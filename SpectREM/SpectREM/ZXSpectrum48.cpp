@@ -16,14 +16,14 @@ using namespace std;
 
 ZXSpectrum48::~ZXSpectrum48()
 {
-    cout << "ZXSpectrum48 Destructor" << endl;
+    cout << "ZXSpectrum48::Destructor" << endl;
     
     release();
 }
 
 ZXSpectrum48::ZXSpectrum48()
 {
-    cout << "ZXSpectrum48 Constructor" << endl;
+    cout << "ZXSpectrum48::Constructor" << endl;
     
     reset();
 }
@@ -32,7 +32,7 @@ ZXSpectrum48::ZXSpectrum48()
 
 void ZXSpectrum48::initialise(char *rom)
 {
-    cout << "ZXSpectrum48 Initialise" << endl;
+    cout << "ZXSpectrum48::initialise" << endl;
 
     memory.resize(64 * 1024);
     
