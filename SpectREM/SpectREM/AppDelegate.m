@@ -1,16 +1,12 @@
 //
 //  AppDelegate.m
-//  z80test
+//  SpectREM
 //
-//  Created by Michael Daley on 30/07/2017.
-//  Copyright © 2017 Mike Daley. All rights reserved.
+//  Created by Mike Daley on 01/08/2017.
+//  Copyright © 2017 71Squared Ltd. All rights reserved.
 //
 
 #import "AppDelegate.h"
-
-@interface AppDelegate ()
-
-@end
 
 @implementation AppDelegate
 
@@ -18,10 +14,12 @@
     // Insert code here to initialize your application
 }
 
-
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
     // Insert code here to tear down your application
 }
 
+- (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender {
+    return YES;
+}
 
 @end

@@ -1,9 +1,9 @@
 //
 //  main.m
-//  z80test
+//  SpectREM
 //
-//  Created by Michael Daley on 30/07/2017.
-//  Copyright © 2017 Mike Daley. All rights reserved.
+//  Created by Mike Daley on 01/08/2017.
+//  Copyright © 2017 71Squared Ltd. All rights reserved.
 //
 
 #import <Cocoa/Cocoa.h>
