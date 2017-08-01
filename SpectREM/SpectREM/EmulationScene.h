@@ -10,4 +10,6 @@
 
 @interface EmulationScene : SKScene
 
+@property (strong, nonatomic) SKTexture *emulationScreenTexture;
+
 @end

@@ -9,8 +9,9 @@
 #ifndef ZXSpectrum48_hpp
 #define ZXSpectrum48_hpp
 
-#include "Z80Core.h"
 #include <vector>
+
+#include "Z80Core.h"
 
 using namespace std;
 
@@ -18,7 +19,6 @@ class ZXSpectrum48
 {
     
 public:
-    
     ZXSpectrum48();
     ~ZXSpectrum48();
 
@@ -27,7 +27,10 @@ public:
     void                    release();
     void                    reset();
     void                    runFrame();
+    void                    loadRomWithPath(char *romPath);
+    void                    generateScreen();
     
+    // Core memory functions
     static unsigned char    zxSpectrumMemoryRead(unsigned short address, void *param);
     static void             zxSpectrumMemoryWrite(unsigned short address, unsigned char data, void *m);
     static void             zxSpectrumMemoryContention(unsigned short address, unsigned int tStates, void *m);
@@ -45,9 +48,12 @@ public:
     void                    coreIOWrite(unsigned short address, unsigned char data);
 
 protected:
-    CZ80Core                core;
-    vector<char>            memory;
-    vector<int>             display;
+    CZ80Core                z80Core;
+    vector<char>            memoryRom;
+    vector<char>            memoryRam;
+    
+public:
+    unsigned int            *display;
 
 };
 
