@@ -10,17 +10,19 @@
 #import "EmulationScene.h"
 #import "ZXSpectrum48.hpp"
 
+#pragma mark - Constants
+
 #pragma mark - Private Interface
 
 @interface EmulationViewController()
 {
     ZXSpectrum48        _machine;
     
+    EmulationScene      *_scene;
+
     dispatch_queue_t    _emulationQueue;
     dispatch_source_t   _emulationTimer;
-    
-    SKTexture           *_screenTexture;
-    EmulationScene      *_scene;
+
 }
 @end
 
@@ -38,8 +40,8 @@
     
     [self.skView presentScene:_scene];
     
-    self.skView.showsFPS = YES;
-    self.skView.showsNodeCount = YES;
+//    self.skView.showsFPS = YES;
+//    self.skView.showsNodeCount = YES;
     
     [self setupTimersAndQueues];
     [self startEmulationTimer];
@@ -59,14 +61,13 @@
     // Basic emulation timer. To be replaced with sound based timing
     dispatch_source_set_event_handler(_emulationTimer, ^{
         _machine.runFrame();
-        
-        NSData *data = [NSData dataWithBytes:_machine.display length:(256 * 192) * 4];
+
         dispatch_async(dispatch_get_main_queue(), ^{
-            _screenTexture = [SKTexture textureWithData:data
-                                                   size:(CGSize){256, 192}
-                                                flipped:YES];
-            _scene.emulationScreenTexture = _screenTexture;
+            [_scene.emulationScreenTexture modifyPixelDataWithBlock:^(void *pixelData, size_t lengthInBytes) {
+                memcpy(pixelData, _machine.display, lengthInBytes);
+            }];
         });
+        
     });
 }
 

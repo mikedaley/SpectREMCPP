@@ -10,7 +10,6 @@
 		ED913F9A1F30759300316E1A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = ED913F991F30759300316E1A /* AppDelegate.m */; };
 		ED913F9D1F30759300316E1A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = ED913F9C1F30759300316E1A /* main.m */; };
 		ED913F9F1F30759300316E1A /* Scene.sks in Resources */ = {isa = PBXBuildFile; fileRef = ED913F9E1F30759300316E1A /* Scene.sks */; };
-		ED913FA11F30759300316E1A /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = ED913FA01F30759300316E1A /* Actions.sks */; };
 		ED913FA41F30759300316E1A /* EmulationScene.m in Sources */ = {isa = PBXBuildFile; fileRef = ED913FA31F30759300316E1A /* EmulationScene.m */; };
 		ED913FA71F30759300316E1A /* EmulationViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = ED913FA61F30759300316E1A /* EmulationViewController.mm */; };
 		ED913FA91F30759300316E1A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ED913FA81F30759300316E1A /* Assets.xcassets */; };
@@ -32,7 +31,6 @@
 		ED913F991F30759300316E1A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		ED913F9C1F30759300316E1A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		ED913F9E1F30759300316E1A /* Scene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Scene.sks; sourceTree = "<group>"; };
-		ED913FA01F30759300316E1A /* Actions.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Actions.sks; sourceTree = "<group>"; };
 		ED913FA21F30759300316E1A /* EmulationScene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmulationScene.h; sourceTree = "<group>"; };
 		ED913FA31F30759300316E1A /* EmulationScene.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EmulationScene.m; sourceTree = "<group>"; };
 		ED913FA51F30759300316E1A /* EmulationViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmulationViewController.h; sourceTree = "<group>"; };
@@ -150,7 +148,6 @@
 				ED913FA21F30759300316E1A /* EmulationScene.h */,
 				ED913FA31F30759300316E1A /* EmulationScene.m */,
 				ED913F9E1F30759300316E1A /* Scene.sks */,
-				ED913FA01F30759300316E1A /* Actions.sks */,
 			);
 			name = "Emulation Scene";
 			sourceTree = "<group>";
@@ -274,7 +271,6 @@
 				ED913FD71F30789300316E1A /* 48.ROM in Resources */,
 				ED913F9F1F30759300316E1A /* Scene.sks in Resources */,
 				ED913FA91F30759300316E1A /* Assets.xcassets in Resources */,
-				ED913FA11F30759300316E1A /* Actions.sks in Resources */,
 				ED913FAC1F30759300316E1A /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -447,6 +443,7 @@
 				ED913FB21F30759300316E1A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

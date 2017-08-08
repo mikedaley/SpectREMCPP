@@ -16,7 +16,7 @@ using namespace std;
 #pragma mark - Constants 
 
 // Size the of the ZX Spectrum ROM in bytes
-const size_t ROM_SIZE = 16383;
+const size_t ROM_SIZE = 16384;
 
 // Size of the ZX Spectrum RAM in bytes
 const size_t RAM_SIZE = 48 * 1024;
@@ -24,8 +24,13 @@ const size_t RAM_SIZE = 48 * 1024;
 // Number of tStates per frame
 const size_t TSTATES_PER_FRAME = 69888;
 
-// Screen buffer size
-const size_t SCREEN_BUFFER_SIZE = (256 * 192) * 4;
+
+// Display border size
+const size_t BORDER_SIZE = 32;
+
+const size_t SCREEN_WIDTH = 320;
+const size_t SCREEN_HEIGHT = 256;
+const size_t SCREEN_BUFFER_SIZE = SCREEN_WIDTH * SCREEN_HEIGHT;
 
 #pragma mark - Constructor/Deconstructor
 
@@ -97,10 +102,11 @@ void ZXSpectrum48::reset()
 
 void ZXSpectrum48::generateScreen()
 {
-    size_t displayIndex = 0;
+    size_t displayIndex = SCREEN_WIDTH * BORDER_SIZE;
     
     for (int y = 0; y < 192; y++)
     {
+        displayIndex += BORDER_SIZE;
         for (int x = 0; x < 256; x++)
         {
             int address = (x >> 3) + ((y & 0x07) << 8) + ((y & 0x38) << 2) + ((y & 0xc0) << 5);
@@ -115,6 +121,7 @@ void ZXSpectrum48::generateScreen()
                 display[displayIndex++] = 0xffbbbbbb;
             }
         }
+        displayIndex += BORDER_SIZE;
     }
 }
 
@@ -127,7 +134,7 @@ unsigned char ZXSpectrum48::zxSpectrumMemoryRead(unsigned short address, void *p
 
 unsigned char ZXSpectrum48::coreMemoryRead(unsigned short address)
 {
-    if (address < 0x4000)
+    if (address < ROM_SIZE)
     {
         return memoryRom[address];
     }
@@ -142,7 +149,7 @@ void ZXSpectrum48::zxSpectrumMemoryWrite(unsigned short address, unsigned char d
 
 void ZXSpectrum48::coreMemoryWrite(unsigned short address, unsigned char data)
 {
-    if (address < 0x4000)
+    if (address < ROM_SIZE)
     {
         return;
     }
@@ -167,7 +174,7 @@ unsigned char ZXSpectrum48::zxSpectrumDebugRead(unsigned int address, void *para
 
 unsigned char ZXSpectrum48::coreDebugRead(unsigned int address, void *data)
 {
-    if (address < 0x4000)
+    if (address < ROM_SIZE)
     {
         return memoryRom[address];
     }
@@ -182,7 +189,7 @@ void ZXSpectrum48::zxSpectrumDebugWrite(unsigned int address, unsigned char byte
 
 void ZXSpectrum48::coreDebugWrite(unsigned int address, unsigned char byte, void *data)
 {
-    if (address < 0x4000)
+    if (address < ROM_SIZE)
     {
         memoryRom[address] = byte;
     }

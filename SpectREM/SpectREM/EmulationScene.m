@@ -9,13 +9,14 @@
 #import "EmulationScene.h"
 
 @implementation EmulationScene {
-    SKShapeNode *_spinnyNode;
     SKSpriteNode *_emulationScreen;
 }
 
 - (void)didMoveToView:(SKView *)view {
     // Get label node from scene and store it for use later
     _emulationScreen = (SKSpriteNode *)[self childNodeWithName:@"//emulationScreen"];
+    _emulationScreenTexture = [SKMutableTexture mutableTextureWithSize:CGSizeMake(320, 256)];
+    _emulationScreen.texture = _emulationScreenTexture;
 }
 
 - (void)touchDownAtPoint:(CGPoint)pos {
@@ -51,11 +52,6 @@
 
 -(void)update:(CFTimeInterval)currentTime {
     // Called before each frame is rendered
-}
-
-- (void)setEmulationScreenTexture:(SKTexture *)emulationScreenTexture
-{
-    _emulationScreen.texture = emulationScreenTexture;
 }
 
 @end
