@@ -34,7 +34,7 @@
     [self initMachineWithRomAtPath:[[NSBundle mainBundle] pathForResource:@"48" ofType:@"ROM"]];
     
     _scene = (EmulationScene *)[SKScene nodeWithFileNamed:@"Scene"];
-    _scene.scaleMode = SKSceneScaleModeAspectFit;
+    _scene.scaleMode = SKSceneScaleModeFill;
     
     [self.skView presentScene:_scene];
     
@@ -56,13 +56,12 @@
     _emulationTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _emulationQueue);
     dispatch_source_set_timer(_emulationTimer, DISPATCH_TIME_NOW, 0.02 * NSEC_PER_SEC, 0);
     
+    // Basic emulation timer. To be replaced with sound based timing
     dispatch_source_set_event_handler(_emulationTimer, ^{
         _machine.runFrame();
         
+        NSData *data = [NSData dataWithBytes:_machine.display length:(256 * 192) * 4];
         dispatch_async(dispatch_get_main_queue(), ^{
-            NSData *data = [NSData dataWithBytes:_machine.display length:49152];
-            
-//            CFDataRef dataRef = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, _machine.display, 49152, kCFAllocatorNull);
             _screenTexture = [SKTexture textureWithData:data
                                                    size:(CGSize){256, 192}
                                                 flipped:YES];

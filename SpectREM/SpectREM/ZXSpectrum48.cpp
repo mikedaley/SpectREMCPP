@@ -25,7 +25,7 @@ const size_t RAM_SIZE = 48 * 1024;
 const size_t TSTATES_PER_FRAME = 69888;
 
 // Screen buffer size
-const size_t SCREEN_BUFFER_SIZE = (256 * 192);
+const size_t SCREEN_BUFFER_SIZE = (256 * 192) * 4;
 
 #pragma mark - Constructor/Deconstructor
 
@@ -108,11 +108,11 @@ void ZXSpectrum48::generateScreen()
                         
             if (byte & (0x80 >> (x & 7)))
             {
-                display[displayIndex++] = 0x000000ff;
+                display[displayIndex++] = 0xff000000;
             }
             else
             {
-                display[displayIndex++] = 0xffffffff;
+                display[displayIndex++] = 0xffbbbbbb;
             }
         }
     }
