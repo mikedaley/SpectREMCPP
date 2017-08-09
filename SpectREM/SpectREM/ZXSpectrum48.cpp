@@ -25,12 +25,15 @@ const size_t RAM_SIZE = 48 * 1024;
 const size_t TSTATES_PER_FRAME = 69888;
 
 
-// Display border size
+// Display constants
 const size_t BORDER_SIZE = 32;
-
 const size_t SCREEN_WIDTH = 320;
 const size_t SCREEN_HEIGHT = 256;
 const size_t SCREEN_BUFFER_SIZE = SCREEN_WIDTH * SCREEN_HEIGHT;
+
+// ROM file name
+const string ROM_EXTENSION = "ROM";
+const string ROM_NAME = "48";
 
 #pragma mark - Constructor/Deconstructor
 

@@ -40,9 +40,6 @@
     
     [self.skView presentScene:_scene];
     
-//    self.skView.showsFPS = YES;
-//    self.skView.showsNodeCount = YES;
-    
     [self setupTimersAndQueues];
     [self startEmulationTimer];
 }
