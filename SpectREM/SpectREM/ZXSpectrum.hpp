@@ -67,7 +67,7 @@ protected:
 public:
     unsigned int            *display;
 
-    // Machine details
+    // Machine details setup in each specific machine class
     size_t                  romSize;
     size_t                  ramSize;
     size_t                  tstatesPerFrame;

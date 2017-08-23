@@ -70,13 +70,6 @@ void ZXSpectrum::runFrame()
     generateScreen();
 }
 
-#pragma mark - Reset
-
-void ZXSpectrum::reset()
-{
-    z80Core.Reset();
-}
-
 #pragma mark - Generate Screen
 
 void ZXSpectrum::generateScreen()
@@ -197,12 +190,19 @@ unsigned char ZXSpectrum::coreIORead(unsigned short address)
 
 void ZXSpectrum::coreIOWrite(unsigned short address, unsigned char data)
 {
-    
+
+}
+
+#pragma mark - Reset
+
+void ZXSpectrum::reset()
+{
+    z80Core.Reset();
 }
 
 #pragma mark - Release
 
 void ZXSpectrum::release()
 {
-
+    delete display;
 }

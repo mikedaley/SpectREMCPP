@@ -11,8 +11,6 @@
 
 #include "ZXSpectrum.hpp"
 
-using namespace std;
-
 class ZXSpectrum48 : public ZXSpectrum
 {
     
@@ -28,11 +26,7 @@ public:
 private:
     void                    loadRomWithPath(char *romPath);
     
-    virtual unsigned char   coreMemoryRead(unsigned short address);
-    virtual void            coreMemoryWrite(unsigned short address, unsigned char data);
     virtual void            coreMemoryContention(unsigned short address, unsigned int tStates);
-    virtual unsigned char   coreDebugRead(unsigned int address, void *data);
-    virtual void            coreDebugWrite(unsigned int address, unsigned char byte, void *data);
     virtual unsigned char   coreIORead(unsigned short address);
     virtual void            coreIOWrite(unsigned short address, unsigned char data);
     

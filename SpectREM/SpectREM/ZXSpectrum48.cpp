@@ -21,14 +21,14 @@ ZXSpectrum48::ZXSpectrum48() : ZXSpectrum()
 ZXSpectrum48::~ZXSpectrum48()
 {
     cout << "ZXSpectrum48::Destructor" << endl;
-    ZXSpectrum::release();
+    release();
 }
 
 #pragma mark - Initialise
 
 void ZXSpectrum48::initialise(char *rom)
 {
-    cout << "ZXSpectrum48::initialise" << endl;
+    cout << "ZXSpectrum48::initialise(char *rom)" << endl;
     
     romSize = 16 * 1024;
     ramSize = 48 * 1024;
@@ -41,65 +41,13 @@ void ZXSpectrum48::initialise(char *rom)
     memoryRom.resize(romSize);
     memoryRam.resize(ramSize);
     
-    ZXSpectrum::loadRomWithPath(rom);
-        
     display = new unsigned int[screenBufferSize];
-    
+
+    ZXSpectrum::loadRomWithPath(rom);
     ZXSpectrum::initialise();
 }
 
-#pragma mark - Memory
-
-unsigned char ZXSpectrum48::coreMemoryRead(unsigned short address)
-{
-    if (address < romSize)
-    {
-        return memoryRom[address];
-    }
-    
-    return memoryRam[address - romSize];
-}
-
-void ZXSpectrum48::coreMemoryWrite(unsigned short address, unsigned char data)
-{
-    if (address < romSize)
-    {
-        return;
-    }
-    
-    memoryRam[address - romSize] = data;
-}
-
-void ZXSpectrum48::coreMemoryContention(unsigned short address, unsigned int tStates)
-{
-    
-}
-
-#pragma mark - Memory Debug
-
-unsigned char ZXSpectrum48::coreDebugRead(unsigned int address, void *data)
-{
-    if (address < romSize)
-    {
-        return memoryRom[address];
-    }
-    
-    return memoryRam[address - romSize];
-}
-
-void ZXSpectrum48::coreDebugWrite(unsigned int address, unsigned char byte, void *data)
-{
-    if (address < romSize)
-    {
-        memoryRom[address] = byte;
-    }
-    else
-    {
-        memoryRam[address] = byte;
-    }
-}
-
-#pragma mark - IO
+#pragma mark - ULA
 
 unsigned char ZXSpectrum48::coreIORead(unsigned short address)
 {
@@ -107,6 +55,13 @@ unsigned char ZXSpectrum48::coreIORead(unsigned short address)
 }
 
 void ZXSpectrum48::coreIOWrite(unsigned short address, unsigned char data)
+{
+    
+}
+
+#pragma mark - Memory
+
+void ZXSpectrum48::coreMemoryContention(unsigned short address, unsigned int tStates)
 {
     
 }
