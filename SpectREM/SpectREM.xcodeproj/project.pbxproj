@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		177E284D1F4DD7E90053756B /* ZXSpectrum48.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 177E284B1F4DD7E90053756B /* ZXSpectrum48.cpp */; };
 		ED913F9A1F30759300316E1A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = ED913F991F30759300316E1A /* AppDelegate.m */; };
 		ED913F9D1F30759300316E1A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = ED913F9C1F30759300316E1A /* main.m */; };
 		ED913F9F1F30759300316E1A /* Scene.sks in Resources */ = {isa = PBXBuildFile; fileRef = ED913F9E1F30759300316E1A /* Scene.sks */; };
@@ -21,11 +22,13 @@
 		ED913FCD1F30781000316E1A /* Z80Core_FDOpcodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED913FC21F30781000316E1A /* Z80Core_FDOpcodes.cpp */; };
 		ED913FCE1F30781000316E1A /* Z80Core_MainOpcodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED913FC41F30781000316E1A /* Z80Core_MainOpcodes.cpp */; };
 		ED913FCF1F30781000316E1A /* Z80Core.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED913FC61F30781000316E1A /* Z80Core.cpp */; };
-		ED913FD41F30787000316E1A /* ZXSpectrum48.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED913FD21F30787000316E1A /* ZXSpectrum48.cpp */; };
+		ED913FD41F30787000316E1A /* ZXSpectrum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED913FD21F30787000316E1A /* ZXSpectrum.cpp */; };
 		ED913FD71F30789300316E1A /* 48.ROM in Resources */ = {isa = PBXBuildFile; fileRef = ED913FD61F30789300316E1A /* 48.ROM */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		177E284B1F4DD7E90053756B /* ZXSpectrum48.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZXSpectrum48.cpp; sourceTree = "<group>"; };
+		177E284E1F4DDF550053756B /* ZXSpectrum48.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ZXSpectrum48.hpp; sourceTree = "<group>"; };
 		ED913F951F30759300316E1A /* SpectREM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpectREM.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED913F981F30759300316E1A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		ED913F991F30759300316E1A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -53,8 +56,8 @@
 		ED913FC61F30781000316E1A /* Z80Core.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Z80Core.cpp; sourceTree = "<group>"; };
 		ED913FC71F30781000316E1A /* Z80Core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Z80Core.h; sourceTree = "<group>"; };
 		ED913FC81F30781000316E1A /* Z80CoreOpcodeTables.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Z80CoreOpcodeTables.h; sourceTree = "<group>"; };
-		ED913FD21F30787000316E1A /* ZXSpectrum48.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZXSpectrum48.cpp; sourceTree = "<group>"; };
-		ED913FD31F30787000316E1A /* ZXSpectrum48.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ZXSpectrum48.hpp; sourceTree = "<group>"; };
+		ED913FD21F30787000316E1A /* ZXSpectrum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZXSpectrum.cpp; sourceTree = "<group>"; };
+		ED913FD31F30787000316E1A /* ZXSpectrum.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ZXSpectrum.hpp; sourceTree = "<group>"; };
 		ED913FD61F30789300316E1A /* 48.ROM */ = {isa = PBXFileReference; lastKnownFileType = file; path = 48.ROM; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -69,6 +72,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		177E284F1F4DEC5B0053756B /* ZX Spectrum 48k */ = {
+			isa = PBXGroup;
+			children = (
+				177E284E1F4DDF550053756B /* ZXSpectrum48.hpp */,
+				177E284B1F4DD7E90053756B /* ZXSpectrum48.cpp */,
+			);
+			name = "ZX Spectrum 48k";
+			sourceTree = "<group>";
+		};
 		ED913F8C1F30759300316E1A = {
 			isa = PBXGroup;
 			children = (
@@ -93,6 +105,7 @@
 				ED913FB71F30765D00316E1A /* Emulation Scene */,
 				ED913FB51F30763500316E1A /* View Controllers */,
 				ED913FD01F30785100316E1A /* Machines */,
+				ED913FD51F30788400316E1A /* ROMs */,
 				ED913FB91F3077DE00316E1A /* Z80 Core */,
 				ED913FB61F30764800316E1A /* Resources */,
 				ED913F9B1F30759300316E1A /* Supporting Files */,
@@ -186,19 +199,11 @@
 		ED913FD01F30785100316E1A /* Machines */ = {
 			isa = PBXGroup;
 			children = (
-				ED913FD51F30788400316E1A /* ROMs */,
-				ED913FD11F30785B00316E1A /* ZX Spectrum 48k */,
+				ED913FD31F30787000316E1A /* ZXSpectrum.hpp */,
+				ED913FD21F30787000316E1A /* ZXSpectrum.cpp */,
+				177E284F1F4DEC5B0053756B /* ZX Spectrum 48k */,
 			);
 			name = Machines;
-			sourceTree = "<group>";
-		};
-		ED913FD11F30785B00316E1A /* ZX Spectrum 48k */ = {
-			isa = PBXGroup;
-			children = (
-				ED913FD31F30787000316E1A /* ZXSpectrum48.hpp */,
-				ED913FD21F30787000316E1A /* ZXSpectrum48.cpp */,
-			);
-			name = "ZX Spectrum 48k";
 			sourceTree = "<group>";
 		};
 		ED913FD51F30788400316E1A /* ROMs */ = {
@@ -288,11 +293,12 @@
 				ED913FCD1F30781000316E1A /* Z80Core_FDOpcodes.cpp in Sources */,
 				ED913FC91F30781000316E1A /* Z80Core_CBOpcodes.cpp in Sources */,
 				ED913FA41F30759300316E1A /* EmulationScene.m in Sources */,
-				ED913FD41F30787000316E1A /* ZXSpectrum48.cpp in Sources */,
+				ED913FD41F30787000316E1A /* ZXSpectrum.cpp in Sources */,
 				ED913FCE1F30781000316E1A /* Z80Core_MainOpcodes.cpp in Sources */,
 				ED913FA71F30759300316E1A /* EmulationViewController.mm in Sources */,
 				ED913FCC1F30781000316E1A /* Z80Core_EDOpcodes.cpp in Sources */,
 				ED913FCF1F30781000316E1A /* Z80Core.cpp in Sources */,
+				177E284D1F4DD7E90053756B /* ZXSpectrum48.cpp in Sources */,
 				ED913F9A1F30759300316E1A /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

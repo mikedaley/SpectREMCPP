@@ -16,10 +16,9 @@
 
 @interface EmulationViewController()
 {
-    ZXSpectrum48        _machine;
-    
     EmulationScene      *_scene;
 
+    ZXSpectrum48        _machine;
     dispatch_queue_t    _emulationQueue;
     dispatch_source_t   _emulationTimer;
 
