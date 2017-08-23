@@ -1,13 +1,13 @@
 //
-//  ZXSpectrum48.hpp
+//  ZXSpectrum.hpp
 //  z80test
 //
 //  Created by Michael Daley on 30/07/2017.
 //  Copyright © 2017 Mike Daley. All rights reserved.
 //
 
-#ifndef ZXSpectrum48_hpp
-#define ZXSpectrum48_hpp
+#ifndef ZXSpectrum_hpp
+#define ZXSpectrum_hpp
 
 #include <vector>
 
@@ -15,22 +15,30 @@
 
 using namespace std;
 
-class ZXSpectrum48
+class ZXSpectrum
 {
+
+private:
+    typedef struct
+    {
+        int                 vkey;
+        int                 mapEntry;
+        int                 mapBit;
+    } KEYBOARD_ENTRY;
     
 public:
-    ZXSpectrum48();
-    ~ZXSpectrum48();
+    ZXSpectrum();
+    ~ZXSpectrum();
 
 public:
-    void                    initialise(char *rom);
+    void                    initialise();
     void                    reset();
     void                    runFrame();
-    void                    generateScreen();
+    void                    release();
+    void                    loadRomWithPath(char *romPath);
     
 private:
-    void                    loadRomWithPath(char *romPath);
-    void                    release();
+    void                    generateScreen();
     
     // Core memory functions
     static unsigned char    zxSpectrumMemoryRead(unsigned short address, void *param);
@@ -53,10 +61,21 @@ protected:
     CZ80Core                z80Core;
     vector<char>            memoryRom;
     vector<char>            memoryRam;
+    unsigned char           keyboardMap[8];
+    static KEYBOARD_ENTRY   keyboardLookupp[];
     
 public:
     unsigned int            *display;
 
+    // Machine details
+    size_t                  romSize;
+    size_t                  ramSize;
+    size_t                  tstatesPerFrame;
+    size_t                  borderSize;
+    size_t                  screenWidth;
+    size_t                  screenHeight;
+    size_t                  screenBufferSize;
+    
 };
 
-#endif /* ZXSpectrum48_hpp */
+#endif /* ZXSpectrum_hpp */

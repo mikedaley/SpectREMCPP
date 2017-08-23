@@ -6,59 +6,37 @@
 //  Copyright © 2017 Mike Daley. All rights reserved.
 //
 
-#include "ZXSpectrum48.hpp"
+#include "ZXSpectrum.hpp"
 
 #include <iostream>
 #include <fstream>
 
+#include "Z80Core.h"
+
 using namespace std;
 
-#pragma mark - Constants 
+#pragma mark - Constants
 
-// Size the of the ZX Spectrum ROM in bytes
-const size_t ROM_SIZE = 16384;
-
-// Size of the ZX Spectrum RAM in bytes
-const size_t RAM_SIZE = 48 * 1024;
-
-// Number of tStates per frame
-const size_t TSTATES_PER_FRAME = 69888;
-
-
-// Display constants
-const size_t BORDER_SIZE = 32;
-const size_t SCREEN_WIDTH = 320;
-const size_t SCREEN_HEIGHT = 256;
-const size_t SCREEN_BUFFER_SIZE = SCREEN_WIDTH * SCREEN_HEIGHT;
-
-// ROM file name
-const string ROM_EXTENSION = "ROM";
-const string ROM_NAME = "48";
 
 #pragma mark - Constructor/Deconstructor
 
-ZXSpectrum48::ZXSpectrum48()
+ZXSpectrum::ZXSpectrum()
 {
-    cout << "ZXSpectrum48::Constructor" << endl;
+    cout << "ZXSpectrum::Constructor" << endl;
 }
 
-ZXSpectrum48::~ZXSpectrum48()
+ZXSpectrum::~ZXSpectrum()
 {
-    cout << "ZXSpectrum48::Destructor" << endl;
+    cout << "ZXSpectrum::Destructor" << endl;
     release();
 }
 
 #pragma mark - Initialise
 
-void ZXSpectrum48::initialise(char *rom)
+void ZXSpectrum::initialise()
 {
-    cout << "ZXSpectrum48::initialise" << endl;
+    cout << "ZXSpectrum::initialise" << endl;
     
-    memoryRom.resize(ROM_SIZE);
-    memoryRam.resize(RAM_SIZE);
-
-    loadRomWithPath(rom);
-
     z80Core.Initialise(zxSpectrumMemoryRead,
                        zxSpectrumMemoryWrite,
                        zxSpectrumIORead,
@@ -67,11 +45,9 @@ void ZXSpectrum48::initialise(char *rom)
                        zxSpectrumDebugRead,
                        zxSpectrumDebugWrite,
                        this);
-    
-    display = (unsigned int *)calloc(SCREEN_BUFFER_SIZE, sizeof(unsigned int));
 }
 
-void ZXSpectrum48::loadRomWithPath(char *romPath)
+void ZXSpectrum::loadRomWithPath(char *romPath)
 {
     std::ifstream romFile(romPath, std::ios::binary|std::ios::ate);
     romFile.seekg(0, std::ios::beg);
@@ -80,11 +56,11 @@ void ZXSpectrum48::loadRomWithPath(char *romPath)
 
 #pragma mark - Generate a frame
 
-void ZXSpectrum48::runFrame()
+void ZXSpectrum::runFrame()
 {
     size_t tStates = 0;
     
-    while (tStates < TSTATES_PER_FRAME)
+    while (tStates < tstatesPerFrame)
     {
         tStates += z80Core.Execute();
     }
@@ -96,25 +72,25 @@ void ZXSpectrum48::runFrame()
 
 #pragma mark - Reset
 
-void ZXSpectrum48::reset()
+void ZXSpectrum::reset()
 {
     z80Core.Reset();
 }
 
 #pragma mark - Generate Screen
 
-void ZXSpectrum48::generateScreen()
+void ZXSpectrum::generateScreen()
 {
-    size_t displayIndex = SCREEN_WIDTH * BORDER_SIZE;
+    size_t displayIndex = screenWidth * borderSize;
     
     for (int y = 0; y < 192; y++)
     {
-        displayIndex += BORDER_SIZE;
+        displayIndex += borderSize;
         for (int x = 0; x < 256; x++)
         {
             int address = (x >> 3) + ((y & 0x07) << 8) + ((y & 0x38) << 2) + ((y & 0xc0) << 5);
             unsigned char byte = memoryRam[address];
-                        
+            
             if (byte & (0x80 >> (x & 7)))
             {
                 display[displayIndex++] = 0xff000000;
@@ -124,75 +100,75 @@ void ZXSpectrum48::generateScreen()
                 display[displayIndex++] = 0xffbbbbbb;
             }
         }
-        displayIndex += BORDER_SIZE;
+        displayIndex += borderSize;
     }
 }
 
 #pragma mark - Memory Access
 
-unsigned char ZXSpectrum48::zxSpectrumMemoryRead(unsigned short address, void *param)
+unsigned char ZXSpectrum::zxSpectrumMemoryRead(unsigned short address, void *param)
 {
-    return ((ZXSpectrum48 *) param)->coreMemoryRead(address);
+    return ((ZXSpectrum *) param)->coreMemoryRead(address);
 }
 
-unsigned char ZXSpectrum48::coreMemoryRead(unsigned short address)
+void ZXSpectrum::zxSpectrumMemoryWrite(unsigned short address, unsigned char data, void *param)
 {
-    if (address < ROM_SIZE)
+    ((ZXSpectrum *) param)->coreMemoryWrite(address, data);
+}
+
+void ZXSpectrum::zxSpectrumMemoryContention(unsigned short address, unsigned int tStates, void *param)
+{
+    
+}
+
+unsigned char ZXSpectrum::zxSpectrumDebugRead(unsigned int address, void *param, void *data)
+{
+    return ((ZXSpectrum *) param)->coreDebugRead(address, data);
+}
+
+void ZXSpectrum::zxSpectrumDebugWrite(unsigned int address, unsigned char byte, void *param, void *data)
+{
+    ((ZXSpectrum *) param)->coreDebugWrite(address, byte, data);
+}
+
+unsigned char ZXSpectrum::coreMemoryRead(unsigned short address)
+{
+    if (address < romSize)
     {
         return memoryRom[address];
     }
     
-    return memoryRam[address - ROM_SIZE];
+    return memoryRam[address - romSize];
 }
 
-void ZXSpectrum48::zxSpectrumMemoryWrite(unsigned short address, unsigned char data, void *param)
+void ZXSpectrum::coreMemoryWrite(unsigned short address, unsigned char data)
 {
-    ((ZXSpectrum48 *) param)->coreMemoryWrite(address, data);
-}
-
-void ZXSpectrum48::coreMemoryWrite(unsigned short address, unsigned char data)
-{
-    if (address < ROM_SIZE)
+    if (address < romSize)
     {
         return;
     }
     
-    memoryRam[address - ROM_SIZE] = data;
+    memoryRam[address - romSize] = data;
 }
 
-void ZXSpectrum48::zxSpectrumMemoryContention(unsigned short address, unsigned int tStates, void *param)
+void ZXSpectrum::coreMemoryContention(unsigned short address, unsigned int tStates)
 {
     
 }
 
-void ZXSpectrum48::coreMemoryContention(unsigned short address, unsigned int tStates)
+unsigned char ZXSpectrum::coreDebugRead(unsigned int address, void *data)
 {
-    
-}
-
-unsigned char ZXSpectrum48::zxSpectrumDebugRead(unsigned int address, void *param, void *data)
-{
-    return ((ZXSpectrum48 *) param)->coreDebugRead(address, data);
-}
-
-unsigned char ZXSpectrum48::coreDebugRead(unsigned int address, void *data)
-{
-    if (address < ROM_SIZE)
+    if (address < romSize)
     {
         return memoryRom[address];
     }
     
-    return memoryRam[address - ROM_SIZE];
+    return memoryRam[address - romSize];
 }
 
-void ZXSpectrum48::zxSpectrumDebugWrite(unsigned int address, unsigned char byte, void *param, void *data)
+void ZXSpectrum::coreDebugWrite(unsigned int address, unsigned char byte, void *data)
 {
-    ((ZXSpectrum48 *) param)->coreDebugWrite(address, byte, data);
-}
-
-void ZXSpectrum48::coreDebugWrite(unsigned int address, unsigned char byte, void *data)
-{
-    if (address < ROM_SIZE)
+    if (address < romSize)
     {
         memoryRom[address] = byte;
     }
@@ -204,29 +180,29 @@ void ZXSpectrum48::coreDebugWrite(unsigned int address, unsigned char byte, void
 
 #pragma mark - IO Access
 
-unsigned char ZXSpectrum48::zxSpectrumIORead(unsigned short address, void *param)
+unsigned char ZXSpectrum::zxSpectrumIORead(unsigned short address, void *param)
 {
-    return ((ZXSpectrum48 *) param)->coreIORead(address);
+    return ((ZXSpectrum *) param)->coreIORead(address);
 }
 
-unsigned char ZXSpectrum48::coreIORead(unsigned short address)
+void ZXSpectrum::zxSpectrumIOWrite(unsigned short address, unsigned char data, void *param)
+{
+    ((ZXSpectrum *) param)->coreIOWrite(address, data);
+}
+
+unsigned char ZXSpectrum::coreIORead(unsigned short address)
 {
     return 0xff;
 }
 
-void ZXSpectrum48::zxSpectrumIOWrite(unsigned short address, unsigned char data, void *param)
-{
-    ((ZXSpectrum48 *) param)->coreIOWrite(address, data);
-}
-
-void ZXSpectrum48::coreIOWrite(unsigned short address, unsigned char data)
+void ZXSpectrum::coreIOWrite(unsigned short address, unsigned char data)
 {
     
 }
 
 #pragma mark - Release
 
-void ZXSpectrum48::release()
+void ZXSpectrum::release()
 {
 
 }
