@@ -39,18 +39,19 @@ public:
     void                    keyDown(unsigned short key);
     void                    keyUp(unsigned short key);
     void                    keyFlagsChanged(unsigned short key);
+    void                    resetKeyboardMap();
     
 private:
     void                    generateScreen();
     
     // Core memory/IO functions
     static unsigned char    zxSpectrumMemoryRead(unsigned short address, void *param);
-    static void             zxSpectrumMemoryWrite(unsigned short address, unsigned char data, void *m);
-    static void             zxSpectrumMemoryContention(unsigned short address, unsigned int tStates, void *m);
+    static void             zxSpectrumMemoryWrite(unsigned short address, unsigned char data, void *param);
+    static void             zxSpectrumMemoryContention(unsigned short address, unsigned int tStates, void *param);
     static unsigned char    zxSpectrumDebugRead(unsigned int address, void *param, void *m);
     static void             zxSpectrumDebugWrite(unsigned int address, unsigned char byte, void *param, void *data);
-    static unsigned char    zxSpectrumIORead(unsigned short address, void *m);
-    static void             zxSpectrumIOWrite(unsigned short address, unsigned char data, void *m);
+    static unsigned char    zxSpectrumIORead(unsigned short address, void *param);
+    static void             zxSpectrumIOWrite(unsigned short address, unsigned char data, void *param);
 
 public:
     virtual unsigned char   coreMemoryRead(unsigned short address);

@@ -69,7 +69,7 @@ unsigned char ZXSpectrum48::coreIORead(unsigned short address)
 
 void ZXSpectrum48::coreIOWrite(unsigned short address, unsigned char data)
 {
-    cout << "IO Write" << endl;
+    cout << "ZXSpectrum48::coreIOWrite" << endl;
 }
 
 #pragma mark - Memory Contention

@@ -96,6 +96,7 @@ void ZXSpectrum::initialise(char *romPath)
                        zxSpectrumDebugWrite,
                        this);
     
+    resetKeyboardMap();
     loadRomWithPath(romPath);
 }
 
@@ -110,16 +111,22 @@ void ZXSpectrum::loadRomWithPath(char *romPath)
 
 void ZXSpectrum::runFrame()
 {
-    size_t tStates = 0;
+    size_t count = tstatesPerFrame;
     
-    while (tStates < tstatesPerFrame)
+    while (count > 0)
     {
-        tStates += z80Core.Execute();
+        int tStates = z80Core.Execute(1, 32);
+        count -= tStates;
+        
+        if (z80Core.GetTStates() >= tstatesPerFrame)
+        {
+            count = 0;
+
+            z80Core.ResetTStates( (unsigned int)tstatesPerFrame );
+            z80Core.SignalInterrupt();
+            generateScreen();
+        }
     }
-    
-    z80Core.SignalInterrupt();
-    
-    generateScreen();
 }
 
 #pragma mark - Generate Screen
@@ -262,8 +269,6 @@ unsigned char ZXSpectrum::coreIORead(unsigned short address)
 void ZXSpectrum::coreIOWrite(unsigned short address, unsigned char data)
 {
     // Nothing to see here
-    cout << "IO Write" << endl;
-    
 }
 
 #pragma mark - Reset
@@ -482,7 +487,13 @@ void ZXSpectrum::keyFlagsChanged(unsigned short key)
     
 }
 
-
+void ZXSpectrum::resetKeyboardMap()
+{
+    for (int i = 0; i < 8; i++)
+    {
+        keyboardMap[i] = 0xbf;
+    }
+}
 
 
 
