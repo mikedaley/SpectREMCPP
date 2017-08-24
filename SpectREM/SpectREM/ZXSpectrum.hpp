@@ -10,8 +10,11 @@
 #define ZXSpectrum_hpp
 
 #include <vector>
+#include <iostream>
+#include <fstream>
 
 #include "Z80Core.h"
+#include "MachineDetails.h"
 
 using namespace std;
 
@@ -19,13 +22,15 @@ class ZXSpectrum
 {
 
 private:
+    // Holds details of the host platforms key codes and how they map to the spectrum keyboard matrix
     typedef struct
     {
-        int                 vkey;
+        int                 key;
         int                 mapEntry;
         int                 mapBit;
     } KEYBOARD_ENTRY;
     
+    // Constructor/Distructor
 public:
     ZXSpectrum();
     ~ZXSpectrum();
@@ -73,14 +78,30 @@ public:
     unsigned int            *display;
 
     // Machine details setup in each specific machine class
-    size_t                  romSize;
-    size_t                  ramSize;
-    size_t                  tstatesPerFrame;
-    size_t                  borderSize;
-    size_t                  screenWidth;
-    size_t                  screenHeight;
-    size_t                  screenBufferSize;
+    int                     borderSize;
+    int                     screenWidth;
+    int                     screenHeight;
+    int                     screenBufferSize;
+
+    // Display
+    int                     tstatesPerFrame;
+    int                     tstatesHorizontalPixelDisplay;
     
+    int                     pixelVerticalPixelDisplay;
+    int                     pixelVerticalBlank;
+    int                     pixelVerticalTotal;
+    
+    // Interrupts
+    int                     tstatesPerInterrupt;
+    
+    MachineInfo             machineInfo;
+
 };
 
 #endif /* ZXSpectrum_hpp */
+
+
+
+
+
+

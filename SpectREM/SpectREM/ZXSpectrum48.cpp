@@ -30,18 +30,7 @@ void ZXSpectrum48::initialise(char *romPath)
 {
     cout << "ZXSpectrum48::initialise(char *rom)" << endl;
     
-    romSize = 16 * 1024;
-    ramSize = 48 * 1024;
-    tstatesPerFrame = 69888;
-    borderSize = 32;
-    screenWidth = borderSize + 256 + borderSize;
-    screenHeight = borderSize + 192 + borderSize;
-    screenBufferSize = screenHeight * screenWidth;
-    
-    memoryRom.resize(romSize);
-    memoryRam.resize(ramSize);
-    
-    display = new unsigned int[screenBufferSize];
+    machineInfo = machines[ eZXSpectrum48 ];
 
     ZXSpectrum::initialise(romPath);
 }
@@ -50,26 +39,14 @@ void ZXSpectrum48::initialise(char *romPath)
 
 unsigned char ZXSpectrum48::coreIORead(unsigned short address)
 {
-    unsigned char result = 0xff;
+    unsigned char result = ZXSpectrum::coreIORead(address);
     
-    // Check to see if the keyboard is being read and if so return any keys currently pressed
-    if (address & 0xfe)
-    {
-        for (int i = 0; i < 8; i++)
-        {
-            if (!(address & (0x100 << i)))
-            {
-                result &= keyboardMap[i];
-            }
-        }
-    }
-
     return result;
 }
 
 void ZXSpectrum48::coreIOWrite(unsigned short address, unsigned char data)
 {
-    cout << "ZXSpectrum48::coreIOWrite" << endl;
+
 }
 
 #pragma mark - Memory Contention
@@ -90,3 +67,6 @@ void ZXSpectrum48::reset()
 {
     ZXSpectrum::reset();
 }
+
+
+
