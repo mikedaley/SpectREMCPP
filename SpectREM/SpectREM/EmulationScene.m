@@ -8,28 +8,25 @@
 
 #import "EmulationScene.h"
 
-@implementation EmulationScene {
+@implementation EmulationScene
+{
     SKSpriteNode *_emulationScreen;
 }
 
-- (void)didMoveToView:(SKView *)view {
-    // Get label node from scene and store it for use later
+- (void)didMoveToView:(SKView *)view
+{
     _emulationScreen = (SKSpriteNode *)[self childNodeWithName:@"//emulationScreen"];
     _emulationScreenTexture = [SKMutableTexture mutableTextureWithSize:CGSizeMake(320, 256)];
+    _emulationScreenTexture.filteringMode = SKTextureFilteringNearest;
     _emulationScreen.texture = _emulationScreenTexture;
+    
+    self.scaleMode = SKSceneScaleModeAspectFit;
 }
 
-- (void)touchDownAtPoint:(CGPoint)pos {
-}
-
-- (void)touchMovedToPoint:(CGPoint)pos {
-}
-
-- (void)touchUpAtPoint:(CGPoint)pos {
-}
-
-- (void)keyDown:(NSEvent *)theEvent {
-    switch (theEvent.keyCode) {
+- (void)keyDown:(NSEvent *)theEvent
+{
+    switch (theEvent.keyCode)
+    {
         case 0x31 /* SPACE */:
             // Run 'Pulse' action from 'Actions.sks'
             break;
@@ -40,17 +37,8 @@
     }
 }
 
-- (void)mouseDown:(NSEvent *)theEvent {
-
-}
-- (void)mouseDragged:(NSEvent *)theEvent {
-
-}
-- (void)mouseUp:(NSEvent *)theEvent {
-
-}
-
--(void)update:(CFTimeInterval)currentTime {
+-(void)update:(CFTimeInterval)currentTime
+{
     // Called before each frame is rendered
 }
 

@@ -15,9 +15,6 @@
 
 using namespace std;
 
-#pragma mark - Constants
-
-
 #pragma mark - Constructor/Deconstructor
 
 ZXSpectrum::ZXSpectrum()
@@ -111,7 +108,7 @@ void ZXSpectrum::zxSpectrumMemoryWrite(unsigned short address, unsigned char dat
 
 void ZXSpectrum::zxSpectrumMemoryContention(unsigned short address, unsigned int tStates, void *param)
 {
-    
+    // Nothing to see here
 }
 
 unsigned char ZXSpectrum::zxSpectrumDebugRead(unsigned int address, void *param, void *data)
@@ -146,7 +143,7 @@ void ZXSpectrum::coreMemoryWrite(unsigned short address, unsigned char data)
 
 void ZXSpectrum::coreMemoryContention(unsigned short address, unsigned int tStates)
 {
-    
+    // Nothing to see here
 }
 
 unsigned char ZXSpectrum::coreDebugRead(unsigned int address, void *data)
@@ -190,7 +187,7 @@ unsigned char ZXSpectrum::coreIORead(unsigned short address)
 
 void ZXSpectrum::coreIOWrite(unsigned short address, unsigned char data)
 {
-
+    // Nothing to see here
 }
 
 #pragma mark - Reset

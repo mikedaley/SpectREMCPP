@@ -32,15 +32,15 @@ public:
 
 public:
     void                    initialise();
-    void                    reset();
-    void                    runFrame();
-    void                    release();
     void                    loadRomWithPath(char *romPath);
+    void                    runFrame();
+    void                    reset();
+    void                    release();
     
 private:
     void                    generateScreen();
     
-    // Core memory functions
+    // Core memory/IO functions
     static unsigned char    zxSpectrumMemoryRead(unsigned short address, void *param);
     static void             zxSpectrumMemoryWrite(unsigned short address, unsigned char data, void *m);
     static void             zxSpectrumMemoryContention(unsigned short address, unsigned int tStates, void *m);
