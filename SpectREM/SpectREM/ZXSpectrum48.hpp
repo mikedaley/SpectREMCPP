@@ -19,13 +19,9 @@ public:
     virtual ~ZXSpectrum48();
     
 public:
-    void                    initialise(char *rom);
+    virtual void            initialise(char *romPath);
     virtual void            release();
     virtual void            reset();
-    
-private:
-    void                    loadRomWithPath(char *romPath);
-    
     virtual void            coreMemoryContention(unsigned short address, unsigned int tStates);
     virtual unsigned char   coreIORead(unsigned short address);
     virtual void            coreIOWrite(unsigned short address, unsigned char data);

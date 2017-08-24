@@ -18,22 +18,8 @@
     _emulationScreenTexture = [SKMutableTexture mutableTextureWithSize:CGSizeMake(320, 256)];
     _emulationScreenTexture.filteringMode = SKTextureFilteringLinear;
     
-    _emulationScreen = (SKSpriteNode *)[self childNodeWithName:@"//display"];
+    _emulationScreen = (SKSpriteNode *)[self childNodeWithName:@"//displayNode"];
     _emulationScreen.texture = _emulationScreenTexture;
-}
-
-- (void)keyDown:(NSEvent *)theEvent
-{
-    switch (theEvent.keyCode)
-    {
-        case 0x31 /* SPACE */:
-            // Run 'Pulse' action from 'Actions.sks'
-            break;
-            
-        default:
-            NSLog(@"keyDown:'%@' keyCode: 0x%02X", theEvent.characters, theEvent.keyCode);
-            break;
-    }
 }
 
 -(void)update:(CFTimeInterval)currentTime

@@ -8,6 +8,7 @@
 
 #import "EmulationViewController.h"
 #import "EmulationScene.h"
+#import "ZXSpectrum.hpp"
 #import "ZXSpectrum48.hpp"
 
 #pragma mark - Constants
@@ -18,16 +19,21 @@
 {
     EmulationScene      *_scene;
 
-    ZXSpectrum48        _machine;
+    ZXSpectrum          *_machine;
     dispatch_queue_t    _emulationQueue;
     dispatch_source_t   _emulationTimer;
 
 }
 @end
 
-#pragma mark - Implementation 
+#pragma mark - Implementation
 
 @implementation EmulationViewController
+
+- (void)dealloc
+{
+    delete _machine;
+}
 
 - (void)viewDidLoad
 {
@@ -39,6 +45,8 @@
     
     // Remember to do this before presenting the scene or it goes all wierd !!!
     _scene.scaleMode = SKSceneScaleModeFill;
+    
+    _scene.nextResponder = self;
 
     [self.skView presentScene:_scene];
     
@@ -48,7 +56,8 @@
 
 - (void)initMachineWithRomAtPath:(NSString *)romPath
 {
-    _machine.initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
+    _machine = new ZXSpectrum48();
+    _machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
 }
 
 - (void)setupTimersAndQueues
@@ -59,16 +68,30 @@
     
     // Basic emulation timer. To be replaced with sound based timing
     dispatch_source_set_event_handler(_emulationTimer, ^{
-        _machine.runFrame();
+        _machine->runFrame();
 
         dispatch_async(dispatch_get_main_queue(), ^{
             [_scene.emulationScreenTexture modifyPixelDataWithBlock:^(void *pixelData, size_t lengthInBytes) {
-                memcpy(pixelData, _machine.display, lengthInBytes);
+                memcpy(pixelData, _machine->display, lengthInBytes);
             }];
         });
         
     });
 }
+
+#pragma mark - Keyboard
+
+- (void)keyDown:(NSEvent *)event
+{
+    _machine->keyDown(event.keyCode);
+}
+
+- (void)keyUp:(NSEvent *)event
+{
+    _machine->keyUp(event.keyCode);
+}
+
+#pragma mark - Timer
 
 - (void)startEmulationTimer
 {

@@ -26,7 +26,7 @@ ZXSpectrum48::~ZXSpectrum48()
 
 #pragma mark - Initialise
 
-void ZXSpectrum48::initialise(char *rom)
+void ZXSpectrum48::initialise(char *romPath)
 {
     cout << "ZXSpectrum48::initialise(char *rom)" << endl;
     
@@ -43,23 +43,36 @@ void ZXSpectrum48::initialise(char *rom)
     
     display = new unsigned int[screenBufferSize];
 
-    ZXSpectrum::loadRomWithPath(rom);
-    ZXSpectrum::initialise();
+    ZXSpectrum::initialise(romPath);
 }
 
 #pragma mark - ULA
 
 unsigned char ZXSpectrum48::coreIORead(unsigned short address)
 {
-    return 0xff;
+    unsigned char result = 0xff;
+    
+    // Check to see if the keyboard is being read and if so return any keys currently pressed
+    if (address & 0xfe)
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            if (!(address & (0x100 << i)))
+            {
+                result &= keyboardMap[i];
+            }
+        }
+    }
+
+    return result;
 }
 
 void ZXSpectrum48::coreIOWrite(unsigned short address, unsigned char data)
 {
-    
+    cout << "IO Write" << endl;
 }
 
-#pragma mark - Memory
+#pragma mark - Memory Contention
 
 void ZXSpectrum48::coreMemoryContention(unsigned short address, unsigned int tStates)
 {
