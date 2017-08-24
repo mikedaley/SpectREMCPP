@@ -1,5 +1,5 @@
 //
-//  SpectrumKeyboard.cpp
+//  Keyboard.cpp
 //  SpectREM
 //
 //  Created by Michael Daley on 24/08/2017.
@@ -268,3 +268,6 @@ void ZXSpectrum::resetKeyboardMap()
         keyboardMap[i] = 0xbf;
     }
 }
+
+
+

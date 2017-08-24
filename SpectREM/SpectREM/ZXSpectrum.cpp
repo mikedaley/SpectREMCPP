@@ -43,10 +43,11 @@ void ZXSpectrum::initialise(char *romPath)
     memoryRom.resize( machineInfo.romSize );
     memoryRam.resize( machineInfo.ramSize );
     
-    display = new unsigned int[ screenBufferSize ];
+    displayBuffer = new unsigned int[ screenBufferSize ];
 
+    buildScreenLineAddressTable();
+    buildDisplayTstateTable();
     loadRomWithPath(romPath);
-    
     reset();
 }
 
@@ -76,52 +77,6 @@ void ZXSpectrum::runFrame()
             generateScreen();
         }
     }
-}
-
-#pragma mark - Generate Screen
-
-void ZXSpectrum::generateScreen()
-{
-    int displayIndex = 0;
-    
-    for (int x = 0; x < screenWidth * machineInfo.pxEmuBorder; x++)
-    {
-        display[displayIndex++] = 0xffbbbbbb;
-    }
-    
-    for (int y = 0; y < 192; y++)
-    {
-        for (int x = 0; x < machineInfo.pxEmuBorder; x++)
-        {
-            display[displayIndex++] = 0xffbbbbbb;
-        }
-        
-        for (int x = 0; x < 256; x++)
-        {
-            int address = (x >> 3) + ((y & 0x07) << 8) + ((y & 0x38) << 2) + ((y & 0xc0) << 5);
-            unsigned char byte = memoryRam[address];
-            
-            if (byte & (0x80 >> (x & 7)))
-            {
-                display[displayIndex++] = 0xff000000;
-            }
-            else
-            {
-                display[displayIndex++] = 0xffbbbbbb;
-            }
-        }
-
-        for (int x = 0; x < machineInfo.pxEmuBorder; x++)
-        {
-            display[displayIndex++] = 0xffbbbbbb;
-        }
-    }
-
-    for (int x = 0; x < screenWidth * machineInfo.pxEmuBorder; x++)
-    {
-        display[displayIndex++] = 0xffbbbbbb;
-    }
-
 }
 
 #pragma mark - Memory Access
@@ -234,13 +189,6 @@ void ZXSpectrum::coreIOWrite(unsigned short address, unsigned char data)
     // Nothing to see here
 }
 
-#pragma mark - Display Tables
-
-void buildDisplayTstateTable()
-{
-    
-}
-
 #pragma mark - Reset
 
 void ZXSpectrum::reset()
@@ -253,7 +201,7 @@ void ZXSpectrum::reset()
 
 void ZXSpectrum::release()
 {
-    delete display;
+    delete displayBuffer;
 }
 
 

@@ -72,7 +72,7 @@
 
         dispatch_async(dispatch_get_main_queue(), ^{
             [_scene.emulationScreenTexture modifyPixelDataWithBlock:^(void *pixelData, size_t lengthInBytes) {
-                memcpy(pixelData, _machine->display, lengthInBytes);
+                memcpy(pixelData, _machine->displayBuffer, lengthInBytes);
             }];
         });
         

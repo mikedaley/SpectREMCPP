@@ -22,6 +22,13 @@ class ZXSpectrum
 {
 
 private:
+    enum
+    {
+        eDisplayRetrace,
+        eDisplayPaper,
+        eDisplayBorder
+    };
+    
     // Holds details of the host platforms key codes and how they map to the spectrum keyboard matrix
     typedef struct
     {
@@ -30,7 +37,6 @@ private:
         int                 mapBit;
     } KEYBOARD_ENTRY;
     
-    // Constructor/Distructor
 public:
     ZXSpectrum();
     ~ZXSpectrum();
@@ -48,6 +54,8 @@ public:
     
 private:
     void                    generateScreen();
+    void                    buildDisplayTstateTable();
+    void                    buildScreenLineAddressTable();
     
     // Core memory/IO functions
     static unsigned char    zxSpectrumMemoryRead(unsigned short address, void *param);
@@ -75,24 +83,13 @@ protected:
     static KEYBOARD_ENTRY   keyboardLookup[];
     
 public:
-    unsigned int            *display;
+    unsigned int            *displayBuffer;
 
-    // Machine details setup in each specific machine class
-    int                     borderSize;
     int                     screenWidth;
     int                     screenHeight;
     int                     screenBufferSize;
-
-    // Display
-    int                     tstatesPerFrame;
-    int                     tstatesHorizontalPixelDisplay;
-    
-    int                     pixelVerticalPixelDisplay;
-    int                     pixelVerticalBlank;
-    int                     pixelVerticalTotal;
-    
-    // Interrupts
-    int                     tstatesPerInterrupt;
+    int                     displayTstateTable[312][224];
+    int                     displayLineAddrTable[192];
     
     MachineInfo             machineInfo;
 
