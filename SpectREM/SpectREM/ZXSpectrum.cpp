@@ -71,11 +71,20 @@ void ZXSpectrum::runFrame()
 
 void ZXSpectrum::generateScreen()
 {
-    size_t displayIndex = screenWidth * borderSize;
+    size_t displayIndex = 0;
+    
+    for (int x = 0; x < screenWidth * borderSize; x++)
+    {
+        display[displayIndex++] = 0xffbbbbbb;
+    }
     
     for (int y = 0; y < 192; y++)
     {
-        displayIndex += borderSize;
+        for (int x = 0; x < borderSize; x++)
+        {
+            display[displayIndex++] = 0xffbbbbbb;
+        }
+        
         for (int x = 0; x < 256; x++)
         {
             int address = (x >> 3) + ((y & 0x07) << 8) + ((y & 0x38) << 2) + ((y & 0xc0) << 5);
@@ -90,8 +99,18 @@ void ZXSpectrum::generateScreen()
                 display[displayIndex++] = 0xffbbbbbb;
             }
         }
-        displayIndex += borderSize;
+
+        for (int x = 0; x < borderSize; x++)
+        {
+            display[displayIndex++] = 0xffbbbbbb;
+        }
     }
+
+    for (int x = 0; x < screenWidth * borderSize; x++)
+    {
+        display[displayIndex++] = 0xffbbbbbb;
+    }
+
 }
 
 #pragma mark - Memory Access

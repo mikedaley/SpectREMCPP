@@ -2,8 +2,8 @@
 // TZT ZX Spectrum Emulator
 //
 
-#ifndef __Z80CORE_H__
-#define __Z80CORE_H__
+#ifndef Z80CORE_H
+#define Z80CORE_H
 
 //-----------------------------------------------------------------------------------------
 

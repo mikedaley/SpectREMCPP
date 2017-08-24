@@ -29,14 +29,17 @@
 
 @implementation EmulationViewController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
 
     [self initMachineWithRomAtPath:[[NSBundle mainBundle] pathForResource:@"48" ofType:@"ROM"]];
     
-    _scene = (EmulationScene *)[SKScene nodeWithFileNamed:@"Scene"];
-    _scene.scaleMode = SKSceneScaleModeFill;
+    _scene = (EmulationScene *)[SKScene nodeWithFileNamed:@"EmulationScene"];
     
+    // Remember to do this before presenting the scene or it goes all wierd !!!
+    _scene.scaleMode = SKSceneScaleModeFill;
+
     [self.skView presentScene:_scene];
     
     [self setupTimersAndQueues];

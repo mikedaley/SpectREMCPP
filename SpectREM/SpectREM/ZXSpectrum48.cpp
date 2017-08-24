@@ -66,14 +66,12 @@ void ZXSpectrum48::coreMemoryContention(unsigned short address, unsigned int tSt
     
 }
 
-#pragma mark - Release
+#pragma mark - Release/Reset
 
 void ZXSpectrum48::release()
 {
     ZXSpectrum::release();
 }
-
-#pragma mark - Reset
 
 void ZXSpectrum48::reset()
 {
