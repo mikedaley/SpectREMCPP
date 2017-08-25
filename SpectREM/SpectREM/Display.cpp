@@ -94,54 +94,12 @@ void ZXSpectrum::updateScreenWithTstates(int tStates)
     }
 }
 
+#pragma mark - Reset Frame
+
 void ZXSpectrum::resetFrame()
 {
     currentDisplayTstates = 0;
     displayBufferIndex = 0;
-}
-
-void ZXSpectrum::generateScreen()
-{
-    int displayIndex = 0;
-    
-    for (int x = 0; x < screenWidth * machineInfo.pxEmuBorder; x++)
-    {
-        displayBuffer[displayIndex++] = 0xffbbbbbb;
-    }
-    
-    for (int y = 0; y < 192; y++)
-    {
-        for (int x = 0; x < machineInfo.pxEmuBorder; x++)
-        {
-            displayBuffer[displayIndex++] = 0xffbbbbbb;
-        }
-        
-        for (int x = 0; x < 256; x++)
-        {
-            int address = (x >> 3) + ((y & 0x07) << 8) + ((y & 0x38) << 2) + ((y & 0xc0) << 5);
-            unsigned char byte = memoryRam[address];
-            
-            if (byte & (0x80 >> (x & 7)))
-            {
-                displayBuffer[displayIndex++] = 0xff000000;
-            }
-            else
-            {
-                displayBuffer[displayIndex++] = 0xffbbbbbb;
-            }
-        }
-        
-        for (int x = 0; x < machineInfo.pxEmuBorder; x++)
-        {
-            displayBuffer[displayIndex++] = 0xffbbbbbb;
-        }
-    }
-    
-    for (int x = 0; x < screenWidth * machineInfo.pxEmuBorder; x++)
-    {
-        displayBuffer[displayIndex++] = 0xffbbbbbb;
-    }
-    
 }
 
 #pragma mark - Build Display Tables

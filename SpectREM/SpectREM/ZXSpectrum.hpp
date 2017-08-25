@@ -22,9 +22,9 @@ class ZXSpectrum
 {
 
 public:
-    static const int            cBITMAP_ADDRESS = 16384;
-    static const int            cBITMAP_SIZE = 6144;
-    static const int            cATTR_SIZE = 768;
+    static const int        cBITMAP_ADDRESS = 16384;
+    static const int        cBITMAP_SIZE = 6144;
+    static const int        cATTR_SIZE = 768;
 
 private:
     enum
@@ -91,9 +91,9 @@ protected:
     static KEYBOARD_ENTRY   keyboardLookup[];
     
 public:
+    // Display
     unsigned int            *displayBuffer;
     unsigned int            displayBufferIndex;
-
     int                     screenWidth;
     int                     screenHeight;
     int                     screenBufferSize;
@@ -102,13 +102,16 @@ public:
     int                     displayPage;
     int                     currentDisplayTstates;
     static unsigned int     palette[];
-    
     int                     borderColor;
+
+    // Emulation
     int                     frameCounter;
     
+    // Audio
     int                     audioEarBit;
     int                     audioMicBit;
     
+    // Contention
     unsigned int            memoryContentionTable[80000];
     unsigned int            ioContentionTable[80000];
     static unsigned int     contentionValues[];
