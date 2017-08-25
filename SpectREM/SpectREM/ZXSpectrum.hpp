@@ -29,9 +29,15 @@ public:
 private:
     enum
     {
-        eDisplayBorder = 1,
-        eDisplayPaper = 2,
-        eDisplayRetrace = 3
+        eDisplayBorder,
+        eDisplayPaper,
+        eDisplayRetrace
+    };
+    
+    enum
+    {
+        eFloatBusTypeValuePixel,
+        eFloatBusTypeValueAttribute
     };
     
     // Holds details of the host platforms key codes and how they map to the spectrum keyboard matrix
@@ -58,6 +64,8 @@ public:
     void                    keyFlagsChanged(unsigned short key);
     void                    resetKeyboardMap();
     void                    updateScreenWithTstates(int tStates);
+    void                    applyIOContention(unsigned short address, bool contended);
+    unsigned char           floatingBus();
     
 private:
     void                    generateScreen();

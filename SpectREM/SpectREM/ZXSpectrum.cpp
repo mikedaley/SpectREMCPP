@@ -8,9 +8,6 @@
 
 #include "ZXSpectrum.hpp"
 
-unsigned int ZXSpectrum::contentionValues[] = { 6, 5, 4, 3, 2, 1, 0, 0 };
-unsigned int ZXSpectrum::floatingBusValues[] = { 0, 0, 1, 2, 1, 2, 0, 0 };
-
 #pragma mark - Constructor/Deconstructor
 
 ZXSpectrum::ZXSpectrum()
@@ -177,9 +174,8 @@ void ZXSpectrum::zxSpectrumIOWrite(unsigned short address, unsigned char data, v
 
 unsigned char ZXSpectrum::coreIORead(unsigned short address)
 {
-    unsigned char result = 0xff;
-    
     // Check to see if the keyboard is being read and if so return any keys currently pressed
+    unsigned char result = 0xff;
     if (address & 0xfe)
     {
         for (int i = 0; i < 8; i++)

@@ -41,6 +41,24 @@ void ZXSpectrum48::initialise(char *romPath)
 
 unsigned char ZXSpectrum48::coreIORead(unsigned short address)
 {
+    bool contended = false;
+    int memoryPage = address / 16384;
+    if (memoryPage == 1)
+    {
+        contended = true;
+    }
+    
+    ZXSpectrum::applyIOContention(address, contended);
+    
+    // ULA Un-owned ports
+    if (address & 0x01)
+    {
+        // Getting here means that nothing has handled that port read so based on a real Spectrum
+        // return the floating bus value
+        return floatingBus();
+    }
+
+    // The base classes virtual function deals with owned ULA ports such as the keyboard ports
     unsigned char result = ZXSpectrum::coreIORead(address);
     
     return result;
@@ -48,6 +66,15 @@ unsigned char ZXSpectrum48::coreIORead(unsigned short address)
 
 void ZXSpectrum48::coreIOWrite(unsigned short address, unsigned char data)
 {
+    bool contended = false;
+    int memoryPage = address / 16384;
+    if (memoryPage == 1)
+    {
+        contended = true;
+    }
+    
+    ZXSpectrum::applyIOContention(address, contended);
+
     // Port: 0xFE
     //   7   6   5   4   3   2   1   0
     // +---+---+---+---+---+-----------+
@@ -67,7 +94,10 @@ void ZXSpectrum48::coreIOWrite(unsigned short address, unsigned char data)
 
 void ZXSpectrum48::coreMemoryContention(unsigned short address, unsigned int tStates)
 {
-    
+    if (address >= 16384 && address <= 32767)
+    {
+        z80Core.AddContentionTStates( memoryContentionTable[z80Core.GetTStates() % machineInfo.tsPerFrame] );
+    }
 }
 
 #pragma mark - Release/Reset
