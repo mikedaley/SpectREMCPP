@@ -33,6 +33,8 @@ void ZXSpectrum48::initialise(char *romPath)
     machineInfo = machines[ eZXSpectrum48 ];
 
     ZXSpectrum::initialise(romPath);
+    
+    displayPage = 1;
 }
 
 #pragma mark - ULA
@@ -46,6 +48,18 @@ unsigned char ZXSpectrum48::coreIORead(unsigned short address)
 
 void ZXSpectrum48::coreIOWrite(unsigned short address, unsigned char data)
 {
+    // Port: 0xFE
+    //   7   6   5   4   3   2   1   0
+    // +---+---+---+---+---+-----------+
+    // |   |   |   | E | M |  BORDER   |
+    // +---+---+---+---+---+-----------+
+    if (!(address & 0x01))
+    {
+        updateScreenWithTstates((z80Core.GetTStates() - currentDisplayTstates) + machineInfo.borderDrawingOffset);
+        audioEarBit = (data & 0x10) >> 4;
+        audioMicBit = (data & 0x08) >> 3;
+        borderColor = data & 0x07;
+    }
 
 }
 

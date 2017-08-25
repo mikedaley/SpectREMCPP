@@ -86,6 +86,18 @@
 			name = "ZX Spectrum 48k";
 			sourceTree = "<group>";
 		};
+		17A089541F4F691F00CAA178 /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				17A0894F1F4F513300CAA178 /* MachineDetails.h */,
+				17A089501F4F5B2700CAA178 /* Keyboard.cpp */,
+				17A089521F4F677200CAA178 /* Display.cpp */,
+				ED913FD31F30787000316E1A /* ZXSpectrum.hpp */,
+				ED913FD21F30787000316E1A /* ZXSpectrum.cpp */,
+			);
+			name = Base;
+			sourceTree = "<group>";
+		};
 		ED913F8C1F30759300316E1A = {
 			isa = PBXGroup;
 			children = (
@@ -204,12 +216,8 @@
 		ED913FD01F30785100316E1A /* Machines */ = {
 			isa = PBXGroup;
 			children = (
-				ED913FD31F30787000316E1A /* ZXSpectrum.hpp */,
-				ED913FD21F30787000316E1A /* ZXSpectrum.cpp */,
+				17A089541F4F691F00CAA178 /* Base */,
 				177E284F1F4DEC5B0053756B /* ZX Spectrum 48k */,
-				17A0894F1F4F513300CAA178 /* MachineDetails.h */,
-				17A089501F4F5B2700CAA178 /* Keyboard.cpp */,
-				17A089521F4F677200CAA178 /* Display.cpp */,
 			);
 			name = Machines;
 			sourceTree = "<group>";

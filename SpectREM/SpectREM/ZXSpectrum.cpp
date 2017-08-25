@@ -8,6 +8,9 @@
 
 #include "ZXSpectrum.hpp"
 
+unsigned int ZXSpectrum::contentionValues[] = { 6, 5, 4, 3, 2, 1, 0, 0 };
+unsigned int ZXSpectrum::floatingBusValues[] = { 0, 0, 1, 2, 1, 2, 0, 0 };
+
 #pragma mark - Constructor/Deconstructor
 
 ZXSpectrum::ZXSpectrum()
@@ -47,6 +50,7 @@ void ZXSpectrum::initialise(char *romPath)
 
     buildScreenLineAddressTable();
     buildDisplayTstateTable();
+    buildContentionTable();
     loadRomWithPath(romPath);
     reset();
 }
@@ -62,19 +66,21 @@ void ZXSpectrum::loadRomWithPath(char *romPath)
 
 void ZXSpectrum::runFrame()
 {
-    int count = machineInfo.tsPerFrame;
+    int currentFrameTstates = machineInfo.tsPerFrame;
     
-    while (count > 0)
+    while (currentFrameTstates > 0)
     {
         int tStates = z80Core.Execute(1, machineInfo.intLength);
-        count -= tStates;
+        currentFrameTstates -= tStates;
         
         if (z80Core.GetTStates() >= machineInfo.tsPerFrame)
         {
-            count = 0;
             z80Core.ResetTStates( machineInfo.tsPerFrame );
             z80Core.SignalInterrupt();
-            generateScreen();
+            updateScreenWithTstates(machineInfo.tsPerFrame - currentDisplayTstates);
+            frameCounter++;
+            currentFrameTstates = 0;
+            resetFrame();
         }
     }
 }
@@ -123,6 +129,10 @@ void ZXSpectrum::coreMemoryWrite(unsigned short address, unsigned char data)
         return;
     }
     
+    if (address >= machineInfo.romSize && address < cBITMAP_ADDRESS + cBITMAP_SIZE + cATTR_SIZE){
+        updateScreenWithTstates((z80Core.GetTStates() - currentDisplayTstates) + machineInfo.paperDrawingOffset);
+    }
+
     memoryRam[address - machineInfo.romSize] = data;
 }
 
@@ -193,8 +203,10 @@ void ZXSpectrum::coreIOWrite(unsigned short address, unsigned char data)
 
 void ZXSpectrum::reset()
 {
-    resetKeyboardMap();
     z80Core.Reset();
+    resetKeyboardMap();
+    frameCounter = 0;
+    resetFrame();
 }
 
 #pragma mark - Release
@@ -202,6 +214,29 @@ void ZXSpectrum::reset()
 void ZXSpectrum::release()
 {
     delete displayBuffer;
+}
+
+#pragma mark - Build Contention Table
+
+void ZXSpectrum::buildContentionTable()
+{
+    for (int i = 0; i < machineInfo.tsPerFrame; i++)
+    {
+        memoryContentionTable[i] = 0;
+        ioContentionTable[i] = 0;
+        
+        if (i >= machineInfo.tsToOrigin)
+        {
+            int line = (i - machineInfo.tsToOrigin) / machineInfo.tsPerLine;
+            int ts = (i - machineInfo.tsToOrigin) % machineInfo.tsPerLine;
+            
+            if (line < machineInfo.pxVerticalDisplay && ts < 128)
+            {
+                memoryContentionTable[i] = contentionValues[ ts & 0x07 ];
+                ioContentionTable[i] = contentionValues[ ts & 0x07 ];
+            }
+        }
+    }
 }
 
 

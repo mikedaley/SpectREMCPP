@@ -21,12 +21,17 @@ using namespace std;
 class ZXSpectrum
 {
 
+public:
+    static const int            cBITMAP_ADDRESS = 16384;
+    static const int            cBITMAP_SIZE = 6144;
+    static const int            cATTR_SIZE = 768;
+
 private:
     enum
     {
-        eDisplayRetrace,
-        eDisplayPaper,
-        eDisplayBorder
+        eDisplayBorder = 1,
+        eDisplayPaper = 2,
+        eDisplayRetrace = 3
     };
     
     // Holds details of the host platforms key codes and how they map to the spectrum keyboard matrix
@@ -45,17 +50,20 @@ public:
     virtual void            initialise(char *romPath);
     void                    loadRomWithPath(char *romPath);
     void                    runFrame();
+    void                    resetFrame();
     virtual void            reset();
     virtual void            release();
     void                    keyDown(unsigned short key);
     void                    keyUp(unsigned short key);
     void                    keyFlagsChanged(unsigned short key);
     void                    resetKeyboardMap();
+    void                    updateScreenWithTstates(int tStates);
     
 private:
     void                    generateScreen();
     void                    buildDisplayTstateTable();
     void                    buildScreenLineAddressTable();
+    void                    buildContentionTable();
     
     // Core memory/IO functions
     static unsigned char    zxSpectrumMemoryRead(unsigned short address, void *param);
@@ -84,12 +92,27 @@ protected:
     
 public:
     unsigned int            *displayBuffer;
+    unsigned int            displayBufferIndex;
 
     int                     screenWidth;
     int                     screenHeight;
     int                     screenBufferSize;
     int                     displayTstateTable[312][224];
     int                     displayLineAddrTable[192];
+    int                     displayPage;
+    int                     currentDisplayTstates;
+    static unsigned int     palette[];
+    
+    int                     borderColor;
+    int                     frameCounter;
+    
+    int                     audioEarBit;
+    int                     audioMicBit;
+    
+    unsigned int            memoryContentionTable[80000];
+    unsigned int            ioContentionTable[80000];
+    static unsigned int     contentionValues[];
+    static unsigned int     floatingBusValues[];    
     
     MachineInfo             machineInfo;
 

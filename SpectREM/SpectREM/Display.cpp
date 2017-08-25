@@ -8,7 +8,97 @@
 
 #include "ZXSpectrum.hpp"
 
+#pragma mark - Spectrum Palette
+
+unsigned int ZXSpectrum::palette[] =
+{
+    // Normal Colours
+    0xff000000, // Black
+    0xffc80000, // Blue
+    0xff0000c8, // Red
+    0xffc800c8, // Green
+    0xff00c800, // Magenta
+    0xffc8c800, // Cyan
+    0xff00c8c8, // Yellow
+    0xffc8c8c8, // White
+    
+    // Bright Colours
+    0xff000000,
+    0xffff0000,
+    0xff0000ff,
+    0xffff00ff,
+    0xff00ff00,
+    0xffffff00,
+    0xff00ffff,
+    0xffffffff
+};
+
 #pragma mark - Generate Screen
+
+void ZXSpectrum::updateScreenWithTstates(int tStates)
+{
+    int memoryAddress = (displayPage * cBITMAP_ADDRESS) - machineInfo.romSize;
+    
+    while (tStates > 0)
+    {
+        int line = currentDisplayTstates / machineInfo.tsPerLine;
+        int ts = currentDisplayTstates % machineInfo.tsPerLine;
+
+        int action = displayTstateTable[line][ts];
+
+        if (action == eDisplayBorder)
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                displayBuffer[displayBufferIndex++] = palette[borderColor];
+            }
+        }
+        else if (action == eDisplayPaper)
+        {
+            int y = line - (machineInfo.pxVerticalBlank + machineInfo.pxVertBorder);
+            int x = (ts >> 2) - 4;
+            
+            uint pixelAddress = displayLineAddrTable[y] + x;
+            uint attributeAddress = cBITMAP_SIZE + ((y >> 3) << 5) + x;
+            
+            int pixelByte = memoryRam[memoryAddress + pixelAddress];
+            int attributeByte = memoryRam[memoryAddress + attributeAddress];
+
+            // Extract the ink and paper colours from the attribute byte read in
+            int ink = (attributeByte & 0x07) + ((attributeByte & 0x40) >> 3);
+            int paper = ((attributeByte >> 3) & 0x07) + ((attributeByte & 0x40) >> 3);
+            
+            // Switch ink and paper if the flash phase has changed
+            if ((frameCounter & 16) && (attributeByte & 0x80))
+            {
+                int tempPaper = paper;
+                paper = ink;
+                ink = tempPaper;
+            }
+            
+            for (int i = 0x80; i; i >>= 1)
+            {
+                if (pixelByte & i)
+                {
+                    displayBuffer[displayBufferIndex++] = palette[ink];
+                }
+                else
+                {
+                    displayBuffer[displayBufferIndex++] = palette[paper];
+                }
+            }
+        }
+        
+        currentDisplayTstates += machineInfo.tsPerChar;
+        tStates -= machineInfo.tsPerChar;
+    }
+}
+
+void ZXSpectrum::resetFrame()
+{
+    currentDisplayTstates = 0;
+    displayBufferIndex = 0;
+}
 
 void ZXSpectrum::generateScreen()
 {
@@ -76,6 +166,7 @@ void ZXSpectrum::buildDisplayTstateTable()
     int tsRightBorderEnd = (machineInfo.pxEmuBorder / 2) + machineInfo.tsHorizontalDisplay + (machineInfo.pxEmuBorder / 2);
     int tsLeftBorderStart = 0;
     int tsLeftBorderEnd = machineInfo.pxEmuBorder / 2;
+    
     int pxLineTopBorderStart = machineInfo.pxVerticalBlank;
     int pxLineTopBorderEnd = machineInfo.pxVerticalBlank + machineInfo.pxVertBorder;
     int pxLinePaperStart = machineInfo.pxVerticalBlank + machineInfo.pxVertBorder;
@@ -95,7 +186,7 @@ void ZXSpectrum::buildDisplayTstateTable()
             // Top Border
             if (line >= pxLineTopBorderStart && line < pxLineTopBorderEnd)
             {
-                if ((ts >= tsRightBorderEnd && ts < machineInfo.tsPerLine) || line < pxLinePaperStart - machineInfo.pxVertBorder)
+                if ((ts >= tsRightBorderEnd && ts < machineInfo.tsPerLine) || line < pxLinePaperStart - machineInfo.pxEmuBorder)
                 {
                     displayTstateTable[line][ts] = eDisplayRetrace;
                 }
