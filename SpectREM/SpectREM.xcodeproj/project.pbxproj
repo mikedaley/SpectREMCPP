@@ -13,6 +13,7 @@
 		17A089511F4F5B2700CAA178 /* Keyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A089501F4F5B2700CAA178 /* Keyboard.cpp */; };
 		17A089531F4F677200CAA178 /* Display.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A089521F4F677200CAA178 /* Display.cpp */; };
 		ED504A621F4EE9D500BD289E /* EmulationScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = ED504A611F4EE9D500BD289E /* EmulationScene.sks */; };
+		ED504A641F51BBFF00BD289E /* Snapshot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED504A631F51BBFF00BD289E /* Snapshot.cpp */; };
 		ED913F9A1F30759300316E1A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = ED913F991F30759300316E1A /* AppDelegate.m */; };
 		ED913F9D1F30759300316E1A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = ED913F9C1F30759300316E1A /* main.m */; };
 		ED913FA41F30759300316E1A /* EmulationScene.m in Sources */ = {isa = PBXBuildFile; fileRef = ED913FA31F30759300316E1A /* EmulationScene.m */; };
@@ -39,6 +40,7 @@
 		17A089501F4F5B2700CAA178 /* Keyboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Keyboard.cpp; sourceTree = "<group>"; };
 		17A089521F4F677200CAA178 /* Display.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Display.cpp; sourceTree = "<group>"; };
 		ED504A611F4EE9D500BD289E /* EmulationScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = EmulationScene.sks; sourceTree = "<group>"; };
+		ED504A631F51BBFF00BD289E /* Snapshot.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Snapshot.cpp; sourceTree = "<group>"; };
 		ED913F951F30759300316E1A /* SpectREM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpectREM.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED913F981F30759300316E1A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		ED913F991F30759300316E1A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -94,12 +96,13 @@
 			isa = PBXGroup;
 			children = (
 				17A0894F1F4F513300CAA178 /* MachineDetails.h */,
+				ED913FD31F30787000316E1A /* ZXSpectrum.hpp */,
+				ED913FD21F30787000316E1A /* ZXSpectrum.cpp */,
 				17A089501F4F5B2700CAA178 /* Keyboard.cpp */,
 				17A089521F4F677200CAA178 /* Display.cpp */,
 				1745BB621F50876E003203FE /* Contention.cpp */,
 				1745BB641F50AE1E003203FE /* FloatingBus.cpp */,
-				ED913FD31F30787000316E1A /* ZXSpectrum.hpp */,
-				ED913FD21F30787000316E1A /* ZXSpectrum.cpp */,
+				ED504A631F51BBFF00BD289E /* Snapshot.cpp */,
 			);
 			name = Base;
 			sourceTree = "<group>";
@@ -326,6 +329,7 @@
 				177E284D1F4DD7E90053756B /* ZXSpectrum48.cpp in Sources */,
 				ED913F9A1F30759300316E1A /* AppDelegate.m in Sources */,
 				17A089531F4F677200CAA178 /* Display.cpp in Sources */,
+				ED504A641F51BBFF00BD289E /* Snapshot.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

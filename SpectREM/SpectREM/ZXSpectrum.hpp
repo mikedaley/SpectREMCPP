@@ -29,7 +29,7 @@ public:
 private:
     enum
     {
-        eDisplayBorder,
+        eDisplayBorder = 1,
         eDisplayPaper,
         eDisplayRetrace
     };
@@ -66,6 +66,8 @@ public:
     void                    updateScreenWithTstates(int tStates);
     void                    applyIOContention(unsigned short address, bool contended);
     unsigned char           floatingBus();
+    void                    loadZ80SnapshotWithPath(char *path);
+    void                    extractMemoryBlock(unsigned char *fileBytes, int memAddr, int fileOffset, bool isCompressed, int unpackedLength);
     
 private:
     void                    generateScreen();
@@ -114,6 +116,7 @@ public:
 
     // Emulation
     int                     frameCounter;
+    bool                    paused;
     
     // Audio
     int                     audioEarBit;

@@ -50,12 +50,18 @@ void ZXSpectrum::initialise(char *romPath)
     buildContentionTable();
     loadRomWithPath(romPath);
     reset();
+    
+    paused = true;
+//    char p[] = "/Users/mikedaley/Dropbox/Z80 Tests/shock.z80";
+    char p[] = "/Users/mikedaley/Desktop/shock.z80";
+    loadZ80SnapshotWithPath(p);
+    paused = false;
 }
 
 void ZXSpectrum::loadRomWithPath(char *romPath)
 {
-    std::ifstream romFile(romPath, std::ios::binary|std::ios::ate);
-    romFile.seekg(0, std::ios::beg);
+    ifstream romFile(romPath, ios::binary|ios::ate);
+    romFile.seekg(0, ios::beg);
     romFile.read(memoryRom.data(), memoryRom.size());
 }
 
@@ -65,7 +71,7 @@ void ZXSpectrum::runFrame()
 {
     int currentFrameTstates = machineInfo.tsPerFrame;
     
-    while (currentFrameTstates > 0)
+    while (currentFrameTstates > 0 && !paused)
     {
         int tStates = z80Core.Execute(1, machineInfo.intLength);
         currentFrameTstates -= tStates;
@@ -96,7 +102,7 @@ void ZXSpectrum::zxSpectrumMemoryWrite(unsigned short address, unsigned char dat
 
 void ZXSpectrum::zxSpectrumMemoryContention(unsigned short address, unsigned int tStates, void *param)
 {
-    // Nothing to see here
+    ((ZXSpectrum *) param)->coreMemoryContention(address, tStates);
 }
 
 unsigned char ZXSpectrum::zxSpectrumDebugRead(unsigned int address, void *param, void *data)
