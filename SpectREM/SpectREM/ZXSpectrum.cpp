@@ -53,8 +53,9 @@ void ZXSpectrum::initialise(char *romPath)
     
     paused = true;
 //    char p[] = "/Users/mikedaley/Dropbox/Z80 Tests/shock.z80";
-    char p[] = "/Users/mikedaley/Desktop/shock.z80";
+    char p[] = "/Users/mikeda/Desktop/float.z80";
     loadZ80SnapshotWithPath(p);
+    resetKeyboardMap();
     paused = false;
 }
 

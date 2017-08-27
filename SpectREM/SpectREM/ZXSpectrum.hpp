@@ -36,7 +36,7 @@ private:
     
     enum
     {
-        eFloatBusTypeValuePixel,
+        eFloatBusTypeValuePixel = 1,
         eFloatBusTypeValueAttribute
     };
     
@@ -61,7 +61,7 @@ public:
     virtual void            release();
     void                    keyDown(unsigned short key);
     void                    keyUp(unsigned short key);
-    void                    keyFlagsChanged(unsigned short key);
+    void                    keyFlagsChanged(unsigned long flags, unsigned short key);
     void                    resetKeyboardMap();
     void                    updateScreenWithTstates(int tStates);
     void                    applyIOContention(unsigned short address, bool contended);

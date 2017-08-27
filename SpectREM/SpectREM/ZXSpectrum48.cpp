@@ -49,10 +49,19 @@ unsigned char ZXSpectrum48::coreIORead(unsigned short address)
     }
     
     ZXSpectrum::applyIOContention(address, contended);
-    
+        
     // ULA Un-owned ports
     if (address & 0x01)
     {
+        // Add Kemptston joystick support. Until then return 0. Byte returned by a Kempston joystick is in the
+        // format: 000FDULR. F = Fire, D = Down, U = Up, L = Left, R = Right
+        // Joystick is read first as it takes priority if you read from a port that activates the keyboard as well on a
+        // real machine.
+        if ((address & 0xff) == 0x1f)
+        {
+            return 0x0;
+        }
+        
         // Getting here means that nothing has handled that port read so based on a real Spectrum
         // return the floating bus value
         return floatingBus();
@@ -61,7 +70,7 @@ unsigned char ZXSpectrum48::coreIORead(unsigned short address)
     // The base classes virtual function deals with owned ULA ports such as the keyboard ports
     unsigned char result = ZXSpectrum::coreIORead(address);
     
-    return result;
+    return (result & 191);
 }
 
 void ZXSpectrum48::coreIOWrite(unsigned short address, unsigned char data)

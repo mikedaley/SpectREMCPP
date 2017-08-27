@@ -19,7 +19,6 @@ unsigned int ZXSpectrum::floatingBusValues[] = { 0, 0, 1, 2, 1, 2, 0, 0 };
  **/
 unsigned char ZXSpectrum::floatingBus()
 {
-    
     int cpuTs = z80Core.GetTStates() - 1;
     int currentDisplayLine = (cpuTs / machineInfo.tsPerLine);
     int currentTs = (cpuTs % machineInfo.tsPerLine);

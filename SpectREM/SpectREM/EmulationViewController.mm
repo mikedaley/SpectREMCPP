@@ -83,12 +83,26 @@
 
 - (void)keyDown:(NSEvent *)event
 {
-    _machine->keyDown(event.keyCode);
+    if (!event.isARepeat)
+    {
+        _machine->keyDown(event.keyCode);
+    }
 }
 
 - (void)keyUp:(NSEvent *)event
 {
-    _machine->keyUp(event.keyCode);
+    if (!event.isARepeat)
+    {
+        _machine->keyUp(event.keyCode);
+    }
+}
+
+- (void)flagsChanged:(NSEvent *)event
+{
+    if (!(event.modifierFlags & NSEventModifierFlagCommand))
+    {
+        _machine->keyFlagsChanged(event.modifierFlags, event.keyCode);
+    }
 }
 
 #pragma mark - Timer

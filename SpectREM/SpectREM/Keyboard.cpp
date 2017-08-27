@@ -256,9 +256,9 @@ void ZXSpectrum::keyUp(unsigned short key)
     }
 }
 
-void ZXSpectrum::keyFlagsChanged(unsigned short key)
+void ZXSpectrum::keyFlagsChanged(unsigned long flags, unsigned short key)
 {
-    
+
 }
 
 void ZXSpectrum::resetKeyboardMap()

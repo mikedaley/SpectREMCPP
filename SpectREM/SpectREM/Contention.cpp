@@ -29,7 +29,7 @@ void ZXSpectrum::applyIOContention(unsigned short address, bool contended)
 {
     if (contended)
     {
-        if ((address & 1) == 0)
+        if ((address & 0x01) == 0)
         {
             z80Core.AddContentionTStates( memoryContentionTable[z80Core.GetTStates() % machineInfo.tsPerFrame] );
             z80Core.AddTStates(1);
@@ -48,7 +48,7 @@ void ZXSpectrum::applyIOContention(unsigned short address, bool contended)
             z80Core.AddTStates(1);
         }
     } else {
-        if ((address & 1) == 0)
+        if ((address & 0x01) == 0)
         {
             z80Core.AddTStates(1);
             z80Core.AddContentionTStates( memoryContentionTable[z80Core.GetTStates() % machineInfo.tsPerFrame] );
