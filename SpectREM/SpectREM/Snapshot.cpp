@@ -14,16 +14,17 @@ void ZXSpectrum::loadZ80SnapshotWithPath(char *path)
     FILE *fileHandle;
 
     fileHandle = fopen(path, "rb");
-    fseek(fileHandle, 0, SEEK_END);
-    long size = ftell(fileHandle);
-    fseek(fileHandle, 0, SEEK_SET);
     
-    if (size <= 0)
+    if (!fileHandle)
     {
         cout << "ERROR LOADING SNAPSHOT: " << path << endl;
         fclose(fileHandle);
         return;
     }
+    
+    fseek(fileHandle, 0, SEEK_END);
+    long size = ftell(fileHandle);
+    fseek(fileHandle, 0, SEEK_SET);
 
     unsigned char fileBytes[size];
     
