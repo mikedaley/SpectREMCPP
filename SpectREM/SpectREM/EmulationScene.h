@@ -11,5 +11,9 @@
 @interface EmulationScene : SKScene
 
 @property (strong, nonatomic) SKMutableTexture *emulationScreenTexture;
+@property (strong, nonatomic) SKMutableTexture *backingTexture;
+
+@property (strong, nonatomic) SKSpriteNode *emulationScreen;
+@property (strong, nonatomic) SKSpriteNode *backingNode;
 
 @end

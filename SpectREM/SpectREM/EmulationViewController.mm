@@ -71,8 +71,15 @@
         _machine->runFrame();
 
         dispatch_async(dispatch_get_main_queue(), ^{
-            [_scene.emulationScreenTexture modifyPixelDataWithBlock:^(void *pixelData, size_t lengthInBytes) {
+            
+            [_scene.backingTexture modifyPixelDataWithBlock:^(void *pixelData, size_t lengthInBytes) {
+
                 memcpy(pixelData, _machine->displayBuffer, lengthInBytes);
+                
+                _scene.backingTexture.filteringMode = SKTextureFilteringNearest;
+                _scene.backingNode.texture = _scene.backingTexture;
+
+                _scene.emulationScreen.texture = [self.skView textureFromNode:_scene.backingNode];
             }];
         });
         

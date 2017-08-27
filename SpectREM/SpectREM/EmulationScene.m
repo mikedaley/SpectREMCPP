@@ -10,7 +10,7 @@
 
 @implementation EmulationScene
 {
-    SKSpriteNode *_emulationScreen;
+
 }
 
 - (void)didMoveToView:(SKView *)view
@@ -18,8 +18,12 @@
     _emulationScreenTexture = [SKMutableTexture mutableTextureWithSize:CGSizeMake(320, 256)];
     _emulationScreenTexture.filteringMode = SKTextureFilteringLinear;
     
-    _emulationScreen = (SKSpriteNode *)[self childNodeWithName:@"//displayNode"];
+    _backingTexture = [SKMutableTexture mutableTextureWithSize:CGSizeMake(320, 256)];
+    
+    _emulationScreen = (SKSpriteNode *)[self childNodeWithName:@"//emulationScreen"];
     _emulationScreen.texture = _emulationScreenTexture;
+    
+    _backingNode = (SKSpriteNode *)[self childNodeWithName:@"//backingNode"];
 }
 
 -(void)update:(CFTimeInterval)currentTime
