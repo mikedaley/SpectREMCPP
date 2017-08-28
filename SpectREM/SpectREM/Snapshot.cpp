@@ -104,14 +104,14 @@ void ZXSpectrum::loadZ80SnapshotWithPath(const char *path)
     // Based on the version number of the snapshot, decode the memory contents
     switch (version) {
         case 1:
-//            NSLog(@"Hardware Type: 48k");
+            cout << "Hardware Type: 48k" << endl;
             extractMemoryBlock(fileBytes, 0x4000, 30, compressed, 0xc000);
             break;
             
         case 2:
         case 3:
             hardwareType = ((unsigned char *)&fileBytes[34])[0];
-//            NSLog(@"Hardware Type: %@", [self hardwareStringForVersion:version hardwareType:hardwareType]);
+            cout << "Hardware Type: " << hardwareTypeForVersion(version, hardwareType) << endl;
             
             int16_t additionHeaderBlockLength = 0;
             additionHeaderBlockLength = ((unsigned short *)&fileBytes[30])[0];
@@ -211,6 +211,70 @@ void ZXSpectrum::extractMemoryBlock(unsigned char *fileBytes, int memAddr, int f
             }
         }
     }
+}
+
+
+string ZXSpectrum::hardwareTypeForVersion(int version, int hardwareType)
+{
+    string hardware = "Unknown";
+    if (version == 2)
+    {
+        switch (hardwareType) {
+            case 0:
+                hardware = "48k";
+                break;
+            case 1:
+                hardware = "48k + Interface 1";
+                break;
+            case 2:
+                hardware = "SamRam";
+                break;
+            case 3:
+                hardware = "128k";
+                break;
+            case 4:
+                hardware = "128k + Interface 1";
+                break;
+            case 5:
+            case 6:
+                break;
+                
+            default:
+                break;
+        }
+    }
+    else
+    {
+        switch (hardwareType) {
+            case 0:
+                hardware = "48k";
+                break;
+            case 1:
+                hardware = "48k + Interface 1";
+                break;
+            case 2:
+                hardware = "SamRam";
+                break;
+            case 3:
+                hardware = "48k + M.G.T";
+                break;
+            case 4:
+                hardware = "128k";
+                break;
+            case 5:
+                hardware = "128k + Interface 1";
+                break;
+            case 6:
+                hardware = "128k + M.G.T";
+                break;
+            case 9:
+                hardware = "Next";
+                
+            default:
+                break;
+        }
+    }
+    return hardware;
 }
 
 

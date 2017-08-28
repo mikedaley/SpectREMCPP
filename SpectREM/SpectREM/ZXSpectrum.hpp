@@ -68,6 +68,7 @@ public:
     unsigned char           floatingBus();
     void                    loadZ80SnapshotWithPath(const char *path);
     void                    extractMemoryBlock(unsigned char *fileBytes, int memAddr, int fileOffset, bool isCompressed, int unpackedLength);
+    string                  hardwareTypeForVersion(int version, int hardwareType);
     
 private:
     void                    generateScreen();
