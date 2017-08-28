@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include "ZXSpectrum.hpp"
 
-void ZXSpectrum::loadZ80SnapshotWithPath(char *path)
+void ZXSpectrum::loadZ80SnapshotWithPath(const char *path)
 {
     FILE *fileHandle;
 
@@ -21,6 +21,8 @@ void ZXSpectrum::loadZ80SnapshotWithPath(char *path)
         fclose(fileHandle);
         return;
     }
+    
+    z80Core.Reset();
     
     fseek(fileHandle, 0, SEEK_END);
     long size = ftell(fileHandle);

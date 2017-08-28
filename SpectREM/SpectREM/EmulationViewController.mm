@@ -72,18 +72,30 @@
 
         dispatch_async(dispatch_get_main_queue(), ^{
             
-            [_scene.backingTexture modifyPixelDataWithBlock:^(void *pixelData, size_t lengthInBytes) {
+            [_scene.emulationScreenTexture modifyPixelDataWithBlock:^(void *pixelData, size_t lengthInBytes) {
 
                 memcpy(pixelData, _machine->displayBuffer, lengthInBytes);
                 
-                _scene.backingTexture.filteringMode = SKTextureFilteringNearest;
-                _scene.backingNode.texture = _scene.backingTexture;
+//                int widthScale = (self.view.frame.size.width / 320);
+//                int heightScale = (self.view.frame.size.width / 256);
+//                CGSize backingsize = (CGSize){floorf(MIN(320  * widthScale, 640)), floorf(MIN(256 * heightScale, 512))};
+//
+//                _scene.backingTexture.filteringMode = SKTextureFilteringNearest;
+//                _scene.backingNode.texture = _scene.backingTexture;
+//                _scene.backingNode.size = backingsize;
 
-                _scene.emulationScreen.texture = [self.skView textureFromNode:_scene.backingNode];
+//                _scene.emulationScreen.texture = [self.skView textureFromNode:_scene.backingNode];
             }];
         });
         
     });
+}
+
+#pragma mark - Load File
+
+- (void)loadFileWithURL:(NSURL *)url
+{
+    _machine->loadZ80SnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
 }
 
 #pragma mark - Keyboard

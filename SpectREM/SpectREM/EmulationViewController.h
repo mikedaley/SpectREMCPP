@@ -12,7 +12,13 @@
 
 @interface EmulationViewController : NSViewController
 
+#pragma mark - Properties
+
 @property (assign) IBOutlet SKView *skView;
+
+#pragma mark - Methods
+
+- (void)loadFileWithURL:(NSURL *)url;
 
 @end
 

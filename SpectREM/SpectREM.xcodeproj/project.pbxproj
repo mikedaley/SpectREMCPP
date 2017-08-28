@@ -29,6 +29,7 @@
 		ED913FCF1F30781000316E1A /* Z80Core.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED913FC61F30781000316E1A /* Z80Core.cpp */; };
 		ED913FD41F30787000316E1A /* ZXSpectrum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED913FD21F30787000316E1A /* ZXSpectrum.cpp */; };
 		ED913FD71F30789300316E1A /* 48.ROM in Resources */ = {isa = PBXBuildFile; fileRef = ED913FD61F30789300316E1A /* 48.ROM */; };
+		EDD9ADEB1F54032C004DD728 /* EmulationView.m in Sources */ = {isa = PBXBuildFile; fileRef = EDD9ADEA1F54032C004DD728 /* EmulationView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -70,6 +71,8 @@
 		ED913FD21F30787000316E1A /* ZXSpectrum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZXSpectrum.cpp; sourceTree = "<group>"; };
 		ED913FD31F30787000316E1A /* ZXSpectrum.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ZXSpectrum.hpp; sourceTree = "<group>"; };
 		ED913FD61F30789300316E1A /* 48.ROM */ = {isa = PBXFileReference; lastKnownFileType = file; path = 48.ROM; sourceTree = "<group>"; };
+		EDD9ADE91F54032C004DD728 /* EmulationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmulationView.h; sourceTree = "<group>"; };
+		EDD9ADEA1F54032C004DD728 /* EmulationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmulationView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -196,6 +199,8 @@
 			children = (
 				ED913FA51F30759300316E1A /* EmulationViewController.h */,
 				ED913FA61F30759300316E1A /* EmulationViewController.mm */,
+				EDD9ADE91F54032C004DD728 /* EmulationView.h */,
+				EDD9ADEA1F54032C004DD728 /* EmulationView.m */,
 			);
 			name = Emulation;
 			sourceTree = "<group>";
@@ -315,6 +320,7 @@
 				1745BB651F50AE1E003203FE /* FloatingBus.cpp in Sources */,
 				1745BB631F50876E003203FE /* Contention.cpp in Sources */,
 				ED913FCB1F30781000316E1A /* Z80Core_DDOpcodes.cpp in Sources */,
+				EDD9ADEB1F54032C004DD728 /* EmulationView.m in Sources */,
 				ED913F9D1F30759300316E1A /* main.m in Sources */,
 				ED913FCA1F30781000316E1A /* Z80Core_DDCB_FDCBOpcodes.cpp in Sources */,
 				ED913FCD1F30781000316E1A /* Z80Core_FDOpcodes.cpp in Sources */,

@@ -37,6 +37,7 @@ unsigned int ZXSpectrum::palette[] =
 
 void ZXSpectrum::updateScreenWithTstates(int tStates)
 {
+    // ROM and RAM are held in separate arrays, so we need to reduce the memory location by the size of the machines ROM
     int memoryAddress = (displayPage * cBITMAP_ADDRESS) - machineInfo.romSize;
     
     while (tStates > 0)
