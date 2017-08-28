@@ -40,7 +40,8 @@
         if (sourceDragMask * NSDragOperationCopy)
         {
             NSURL *fileURL = [NSURL URLFromPasteboard:pBoard];
-            if ([[fileURL.pathExtension uppercaseString] isEqualToString:@"Z80"])
+            if ([[fileURL.pathExtension uppercaseString] isEqualToString:@"Z80"] ||
+                [[fileURL.pathExtension uppercaseString] isEqualToString:@"SNA"])
             {
                 return NSDragOperationCopy;
             }
@@ -59,7 +60,8 @@
     if ([[pBoard types] containsObject:NSURLPboardType])
     {
         NSURL *fileURL = [NSURL URLFromPasteboard:pBoard];
-        if ([[fileURL.pathExtension uppercaseString] isEqualToString:@"Z80"])
+        if ([[fileURL.pathExtension uppercaseString] isEqualToString:@"Z80"] ||
+            [[fileURL.pathExtension uppercaseString] isEqualToString:@"SNA"])
         {
             EmulationViewController *emulationViewController = (EmulationViewController *)[self.window contentViewController];
             [emulationViewController loadFileWithURL:fileURL];

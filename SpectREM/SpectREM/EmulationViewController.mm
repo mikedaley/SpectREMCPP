@@ -95,7 +95,14 @@
 
 - (void)loadFileWithURL:(NSURL *)url
 {
-    _machine->loadZ80SnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+    if ([[url.pathExtension uppercaseString] isEqualToString:@"Z80"])
+    {
+        _machine->loadZ80SnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+    }
+    else if ([[url.pathExtension uppercaseString] isEqualToString:@"SNA"])
+    {
+        _machine->loadSnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+    }
 }
 
 #pragma mark - Keyboard

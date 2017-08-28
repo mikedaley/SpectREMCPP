@@ -9,6 +9,87 @@
 #include <stdio.h>
 #include "ZXSpectrum.hpp"
 
+int const               cSNA_HEADER_SIZE = 27;
+unsigned short const    cZ80_V3_HEADER_SIZE = 86;
+unsigned short const    cZ80_V3_ADD_HEADER_SIZE = 54;
+unsigned char const     cZ80_V3_PAGE_HEADER_SIZE = 3;
+
+#pragma mark - SNA
+
+void ZXSpectrum::loadSnapshotWithPath(const char *path)
+{
+    FILE *fileHandle;
+    
+    fileHandle = fopen(path, "rb");
+    
+    if (!fileHandle)
+    {
+        cout << "ERROR LOADING SNAPSHOT: " << path << endl;
+        fclose(fileHandle);
+        return;
+    }
+    
+    paused = true;
+    
+    z80Core.Reset();
+    resetKeyboardMap();
+    
+    fseek(fileHandle, 0, SEEK_END);
+    long size = ftell(fileHandle);
+    fseek(fileHandle, 0, SEEK_SET);
+    
+    unsigned char fileBytes[size];
+    
+    fread(&fileBytes, 1, size, fileHandle);
+    
+    // Decode the header
+    z80Core.SetRegister(CZ80Core::eREG_I, fileBytes[0]);
+    z80Core.SetRegister(CZ80Core::eREG_R, fileBytes[20]);
+    z80Core.SetRegister(CZ80Core::eREG_ALT_HL, ((unsigned short *)&fileBytes[1])[0]);
+    z80Core.SetRegister(CZ80Core::eREG_ALT_DE, ((unsigned short *)&fileBytes[1])[1]);
+    z80Core.SetRegister(CZ80Core::eREG_ALT_BC, ((unsigned short *)&fileBytes[1])[2]);
+    z80Core.SetRegister(CZ80Core::eREG_ALT_AF, ((unsigned short *)&fileBytes[1])[3]);
+    z80Core.SetRegister(CZ80Core::eREG_HL, ((unsigned short *)&fileBytes[1])[4]);
+    z80Core.SetRegister(CZ80Core::eREG_DE, ((unsigned short *)&fileBytes[1])[5]);
+    z80Core.SetRegister(CZ80Core::eREG_BC, ((unsigned short *)&fileBytes[1])[6]);
+    z80Core.SetRegister(CZ80Core::eREG_IY, ((unsigned short *)&fileBytes[1])[7]);
+    z80Core.SetRegister(CZ80Core::eREG_IX, ((unsigned short *)&fileBytes[1])[8]);
+    
+    z80Core.SetRegister(CZ80Core::eREG_AF, ((unsigned short *)&fileBytes[21])[0]);
+    
+    z80Core.SetRegister(CZ80Core::eREG_SP, ((unsigned short *)&fileBytes[21])[1]);
+    
+    // Border colour
+    borderColor = fileBytes[26] & 0x07;
+    
+    // Set the IM
+    z80Core.SetIMMode(fileBytes[25]);
+    
+    // Do both on bit 2 as a RETN copies IFF2 to IFF1
+    z80Core.SetIFF1((fileBytes[19] >> 2) & 1);
+    z80Core.SetIFF2((fileBytes[19] >> 2) & 1);
+    
+    if (size == (48 * 1024) + cSNA_HEADER_SIZE)
+    {
+        int snaAddr = cSNA_HEADER_SIZE;
+        for (int i= 0; i < (48 * 1024); i++)
+        {
+            memoryRam[i] = fileBytes[snaAddr++];
+        }
+        
+        // Set the PC
+        unsigned char pc_lsb = memoryRam[z80Core.GetRegister(CZ80Core::eREG_SP) - machineInfo.romSize];
+        unsigned char pc_msb = memoryRam[(z80Core.GetRegister(CZ80Core::eREG_SP) + 1) - machineInfo.romSize];
+        z80Core.SetRegister(CZ80Core::eREG_PC, (pc_msb << 8) | pc_lsb);
+        z80Core.SetRegister(CZ80Core::eREG_SP, z80Core.GetRegister(CZ80Core::eREG_SP) + 2);
+    }
+    
+    paused = false;
+    
+}
+
+#pragma mark - Z80
+
 void ZXSpectrum::loadZ80SnapshotWithPath(const char *path)
 {
     FILE *fileHandle;
@@ -22,7 +103,10 @@ void ZXSpectrum::loadZ80SnapshotWithPath(const char *path)
         return;
     }
     
+    paused = true;
+    
     z80Core.Reset();
+    resetKeyboardMap();
     
     fseek(fileHandle, 0, SEEK_END);
     long size = ftell(fileHandle);
@@ -174,6 +258,7 @@ void ZXSpectrum::loadZ80SnapshotWithPath(const char *path)
             break;
     }
     
+    paused = false;
 }
 
 void ZXSpectrum::extractMemoryBlock(unsigned char *fileBytes, int memAddr, int fileOffset, bool isCompressed, int unpackedLength)
