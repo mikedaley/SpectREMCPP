@@ -264,7 +264,7 @@ ZXSpectrum::snap ZXSpectrum::createZ80Snapshot()
     snapData.data[84] = 0; // Disciple inhibit button
     snapData.data[85] = 0; // Disciple inhibit flag
     
-    int snapPtr = 86;
+    int snapPtr = cZ80_V3_HEADER_SIZE;
     
     if (machineInfo.machineType == eZXSpectrum48)
     {

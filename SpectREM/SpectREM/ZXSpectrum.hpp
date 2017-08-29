@@ -48,6 +48,7 @@ private:
         int                 mapBit;
     } KEYBOARD_ENTRY;
     
+public:
     // Holds the data returned when creating a Snapshot or Z80 snapshot
     struct snap {
         int length;
