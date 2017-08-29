@@ -9,6 +9,8 @@
 #include <stdio.h>
 #include "ZXSpectrum.hpp"
 
+#pragma mark - Constants
+
 int const               cSNA_HEADER_SIZE = 27;
 unsigned short const    cZ80_V3_HEADER_SIZE = 86;
 unsigned short const    cZ80_V3_ADD_HEADER_SIZE = 54;
@@ -16,7 +18,75 @@ unsigned char const     cZ80_V3_PAGE_HEADER_SIZE = 3;
 
 #pragma mark - SNA
 
-void ZXSpectrum::loadSnapshotWithPath(const char *path)
+ZXSpectrum::snap ZXSpectrum::createSnapshot()
+{
+    // We don't want the core running when we take a snapshot
+    paused = true;
+    
+    snap snap;
+    snap.length = (48 * 1024) + cSNA_HEADER_SIZE;
+    snap.data = (unsigned char*)calloc(snap.length, sizeof(unsigned char));
+    
+    snap.data[0] = z80Core.GetRegister(CZ80Core::eREG_I);
+    snap.data[1] = z80Core.GetRegister(CZ80Core::eREG_ALT_HL) & 0xff;
+    snap.data[2] = z80Core.GetRegister(CZ80Core::eREG_ALT_HL) >> 8;
+    
+    snap.data[3] = z80Core.GetRegister(CZ80Core::eREG_ALT_DE) & 0xff;
+    snap.data[4] = z80Core.GetRegister(CZ80Core::eREG_ALT_DE) >> 8;
+    
+    snap.data[5] = z80Core.GetRegister(CZ80Core::eREG_ALT_BC) & 0xff;
+    snap.data[6] = z80Core.GetRegister(CZ80Core::eREG_ALT_BC) >> 8;
+    
+    snap.data[7] = z80Core.GetRegister(CZ80Core::eREG_ALT_AF) & 0xff;
+    snap.data[8] = z80Core.GetRegister(CZ80Core::eREG_ALT_AF) >> 8;
+    
+    snap.data[9] = z80Core.GetRegister(CZ80Core::eREG_HL) & 0xff;
+    snap.data[10] = z80Core.GetRegister(CZ80Core::eREG_HL) >> 8;
+    
+    snap.data[11] = z80Core.GetRegister(CZ80Core::eREG_DE) & 0xff;
+    snap.data[12] = z80Core.GetRegister(CZ80Core::eREG_DE) >> 8;
+    
+    snap.data[13] = z80Core.GetRegister(CZ80Core::eREG_BC) & 0xff;
+    snap.data[14] = z80Core.GetRegister(CZ80Core::eREG_BC) >> 8;
+    
+    snap.data[15] = z80Core.GetRegister(CZ80Core::eREG_IY) & 0xff;
+    snap.data[16] = z80Core.GetRegister(CZ80Core::eREG_IY) >> 8;
+    
+    snap.data[17] = z80Core.GetRegister(CZ80Core::eREG_IX) & 0xff;
+    snap.data[18] = z80Core.GetRegister(CZ80Core::eREG_IX) >> 8;
+    
+    snap.data[19] = (z80Core.GetIFF1() & 1) << 2;
+    snap.data[20] = z80Core.GetRegister(CZ80Core::eREG_R);
+    
+    snap.data[21] = z80Core.GetRegister(CZ80Core::eREG_AF) & 0xff;
+    snap.data[22] = z80Core.GetRegister(CZ80Core::eREG_AF) >> 8;
+    
+    unsigned short pc = z80Core.GetRegister(CZ80Core::eREG_PC);
+    unsigned short sp = z80Core.GetRegister(CZ80Core::eREG_SP) - 2;
+    
+    snap.data[23] = sp & 0xff;
+    snap.data[24] = sp >> 8;
+    
+    snap.data[25] = z80Core.GetIMMode();
+    snap.data[26] = borderColor & 0x07;
+    
+    int dataIndex = cSNA_HEADER_SIZE;
+    for (unsigned int addr = 16384; addr < 16384 + (48 * 1024); addr++)
+    {
+        snap.data[dataIndex++] = z80Core.Z80CoreDebugMemRead(addr, NULL);
+    }
+    
+    // Update the SP location in the snapshot buffer with the new SP, as PC has been added to the stack
+    // as part of creating the snapshot
+    snap.data[sp - 16384 + cSNA_HEADER_SIZE] = pc & 0xff;
+    snap.data[sp - 16384 + cSNA_HEADER_SIZE + 1] = pc >> 8;
+    
+    paused = false;
+    
+    return snap;
+}
+
+bool ZXSpectrum::loadSnapshotWithPath(const char *path)
 {
     FILE *fileHandle;
     
@@ -26,13 +96,12 @@ void ZXSpectrum::loadSnapshotWithPath(const char *path)
     {
         cout << "ERROR LOADING SNAPSHOT: " << path << endl;
         fclose(fileHandle);
-        return;
+        return false;
     }
     
     paused = true;
     
-    z80Core.Reset();
-    resetKeyboardMap();
+    ZXSpectrum::reset();
     
     fseek(fileHandle, 0, SEEK_END);
     long size = ftell(fileHandle);
@@ -86,11 +155,168 @@ void ZXSpectrum::loadSnapshotWithPath(const char *path)
     
     paused = false;
     
+    return true;
+    
 }
 
 #pragma mark - Z80
 
-void ZXSpectrum::loadZ80SnapshotWithPath(const char *path)
+ZXSpectrum::snap ZXSpectrum::createZ80Snapshot()
+{
+    paused = true;
+    
+    int snapshotSize = 0;
+    if (machineInfo.machineType == eZXSpectrum48)
+    {
+        snapshotSize = (48 * 1024) + cZ80_V3_HEADER_SIZE + (cZ80_V3_PAGE_HEADER_SIZE * 3);
+    }
+    else
+    {
+        snapshotSize = (128 * 1024) + cZ80_V3_HEADER_SIZE + (cZ80_V3_PAGE_HEADER_SIZE * 8);
+    }
+    
+    // Structure to be returned containing the length and size of the snapshot
+    snap snapData;
+    snapData.length = snapshotSize;
+    snapData.data = (unsigned char*)calloc(snapshotSize, sizeof(unsigned char));
+    
+    // Header
+    snapData.data[0] = z80Core.GetRegister(CZ80Core::eREG_A);
+    snapData.data[1] = z80Core.GetRegister(CZ80Core::eREG_F);
+    snapData.data[2] = z80Core.GetRegister(CZ80Core::eREG_BC) & 0xff;
+    snapData.data[3] = z80Core.GetRegister(CZ80Core::eREG_BC) >> 8;
+    snapData.data[4] = z80Core.GetRegister(CZ80Core::eREG_HL) & 0xff;
+    snapData.data[5] = z80Core.GetRegister(CZ80Core::eREG_HL) >> 8;
+    snapData.data[6] = 0x0; // PC
+    snapData.data[7] = 0x0;
+    snapData.data[8] = z80Core.GetRegister(CZ80Core::eREG_SP) & 0xff;
+    snapData.data[9] = z80Core.GetRegister(CZ80Core::eREG_SP) >> 8;
+    snapData.data[10] = z80Core.GetRegister(CZ80Core::eREG_I);
+    snapData.data[11] = z80Core.GetRegister(CZ80Core::eREG_R) & 0x7f;
+    
+    unsigned char byte12 = z80Core.GetRegister(CZ80Core::eREG_R) >> 7;
+    byte12 |= (borderColor & 0x07) << 1;
+    byte12 &= ~(1 << 5);
+    snapData.data[12] = byte12;
+    
+    snapData.data[13] = z80Core.GetRegister(CZ80Core::eREG_E);            // E
+    snapData.data[14] = z80Core.GetRegister(CZ80Core::eREG_D);            // D
+    snapData.data[15] = z80Core.GetRegister(CZ80Core::eREG_ALT_C);        // C'
+    snapData.data[16] = z80Core.GetRegister(CZ80Core::eREG_ALT_B);        // B'
+    snapData.data[17] = z80Core.GetRegister(CZ80Core::eREG_ALT_E);        // E'
+    snapData.data[18] = z80Core.GetRegister(CZ80Core::eREG_ALT_D);        // D'
+    snapData.data[19] = z80Core.GetRegister(CZ80Core::eREG_ALT_L);        // L'
+    snapData.data[20] = z80Core.GetRegister(CZ80Core::eREG_ALT_H);        // H'
+    snapData.data[21] = z80Core.GetRegister(CZ80Core::eREG_ALT_A);        // A'
+    snapData.data[22] = z80Core.GetRegister(CZ80Core::eREG_ALT_F);        // F'
+    snapData.data[23] = z80Core.GetRegister(CZ80Core::eREG_IY) & 0xff;    // IY
+    snapData.data[24] = z80Core.GetRegister(CZ80Core::eREG_IY) >> 8;      //
+    snapData.data[25] = z80Core.GetRegister(CZ80Core::eREG_IX) & 0xff;    // IX
+    snapData.data[26] = z80Core.GetRegister(CZ80Core::eREG_IX) >> 8;      //
+    snapData.data[27] = (z80Core.GetIFF1()) ? 0xff : 0x0;
+    snapData.data[28] = (z80Core.GetIFF2()) ? 0xff : 0x0;
+    snapData.data[29] = z80Core.GetIMMode() & 0x03;                       // IM Mode
+    
+    // Version 3 Additional Header
+    snapData.data[30] = (cZ80_V3_ADD_HEADER_SIZE) & 0xff;               // Addition Header Length
+    snapData.data[31] = (cZ80_V3_ADD_HEADER_SIZE) >> 8;
+    snapData.data[32] = z80Core.GetRegister(CZ80Core::eREG_PC) & 0xff;    // PC
+    snapData.data[33] = z80Core.GetRegister(CZ80Core::eREG_PC) >> 8;
+    
+    if (machineInfo.machineType == eZXSpectrum48)
+    {
+        snapData.data[34] = 0;
+    }
+    else if (machineInfo.machineType == eZXSpectrum128)
+    {
+        snapData.data[34] = 4;
+    }
+    else if (machineInfo.machineType == eZXSpectrumNext)
+    {
+        snapData.data[34] = 9;
+    }
+    
+//    if (machineInfo.machineType == eZXSpectrum128 || machine->machineInfo.machineType == eZXSpectrumNext)
+//    {
+//        snapData.data[35] = machine->last7ffd; // last 128k 0x7ffd port value
+//    }
+//    else
+//    {
+        snapData.data[35] = 0;
+//    }
+    
+    snapData.data[36] = 0; // Interface 1 ROM
+    snapData.data[37] = 0; // AY Sound
+    snapData.data[38] = 0; // Last OUT fffd
+    
+    int quarterStates = machineInfo.tsPerFrame / 4;
+    int lowTStates = quarterStates - (z80Core.GetTStates() % quarterStates) - 1;
+    snapData.data[55] = lowTStates & 0xff;
+    snapData.data[56] = lowTStates >> 8;
+    
+    snapData.data[57] = ((z80Core.GetTStates() / quarterStates) + 3) % 4;
+    snapData.data[58] = 0; // QL Emu
+    snapData.data[59] = 0; // MGT Paged ROM
+    snapData.data[60] = 0; // Multiface ROM paged
+    snapData.data[61] = 0; // 0 - 8192 ROM
+    snapData.data[63] = 0; // 8192 - 16384 ROM
+    snapData.data[83] = 0; // MGT Type
+    snapData.data[84] = 0; // Disciple inhibit button
+    snapData.data[85] = 0; // Disciple inhibit flag
+    
+    int snapPtr = 86;
+    
+    if (machineInfo.machineType == eZXSpectrum48)
+    {
+        snapData.data[snapPtr++] = 0xff;
+        snapData.data[snapPtr++] = 0xff;
+        snapData.data[snapPtr++] = 4;
+        
+        for (int memAddr = 0x8000; memAddr <= 0xbfff; memAddr++)
+        {
+            snapData.data[snapPtr++] = z80Core.Z80CoreDebugMemRead(memAddr, NULL);
+        }
+        
+        snapData.data[snapPtr++] = 0xff;
+        snapData.data[snapPtr++] = 0xff;
+        snapData.data[snapPtr++] = 5;
+        
+        for (int memAddr = 0xc000; memAddr <= 0xffff; memAddr++)
+        {
+            snapData.data[snapPtr++] = z80Core.Z80CoreDebugMemRead(memAddr, NULL);
+        }
+        
+        snapData.data[snapPtr++] = 0xff;
+        snapData.data[snapPtr++] = 0xff;
+        snapData.data[snapPtr++] = 8;
+        
+        for (int memAddr = 0x4000; memAddr <= 0x7fff; memAddr++)
+        {
+            snapData.data[snapPtr++] = z80Core.Z80CoreDebugMemRead(memAddr, NULL);
+        }
+    }
+    else
+    {
+        // 128k/Next
+        for (int page = 0; page < 8; page++)
+        {
+            snapData.data[snapPtr++] = 0xff;
+            snapData.data[snapPtr++] = 0xff;
+            snapData.data[snapPtr++] = page + 3;
+            
+            for (int memAddr = page * 0x4000; memAddr < (page * 0x4000) + 0x4000; memAddr++)
+            {
+                snapData.data[snapPtr++] = memoryRam[memAddr - machineInfo.romSize];
+            }
+        }
+    }
+    
+    paused = false;
+    
+    return snapData;
+}
+
+bool ZXSpectrum::loadZ80SnapshotWithPath(const char *path)
 {
     FILE *fileHandle;
 
@@ -100,13 +326,12 @@ void ZXSpectrum::loadZ80SnapshotWithPath(const char *path)
     {
         cout << "ERROR LOADING SNAPSHOT: " << path << endl;
         fclose(fileHandle);
-        return;
+        return false;
     }
     
     paused = true;
     
-    z80Core.Reset();
-    resetKeyboardMap();
+    ZXSpectrum::reset();
     
     fseek(fileHandle, 0, SEEK_END);
     long size = ftell(fileHandle);
@@ -259,6 +484,8 @@ void ZXSpectrum::loadZ80SnapshotWithPath(const char *path)
     }
     
     paused = false;
+    
+    return true;
 }
 
 void ZXSpectrum::extractMemoryBlock(unsigned char *fileBytes, int memAddr, int fileOffset, bool isCompressed, int unpackedLength)

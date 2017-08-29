@@ -13,16 +13,17 @@
 
 #pragma mark - Constants
 
+NSString *const cSNA_EXTENSION = @"SNA";
+NSString *const cZ80_EXTENSION = @"Z80";
+
 #pragma mark - Private Interface
 
 @interface EmulationViewController()
 {
     EmulationScene      *_scene;
-
     ZXSpectrum          *_machine;
     dispatch_queue_t    _emulationQueue;
     dispatch_source_t   _emulationTimer;
-
 }
 @end
 
@@ -68,6 +69,7 @@
     
     // Basic emulation timer. To be replaced with sound based timing
     dispatch_source_set_event_handler(_emulationTimer, ^{
+        
         _machine->runFrame();
 
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -75,34 +77,11 @@
             [_scene.emulationScreenTexture modifyPixelDataWithBlock:^(void *pixelData, size_t lengthInBytes) {
 
                 memcpy(pixelData, _machine->displayBuffer, lengthInBytes);
-                
-//                int widthScale = (self.view.frame.size.width / 320);
-//                int heightScale = (self.view.frame.size.width / 256);
-//                CGSize backingsize = (CGSize){floorf(MIN(320  * widthScale, 640)), floorf(MIN(256 * heightScale, 512))};
-//
-//                _scene.backingTexture.filteringMode = SKTextureFilteringNearest;
-//                _scene.backingNode.texture = _scene.backingTexture;
-//                _scene.backingNode.size = backingsize;
 
-//                _scene.emulationScreen.texture = [self.skView textureFromNode:_scene.backingNode];
             }];
         });
         
     });
-}
-
-#pragma mark - Load File
-
-- (void)loadFileWithURL:(NSURL *)url
-{
-    if ([[url.pathExtension uppercaseString] isEqualToString:@"Z80"])
-    {
-        _machine->loadZ80SnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
-    }
-    else if ([[url.pathExtension uppercaseString] isEqualToString:@"SNA"])
-    {
-        _machine->loadSnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
-    }
 }
 
 #pragma mark - Keyboard
@@ -142,5 +121,48 @@
 {
     dispatch_suspend(_emulationTimer);
 }
+
+#pragma mark - File Loading
+
+- (void)loadFileWithURL:(NSURL *)url
+{
+    if ([[url.pathExtension uppercaseString] isEqualToString:@"Z80"])
+    {
+        if (_machine->loadZ80SnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]))
+        {
+            [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:url];
+        }
+    }
+    else if ([[url.pathExtension uppercaseString] isEqualToString:@"SNA"])
+    {
+        if (_machine->loadSnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]))
+        {
+            [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:url];
+        }
+    }
+}
+
+#pragma mark - Menu Actions
+
+- (IBAction)openFile:(id)sender
+{
+    NSOpenPanel *openPanel = [NSOpenPanel new];
+    openPanel.canChooseDirectories = NO;
+    openPanel.allowsMultipleSelection = NO;
+    openPanel.allowedFileTypes = @[cSNA_EXTENSION, cZ80_EXTENSION];
+    
+    [openPanel beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger result) {
+        if (result == NSModalResponseOK)
+        {
+            [self loadFileWithURL:openPanel.URLs[0]];
+        }
+    }];
+}
+
+- (IBAction)resetMachine:(id)sender
+{
+    _machine->reset();
+}
+
 
 @end

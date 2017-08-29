@@ -9,9 +9,6 @@
 #import "EmulationScene.h"
 
 @implementation EmulationScene
-{
-
-}
 
 - (void)didMoveToView:(SKView *)view
 {

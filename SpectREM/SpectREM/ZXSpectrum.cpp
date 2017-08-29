@@ -163,7 +163,7 @@ void ZXSpectrum::coreDebugWrite(unsigned int address, unsigned char byte, void *
     }
     else
     {
-        memoryRam[address] = byte;
+        memoryRam[address - machineInfo.romSize] = byte;
     }
 }
 
@@ -208,8 +208,8 @@ void ZXSpectrum::reset()
 {
     z80Core.Reset();
     resetKeyboardMap();
-    frameCounter = 0;
     resetFrame();
+    frameCounter = 0;
 }
 
 #pragma mark - Release

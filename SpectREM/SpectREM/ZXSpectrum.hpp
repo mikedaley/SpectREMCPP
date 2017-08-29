@@ -48,6 +48,12 @@ private:
         int                 mapBit;
     } KEYBOARD_ENTRY;
     
+    // Holds the data returned when creating a Snapshot or Z80 snapshot
+    struct snap {
+        int length;
+        unsigned char *data;
+    };
+
 public:
     ZXSpectrum();
     ~ZXSpectrum();
@@ -66,8 +72,10 @@ public:
     void                    updateScreenWithTstates(int tStates);
     void                    applyIOContention(unsigned short address, bool contended);
     unsigned char           floatingBus();
-    void                    loadZ80SnapshotWithPath(const char *path);
-    void                    loadSnapshotWithPath(const char *path);
+    bool                    loadZ80SnapshotWithPath(const char *path);
+    bool                    loadSnapshotWithPath(const char *path);
+    snap                    createSnapshot();
+    snap                    createZ80Snapshot();
     void                    extractMemoryBlock(unsigned char *fileBytes, int memAddr, int fileOffset, bool isCompressed, int unpackedLength);
     string                  hardwareTypeForVersion(int version, int hardwareType);
     
