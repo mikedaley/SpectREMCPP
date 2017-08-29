@@ -18,7 +18,7 @@
 
 #pragma mark - Methods
 
-- (void)loadFileWithURL:(NSURL *)url;
+- (void)loadFileWithURL:(NSURL *)url addToRecent:(BOOL)addToRecent;
 
 @end
 

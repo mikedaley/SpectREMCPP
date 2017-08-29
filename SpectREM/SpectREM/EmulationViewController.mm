@@ -127,20 +127,26 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
 #pragma mark - File Loading
 
-- (void)loadFileWithURL:(NSURL *)url
+- (void)loadFileWithURL:(NSURL *)url addToRecent:(BOOL)addToRecent
 {
     if ([[url.pathExtension uppercaseString] isEqualToString:@"Z80"])
     {
         if (_machine->loadZ80SnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]))
         {
-            [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:url];
+            if (addToRecent)
+            {
+                [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:url];
+            }
         }
     }
     else if ([[url.pathExtension uppercaseString] isEqualToString:@"SNA"])
     {
         if (_machine->loadSnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]))
         {
-            [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:url];
+            if (addToRecent)
+            {
+                [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:url];
+            }
         }
     }
 }
@@ -190,7 +196,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
         if ([fileManager fileExistsAtPath:supportDirUrl.path])
         {
             NSLog(@"Restoring session");
-            [self loadFileWithURL:supportDirUrl];
+            [self loadFileWithURL:supportDirUrl addToRecent:NO];
         }
         else
         {
@@ -211,7 +217,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     [openPanel beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger result) {
         if (result == NSModalResponseOK)
         {
-            [self loadFileWithURL:openPanel.URLs[0]];
+            [self loadFileWithURL:openPanel.URLs[0] addToRecent:YES];
         }
     }];
 }

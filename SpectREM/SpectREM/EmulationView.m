@@ -64,7 +64,7 @@
             [[fileURL.pathExtension uppercaseString] isEqualToString:@"SNA"])
         {
             EmulationViewController *emulationViewController = (EmulationViewController *)[self.window contentViewController];
-            [emulationViewController loadFileWithURL:fileURL];
+            [emulationViewController loadFileWithURL:fileURL addToRecent:YES];
             return YES;
         }
     }
