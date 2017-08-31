@@ -54,6 +54,12 @@ public:
         int length;
         unsigned char *data;
     };
+    
+    // Previous frame screen buffer contents
+    struct ScreenBufferData {
+        unsigned char pixels;
+        unsigned char attribute;
+    };
 
 public:
     ZXSpectrum();
@@ -114,6 +120,7 @@ protected:
 public:
     // Display
     unsigned int            *displayBuffer;
+    ScreenBufferData        *displayBufferCopy;
     unsigned int            displayBufferIndex;
     int                     screenWidth;
     int                     screenHeight;

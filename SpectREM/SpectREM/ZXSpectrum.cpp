@@ -44,6 +44,7 @@ void ZXSpectrum::initialise(char *romPath)
     memoryRam.resize( machineInfo.ramSize );
     
     displayBuffer = new unsigned int[ screenBufferSize ];
+    displayBufferCopy = new ScreenBufferData[ machineInfo.tsPerFrame ];
 
     buildScreenLineAddressTable();
     buildDisplayTstateTable();
@@ -51,12 +52,6 @@ void ZXSpectrum::initialise(char *romPath)
     loadRomWithPath(romPath);
     reset();
     
-    paused = true;
-//    char p[] = "/Users/mikedaley/Dropbox/Z80 Tests/shock.z80";
-    const char p[] = "/Users/mikedaley/Desktop/shock.z80";
-    loadZ80SnapshotWithPath(p);
-    resetKeyboardMap();
-    paused = false;
 }
 
 void ZXSpectrum::loadRomWithPath(char *romPath)

@@ -129,6 +129,8 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
 - (void)loadFileWithURL:(NSURL *)url addToRecent:(BOOL)addToRecent
 {
+    BOOL error = NO;
+    
     if ([[url.pathExtension uppercaseString] isEqualToString:@"Z80"])
     {
         if (_machine->loadZ80SnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]))
@@ -137,6 +139,10 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
             {
                 [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:url];
             }
+        }
+        else
+        {
+            error = YES;
         }
     }
     else if ([[url.pathExtension uppercaseString] isEqualToString:@"SNA"])
@@ -148,6 +154,21 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
                 [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:url];
             }
         }
+        else
+        {
+            error = YES;
+        }
+    }
+    
+    if (error)
+    {
+        NSWindow *window = [[NSApplication sharedApplication] mainWindow];
+        NSAlert *alert = [NSAlert new];
+        alert.informativeText = [NSString stringWithFormat:@"An error occurred trying to open %@", url.path];
+        [alert addButtonWithTitle:@"OK"];
+        [alert beginSheetModalForWindow:window completionHandler:^(NSModalResponse returnCode)
+         {
+         }];
     }
 }
 

@@ -20,5 +20,7 @@
 
 - (void)loadFileWithURL:(NSURL *)url addToRecent:(BOOL)addToRecent;
 
+int* resizePixels(int* pixels,int w1,int h1,int w2,int h2);
+
 @end
 

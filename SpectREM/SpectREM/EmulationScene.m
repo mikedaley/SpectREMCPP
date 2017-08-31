@@ -13,7 +13,7 @@
 - (void)didMoveToView:(SKView *)view
 {
     _emulationScreenTexture = [SKMutableTexture mutableTextureWithSize:CGSizeMake(320, 256)];
-    _emulationScreenTexture.filteringMode = SKTextureFilteringLinear;
+    _emulationScreenTexture.filteringMode = SKTextureFilteringNearest;
     
     _backingTexture = [SKMutableTexture mutableTextureWithSize:CGSizeMake(320, 256)];
     

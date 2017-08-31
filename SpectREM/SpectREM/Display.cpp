@@ -49,9 +49,18 @@ void ZXSpectrum::updateScreenWithTstates(int tStates)
 
         if (action == eDisplayBorder)
         {
-            for (int i = 0; i < 8; i++)
+            if (displayBufferCopy[ currentDisplayTstates ].attribute != borderColor)
             {
-                displayBuffer[displayBufferIndex++] = palette[borderColor];
+                displayBufferCopy[ currentDisplayTstates ].attribute = borderColor;
+
+                for (int i = 0; i < 8; i++)
+                {
+                    displayBuffer[displayBufferIndex++] = palette[borderColor];
+                }
+            }
+            else
+            {
+                displayBufferIndex += 8;
             }
         }
         else if (action == eDisplayPaper)
@@ -65,28 +74,41 @@ void ZXSpectrum::updateScreenWithTstates(int tStates)
             int pixelByte = memoryRam[memoryAddress + pixelAddress];
             int attributeByte = memoryRam[memoryAddress + attributeAddress];
 
-            // Extract the ink and paper colours from the attribute byte read in
-            int ink = (attributeByte & 0x07) + ((attributeByte & 0x40) >> 3);
-            int paper = ((attributeByte >> 3) & 0x07) + ((attributeByte & 0x40) >> 3);
-            
-            // Switch ink and paper if the flash phase has changed
-            if ((frameCounter & 16) && (attributeByte & 0x80))
+            // Only draw the bitmap if the bitmap data has changed
+            if (displayBufferCopy[ currentDisplayTstates ].pixels != pixelByte ||
+                displayBufferCopy[ currentDisplayTstates ].attribute != attributeByte ||
+                (attributeByte & 0x80))
             {
-                int tempPaper = paper;
-                paper = ink;
-                ink = tempPaper;
+                displayBufferCopy[ currentDisplayTstates ].pixels = pixelByte;
+                displayBufferCopy[ currentDisplayTstates ].attribute = attributeByte;
+
+                // Extract the ink and paper colours from the attribute byte read in
+                int ink = (attributeByte & 0x07) + ((attributeByte & 0x40) >> 3);
+                int paper = ((attributeByte >> 3) & 0x07) + ((attributeByte & 0x40) >> 3);
+                
+                // Switch ink and paper if the flash phase has changed
+                if ((frameCounter & 16) && (attributeByte & 0x80))
+                {
+                    int tempPaper = paper;
+                    paper = ink;
+                    ink = tempPaper;
+                }
+                
+                for (int i = 0x80; i; i >>= 1)
+                {
+                    if (pixelByte & i)
+                    {
+                        displayBuffer[displayBufferIndex++] = palette[ink];
+                    }
+                    else
+                    {
+                        displayBuffer[displayBufferIndex++] = palette[paper];
+                    }
+                }
             }
-            
-            for (int i = 0x80; i; i >>= 1)
+            else
             {
-                if (pixelByte & i)
-                {
-                    displayBuffer[displayBufferIndex++] = palette[ink];
-                }
-                else
-                {
-                    displayBuffer[displayBufferIndex++] = palette[paper];
-                }
+                displayBufferIndex += 8;
             }
         }
         
