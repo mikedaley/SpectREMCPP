@@ -243,6 +243,21 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     }];
 }
 
+- (IBAction)setWindowSize:(id)sender
+{
+    if (([self.view.window styleMask] & NSWindowStyleMaskFullScreen) != NSWindowStyleMaskFullScreen)
+    {
+        NSMenuItem *menuItem = (NSMenuItem*)sender;
+        float width = 320 * menuItem.tag;
+        float height = 256 * menuItem.tag;
+        float originX = self.view.window.frame.origin.x;
+        float originY = self.view.window.frame.origin.y - (height - self.view.window.frame.size.height);
+        NSRect windowFrame = CGRectMake(originX, originY, width, height);
+        [self.view.window.animator setContentSize:windowFrame.size];
+    }
+
+}
+
 - (IBAction)resetMachine:(id)sender
 {
     _machine->reset();

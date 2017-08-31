@@ -119,13 +119,45 @@
                                     </items>
                                 </menu>
                             </menuItem>
-                            <menuItem title="Machine" id="lpt-1L-Jne">
+                            <menuItem title="View" id="lpt-1L-Jne" userLabel="View">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Machine" id="taL-tK-nzq">
+                                <menu key="submenu" title="View" id="taL-tK-nzq">
                                     <items>
-                                        <menuItem title="Reset" keyEquivalent="R" id="idP-g3-4Xr">
+                                        <menuItem title="Screen x 1" tag="1" keyEquivalent="1" id="idP-g3-4Xr">
                                             <connections>
-                                                <action selector="resetMachine:" target="Ady-hI-5gd" id="whC-pG-18q"/>
+                                                <action selector="setWindowSize:" target="Ady-hI-5gd" id="TXI-dh-3pS"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Screen x 2" tag="2" keyEquivalent="2" id="EJD-A1-UeP" userLabel="Screen x 2">
+                                            <connections>
+                                                <action selector="setWindowSize:" target="Ady-hI-5gd" id="Ojh-Ol-ocT"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Screen x 3" tag="3" keyEquivalent="3" id="EdA-Dc-8f7" userLabel="Screen x 3">
+                                            <connections>
+                                                <action selector="setWindowSize:" target="Ady-hI-5gd" id="jJh-Ja-BJt"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Screen x 4" tag="4" keyEquivalent="4" id="F5y-WD-nXl" userLabel="Screen x 4">
+                                            <connections>
+                                                <action selector="setWindowSize:" target="Ady-hI-5gd" id="5Q1-Ch-gkb"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Screen x 5" tag="5" keyEquivalent="5" id="wAb-9j-Sp6" userLabel="Screen x 5">
+                                            <connections>
+                                                <action selector="setWindowSize:" target="Ady-hI-5gd" id="5vB-W2-gJ8"/>
+                                            </connections>
+                                        </menuItem>
+                                    </items>
+                                </menu>
+                            </menuItem>
+                            <menuItem title="Machine" id="CeM-H5-u56">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Machine" id="O3z-fs-ZbQ">
+                                    <items>
+                                        <menuItem title="Reset" keyEquivalent="R" id="lrW-SZ-feE">
+                                            <connections>
+                                                <action selector="resetMachine:" target="Ady-hI-5gd" id="FRG-eM-sss"/>
                                             </connections>
                                         </menuItem>
                                     </items>
