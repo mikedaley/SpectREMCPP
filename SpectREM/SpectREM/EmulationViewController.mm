@@ -76,7 +76,8 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
         _machine->runFrame();
 
         dispatch_async(dispatch_get_main_queue(), ^{
-            
+            // Once a frame has been generated we can grab the pixel data that has been generated for the emulation
+            // output and apply it to the texture being used in the host platform display.
             [_scene.emulationScreenTexture modifyPixelDataWithBlock:^(void *pixelData, size_t lengthInBytes) {
 
                 memcpy(pixelData, _machine->displayBuffer, lengthInBytes);
@@ -166,9 +167,9 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
         NSAlert *alert = [NSAlert new];
         alert.informativeText = [NSString stringWithFormat:@"An error occurred trying to open %@", url.path];
         [alert addButtonWithTitle:@"OK"];
-        [alert beginSheetModalForWindow:window completionHandler:^(NSModalResponse returnCode)
-         {
-         }];
+        [alert beginSheetModalForWindow:window completionHandler:^(NSModalResponse returnCode) {
+            // No need to do
+        }];
     }
 }
 
@@ -226,7 +227,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     }
 }
 
-#pragma mark - Menu Actions
+#pragma mark - File Menu Items
 
 - (IBAction)openFile:(id)sender
 {
@@ -243,6 +244,8 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     }];
 }
 
+#pragma mark - View Menu Items
+
 - (IBAction)setWindowSize:(id)sender
 {
     if (([self.view.window styleMask] & NSWindowStyleMaskFullScreen) != NSWindowStyleMaskFullScreen)
@@ -250,13 +253,11 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
         NSMenuItem *menuItem = (NSMenuItem*)sender;
         float width = 320 * menuItem.tag;
         float height = 256 * menuItem.tag;
-        float originX = self.view.window.frame.origin.x;
-        float originY = self.view.window.frame.origin.y - (height - self.view.window.frame.size.height);
-        NSRect windowFrame = CGRectMake(originX, originY, width, height);
-        [self.view.window.animator setContentSize:windowFrame.size];
+        [self.view.window.animator setContentSize:(NSSize){width, height}];
     }
-
 }
+
+#pragma mark - Machine Menu Items
 
 - (IBAction)resetMachine:(id)sender
 {

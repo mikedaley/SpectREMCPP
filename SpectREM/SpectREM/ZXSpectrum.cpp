@@ -212,6 +212,7 @@ void ZXSpectrum::reset()
 void ZXSpectrum::release()
 {
     delete displayBuffer;
+    delete displayBufferCopy;
 }
 
 

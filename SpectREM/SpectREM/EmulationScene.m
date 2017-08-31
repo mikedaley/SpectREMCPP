@@ -13,7 +13,7 @@
 - (void)didMoveToView:(SKView *)view
 {
     _emulationScreenTexture = [SKMutableTexture mutableTextureWithSize:CGSizeMake(320, 256)];
-    _emulationScreenTexture.filteringMode = SKTextureFilteringNearest;
+    _emulationScreenTexture.filteringMode = SKTextureFilteringLinear;
     
     _backingTexture = [SKMutableTexture mutableTextureWithSize:CGSizeMake(320, 256)];
     
@@ -21,6 +21,9 @@
     _emulationScreen.texture = _emulationScreenTexture;
     
     _backingNode = (SKSpriteNode *)[self childNodeWithName:@"//backingNode"];
+    
+    SKShader *shader = [SKShader shaderWithFileNamed:@"PixelShader.fsh"];
+    _emulationScreen.shader = shader;
 }
 
 -(void)update:(CFTimeInterval)currentTime

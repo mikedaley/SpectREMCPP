@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		1745BB631F50876E003203FE /* Contention.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1745BB621F50876E003203FE /* Contention.cpp */; };
 		1745BB651F50AE1E003203FE /* FloatingBus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1745BB641F50AE1E003203FE /* FloatingBus.cpp */; };
+		174AAFBB1F585AF100B75535 /* PixelShader.fsh in Sources */ = {isa = PBXBuildFile; fileRef = 174AAFBA1F585AF100B75535 /* PixelShader.fsh */; };
+		174AAFBC1F585DCC00B75535 /* PixelShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 174AAFBA1F585AF100B75535 /* PixelShader.fsh */; };
 		177E284D1F4DD7E90053756B /* ZXSpectrum48.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 177E284B1F4DD7E90053756B /* ZXSpectrum48.cpp */; };
 		17A089511F4F5B2700CAA178 /* Keyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A089501F4F5B2700CAA178 /* Keyboard.cpp */; };
 		17A089531F4F677200CAA178 /* Display.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A089521F4F677200CAA178 /* Display.cpp */; };
@@ -35,6 +37,7 @@
 /* Begin PBXFileReference section */
 		1745BB621F50876E003203FE /* Contention.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Contention.cpp; sourceTree = "<group>"; };
 		1745BB641F50AE1E003203FE /* FloatingBus.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FloatingBus.cpp; sourceTree = "<group>"; };
+		174AAFBA1F585AF100B75535 /* PixelShader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = PixelShader.fsh; sourceTree = "<group>"; };
 		177E284B1F4DD7E90053756B /* ZXSpectrum48.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZXSpectrum48.cpp; sourceTree = "<group>"; };
 		177E284E1F4DDF550053756B /* ZXSpectrum48.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ZXSpectrum48.hpp; sourceTree = "<group>"; };
 		17A0894F1F4F513300CAA178 /* MachineDetails.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MachineDetails.h; sourceTree = "<group>"; };
@@ -201,6 +204,7 @@
 				ED913FA61F30759300316E1A /* EmulationViewController.mm */,
 				EDD9ADE91F54032C004DD728 /* EmulationView.h */,
 				EDD9ADEA1F54032C004DD728 /* EmulationView.m */,
+				174AAFBA1F585AF100B75535 /* PixelShader.fsh */,
 			);
 			name = Emulation;
 			sourceTree = "<group>";
@@ -303,6 +307,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				174AAFBC1F585DCC00B75535 /* PixelShader.fsh in Resources */,
 				ED913FD71F30789300316E1A /* 48.ROM in Resources */,
 				ED913FA91F30759300316E1A /* Assets.xcassets in Resources */,
 				ED913FAC1F30759300316E1A /* Main.storyboard in Resources */,
@@ -321,6 +326,7 @@
 				1745BB631F50876E003203FE /* Contention.cpp in Sources */,
 				ED913FCB1F30781000316E1A /* Z80Core_DDOpcodes.cpp in Sources */,
 				EDD9ADEB1F54032C004DD728 /* EmulationView.m in Sources */,
+				174AAFBB1F585AF100B75535 /* PixelShader.fsh in Sources */,
 				ED913F9D1F30759300316E1A /* main.m in Sources */,
 				ED913FCA1F30781000316E1A /* Z80Core_DDCB_FDCBOpcodes.cpp in Sources */,
 				ED913FCD1F30781000316E1A /* Z80Core_FDOpcodes.cpp in Sources */,
