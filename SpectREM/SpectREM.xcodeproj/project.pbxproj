@@ -89,6 +89,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		174AAFBD1F58626E00B75535 /* Shader */ = {
+			isa = PBXGroup;
+			children = (
+				174AAFBA1F585AF100B75535 /* PixelShader.fsh */,
+			);
+			name = Shader;
+			sourceTree = "<group>";
+		};
 		177E284F1F4DEC5B0053756B /* ZX Spectrum 48k */ = {
 			isa = PBXGroup;
 			children = (
@@ -173,6 +181,7 @@
 		ED913FB51F30763500316E1A /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				174AAFBD1F58626E00B75535 /* Shader */,
 				ED913FB81F30767A00316E1A /* Emulation */,
 			);
 			name = "View Controllers";
@@ -204,7 +213,6 @@
 				ED913FA61F30759300316E1A /* EmulationViewController.mm */,
 				EDD9ADE91F54032C004DD728 /* EmulationView.h */,
 				EDD9ADEA1F54032C004DD728 /* EmulationView.m */,
-				174AAFBA1F585AF100B75535 /* PixelShader.fsh */,
 			);
 			name = Emulation;
 			sourceTree = "<group>";
