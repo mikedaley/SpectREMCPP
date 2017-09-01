@@ -8,6 +8,20 @@
 
 #include "ZXSpectrum.hpp"
 
+typedef enum {
+    NSEventModifierFlagCapsLock           = 1 << 16, // Set if Caps Lock key is pressed.
+    NSEventModifierFlagShift              = 1 << 17, // Set if Shift key is pressed.
+    NSEventModifierFlagControl            = 1 << 18, // Set if Control key is pressed.
+    NSEventModifierFlagOption             = 1 << 19, // Set if Option or Alternate key is pressed.
+    NSEventModifierFlagCommand            = 1 << 20, // Set if Command key is pressed.
+    NSEventModifierFlagNumericPad         = 1 << 21, // Set if any key in the numeric keypad is pressed.
+    NSEventModifierFlagHelp               = 1 << 22, // Set if the Help key is pressed.
+    NSEventModifierFlagFunction           = 1 << 23, // Set if any function key is pressed.
+    
+    // Used to retrieve only the device-independent modifier flags, allowing applications to mask off the device-dependent modifier flags, including event coalescing information.
+    NSEventModifierFlagDeviceIndependentFlagsMask    = 0xffff0000UL
+} eKeyboardConstants;
+
 #pragma mark - Keyboard
 
 ZXSpectrum::KEYBOARD_ENTRY ZXSpectrum::keyboardLookup[] =
@@ -258,7 +272,72 @@ void ZXSpectrum::keyUp(unsigned short key)
 
 void ZXSpectrum::keyFlagsChanged(unsigned long flags, unsigned short key)
 {
+    switch (key)
+    {
+        case 58: // Alt Right - This puts the keyboard into extended mode in a single keypress
+        case 61: // Alt Left
+            if (flags & NSEventModifierFlagOption)
+            {
+                keyboardMap[0] &= ~0x01;
+                keyboardMap[7] &= ~0x02;
+            }
+            else
+            {
+                keyboardMap[0] |= 0x01;
+                keyboardMap[7] |= 0x02;
+            }
+            break;
+            
+        case 57: // Caps Lock
+            if ((flags & NSEventModifierFlagCapsLock) || !(flags & NSEventModifierFlagCapsLock))
+            {
+                keyboardMap[0] &= ~0x01;
+                keyboardMap[3] &= ~0x02;
+                keyboardCapsLockPressed = true;
+            }
+            break;
+            
+        case 56: // Left Shift
+        case 60: // Right Shift
+            if (flags & NSEventModifierFlagShift)
+            {
+                keyboardMap[0] &= ~0x01;
+            }
+            else
+            {
+                keyboardMap[0] |= 0x01;
+            }
+            break;
+            
+        case 59: // Control
+            if (flags & NSEventModifierFlagControl)
+            {
+                keyboardMap[7] &= ~0x02;
+            }
+            else
+            {
+                keyboardMap[7] |= 0x02;
+            }
+            break;
+            
+        default:
+            break;
+    }
+}
 
+void ZXSpectrum::checkCapsLockStatus()
+{
+    if (keyboardCapsLockPressed && keyboardCapsLockFrames > 2)
+    {
+        keyboardMap[0] |= 0x01;
+        keyboardMap[3] |= 0x02;
+        keyboardCapsLockPressed = false;
+        keyboardCapsLockFrames = 0;
+    }
+    else if (keyboardCapsLockPressed)
+    {
+        keyboardCapsLockFrames ++;
+    }
 }
 
 void ZXSpectrum::resetKeyboardMap()

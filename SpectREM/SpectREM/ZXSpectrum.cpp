@@ -80,6 +80,7 @@ void ZXSpectrum::runFrame()
             frameCounter++;
             currentFrameTstates = 0;
             resetFrame();
+            checkCapsLockStatus();
         }
     }
 }

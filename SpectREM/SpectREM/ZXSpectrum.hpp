@@ -75,7 +75,6 @@ public:
     void                    keyDown(unsigned short key);
     void                    keyUp(unsigned short key);
     void                    keyFlagsChanged(unsigned long flags, unsigned short key);
-    void                    resetKeyboardMap();
     void                    updateScreenWithTstates(int tStates);
     void                    applyIOContention(unsigned short address, bool contended);
     unsigned char           floatingBus();
@@ -91,6 +90,8 @@ private:
     void                    buildDisplayTstateTable();
     void                    buildScreenLineAddressTable();
     void                    buildContentionTable();
+    void                    checkCapsLockStatus();
+    void                    resetKeyboardMap();
     
     // Core memory/IO functions
     static unsigned char    zxSpectrumMemoryRead(unsigned short address, void *param);
@@ -116,6 +117,7 @@ protected:
     vector<char>            memoryRam;
     unsigned char           keyboardMap[8];
     static KEYBOARD_ENTRY   keyboardLookup[];
+    int                     keyboardCapsLockFrames;
     
 public:
     // Display
@@ -139,6 +141,9 @@ public:
     // Audio
     int                     audioEarBit;
     int                     audioMicBit;
+    
+    // Keyboard
+    bool                    keyboardCapsLockPressed;
     
     // Contention
     unsigned int            memoryContentionTable[80000];

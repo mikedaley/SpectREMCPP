@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		1745BB631F50876E003203FE /* Contention.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1745BB621F50876E003203FE /* Contention.cpp */; };
 		1745BB651F50AE1E003203FE /* FloatingBus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1745BB641F50AE1E003203FE /* FloatingBus.cpp */; };
-		174AAFBB1F585AF100B75535 /* PixelShader.fsh in Sources */ = {isa = PBXBuildFile; fileRef = 174AAFBA1F585AF100B75535 /* PixelShader.fsh */; };
 		174AAFBC1F585DCC00B75535 /* PixelShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 174AAFBA1F585AF100B75535 /* PixelShader.fsh */; };
 		177E284D1F4DD7E90053756B /* ZXSpectrum48.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 177E284B1F4DD7E90053756B /* ZXSpectrum48.cpp */; };
 		17A089511F4F5B2700CAA178 /* Keyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A089501F4F5B2700CAA178 /* Keyboard.cpp */; };
@@ -334,7 +333,6 @@
 				1745BB631F50876E003203FE /* Contention.cpp in Sources */,
 				ED913FCB1F30781000316E1A /* Z80Core_DDOpcodes.cpp in Sources */,
 				EDD9ADEB1F54032C004DD728 /* EmulationView.m in Sources */,
-				174AAFBB1F585AF100B75535 /* PixelShader.fsh in Sources */,
 				ED913F9D1F30759300316E1A /* main.m in Sources */,
 				ED913FCA1F30781000316E1A /* Z80Core_DDCB_FDCBOpcodes.cpp in Sources */,
 				ED913FCD1F30781000316E1A /* Z80Core_FDOpcodes.cpp in Sources */,
