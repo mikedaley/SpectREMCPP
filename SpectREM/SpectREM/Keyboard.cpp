@@ -8,6 +8,7 @@
 
 #include "ZXSpectrum.hpp"
 
+// Mac enum for the key flags
 typedef enum {
     NSEventModifierFlagCapsLock           = 1 << 16, // Set if Caps Lock key is pressed.
     NSEventModifierFlagShift              = 1 << 17, // Set if Shift key is pressed.

@@ -69,37 +69,31 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
         
         _machine->runFrame();
         
-        // Once a frame has been generated we can grab the pixel data that has been generated for the emulation
-        // output and apply it to the texture being used in the host platform display.
         [_scene.emulationScreenTexture modifyPixelDataWithBlock:^(void *pixelData, size_t lengthInBytes) {
-            
             memcpy(pixelData, _machine->displayBuffer, lengthInBytes);
-            
         }];
         
     }];
     
     [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
     
-    return;
-    
-    _emulationTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
-    dispatch_source_set_timer(_emulationTimer, DISPATCH_TIME_NOW, 0.02 * NSEC_PER_SEC, 0);
-    
-    // Basic emulation timer. To be replaced with sound based timing
-    dispatch_source_set_event_handler(_emulationTimer, ^{
-        
-        _machine->runFrame();
-
-        // Once a frame has been generated we can grab the pixel data that has been generated for the emulation
-        // output and apply it to the texture being used in the host platform display.
-        [_scene.emulationScreenTexture modifyPixelDataWithBlock:^(void *pixelData, size_t lengthInBytes) {
-
-            memcpy(pixelData, _machine->displayBuffer, lengthInBytes);
-
-        }];
-        
-    });
+//    _emulationTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
+//    dispatch_source_set_timer(_emulationTimer, DISPATCH_TIME_NOW, 0.02 * NSEC_PER_SEC, 0);
+//    
+//    // Basic emulation timer. To be replaced with sound based timing
+//    dispatch_source_set_event_handler(_emulationTimer, ^{
+//        
+//        _machine->runFrame();
+//
+//        // Once a frame has been generated we can grab the pixel data that has been generated for the emulation
+//        // output and apply it to the texture being used in the host platform display.
+//        [_scene.emulationScreenTexture modifyPixelDataWithBlock:^(void *pixelData, size_t lengthInBytes) {
+//
+//            memcpy(pixelData, _machine->displayBuffer, lengthInBytes);
+//
+//        }];
+//        
+//    });
 }
 
 #pragma mark - Keyboard
