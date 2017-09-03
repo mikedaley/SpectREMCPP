@@ -8,6 +8,11 @@
 
 #include "ZXSpectrum.hpp"
 
+#define kExponent 18
+#define kUsed ((audioQueueBufferWritten - audioQueueBufferRead) & (audioQueueBufferCapacity - 1))
+#define kSpace (audioQueueBufferCapacity - 1 - kUsed)
+#define kSize (audioQueueBufferCapacity - 1)
+
 static float fAYVolBase[] = {
     0.0000,
     0.0079,
@@ -290,8 +295,85 @@ void ZXSpectrum::setupAudio(int sampleRate, int fps)
 
     audioTsStep = machineInfo.tsPerFrame / (sampleRate / fps);
     audioAYTStatesStep = 32;
+    
+    audioQueueBufferCapacity = 1 << kExponent;
+    audioQueueBuffer = new signed short[ audioQueueBufferCapacity << 2];
 }
 
 #pragma mark - Audio Queue
+
+// Write the supplied number of bytes into the queues buffer from the supplied buffer pointer
+int ZXSpectrum::audioQueueWrite(signed short *buffer, int count)
+{
+    if (!count) {
+        return 0;
+    }
+    
+    int t;
+    int i;
+    
+    t = kSpace;
+    
+    if (count > t)
+    {
+        count = t;
+    } else {
+        t = count;
+    }
+    
+    i = audioQueueBufferWritten;
+    
+    if ((i + count) > audioQueueBufferCapacity)
+    {
+        memcpy(audioQueueBuffer + i, buffer, (audioQueueBufferCapacity - i) << 1);
+        buffer += audioQueueBufferCapacity - i;
+        count -= audioQueueBufferCapacity - i;
+        i = 0;
+    }
+    
+    memcpy(audioQueueBuffer + i, buffer, count << 1);
+    audioQueueBufferWritten = i + count;
+    
+    return t;
+ 
+}
+
+// Read the supplied number of bytes from the queues buffer into the supplied buffer pointer
+int ZXSpectrum::audioQueueRead(signed short *buffer, int count)
+{
+    int t;
+    int i;
+    
+    t = kUsed;
+    
+    if (count > t)
+    {
+        count = t;
+    } else {
+        t = count;
+    }
+    
+    i = audioQueueBufferRead;
+    
+    if ((i + count) > audioQueueBufferCapacity)
+    {
+        memcpy(buffer, audioQueueBuffer + i, (audioQueueBufferCapacity - i) << 1);
+        buffer += audioQueueBufferCapacity - i;
+        count -= audioQueueBufferCapacity - i;
+        i = 0;
+    }
+    
+    memcpy(buffer, audioQueueBuffer + i, count << 1);
+    audioQueueBufferRead = i + count;
+    
+    return t;
+}
+
+// Return the number of used samples in the buffer
+int ZXSpectrum::audioQueueBufferUsed()
+{
+    return kUsed;
+}
+
 
 

@@ -215,6 +215,7 @@ void ZXSpectrum::release()
     delete displayBuffer;
     delete displayBufferCopy;
     delete audioBuffer;
+    delete audioQueueBuffer;
 }
 
 

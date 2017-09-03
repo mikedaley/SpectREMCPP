@@ -56,14 +56,10 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
     [self.skView presentScene:_scene];
     
-//    [self setupTimersAndQueues];
-//    [self startEmulationTimer];
+    [self setupTimersAndQueues];
+    [self startEmulationTimer];
     
-    _audioCore = [[AudioCore alloc] initWithSampleRate:192000 framesPerSecond:50 block:^(EmulationViewController *controller) {
-        [_audioCore.queue write:controller._machine->audioBuffer count:(audioCore->samplesPerFrame << 1)];
-
-        
-    }];
+    _audioCore = [[AudioCore alloc] initWithSampleRate:192000 framesPerSecond:50 machine:_machine];
     
     [_audioCore start];
     
@@ -78,9 +74,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
 - (void)setupTimersAndQueues
 {
-    _emulationTimer = [NSTimer timerWithTimeInterval:0.0199 repeats:YES block:^(NSTimer * _Nonnull timer) {
-        
-        _machine->runFrame();
+    _emulationTimer = [NSTimer timerWithTimeInterval:0.02 repeats:YES block:^(NSTimer * _Nonnull timer) {
         
         [_scene.emulationScreenTexture modifyPixelDataWithBlock:^(void *pixelData, size_t lengthInBytes) {
             memcpy(pixelData, _machine->displayBuffer, lengthInBytes);

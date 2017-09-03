@@ -11,7 +11,6 @@
 #import "AudioCore.h"
 #import "ZXSpectrum.hpp"
 #import "AudioQueue.h"
-#import "EmulationViewController.h"
 
 #pragma mark - Private interface
 
@@ -24,9 +23,7 @@
     UInt32          formatChannelsPerFrame;
     UInt32          formatBitsPerChannel;
     UInt32          formatFramesPerPacket;
-    UInt32          formatBytesPerPacket;
-    
-    void            (^callbackBlock)(EmulationViewController *controller);
+    UInt32          formatBytesPerPacket;    
 }
 
 // Reference to the emulation queue that is being used to drive the emulation
@@ -77,12 +74,11 @@ static OSStatus renderAudio(void *inRefCon,
     
 }
 
-- (instancetype)initWithSampleRate:(int)sampleRate framesPerSecond:(float)fps
+- (instancetype)initWithSampleRate:(int)sampleRate framesPerSecond:(float)fps machine:(ZXSpectrum *)machine
 {
     self = [super init];
     if (self)
     {
-        callbackBlock = block;
         _queue = [AudioQueue queue];
         samplesPerFrame = sampleRate / fps;
     
@@ -152,7 +148,7 @@ static OSStatus renderAudio(void *inRefCon,
         // define the callback for rendering audio
         AURenderCallbackStruct renderCallbackStruct;
         renderCallbackStruct.inputProc = renderAudio;
-        renderCallbackStruct.inputProcRefCon = (__bridge void *)self;
+        renderCallbackStruct.inputProcRefCon = machine;
         
         // Attach the audio callback to the converterNode
         CheckError(AUGraphSetNodeInputCallback(_graph, _converterNode, 0, &renderCallbackStruct), "AUGraphNodeInputCallback");
@@ -190,9 +186,11 @@ static OSStatus renderAudio(void *inRefCon,
 
 #pragma mark - Audio Render
 
-static OSStatus renderAudio(void *inRefCon,AudioUnitRenderActionFlags *ioActionFlags,const AudioTimeStamp *inTimeStamp,UInt32 inBusNumber,UInt32 inNumberFrames,AudioBufferList *ioData)
+static OSStatus renderAudio(void *inRefCon, AudioUnitRenderActionFlags *ioActionFlags,
+                            const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber, UInt32 inNumberFrames,
+                            AudioBufferList *ioData)
 {
-    AudioCore *audioCore = (__bridge AudioCore *)inRefCon;
+    ZXSpectrum *machine = (ZXSpectrum *)inRefCon;
     
     // Grab the buffer that core audio has passed in and reset its contents to 0.
     // The format being used has 4 bytes per frame so multiply inNumberFrames by 4
@@ -200,15 +198,15 @@ static OSStatus renderAudio(void *inRefCon,AudioUnitRenderActionFlags *ioActionF
     memset(buffer, 0, inNumberFrames << 2);
     
     // Update the queue with the reset buffer
-    [audioCore.queue read:buffer count:(inNumberFrames << 1)];
+    machine->audioQueueRead(machine->audioBuffer, (inNumberFrames << 1));
     
     // Check if we have used a frames worth of buffer storage and if so then its time to generate another frame.
-    if ([audioCore.queue used] < (audioCore->samplesPerFrame << 1))
+    if (machine->audioQueueBufferUsed() < 7680)
     {
+        machine->runFrame();
         
-        // Populate the audio buffer on the same thread as the Core Audio callback otherwise there are timing
-        // problems
-        [audioCore.queue write:audioCore->_machine->audioBuffer count:(audioCore->samplesPerFrame << 1)];
+        // Populate the audio buffer on the same thread as the Core Audio callback otherwise there are timing problems
+        machine->audioQueueWrite(machine->audioBuffer, 7680);
     }
     
     // Set the size of the buffer to be the number of frames requested by the Core Audio callback. This is

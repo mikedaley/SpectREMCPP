@@ -124,8 +124,9 @@ public:
     unsigned char           readAYData();
     void                    updateAY(int audioSteps);
     void                    resetAudio();
-    void                    setupDisplay();
-    void                    setupAudio(int sampleRate, int fps);
+    int                     audioQueueWrite(signed short *buffer, int count);
+    int                     audioQueueRead(signed short *buffer, int count);
+    int                     audioQueueBufferUsed();
     
 private:
     void                    generateScreen();
@@ -137,6 +138,8 @@ private:
     void                    resetKeyboardMap();
     string                  hardwareTypeForVersion(int version, int hardwareType);
     void                    extractMemoryBlock(unsigned char *fileBytes, int memAddr, int fileOffset, bool isCompressed, int unpackedLength);
+    void                    setupDisplay();
+    void                    setupAudio(int sampleRate, int fps);
     
     
     // Core memory/IO functions
@@ -189,10 +192,10 @@ public:
     // Audio
     int                     audioEarBit;
     int                     audioMicBit;
-    signed int              channelOutput[3];
+    int                     channelOutput[3];
     unsigned int            AYChannelCount[3];
     unsigned short          AYVolumes[16];
-    signed short            *audioBuffer;
+    short                   *audioBuffer;
     unsigned int            random;
     unsigned int            AYOutput;
     unsigned int            noiseCount;
@@ -209,6 +212,11 @@ public:
     int                     audioBufferSize;
     float                   audioTsStep;
     int                     audioAYTStatesStep;
+    
+    short                   *audioQueueBuffer;
+    int                     audioQueueBufferRead;
+    int                     audioQueueBufferWritten;
+    int                     audioQueueBufferCapacity;
     
     // Keyboard
     bool                    keyboardCapsLockPressed;
