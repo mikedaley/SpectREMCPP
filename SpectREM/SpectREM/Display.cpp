@@ -12,7 +12,7 @@
 
 unsigned int ZXSpectrum::palette[] =
 {
-    // Normal Colours
+    // Normal Colours in AABBGGRR format
     0xff000000, // Black
     0xffc80000, // Blue
     0xff0000c8, // Red
@@ -33,6 +33,14 @@ unsigned int ZXSpectrum::palette[] =
     0xffffffff
 };
 
+#pragma mark - Setup
+
+void ZXSpectrum::setupDisplay()
+{
+    displayBuffer = new unsigned int[ screenBufferSize ];
+    displayBufferCopy = new ScreenBufferData[ machineInfo.tsPerFrame ];
+}
+
 #pragma mark - Generate Screen
 
 void ZXSpectrum::updateScreenWithTstates(int tStates)
@@ -49,9 +57,11 @@ void ZXSpectrum::updateScreenWithTstates(int tStates)
 
         if (action == eDisplayBorder)
         {
+            // Only draw the border of the border data has changed
             if (displayBufferCopy[ currentDisplayTstates ].attribute != borderColor)
             {
                 displayBufferCopy[ currentDisplayTstates ].attribute = borderColor;
+                displayBufferCopy[ currentDisplayTstates ].changed = true;
 
                 for (int i = 0; i < 8; i++)
                 {
@@ -60,6 +70,7 @@ void ZXSpectrum::updateScreenWithTstates(int tStates)
             }
             else
             {
+                displayBufferCopy [ currentDisplayTstates ].changed = false;
                 displayBufferIndex += 8;
             }
         }
@@ -81,6 +92,8 @@ void ZXSpectrum::updateScreenWithTstates(int tStates)
             {
                 displayBufferCopy[ currentDisplayTstates ].pixels = pixelByte;
                 displayBufferCopy[ currentDisplayTstates ].attribute = attributeByte;
+                displayBufferCopy[ currentDisplayTstates ].changed = true;
+                
 
                 // Extract the ink and paper colours from the attribute byte read in
                 int ink = (attributeByte & 0x07) + ((attributeByte & 0x40) >> 3);
@@ -108,6 +121,7 @@ void ZXSpectrum::updateScreenWithTstates(int tStates)
             }
             else
             {
+                displayBufferCopy[ currentDisplayTstates ].changed = false;
                 displayBufferIndex += 8;
             }
         }
@@ -154,9 +168,9 @@ void ZXSpectrum::buildDisplayTstateTable()
     int pxLinePaperEnd = machineInfo.pxVerticalBlank + machineInfo.pxVertBorder + machineInfo.pxVerticalDisplay;
     int pxLineBottomBorderEnd = machineInfo.pxVerticalTotal - (machineInfo.pxVertBorder - machineInfo.pxEmuBorder);
     
-    for(int line = 0; line < machineInfo.pxVerticalTotal; line++)
+    for (int line = 0; line < machineInfo.pxVerticalTotal; line++)
     {
-        for(int ts = 0 ; ts < machineInfo.tsPerLine; ts++)
+        for (int ts = 0 ; ts < machineInfo.tsPerLine; ts++)
         {
             // Screen Retrace
             if (line >= 0  && line < machineInfo.pxVerticalBlank)

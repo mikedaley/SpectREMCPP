@@ -43,15 +43,14 @@ void ZXSpectrum::initialise(char *romPath)
     memoryRom.resize( machineInfo.romSize );
     memoryRam.resize( machineInfo.ramSize );
     
-    displayBuffer = new unsigned int[ screenBufferSize ];
-    displayBufferCopy = new ScreenBufferData[ machineInfo.tsPerFrame ];
-
+    setupDisplay();
+    setupAudio(192000, 50);
     buildScreenLineAddressTable();
     buildDisplayTstateTable();
     buildContentionTable();
+    buildAYVolumesTable();
     loadRomWithPath(romPath);
-    reset();
-    
+    resetMachine();
 }
 
 void ZXSpectrum::loadRomWithPath(char *romPath)
@@ -200,11 +199,12 @@ void ZXSpectrum::coreIOWrite(unsigned short address, unsigned char data)
 
 #pragma mark - Reset
 
-void ZXSpectrum::reset()
+void ZXSpectrum::resetMachine()
 {
     z80Core.Reset();
     resetKeyboardMap();
     resetFrame();
+    resetAudio();
     frameCounter = 0;
 }
 
@@ -214,6 +214,7 @@ void ZXSpectrum::release()
 {
     delete displayBuffer;
     delete displayBufferCopy;
+    delete audioBuffer;
 }
 
 

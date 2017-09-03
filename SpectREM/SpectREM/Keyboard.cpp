@@ -328,6 +328,8 @@ void ZXSpectrum::keyFlagsChanged(unsigned long flags, unsigned short key)
 
 void ZXSpectrum::checkCapsLockStatus()
 {
+    // The Caps Lock combination needs to be set for minimum 2 frames for it to be registered by the ROM.
+    // Once two frames have passed the key combination can be removed from the keyboard map.
     if (keyboardCapsLockPressed && keyboardCapsLockFrames > 2)
     {
         keyboardMap[0] |= 0x01;

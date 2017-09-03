@@ -7,6 +7,8 @@
 //
 
 #import "EmulationViewController.h"
+#import "AudioCore.h"
+#import "AudioQueue.h"
 #import "EmulationScene.h"
 #import "ZXSpectrum.hpp"
 #import "ZXSpectrum48.hpp"
@@ -24,7 +26,9 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 {
     EmulationScene      *_scene;
     ZXSpectrum          *_machine;
-    dispatch_source_t   _emulationTimer;
+//    dispatch_source_t   _emulationTimer;
+    NSTimer             *_emulationTimer;
+    AudioCore           *_audioCore;
 }
 @end
 
@@ -52,8 +56,17 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
     [self.skView presentScene:_scene];
     
-    [self setupTimersAndQueues];
-    [self startEmulationTimer];
+//    [self setupTimersAndQueues];
+//    [self startEmulationTimer];
+    
+    _audioCore = [[AudioCore alloc] initWithSampleRate:192000 framesPerSecond:50 block:^(EmulationViewController *controller) {
+        [_audioCore.queue write:controller._machine->audioBuffer count:(audioCore->samplesPerFrame << 1)];
+
+        
+    }];
+    
+    [_audioCore start];
+    
     [self restoreSession];
 }
 
@@ -65,7 +78,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
 - (void)setupTimersAndQueues
 {
-    NSTimer *timer = [NSTimer timerWithTimeInterval:0.02 repeats:YES block:^(NSTimer * _Nonnull timer) {
+    _emulationTimer = [NSTimer timerWithTimeInterval:0.0199 repeats:YES block:^(NSTimer * _Nonnull timer) {
         
         _machine->runFrame();
         
@@ -74,26 +87,6 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
         }];
         
     }];
-    
-    [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
-    
-//    _emulationTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
-//    dispatch_source_set_timer(_emulationTimer, DISPATCH_TIME_NOW, 0.02 * NSEC_PER_SEC, 0);
-//    
-//    // Basic emulation timer. To be replaced with sound based timing
-//    dispatch_source_set_event_handler(_emulationTimer, ^{
-//        
-//        _machine->runFrame();
-//
-//        // Once a frame has been generated we can grab the pixel data that has been generated for the emulation
-//        // output and apply it to the texture being used in the host platform display.
-//        [_scene.emulationScreenTexture modifyPixelDataWithBlock:^(void *pixelData, size_t lengthInBytes) {
-//
-//            memcpy(pixelData, _machine->displayBuffer, lengthInBytes);
-//
-//        }];
-//        
-//    });
 }
 
 #pragma mark - Keyboard
@@ -126,12 +119,12 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
 - (void)startEmulationTimer
 {
-//    dispatch_resume(_emulationTimer);
+    [[NSRunLoop currentRunLoop] addTimer:_emulationTimer forMode:NSDefaultRunLoopMode];
 }
 
 - (void)suspendEmulationTimer
 {
-    dispatch_suspend(_emulationTimer);
+    [_emulationTimer invalidate];
 }
 
 #pragma mark - File Loading
@@ -269,8 +262,29 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
 - (IBAction)resetMachine:(id)sender
 {
-    _machine->reset();
+    _machine->resetMachine();
 }
 
 
 @end
+
+
+
+
+//    _emulationTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
+//    dispatch_source_set_timer(_emulationTimer, DISPATCH_TIME_NOW, 0.02 * NSEC_PER_SEC, 0);
+//
+//    // Basic emulation timer. To be replaced with sound based timing
+//    dispatch_source_set_event_handler(_emulationTimer, ^{
+//
+//        _machine->runFrame();
+//
+//        // Once a frame has been generated we can grab the pixel data that has been generated for the emulation
+//        // output and apply it to the texture being used in the host platform display.
+//        [_scene.emulationScreenTexture modifyPixelDataWithBlock:^(void *pixelData, size_t lengthInBytes) {
+//
+//            memcpy(pixelData, _machine->displayBuffer, lengthInBytes);
+//
+//        }];
+//
+//    });

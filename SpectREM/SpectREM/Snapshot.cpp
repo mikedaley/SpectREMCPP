@@ -101,7 +101,7 @@ bool ZXSpectrum::loadSnapshotWithPath(const char *path)
     
     paused = true;
     
-    ZXSpectrum::reset();
+    ZXSpectrum::resetMachine();
     
     fseek(fileHandle, 0, SEEK_END);
     long size = ftell(fileHandle);
@@ -331,7 +331,7 @@ bool ZXSpectrum::loadZ80SnapshotWithPath(const char *path)
     
     paused = true;
     
-    ZXSpectrum::reset();
+    ZXSpectrum::resetMachine();
     
     fseek(fileHandle, 0, SEEK_END);
     long size = ftell(fileHandle);

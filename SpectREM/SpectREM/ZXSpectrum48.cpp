@@ -118,7 +118,7 @@ void ZXSpectrum48::release()
 
 void ZXSpectrum48::reset()
 {
-    ZXSpectrum::reset();
+    ZXSpectrum::resetMachine();
 }
 
 

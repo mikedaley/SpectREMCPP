@@ -55,10 +55,46 @@ public:
         unsigned char *data;
     };
     
-    // Previous frame screen buffer contents
+    // Previous frames screen buffer contents
     struct ScreenBufferData {
         unsigned char pixels;
         unsigned char attribute;
+        bool changed;
+    };
+    
+    enum
+    {
+        eAYREGISTER_A_FINE = 0,
+        eAYREGISTER_A_COARSE,
+        eAYREGISTER_B_FINE,
+        eAYREGISTER_B_COARSE,
+        eAYREGISTER_C_FINE,
+        eAYREGISTER_C_COARSE,
+        eAYREGISTER_NOISEPER,
+        eAYREGISTER_ENABLE,
+        eAYREGISTER_A_VOL,
+        eAYREGISTER_B_VOL,
+        eAYREGISTER_C_VOL,
+        eAYREGISTER_E_FINE,
+        eAYREGISTER_E_COARSE,
+        eAYREGISTER_E_SHAPE,
+        eAYREGISTER_PORT_A,
+        eAYREGISTER_PORT_B,
+        
+        // Used to emulate the odd floating behaviour of setting an AY register > 15. The value
+        // written to registers > 15 decays over time and this is the value returned when reading
+        // a register > 15
+        eAYREGISTER_FLOATING,
+        
+        eAY_MAX_REGISTERS
+    };
+    
+    enum
+    {
+        eENVFLAG_HOLD = 0x01,
+        eENVFLAG_ALTERNATE = 0x02,
+        eENVFLAG_ATTACK = 0x04,
+        eENVFLAG_CONTINUE = 0x08
     };
 
 public:
@@ -67,11 +103,12 @@ public:
 
 public:
     virtual void            initialise(char *romPath);
+    virtual void            resetMachine();
+    virtual void            release();
+
     void                    loadRomWithPath(char *romPath);
     void                    runFrame();
     void                    resetFrame();
-    virtual void            reset();
-    virtual void            release();
     void                    keyDown(unsigned short key);
     void                    keyUp(unsigned short key);
     void                    keyFlagsChanged(unsigned long flags, unsigned short key);
@@ -82,16 +119,25 @@ public:
     bool                    loadSnapshotWithPath(const char *path);
     snap                    createSnapshot();
     snap                    createZ80Snapshot();
-    void                    extractMemoryBlock(unsigned char *fileBytes, int memAddr, int fileOffset, bool isCompressed, int unpackedLength);
-    string                  hardwareTypeForVersion(int version, int hardwareType);
+    void                    setAYRegister(unsigned char reg);
+    void                    writeAYData(unsigned char data);
+    unsigned char           readAYData();
+    void                    updateAY(int audioSteps);
+    void                    resetAudio();
+    void                    setupDisplay();
+    void                    setupAudio(int sampleRate, int fps);
     
 private:
     void                    generateScreen();
     void                    buildDisplayTstateTable();
     void                    buildScreenLineAddressTable();
     void                    buildContentionTable();
+    void                    buildAYVolumesTable();
     void                    checkCapsLockStatus();
     void                    resetKeyboardMap();
+    string                  hardwareTypeForVersion(int version, int hardwareType);
+    void                    extractMemoryBlock(unsigned char *fileBytes, int memAddr, int fileOffset, bool isCompressed, int unpackedLength);
+    
     
     // Core memory/IO functions
     static unsigned char    zxSpectrumMemoryRead(unsigned short address, void *param);
@@ -120,6 +166,8 @@ protected:
     int                     keyboardCapsLockFrames;
     
 public:
+    MachineInfo             machineInfo;
+
     // Display
     unsigned int            *displayBuffer;
     ScreenBufferData        *displayBufferCopy;
@@ -127,7 +175,7 @@ public:
     int                     screenWidth;
     int                     screenHeight;
     int                     screenBufferSize;
-    int                     displayTstateTable[312][224];
+    int                     displayTstateTable[312][228];
     int                     displayLineAddrTable[192];
     int                     displayPage;
     int                     currentDisplayTstates;
@@ -141,6 +189,26 @@ public:
     // Audio
     int                     audioEarBit;
     int                     audioMicBit;
+    signed int              channelOutput[3];
+    unsigned int            AYChannelCount[3];
+    unsigned short          AYVolumes[16];
+    signed short            *audioBuffer;
+    unsigned int            random;
+    unsigned int            AYOutput;
+    unsigned int            noiseCount;
+    unsigned int            envelopeCount;
+    int                     envelopeStep;
+    unsigned char           AYRegisters[ eAY_MAX_REGISTERS ];
+    unsigned char           currentAYRegister;
+    unsigned char           floatingAYRegister;
+    bool                    envelopeHolding;
+    bool                    envelopeHold;
+    bool                    envelopeAlt;
+    bool                    envelope;
+    unsigned int            attackEndVol;
+    int                     audioBufferSize;
+    float                   audioTsStep;
+    int                     audioAYTStatesStep;
     
     // Keyboard
     bool                    keyboardCapsLockPressed;
@@ -149,9 +217,10 @@ public:
     unsigned int            memoryContentionTable[80000];
     unsigned int            ioContentionTable[80000];
     static unsigned int     contentionValues[];
-    static unsigned int     floatingBusValues[];    
+
+    // Floating bus
+    static unsigned int     floatingBusValues[];
     
-    MachineInfo             machineInfo;
 
 };
 

@@ -13,6 +13,10 @@
 		177E284D1F4DD7E90053756B /* ZXSpectrum48.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 177E284B1F4DD7E90053756B /* ZXSpectrum48.cpp */; };
 		17A089511F4F5B2700CAA178 /* Keyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A089501F4F5B2700CAA178 /* Keyboard.cpp */; };
 		17A089531F4F677200CAA178 /* Display.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A089521F4F677200CAA178 /* Display.cpp */; };
+		17B5DB971F5B14A7003E7EF3 /* AudioCore.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17B5DB951F5B14A7003E7EF3 /* AudioCore.mm */; };
+		17B5DB981F5B14A7003E7EF3 /* AudioQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 17B5DB961F5B14A7003E7EF3 /* AudioQueue.m */; };
+		17B5DB9A1F5B14D3003E7EF3 /* Audio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17B5DB991F5B14D3003E7EF3 /* Audio.cpp */; };
+		17EC89101F5B1FC500B6EFAF /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17EC890F1F5B1FC500B6EFAF /* AudioToolbox.framework */; };
 		ED504A621F4EE9D500BD289E /* EmulationScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = ED504A611F4EE9D500BD289E /* EmulationScene.sks */; };
 		ED504A641F51BBFF00BD289E /* Snapshot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED504A631F51BBFF00BD289E /* Snapshot.cpp */; };
 		ED913F9A1F30759300316E1A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = ED913F991F30759300316E1A /* AppDelegate.m */; };
@@ -43,6 +47,13 @@
 		17A0894F1F4F513300CAA178 /* MachineDetails.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MachineDetails.h; sourceTree = "<group>"; };
 		17A089501F4F5B2700CAA178 /* Keyboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Keyboard.cpp; sourceTree = "<group>"; };
 		17A089521F4F677200CAA178 /* Display.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Display.cpp; sourceTree = "<group>"; };
+		17B5DB931F5B14A7003E7EF3 /* AudioCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioCore.h; sourceTree = "<group>"; };
+		17B5DB941F5B14A7003E7EF3 /* AudioQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioQueue.h; sourceTree = "<group>"; };
+		17B5DB951F5B14A7003E7EF3 /* AudioCore.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AudioCore.mm; sourceTree = "<group>"; };
+		17B5DB961F5B14A7003E7EF3 /* AudioQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioQueue.m; sourceTree = "<group>"; };
+		17B5DB991F5B14D3003E7EF3 /* Audio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Audio.cpp; sourceTree = "<group>"; };
+		17B5DB9C1F5B1CCE003E7EF3 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		17EC890F1F5B1FC500B6EFAF /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		ED504A611F4EE9D500BD289E /* EmulationScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = EmulationScene.sks; sourceTree = "<group>"; };
 		ED504A631F51BBFF00BD289E /* Snapshot.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Snapshot.cpp; sourceTree = "<group>"; };
 		ED913F951F30759300316E1A /* SpectREM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpectREM.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -84,6 +95,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				17EC89101F5B1FC500B6EFAF /* AudioToolbox.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -118,8 +130,29 @@
 				1745BB621F50876E003203FE /* Contention.cpp */,
 				1745BB641F50AE1E003203FE /* FloatingBus.cpp */,
 				ED504A631F51BBFF00BD289E /* Snapshot.cpp */,
+				17B5DB991F5B14D3003E7EF3 /* Audio.cpp */,
 			);
 			name = Base;
+			sourceTree = "<group>";
+		};
+		17B5DB921F5B146C003E7EF3 /* Audio Core */ = {
+			isa = PBXGroup;
+			children = (
+				17B5DB931F5B14A7003E7EF3 /* AudioCore.h */,
+				17B5DB951F5B14A7003E7EF3 /* AudioCore.mm */,
+				17B5DB941F5B14A7003E7EF3 /* AudioQueue.h */,
+				17B5DB961F5B14A7003E7EF3 /* AudioQueue.m */,
+			);
+			name = "Audio Core";
+			sourceTree = "<group>";
+		};
+		17B5DB9B1F5B1CCE003E7EF3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				17EC890F1F5B1FC500B6EFAF /* AudioToolbox.framework */,
+				17B5DB9C1F5B1CCE003E7EF3 /* AVFoundation.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		ED913F8C1F30759300316E1A = {
@@ -127,6 +160,7 @@
 			children = (
 				ED913F971F30759300316E1A /* SpectREM */,
 				ED913F961F30759300316E1A /* Products */,
+				17B5DB9B1F5B1CCE003E7EF3 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -141,6 +175,7 @@
 		ED913F971F30759300316E1A /* SpectREM */ = {
 			isa = PBXGroup;
 			children = (
+				17B5DB921F5B146C003E7EF3 /* Audio Core */,
 				ED913FB41F30762600316E1A /* App Delegate */,
 				ED913FB31F30761B00316E1A /* StoryBoard */,
 				ED913FB71F30765D00316E1A /* Emulation Scene */,
@@ -334,6 +369,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				1745BB651F50AE1E003203FE /* FloatingBus.cpp in Sources */,
+				17B5DB971F5B14A7003E7EF3 /* AudioCore.mm in Sources */,
+				17B5DB9A1F5B14D3003E7EF3 /* Audio.cpp in Sources */,
 				1745BB631F50876E003203FE /* Contention.cpp in Sources */,
 				ED913FCB1F30781000316E1A /* Z80Core_DDOpcodes.cpp in Sources */,
 				EDD9ADEB1F54032C004DD728 /* EmulationView.m in Sources */,
@@ -350,6 +387,7 @@
 				ED913FCF1F30781000316E1A /* Z80Core.cpp in Sources */,
 				177E284D1F4DD7E90053756B /* ZXSpectrum48.cpp in Sources */,
 				ED913F9A1F30759300316E1A /* AppDelegate.m in Sources */,
+				17B5DB981F5B14A7003E7EF3 /* AudioQueue.m in Sources */,
 				17A089531F4F677200CAA178 /* Display.cpp in Sources */,
 				ED504A641F51BBFF00BD289E /* Snapshot.cpp in Sources */,
 			);
