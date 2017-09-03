@@ -40,6 +40,98 @@ void ZXSpectrum::buildAYVolumesTable()
     }
 }
 
+void ZXSpectrum::setupAudio(float sampleRate, float fps)
+{
+    audioBufferSize = (sampleRate / fps) * 6;
+    audioBuffer = new short[ audioBufferSize ];
+    
+    audioTsStep = machineInfo.tsPerFrame / (sampleRate / fps);
+    audioAYTStatesStep = 32;
+    
+    audioQueueBufferCapacity = 1 << kExponent;
+    audioQueueBuffer = new short[ audioQueueBufferCapacity << 2 ];
+}
+
+void ZXSpectrum::resetAudio()
+{
+    audioBufferIndex = 0;
+    audioTsCounter = 0;
+    audioTsStepCounter = 0;
+    audioBeeperLeft = 0;
+    audioBeeperRight = 0;
+    memset(audioBuffer, 0, audioBufferSize);
+
+    AYOutput = 0;
+    random = 1;
+    channelOutput[0] = 0;
+    channelOutput[1] = 0;
+    channelOutput[2] = 0;
+    AYChannelCount[0] = 0;
+    AYChannelCount[1] = 0;
+    AYChannelCount[2] = 0;
+    noiseCount = 0;
+    envelopeCount = 0;
+    envelopeStep = 15;
+    envelopeHolding = false;
+    
+    for (int i = 0; i < eAY_MAX_REGISTERS; i++)
+    {
+        setAYRegister(i);
+        writeAYData(0);
+    }
+}
+
+#pragma mark - Audio Update
+
+void ZXSpectrum::audioUpdateWithTstates(int tStates)
+{
+    if (paused)
+    {
+        return;
+    }
+
+    // Grab the current state of the audio ear output & the tapeLevel which is used to register input when loading tapes.
+    // Only need to do this once per audio update
+    int localBeeperLevel = audioEarBit * 128;
+    int beeperLevelLeft = localBeeperLevel;
+    int beeperLevelRight = localBeeperLevel;
+    
+    // Loop over each tState so that the necessary audio samples can be generated
+    for(int i = 0; i < tStates; i++)
+    {
+        // If we have done more cycles now than the audio step counter, generate a new sample
+        if (audioTsCounter++ >= audioTsStepCounter)
+        {
+            // Quantize the value loaded into the audio buffer e.g. if cycles = 19 and step size is 18.2
+            // 0.2 of the beeper value goes into this sample and 0.8 goes into the next sample
+            double delta1 = audioTsStepCounter - (audioTsCounter - 1);
+            double delta2 = (1 - delta1);
+            
+            // Quantize for the current sample
+            audioBeeperLeft += beeperLevelLeft * delta1;
+            audioBeeperRight += beeperLevelRight * delta1;
+            
+            // Load the buffer with the sample for both left and right channels
+            audioBuffer[ audioBufferIndex++ ] = (short)audioBeeperLeft;
+            audioBuffer[ audioBufferIndex++ ] = (short)audioBeeperRight;
+            
+            // Quantize for the next sample
+            audioBeeperLeft = beeperLevelLeft * delta2;
+            audioBeeperRight = beeperLevelRight * delta2;
+            
+            // Increment the step counter so that the next sample will be taken after another 18.2 T-States
+            audioTsStepCounter += audioTsStep;
+        }
+        else
+        {
+            audioBeeperLeft += beeperLevelLeft;
+            audioBeeperRight += beeperLevelRight;
+        }
+        
+        beeperLevelLeft = beeperLevelRight = localBeeperLevel;
+    }
+}
+
 #pragma mark - AY Chip
 
 void ZXSpectrum::setAYRegister(unsigned char reg)
@@ -264,40 +356,6 @@ void ZXSpectrum::updateAY(int audioSteps)
         
         channelOutput[2] += AYVolumes[vol];
     }
-}
-
-void ZXSpectrum::resetAudio()
-{
-    AYOutput = 0;
-    random = 1;
-    channelOutput[0] = 0;
-    channelOutput[1] = 0;
-    channelOutput[2] = 0;
-    AYChannelCount[0] = 0;
-    AYChannelCount[1] = 0;
-    AYChannelCount[2] = 0;
-    noiseCount = 0;
-    envelopeCount = 0;
-    envelopeStep = 15;
-    envelopeHolding = false;
-    
-    for (int i = 0; i < eAY_MAX_REGISTERS; i++)
-    {
-        setAYRegister(i);
-        writeAYData(0);
-    }
-}
-
-void ZXSpectrum::setupAudio(int sampleRate, int fps)
-{
-    audioBufferSize = (sampleRate / fps) * 6;
-    audioBuffer = new signed short[ audioBufferSize ];
-
-    audioTsStep = machineInfo.tsPerFrame / (sampleRate / fps);
-    audioAYTStatesStep = 32;
-    
-    audioQueueBufferCapacity = 1 << kExponent;
-    audioQueueBuffer = new signed short[ audioQueueBufferCapacity << 2];
 }
 
 #pragma mark - Audio Queue

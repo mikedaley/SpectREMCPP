@@ -10,7 +10,6 @@
 
 #import "AudioCore.h"
 #import "ZXSpectrum.hpp"
-#import "AudioQueue.h"
 
 #pragma mark - Private interface
 
@@ -28,9 +27,6 @@
 
 // Reference to the emulation queue that is being used to drive the emulation
 @property (assign) dispatch_queue_t emulationQueue;
-
-// Queue used to control the samples being provided to Core Audio
-@property (strong) AudioQueue *queue;
 
 // Properties used to store the CoreAudio graph and nodes, including the high and low pass effects nodes
 @property (assign) AUGraph graph;
@@ -79,7 +75,6 @@ static OSStatus renderAudio(void *inRefCon,
     self = [super init];
     if (self)
     {
-        _queue = [AudioQueue queue];
         samplesPerFrame = sampleRate / fps;
     
         CheckError(NewAUGraph(&_graph), "NewAUGraph");
@@ -159,7 +154,11 @@ static OSStatus renderAudio(void *inRefCon,
         AUGraphNodeInfo(_graph, _mixerNode, 0, &_mixerUnit);
         AUGraphNodeInfo(_graph, _lowPassNode, 0, &_lowPassFilterUnit);
         AUGraphNodeInfo(_graph, _highPassNode, 0, &_highPassFilterUnit);
-                
+
+        
+        AudioUnitSetParameter(_lowPassFilterUnit, 0, kAudioUnitScope_Global, 0, 3500, 0);
+        AudioUnitSetParameter(_highPassFilterUnit, 0, kAudioUnitScope_Global, 0, 1, 0);
+        AudioUnitSetParameter(_mixerUnit, kMultiChannelMixerParam_Volume, kAudioUnitScope_Output, 0, 1, 0);
     }
     return self;
 }
@@ -198,14 +197,12 @@ static OSStatus renderAudio(void *inRefCon, AudioUnitRenderActionFlags *ioAction
     memset(buffer, 0, inNumberFrames << 2);
     
     // Update the queue with the reset buffer
-    machine->audioQueueRead(machine->audioBuffer, (inNumberFrames << 1));
+    machine->audioQueueRead(buffer, (inNumberFrames << 1));
     
     // Check if we have used a frames worth of buffer storage and if so then its time to generate another frame.
     if (machine->audioQueueBufferUsed() < 7680)
     {
         machine->runFrame();
-        
-        // Populate the audio buffer on the same thread as the Core Audio callback otherwise there are timing problems
         machine->audioQueueWrite(machine->audioBuffer, 7680);
     }
     

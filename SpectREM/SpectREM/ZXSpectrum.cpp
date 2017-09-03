@@ -71,6 +71,8 @@ void ZXSpectrum::runFrame()
         int tStates = z80Core.Execute(1, machineInfo.intLength);
         currentFrameTstates -= tStates;
         
+        audioUpdateWithTstates(tStates);
+        
         if (z80Core.GetTStates() >= machineInfo.tsPerFrame)
         {
             z80Core.ResetTStates( machineInfo.tsPerFrame );

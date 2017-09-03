@@ -137,6 +137,10 @@ void ZXSpectrum::resetFrame()
 {
     currentDisplayTstates = 0;
     displayBufferIndex = 0;
+    
+    audioBufferIndex = 0;
+    audioTsCounter = 0;
+    audioTsStepCounter = 0;
 }
 
 #pragma mark - Build Display Tables

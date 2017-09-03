@@ -127,6 +127,7 @@ public:
     int                     audioQueueWrite(signed short *buffer, int count);
     int                     audioQueueRead(signed short *buffer, int count);
     int                     audioQueueBufferUsed();
+    void                    audioUpdateWithTstates(int tStates);
     
 private:
     void                    generateScreen();
@@ -139,7 +140,7 @@ private:
     string                  hardwareTypeForVersion(int version, int hardwareType);
     void                    extractMemoryBlock(unsigned char *fileBytes, int memAddr, int fileOffset, bool isCompressed, int unpackedLength);
     void                    setupDisplay();
-    void                    setupAudio(int sampleRate, int fps);
+    void                    setupAudio(float sampleRate, float fps);
     
     
     // Core memory/IO functions
@@ -210,8 +211,13 @@ public:
     bool                    envelope;
     unsigned int            attackEndVol;
     int                     audioBufferSize;
-    float                   audioTsStep;
-    int                     audioAYTStatesStep;
+    double                  audioTsStep;
+    int                     audioTsCounter;
+    double                  audioAYTStatesStep;
+    double                  audioTsStepCounter;
+    int                     audioBufferIndex;
+    double                  audioBeeperLeft;
+    double                  audioBeeperRight;
     
     short                   *audioQueueBuffer;
     int                     audioQueueBufferRead;
