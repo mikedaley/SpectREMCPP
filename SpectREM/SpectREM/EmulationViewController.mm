@@ -26,10 +26,10 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
 @interface EmulationViewController()
 {
-    EmulationScene      *_scene;
-    ZXSpectrum          *_machine;
-    dispatch_source_t   _emulationTimer;
-    AudioCore           *_audioCore;
+    EmulationScene      *scene;
+    ZXSpectrum          *machine;
+    AudioCore           *audioCore;
+    dispatch_source_t   displayTimer;
 }
 @end
 
@@ -39,7 +39,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
 - (void)dealloc
 {
-    delete _machine;
+    delete machine;
 }
 
 - (void)viewDidLoad
@@ -48,20 +48,20 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
     [self initMachineWithRomAtPath:[[NSBundle mainBundle] pathForResource:@"48" ofType:@"ROM"]];
     
-    _scene = (EmulationScene *)[SKScene nodeWithFileNamed:@"EmulationScene"];
+    scene = (EmulationScene *)[SKScene nodeWithFileNamed:@"EmulationScene"];
     
     // Remember to do this before presenting the scene or it goes all wierd !!!
-    _scene.scaleMode = SKSceneScaleModeFill;
+    scene.scaleMode = SKSceneScaleModeFill;
     
-    _scene.nextResponder = self;
+    scene.nextResponder = self;
 
-    [self.skView presentScene:_scene];
+    [self.skView presentScene:scene];
     
     [self setupTimersAndQueues];
     
-    _audioCore = [[AudioCore alloc] initWithSampleRate:cAUDIO_SAMPLE_RATE framesPerSecond:cFRAMES_PER_SECOND machine:_machine];
+    audioCore = [[AudioCore alloc] initWithSampleRate:cAUDIO_SAMPLE_RATE framesPerSecond:cFRAMES_PER_SECOND machine:machine];
     
-    [_audioCore start];
+    [audioCore start];
     [self startEmulationTimer];
     
     [self restoreSession];
@@ -69,25 +69,19 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
 - (void)initMachineWithRomAtPath:(NSString *)romPath
 {
-    _machine = new ZXSpectrum48();
-    _machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
+    machine = new ZXSpectrum48();
+    machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
 }
 
 - (void)setupTimersAndQueues
 {
-    _emulationTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
-    dispatch_source_set_timer(_emulationTimer, DISPATCH_TIME_NOW, (1.0 / cFRAMES_PER_SECOND) * NSEC_PER_SEC, 0);
+    displayTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
+    dispatch_source_set_timer(displayTimer, DISPATCH_TIME_NOW, (1.0 / cFRAMES_PER_SECOND) * NSEC_PER_SEC, 0);
 
-    dispatch_source_set_event_handler(_emulationTimer, ^{
-
-        // Once a frame has been generated we can grab the pixel data that has been generated for the emulation
-        // output and apply it to the texture being used in the host platform display.
-        [_scene.emulationScreenTexture modifyPixelDataWithBlock:^(void *pixelData, size_t lengthInBytes) {
-
-            memcpy(pixelData, _machine->displayBuffer, lengthInBytes);
-
+    dispatch_source_set_event_handler(displayTimer, ^{
+        [scene.emulationScreenTexture modifyPixelDataWithBlock:^(void *pixelData, size_t lengthInBytes) {
+            memcpy(pixelData, machine->displayBuffer, lengthInBytes);
         }];
-
     });
 }
 
@@ -97,7 +91,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 {
     if (!event.isARepeat)
     {
-        _machine->keyDown(event.keyCode);
+        machine->keyDown(event.keyCode);
     }
 }
 
@@ -105,7 +99,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 {
     if (!event.isARepeat)
     {
-        _machine->keyUp(event.keyCode);
+        machine->keyUp(event.keyCode);
     }
 }
 
@@ -113,7 +107,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 {
     if (!(event.modifierFlags & NSEventModifierFlagCommand))
     {
-        _machine->keyFlagsChanged(event.modifierFlags, event.keyCode);
+        machine->keyFlagsChanged(event.modifierFlags, event.keyCode);
     }
 }
 
@@ -121,12 +115,12 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
 - (void)startEmulationTimer
 {
-    dispatch_resume(_emulationTimer);
+    dispatch_resume(displayTimer);
 }
 
 - (void)suspendEmulationTimer
 {
-    dispatch_suspend(_emulationTimer);
+    dispatch_suspend(displayTimer);
 }
 
 #pragma mark - File Loading
@@ -137,7 +131,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     
     if ([[url.pathExtension uppercaseString] isEqualToString:@"Z80"])
     {
-        if (_machine->loadZ80SnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]))
+        if (machine->loadZ80SnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]))
         {
             if (addToRecent)
             {
@@ -151,7 +145,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     }
     else if ([[url.pathExtension uppercaseString] isEqualToString:@"SNA"])
     {
-        if (_machine->loadSnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]))
+        if (machine->loadSnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]))
         {
             if (addToRecent)
             {
@@ -197,7 +191,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
         }
         
         supportDirUrl = [supportDirUrl URLByAppendingPathComponent:cSESSION_FILE_NAME];
-        ZXSpectrum::snap sessionSnapshot = _machine->createZ80Snapshot();
+        ZXSpectrum::snap sessionSnapshot = machine->createZ80Snapshot();
         NSData *data = [NSData dataWithBytes:sessionSnapshot.data length:sessionSnapshot.length];
         [data writeToURL:supportDirUrl atomically:YES];
     }
@@ -264,7 +258,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
 - (IBAction)resetMachine:(id)sender
 {
-    _machine->resetMachine();
+    machine->resetMachine();
 }
 
 

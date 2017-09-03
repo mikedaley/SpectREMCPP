@@ -96,6 +96,19 @@ void ZXSpectrum48::coreIOWrite(unsigned short address, unsigned char data)
         audioMicBit = (data & 0x08) >> 3;
         borderColor = data & 0x07;
     }
+    
+    // AY-3-8912 ports
+    if(address == 0xfffd && machineInfo.hasAY)
+    {
+//        machine->lastfffd = data;
+        setAYRegister(data);
+    }
+    
+    if ((address & 0xc002) == 0x8000 && machineInfo.hasAY)
+    {
+        writeAYData(data);
+//        [machine.audioCore writeAYData:data];
+    }
 
 }
 

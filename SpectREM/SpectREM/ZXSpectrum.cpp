@@ -48,7 +48,7 @@ void ZXSpectrum::initialise(char *romPath)
     buildScreenLineAddressTable();
     buildDisplayTstateTable();
     buildContentionTable();
-    buildAYVolumesTable();
+    buildaudioAYVolumesTable();
     loadRomWithPath(romPath);
     resetMachine();
 }
@@ -77,11 +77,15 @@ void ZXSpectrum::runFrame()
         {
             z80Core.ResetTStates( machineInfo.tsPerFrame );
             z80Core.SignalInterrupt();
+
             updateScreenWithTstates(machineInfo.tsPerFrame - currentDisplayTstates);
+            
             frameCounter++;
-            currentFrameTstates = 0;
+            
             resetFrame();
             checkCapsLockStatus();
+            
+            currentFrameTstates = 0;
         }
     }
 }
@@ -196,7 +200,7 @@ unsigned char ZXSpectrum::coreIORead(unsigned short address)
 
 void ZXSpectrum::coreIOWrite(unsigned short address, unsigned char data)
 {
-    // Nothing to see here
+    // Nothing to see here. Most likely implemented in the 
 }
 
 #pragma mark - Reset

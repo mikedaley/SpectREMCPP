@@ -134,7 +134,7 @@ private:
     void                    buildDisplayTstateTable();
     void                    buildScreenLineAddressTable();
     void                    buildContentionTable();
-    void                    buildAYVolumesTable();
+    void                    buildaudioAYVolumesTable();
     void                    checkCapsLockStatus();
     void                    resetKeyboardMap();
     string                  hardwareTypeForVersion(int version, int hardwareType);
@@ -193,31 +193,34 @@ public:
     // Audio
     int                     audioEarBit;
     int                     audioMicBit;
-    int                     channelOutput[3];
-    unsigned int            AYChannelCount[3];
-    unsigned short          AYVolumes[16];
     short                   *audioBuffer;
-    unsigned int            random;
-    unsigned int            AYOutput;
-    unsigned int            noiseCount;
-    unsigned int            envelopeCount;
-    int                     envelopeStep;
-    unsigned char           AYRegisters[ eAY_MAX_REGISTERS ];
-    unsigned char           currentAYRegister;
-    unsigned char           floatingAYRegister;
-    bool                    envelopeHolding;
-    bool                    envelopeHold;
-    bool                    envelopeAlt;
-    bool                    envelope;
-    unsigned int            attackEndVol;
     int                     audioBufferSize;
-    double                  audioTsStep;
-    int                     audioTsCounter;
-    double                  audioAYTStatesStep;
-    double                  audioTsStepCounter;
     int                     audioBufferIndex;
-    double                  audioBeeperLeft;
-    double                  audioBeeperRight;
+    int                     audioTsCounter;
+    float                   audioTsStepCounter;
+
+    float                   audioBeeperTsStep;
+    float                   audioBeeperLeft;
+    float                   audioBeeperRight;
+
+    int                     audioAYChannelOutput[3];
+    unsigned int            audioAYChannelCount[3];
+    unsigned short          audioAYVolumes[16];
+    unsigned int            audioAYrandom;
+    unsigned int            audioAYOutput;
+    unsigned int            audioAYNoiseCount;
+    unsigned int            audioATaudioAYEnvelopeCount;
+    int                     audioAYaudioAYEnvelopeStep;
+    unsigned char           audioAYRegisters[ eAY_MAX_REGISTERS ];
+    unsigned char           audioAYCurrentRegister;
+    unsigned char           audioAYFloatingRegister;
+    bool                    audioAYaudioAYaudioAYEnvelopeHolding;
+    bool                    audioAYaudioAYEnvelopeHold;
+    bool                    audioAYaudioAYEnvelopeAlt;
+    bool                    audioAYEnvelope;
+    unsigned int            audioAYAttackEndVol;
+    float                   audioAYTsStep;
+    int                     audioAYTs;
     
     short                   *audioQueueBuffer;
     int                     audioQueueBufferRead;
