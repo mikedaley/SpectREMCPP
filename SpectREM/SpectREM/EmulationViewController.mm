@@ -73,7 +73,10 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
 - (void)initMachineWithRomPath:(NSString *)romPath machineType:(int)machineType
 {
-    [audioCore stop];
+    if (audioCore)
+    {
+        [audioCore stop];
+    }
     
     if (machine)
     {
@@ -92,9 +95,9 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
 
     audioCore = [[AudioCore alloc] initWithSampleRate:cAUDIO_SAMPLE_RATE framesPerSecond:cFRAMES_PER_SECOND machine:machine];
+    
     [audioCore start];
 }
-
 
 - (void *)getDisplayBuffer
 {

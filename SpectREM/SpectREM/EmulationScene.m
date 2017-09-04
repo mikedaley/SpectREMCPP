@@ -33,7 +33,6 @@
     [_emulationScreenTexture modifyPixelDataWithBlock:^(void *pixelData, size_t lengthInBytes) {
         memcpy(pixelData, [self.emulationViewController getDisplayBuffer], lengthInBytes);
     }];
-
 }
 
 @end

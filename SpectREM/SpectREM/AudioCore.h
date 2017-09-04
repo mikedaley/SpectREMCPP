@@ -28,4 +28,6 @@
 - (void)stop;
 - (void)start;
 
+- (BOOL)isRunning;
+
 @end

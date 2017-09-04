@@ -183,6 +183,13 @@ static OSStatus renderAudio(void *inRefCon,
     }
 }
 
+- (BOOL)isRunning
+{
+    Boolean running;
+    AUGraphIsRunning(_graph, &running);
+    return running;
+}
+
 #pragma mark - Audio Render
 
 static OSStatus renderAudio(void *inRefCon, AudioUnitRenderActionFlags *ioActionFlags,

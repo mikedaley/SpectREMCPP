@@ -36,12 +36,12 @@ unsigned char ZXSpectrum::ULAFloatingBus()
         
         if (ulaValueType == eFloatBusTypeValuePixel)
         {
-            return memoryRam[(cBITMAP_ADDRESS - 16384) + displayLineAddrTable[y] + x];
+            return memoryRam[(cBITMAP_ADDRESS) + displayLineAddrTable[y] + x];
         }
         
         if (ulaValueType == eFloatBusTypeValueAttribute)
         {
-            return memoryRam[(cBITMAP_ADDRESS - 16384) + cBITMAP_SIZE + ((y >> 3) << 5) + x];
+            return memoryRam[(cBITMAP_ADDRESS) + cBITMAP_SIZE + ((y >> 3) << 5) + x];
         }
     }
     

@@ -19,6 +19,7 @@
 #pragma mark - Methods
 
 - (void *)getDisplayBuffer;
+- (BOOL)isMachineRunning;
 - (void)loadFileWithURL:(NSURL *)url addToRecent:(BOOL)addToRecent;
 
 @end

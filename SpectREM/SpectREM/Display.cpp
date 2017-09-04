@@ -37,8 +37,8 @@ unsigned int ZXSpectrum::displayPalette[] =
 
 void ZXSpectrum::displaySetup()
 {
-    displayBuffer = new unsigned int[ screenBufferSize ];
-    displayBufferCopy = new ScreenBufferData[ machineInfo.tsPerFrame ];
+    displayBuffer = new unsigned int[ screenBufferSize ]();
+    displayBufferCopy = new ScreenBufferData[ machineInfo.tsPerFrame ]();
 }
 
 #pragma mark - Generate Screen

@@ -46,11 +46,14 @@ void ZXSpectrum::initialise(string romPath)
     memoryRam.resize( machineInfo.ramSize );
     
     displaySetup();
-    audioSetup(192000, 50);
     displayBuildLineAddressTable();
     displayBuildTsTable();
+    
     ULABuildContentionTable();
+
+    audioSetup(192000, 50);
     audioBuildAYVolumesTable();
+    
     resetMachine(false);
 }
 
