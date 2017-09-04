@@ -21,7 +21,7 @@ unsigned char const     cZ80_V3_PAGE_HEADER_SIZE = 3;
 ZXSpectrum::snap ZXSpectrum::snapshotCreateSNA()
 {
     // We don't want the core running when we take a snapshot
-    paused = true;
+    emuPaused = true;
     
     snap snap;
     snap.length = (48 * 1024) + cSNA_HEADER_SIZE;
@@ -81,7 +81,7 @@ ZXSpectrum::snap ZXSpectrum::snapshotCreateSNA()
     snap.data[sp - 16384 + cSNA_HEADER_SIZE] = pc & 0xff;
     snap.data[sp - 16384 + cSNA_HEADER_SIZE + 1] = pc >> 8;
     
-    paused = false;
+    emuPaused = false;
     
     return snap;
 }
@@ -99,7 +99,7 @@ bool ZXSpectrum::snapshotSNALoadWithPath(const char *path)
         return false;
     }
     
-    paused = true;
+    emuPaused = true;
     
     ZXSpectrum::resetMachine();
     
@@ -141,19 +141,19 @@ bool ZXSpectrum::snapshotSNALoadWithPath(const char *path)
     if (size == (48 * 1024) + cSNA_HEADER_SIZE)
     {
         int snaAddr = cSNA_HEADER_SIZE;
-        for (int i= 0; i < (48 * 1024); i++)
+        for (int i = 16384; i < (64 * 1024); i++)
         {
             memoryRam[i] = fileBytes[snaAddr++];
         }
         
         // Set the PC
-        unsigned char pc_lsb = memoryRam[z80Core.GetRegister(CZ80Core::eREG_SP) - machineInfo.romSize];
-        unsigned char pc_msb = memoryRam[(z80Core.GetRegister(CZ80Core::eREG_SP) + 1) - machineInfo.romSize];
+        unsigned char pc_lsb = memoryRam[z80Core.GetRegister(CZ80Core::eREG_SP)];
+        unsigned char pc_msb = memoryRam[(z80Core.GetRegister(CZ80Core::eREG_SP) + 1)];
         z80Core.SetRegister(CZ80Core::eREG_PC, (pc_msb << 8) | pc_lsb);
         z80Core.SetRegister(CZ80Core::eREG_SP, z80Core.GetRegister(CZ80Core::eREG_SP) + 2);
     }
     
-    paused = false;
+    emuPaused = false;
     
     return true;
     
@@ -163,14 +163,14 @@ bool ZXSpectrum::snapshotSNALoadWithPath(const char *path)
 
 ZXSpectrum::snap ZXSpectrum::snapshotCreateZ80()
 {
-    paused = true;
+    emuPaused = true;
     
     int snapshotSize = 0;
     if (machineInfo.machineType == eZXSpectrum48)
     {
         snapshotSize = (48 * 1024) + cZ80_V3_HEADER_SIZE + (cZ80_V3_PAGE_HEADER_SIZE * 3);
     }
-    else
+    else if (machineInfo.machineType == eZXSpectrum128)
     {
         snapshotSize = (128 * 1024) + cZ80_V3_HEADER_SIZE + (cZ80_V3_PAGE_HEADER_SIZE * 8);
     }
@@ -231,19 +231,15 @@ ZXSpectrum::snap ZXSpectrum::snapshotCreateZ80()
     {
         snapData.data[34] = 4;
     }
-    else if (machineInfo.machineType == eZXSpectrumNext)
-    {
-        snapData.data[34] = 9;
-    }
     
-//    if (machineInfo.machineType == eZXSpectrum128 || machine->machineInfo.machineType == eZXSpectrumNext)
-//    {
-//        snapData.data[35] = machine->last7ffd; // last 128k 0x7ffd port value
-//    }
-//    else
-//    {
+    if (machineInfo.machineType == eZXSpectrum128)
+    {
+        snapData.data[35] = ULAPortFFFDValue; // last 128k 0x7ffd port value
+    }
+    else
+    {
         snapData.data[35] = 0;
-//    }
+    }
     
     snapData.data[36] = 0; // Interface 1 ROM
     snapData.data[37] = 0; // AY Sound
@@ -295,7 +291,7 @@ ZXSpectrum::snap ZXSpectrum::snapshotCreateZ80()
             snapData.data[snapPtr++] = z80Core.Z80CoreDebugMemRead(memAddr, NULL);
         }
     }
-    else
+    else if (machineInfo.machineType == eZXSpectrum128)
     {
         // 128k/Next
         for (int page = 0; page < 8; page++)
@@ -306,12 +302,12 @@ ZXSpectrum::snap ZXSpectrum::snapshotCreateZ80()
             
             for (int memAddr = page * 0x4000; memAddr < (page * 0x4000) + 0x4000; memAddr++)
             {
-                snapData.data[snapPtr++] = memoryRam[memAddr - machineInfo.romSize];
+                snapData.data[snapPtr++] = memoryRam[memAddr];
             }
         }
     }
     
-    paused = false;
+    emuPaused = false;
     
     return snapData;
 }
@@ -329,7 +325,7 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
         return false;
     }
     
-    paused = true;
+    emuPaused = true;
     
     ZXSpectrum::resetMachine();
     
@@ -426,22 +422,22 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
             additionHeaderBlockLength = ((unsigned short *)&fileBytes[30])[0];
             int offset = 32 + additionHeaderBlockLength;
             
-//            if ( (version == 2 && (hardwareType == 3 || hardwareType == 4)) || (version == 3 && (hardwareType == 4 || hardwareType == 5 || hardwareType == 6 || hardwareType == 9)) )
-//            {
-//                // Decode byte 35 so that port 0x7ffd can be set on the 128k
-//                unsigned char data = ((unsigned char *)&fileBytes[35])[0];
-//                machine->disablePaging = ((data & 0x20) == 0x20) ? YES : NO;
-//                machine->currentROMPage = ((data & 0x10) == 0x10) ? 1 : 0;
-//                machine->displayPage = ((data & 0x08) == 0x08) ? 7 : 5;
-//                machine->currentRAMPage = (data & 0x07);
-//            }
-//            else
-//            {
-//                machine->disablePaging = YES;
-//                machine->currentROMPage = 0;
-//                machine->currentRAMPage = 0;
-                displayPage = 1;
-//            }
+            if ( (version == 2 && (hardwareType == 3 || hardwareType == 4)) || (version == 3 && (hardwareType == 4 || hardwareType == 5 || hardwareType == 6 || hardwareType == 9)) )
+            {
+                // Decode byte 35 so that port 0x7ffd can be set on the 128k
+                unsigned char data = ((unsigned char *)&fileBytes[35])[0];
+                emuDisablePaging = ((data & 0x20) == 0x20) ? true : false;
+                emuROMPage = ((data & 0x10) == 0x10) ? 1 : 0;
+                emuDisplayPage = ((data & 0x08) == 0x08) ? 7 : 5;
+                emuRAMPage = (data & 0x07);
+            }
+            else
+            {
+                emuDisablePaging = true;
+                emuROMPage = 0;
+                emuRAMPage = 0;
+                emuDisplayPage = 1;
+            }
             
             while (offset < size)
             {
@@ -472,18 +468,18 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
                             break;
                     }
                 }
-//                else
-//                {
-//                    // 128k
-//                    [self snapshotExtractMemoryBlock:fileBytes memAddr:((pageId - 3) * 0x4000) fileOffset:offset + 3 compressed:isCompressed unpackedLength:0x4000 intoMachine:machine];
-//                }
+                else
+                {
+                    // 128k
+                    snapshotExtractMemoryBlock(fileBytes, (pageId - 3) * 0x4000, offset + 3, isCompressed, 0x4000);
+                }
                 
                 offset += compressedLength + 3;
             }
             break;
     }
     
-    paused = false;
+    emuPaused = false;
     
     return true;
 }
@@ -491,23 +487,23 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
 void ZXSpectrum::snapshotExtractMemoryBlock(unsigned char *fileBytes, int memAddr, int fileOffset, bool isCompressed, int unpackedLength)
 {
     int filePtr = fileOffset;
-    int memoryPtr = memAddr - machineInfo.romSize;
+    int memoryPtr = memAddr;
     
     if (!isCompressed)
     {
-        while (memoryPtr < unpackedLength + (memAddr - machineInfo.romSize))
+        while (memoryPtr < unpackedLength + memAddr)
         {
             memoryRam[memoryPtr++] = fileBytes[filePtr++];
         }
     }
     else
     {
-        while (memoryPtr < unpackedLength + (memAddr - machineInfo.romSize))
+        while (memoryPtr < unpackedLength + memAddr)
         {
             unsigned char byte1 = fileBytes[filePtr];
             unsigned char byte2 = fileBytes[filePtr + 1];
             
-            if ((unpackedLength + (memAddr - machineInfo.romSize)) - memoryPtr >= 2 && byte1 == 0xed && byte2 == 0xed)
+            if ((unpackedLength + memAddr) - memoryPtr >= 2 && byte1 == 0xed && byte2 == 0xed)
             {
                 unsigned char count = fileBytes[filePtr + 2];
                 unsigned char value = fileBytes[filePtr + 3];
@@ -589,4 +585,90 @@ string ZXSpectrum::snapshotHardwareTypeForVersion(int version, int hardwareType)
     return hardware;
 }
 
+int ZXSpectrum::snapshotMachineInSnapshotWithPath(const char *path)
+{
+    FILE *fileHandle;
+    
+    fileHandle = fopen(path, "rb");
+    
+    if (!fileHandle)
+    {
+        cout << "ERROR LOADING SNAPSHOT: " << path << endl;
+        fclose(fileHandle);
+        return false;
+    }
+    
+    emuPaused = true;
+    
+    ZXSpectrum::resetMachine();
+    
+    fseek(fileHandle, 0, SEEK_END);
+    long size = ftell(fileHandle);
+    fseek(fileHandle, 0, SEEK_SET);
+    
+    unsigned char fileBytes[size];
+    
+    fread(&fileBytes, 1, size, fileHandle);
+    
+    // Decode the header
+    unsigned short headerLength = ((unsigned short *)&fileBytes[30])[0];
+    int version;
+    unsigned char hardwareType;
+    unsigned short pc;
+    
+    switch (headerLength) {
+        case 23:
+            version = 2;
+            pc = ((unsigned short *)&fileBytes[32])[0];
+            break;
+        case 54:
+        case 55:
+            version = 3;
+            pc = ((unsigned short *)&fileBytes[32])[0];
+            break;
+        default:
+            version = 1;
+            pc = ((unsigned short *)&fileBytes[6])[0];
+            break;
+    }
+    
+    if (pc == 0)
+    {
+        version = 2;
+        pc = ((unsigned short *)&fileBytes[32])[0];
+    }
+    
+    if (version == 1)
+    {
+        return eZXSpectrum48;
+    }
+    
+    if (version == 2)
+    {
+        hardwareType = ((unsigned char *)&fileBytes[34])[0];
+        if (hardwareType == 0 || hardwareType == 1)
+        {
+            return eZXSpectrum48;
+        }
+        else if (hardwareType == 3 || hardwareType == 4)
+        {
+            return eZXSpectrum128;
+        }
+    }
+    
+    if (version == 3)
+    {
+        hardwareType = ((unsigned char *)&fileBytes[34])[0];
+        if (hardwareType == 0 || hardwareType == 1 || hardwareType == 3)
+        {
+            return eZXSpectrum48;
+        }
+        else if (hardwareType == 4 || hardwareType == 5 || hardwareType == 6)
+        {
+            return eZXSpectrum128;
+        }
+    }
+    
+    return -1;
+}
 

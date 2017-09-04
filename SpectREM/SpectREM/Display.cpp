@@ -46,22 +46,22 @@ void ZXSpectrum::displaySetup()
 void ZXSpectrum::displayUpdateWithTs(int tStates)
 {
     // ROM and RAM are held in separate arrays, so we need to reduce the memory location by the size of the machines ROM
-    int memoryAddress = (displayPage * cBITMAP_ADDRESS) - machineInfo.romSize;
+    int memoryAddress = (emuDisplayPage * cBITMAP_ADDRESS);
     
     while (tStates > 0)
     {
-        int line = currentDisplayTstates / machineInfo.tsPerLine;
-        int ts = currentDisplayTstates % machineInfo.tsPerLine;
+        int line = emuCurrentDisplayTs / machineInfo.tsPerLine;
+        int ts = emuCurrentDisplayTs % machineInfo.tsPerLine;
 
         int action = displayTstateTable[line][ts];
 
         if (action == eDisplayBorder)
         {
             // Only draw the border of the border data has changed
-            if (displayBufferCopy[ currentDisplayTstates ].attribute != displayBorderColor)
+            if (displayBufferCopy[ emuCurrentDisplayTs ].attribute != displayBorderColor)
             {
-                displayBufferCopy[ currentDisplayTstates ].attribute = displayBorderColor;
-                displayBufferCopy[ currentDisplayTstates ].changed = true;
+                displayBufferCopy[ emuCurrentDisplayTs ].attribute = displayBorderColor;
+                displayBufferCopy[ emuCurrentDisplayTs ].changed = true;
 
                 for (int i = 0; i < 8; i++)
                 {
@@ -70,7 +70,7 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
             }
             else
             {
-                displayBufferCopy [ currentDisplayTstates ].changed = false;
+                displayBufferCopy [ emuCurrentDisplayTs ].changed = false;
                 displayBufferIndex += 8;
             }
         }
@@ -86,13 +86,13 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
             int attributeByte = memoryRam[memoryAddress + attributeAddress];
 
             // Only draw the bitmap if the bitmap data has changed
-            if (displayBufferCopy[ currentDisplayTstates ].pixels != pixelByte ||
-                displayBufferCopy[ currentDisplayTstates ].attribute != attributeByte ||
+            if (displayBufferCopy[ emuCurrentDisplayTs ].pixels != pixelByte ||
+                displayBufferCopy[ emuCurrentDisplayTs ].attribute != attributeByte ||
                 (attributeByte & 0x80))
             {
-                displayBufferCopy[ currentDisplayTstates ].pixels = pixelByte;
-                displayBufferCopy[ currentDisplayTstates ].attribute = attributeByte;
-                displayBufferCopy[ currentDisplayTstates ].changed = true;
+                displayBufferCopy[ emuCurrentDisplayTs ].pixels = pixelByte;
+                displayBufferCopy[ emuCurrentDisplayTs ].attribute = attributeByte;
+                displayBufferCopy[ emuCurrentDisplayTs ].changed = true;
                 
 
                 // Extract the ink and paper colours from the attribute byte read in
@@ -100,7 +100,7 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
                 int paper = ((attributeByte >> 3) & 0x07) + ((attributeByte & 0x40) >> 3);
                 
                 // Switch ink and paper if the flash phase has changed
-                if ((frameCounter & 16) && (attributeByte & 0x80))
+                if ((emuFrameCounter & 16) && (attributeByte & 0x80))
                 {
                     int tempPaper = paper;
                     paper = ink;
@@ -121,12 +121,12 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
             }
             else
             {
-                displayBufferCopy[ currentDisplayTstates ].changed = false;
+                displayBufferCopy[ emuCurrentDisplayTs ].changed = false;
                 displayBufferIndex += 8;
             }
         }
         
-        currentDisplayTstates += machineInfo.tsPerChar;
+        emuCurrentDisplayTs += machineInfo.tsPerChar;
         tStates -= machineInfo.tsPerChar;
     }
 }
@@ -135,7 +135,7 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
 
 void ZXSpectrum::displayFrameReset()
 {
-    currentDisplayTstates = 0;
+    emuCurrentDisplayTs = 0;
     displayBufferIndex = 0;
     
     audioBufferIndex = 0;

@@ -12,6 +12,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <string>
 
 #include "Z80Core.h"
 #include "MachineDetails.h"
@@ -25,6 +26,7 @@ public:
     static const int        cBITMAP_ADDRESS = 16384;
     static const int        cBITMAP_SIZE = 6144;
     static const int        cATTR_SIZE = 768;
+    static const int        cMEMORY_PAGE_SIZE = 16384;
 
 private:
     enum
@@ -102,22 +104,25 @@ public:
     ~ZXSpectrum();
 
 public:
-    virtual void            initialise(char *romPath);
-    virtual void            resetMachine();
+    virtual void            initialise(string romPath);
+    virtual void            resetMachine(bool hard = true);
     virtual void            release();
 
-    void                    loadRomWithPath(char *romPath);
-    void                    runFrame();
+    virtual void            loadDefaultROM();
+
+    void                    generateFrame();
     void                    displayFrameReset();
+    void                    displayUpdateWithTs(int tStates);
     void                    keyboardKeyDown(unsigned short key);
     void                    keyboardKeyUp(unsigned short key);
     void                    keyboardFlagsChanged(unsigned long flags, unsigned short key);
-    void                    displayUpdateWithTs(int tStates);
+
     void                    ULAApplyIOContention(unsigned short address, bool contended);
-    unsigned char           floatingBus();
+    unsigned char           ULAFloatingBus();
     
     bool                    snapshotZ80LoadWithPath(const char *path);
     bool                    snapshotSNALoadWithPath(const char *path);
+    int                     snapshotMachineInSnapshotWithPath(const char *path);
     snap                    snapshotCreateSNA();
     snap                    snapshotCreateZ80();
     
@@ -134,8 +139,8 @@ public:
 private:
     void                    displayBuildTsTable();
     void                    displayBuildLineAddressTable();
-    void                    buildContentionTable();
-    void                    buildaudioAYVolumesTable();
+    void                    ULABuildContentionTable();
+    void                    audioBuildAYVolumesTable();
     void                    keyboardCheckCapsLockStatus();
     void                    keyboardMapReset();
     string                  snapshotHardwareTypeForVersion(int version, int hardwareType);
@@ -162,7 +167,6 @@ public:
     virtual unsigned char   coreIORead(unsigned short address);
     virtual void            coreIOWrite(unsigned short address, unsigned char data);
 
-protected:
     CZ80Core                z80Core;
     vector<char>            memoryRom;
     vector<char>            memoryRam;
@@ -182,14 +186,18 @@ public:
     int                     screenBufferSize;
     int                     displayTstateTable[312][228];
     int                     displayLineAddrTable[192];
-    int                     displayPage;
     static unsigned int     displayPalette[];
     int                     displayBorderColor;
-    int                     currentDisplayTstates;
 
     // Emulation
-    int                     frameCounter;
-    bool                    paused;
+    int                     emuCurrentDisplayTs;
+    int                     emuFrameCounter;
+    bool                    emuPaused;
+    int                     emuRAMPage;
+    int                     emuROMPage;
+    int                     emuDisplayPage;
+    bool                    emuDisablePaging;
+    string                  emuROMPath;
     
     // Audio
     int                     audioEarBit;

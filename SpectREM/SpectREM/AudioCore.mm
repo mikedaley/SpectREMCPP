@@ -202,7 +202,7 @@ static OSStatus renderAudio(void *inRefCon, AudioUnitRenderActionFlags *ioAction
     // Check if we have used a frames worth of buffer storage and if so then its time to generate another frame.
     if (machine->audioQueueBufferUsed() < 7680)
     {
-        machine->runFrame();
+        machine->generateFrame();
         machine->audioQueueWrite(machine->audioBuffer, 7680);
     }
     

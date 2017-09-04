@@ -13,6 +13,8 @@
 #define kSpace (audioQueueBufferCapacity - 1 - kUsed)
 #define kSize (audioQueueBufferCapacity - 1)
 
+const int cBEEPER_VOLUME_MULTIPLIER = 384;
+
 static float fAYVolBase[] = {
     0.0000,
     0.0079,
@@ -32,11 +34,11 @@ static float fAYVolBase[] = {
     1.0000
 };
 
-void ZXSpectrum::buildaudioAYVolumesTable()
+void ZXSpectrum::audioBuildAYVolumesTable()
 {
     for (int i = 0; i < 16; i++)
     {
-        audioAYVolumes[i] = (unsigned short)(fAYVolBase[i] * 10240);
+        audioAYVolumes[i] = (unsigned short)(fAYVolBase[i] * 8192);
     }
 }
 
@@ -85,14 +87,14 @@ void ZXSpectrum::audioReset()
 
 void ZXSpectrum::audioUpdateWithTs(int tStates)
 {
-    if (paused)
+    if (emuPaused)
     {
         return;
     }
 
     // Grab the current state of the audio ear output & the tapeLevel which is used to register input when loading tapes.
     // Only need to do this once per audio update
-    int localBeeperLevel = audioEarBit * 512;
+    int localBeeperLevel = audioEarBit * cBEEPER_VOLUME_MULTIPLIER;
     int beeperLevelLeft = localBeeperLevel;
     int beeperLevelRight = localBeeperLevel;
     

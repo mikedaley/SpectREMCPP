@@ -11,6 +11,7 @@
 #import "EmulationScene.h"
 #import "ZXSpectrum.hpp"
 #import "ZXSpectrum48.hpp"
+#import "ZXSpectrum128.hpp"
 
 #pragma mark - Constants
 
@@ -26,10 +27,12 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
 @interface EmulationViewController()
 {
+@public
     EmulationScene      *scene;
     ZXSpectrum          *machine;
     AudioCore           *audioCore;
     dispatch_source_t   displayTimer;
+    NSString            *mainBundlePath;
 }
 @end
 
@@ -46,7 +49,8 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 {
     [super viewDidLoad];
 
-    [self initMachineWithRomAtPath:[[NSBundle mainBundle] pathForResource:@"48" ofType:@"ROM"]];
+    mainBundlePath = [[NSBundle mainBundle] bundlePath];
+    [self initMachineWithRomPath:mainBundlePath machineType:eZXSpectrum48];
     
     scene = (EmulationScene *)[SKScene nodeWithFileNamed:@"EmulationScene"];
     
@@ -54,35 +58,47 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     scene.scaleMode = SKSceneScaleModeFill;
     
     scene.nextResponder = self;
+    scene.emulationViewController = self;
 
     [self.skView presentScene:scene];
-    
-    [self setupTimersAndQueues];
     
     audioCore = [[AudioCore alloc] initWithSampleRate:cAUDIO_SAMPLE_RATE framesPerSecond:cFRAMES_PER_SECOND machine:machine];
     
     [audioCore start];
-    [self startEmulationTimer];
     
-    [self restoreSession];
+//    [self restoreSession];
 }
 
-- (void)initMachineWithRomAtPath:(NSString *)romPath
+#pragma mark - Init/Switch Machine
+
+- (void)initMachineWithRomPath:(NSString *)romPath machineType:(int)machineType
 {
-    machine = new ZXSpectrum48();
+    [audioCore stop];
+    
+    if (machine)
+    {
+        delete machine;
+    }
+    
+    if (machineType == eZXSpectrum48)
+    {
+        machine = new ZXSpectrum48();
+    }
+    else if (machineType == eZXSpectrum128)
+    {
+        machine = new ZXSpectrum128();
+    }
+    
     machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
+
+    audioCore = [[AudioCore alloc] initWithSampleRate:cAUDIO_SAMPLE_RATE framesPerSecond:cFRAMES_PER_SECOND machine:machine];
+    [audioCore start];
 }
 
-- (void)setupTimersAndQueues
-{
-    displayTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
-    dispatch_source_set_timer(displayTimer, DISPATCH_TIME_NOW, (1.0 / cFRAMES_PER_SECOND) * NSEC_PER_SEC, 0);
 
-    dispatch_source_set_event_handler(displayTimer, ^{
-        [scene.emulationScreenTexture modifyPixelDataWithBlock:^(void *pixelData, size_t lengthInBytes) {
-            memcpy(pixelData, machine->displayBuffer, lengthInBytes);
-        }];
-    });
+- (void *)getDisplayBuffer
+{
+    return machine->displayBuffer;
 }
 
 #pragma mark - Keyboard
@@ -109,18 +125,6 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     {
         machine->keyboardFlagsChanged(event.modifierFlags, event.keyCode);
     }
-}
-
-#pragma mark - Timer
-
-- (void)startEmulationTimer
-{
-    dispatch_resume(displayTimer);
-}
-
-- (void)suspendEmulationTimer
-{
-    dispatch_suspend(displayTimer);
 }
 
 #pragma mark - File Loading
@@ -258,9 +262,31 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
 - (IBAction)resetMachine:(id)sender
 {
-    machine->resetMachine();
+    NSMenuItem *menuItem = (NSMenuItem *)sender;
+    if (menuItem.tag == 0)
+    {
+        machine->resetMachine(false);
+    }
+    else
+    {
+        machine->resetMachine(true);
+    }
 }
 
+- (IBAction)selectMachine:(id)sender
+{
+    NSMenuItem *menuItem = (NSMenuItem *)sender;
+    
+    switch (menuItem.tag)
+    {
+        case eZXSpectrum48:
+            [self initMachineWithRomPath:mainBundlePath machineType:eZXSpectrum48];
+            break;
+        case eZXSpectrum128:
+            [self initMachineWithRomPath:mainBundlePath machineType:eZXSpectrum128];
+            break;
+    }
+}
 
 @end
 

@@ -11,6 +11,10 @@
 #include <iostream>
 #include <fstream>
 
+#pragma mark - Constants
+
+const int cROM_SIZE = 16384;
+
 #pragma mark - Constructor/Destructor
 
 ZXSpectrum48::ZXSpectrum48() : ZXSpectrum()
@@ -26,15 +30,25 @@ ZXSpectrum48::~ZXSpectrum48()
 
 #pragma mark - Initialise
 
-void ZXSpectrum48::initialise(char *romPath)
+void ZXSpectrum48::initialise(string romPath)
 {
     cout << "ZXSpectrum48::initialise(char *rom)" << endl;
     
     machineInfo = machines[ eZXSpectrum48 ];
 
     ZXSpectrum::initialise(romPath);
+    loadDefaultROM();
     
-    displayPage = 1;
+    emuDisplayPage = 1;
+}
+
+void ZXSpectrum48::loadDefaultROM()
+{
+    string romPath = emuROMPath.append("/Contents/Resources/48.ROM");
+    
+    ifstream romFile(romPath, ios::binary|ios::ate);
+    romFile.seekg(0, ios::beg);
+    romFile.read(memoryRom.data(), cROM_SIZE);
 }
 
 #pragma mark - ULA
@@ -42,7 +56,7 @@ void ZXSpectrum48::initialise(char *romPath)
 unsigned char ZXSpectrum48::coreIORead(unsigned short address)
 {
     bool contended = false;
-    int memoryPage = address / 16384;
+    int memoryPage = address / cMEMORY_PAGE_SIZE;
     if (memoryPage == 1)
     {
         contended = true;
@@ -64,7 +78,7 @@ unsigned char ZXSpectrum48::coreIORead(unsigned short address)
         
         // Getting here means that nothing has handled that port read so based on a real Spectrum
         // return the floating bus value
-        return floatingBus();
+        return ULAFloatingBus();
     }
 
     // The base classes virtual function deals with owned ULA ports such as the keyboard ports
@@ -76,7 +90,7 @@ unsigned char ZXSpectrum48::coreIORead(unsigned short address)
 void ZXSpectrum48::coreIOWrite(unsigned short address, unsigned char data)
 {
     bool contended = false;
-    int memoryPage = address / 16384;
+    int memoryPage = address / cMEMORY_PAGE_SIZE;
     if (memoryPage == 1)
     {
         contended = true;
@@ -91,7 +105,7 @@ void ZXSpectrum48::coreIOWrite(unsigned short address, unsigned char data)
     // +---+---+---+---+---+-----------+
     if (!(address & 0x01))
     {
-        displayUpdateWithTs((z80Core.GetTStates() - currentDisplayTstates) + machineInfo.borderDrawingOffset);
+        displayUpdateWithTs((z80Core.GetTStates() - emuCurrentDisplayTs) + machineInfo.borderDrawingOffset);
         audioEarBit = (data & 0x10) >> 4;
         audioMicBit = (data & 0x08) >> 3;
         displayBorderColor = data & 0x07;
@@ -111,6 +125,32 @@ void ZXSpectrum48::coreIOWrite(unsigned short address, unsigned char data)
 
 }
 
+#pragma mark - Memory Read/Write
+
+void ZXSpectrum48::coreMemoryWrite(unsigned short address, unsigned char data)
+{
+    if (address < cROM_SIZE)
+    {
+        return;
+    }
+    
+    if (address >= cROM_SIZE && address < cBITMAP_ADDRESS + cBITMAP_SIZE + cATTR_SIZE){
+        displayUpdateWithTs((z80Core.GetTStates() - emuCurrentDisplayTs) + machineInfo.paperDrawingOffset);
+    }
+    
+    memoryRam[address] = data;
+}
+
+unsigned char ZXSpectrum48::coreMemoryRead(unsigned short address)
+{
+    if (address < cROM_SIZE)
+    {
+        return memoryRom[address];
+    }
+    
+    return memoryRam[address];
+}
+
 #pragma mark - Memory Contention
 
 void ZXSpectrum48::coreMemoryContention(unsigned short address, unsigned int tStates)
@@ -128,9 +168,9 @@ void ZXSpectrum48::release()
     ZXSpectrum::release();
 }
 
-void ZXSpectrum48::reset()
+void ZXSpectrum48::resetMachine(bool hard)
 {
-    ZXSpectrum::resetMachine();
+    ZXSpectrum::resetMachine(hard);
 }
 
 

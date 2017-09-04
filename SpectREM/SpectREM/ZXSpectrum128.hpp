@@ -1,22 +1,22 @@
 //
-//  ZXSpectrum48.hpp
+//  ZXSpectrum128.hpp
 //  SpectREM
 //
-//  Created by Michael Daley on 23/08/2017.
+//  Created by Mike Daley on 04/09/2017.
 //  Copyright © 2017 71Squared Ltd. All rights reserved.
 //
 
-#ifndef ZXSpectrum48_h
-#define ZXSpectrum48_h
+#ifndef ZXSpectrum128_hpp
+#define ZXSpectrum128_hpp
 
 #include "ZXSpectrum.hpp"
 
-class ZXSpectrum48 : public ZXSpectrum
+class ZXSpectrum128 : public ZXSpectrum
 {
     
 public:
-    ZXSpectrum48();
-    virtual ~ZXSpectrum48();
+    ZXSpectrum128();
+    virtual ~ZXSpectrum128();
     
 public:
     virtual void            initialise(string romPath);
@@ -30,4 +30,4 @@ public:
     virtual void            coreIOWrite(unsigned short address, unsigned char data);
 };
 
-#endif /* ZXSpectrum48_h */
+#endif /* ZXSpectrum128_hpp */

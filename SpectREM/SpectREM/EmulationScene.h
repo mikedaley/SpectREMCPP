@@ -8,6 +8,8 @@
 
 #import <SpriteKit/SpriteKit.h>
 
+@class EmulationViewController;
+
 @interface EmulationScene : SKScene
 
 @property (strong, nonatomic) SKMutableTexture *emulationScreenTexture;
@@ -15,5 +17,7 @@
 
 @property (strong, nonatomic) SKSpriteNode *emulationScreen;
 @property (strong, nonatomic) SKSpriteNode *backingNode;
+
+@property (strong, nonatomic) EmulationViewController *emulationViewController;
 
 @end

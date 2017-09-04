@@ -35,6 +35,9 @@
 		ED913FD71F30789300316E1A /* 48.ROM in Resources */ = {isa = PBXBuildFile; fileRef = ED913FD61F30789300316E1A /* 48.ROM */; };
 		EDD9ADEB1F54032C004DD728 /* EmulationView.m in Sources */ = {isa = PBXBuildFile; fileRef = EDD9ADEA1F54032C004DD728 /* EmulationView.m */; };
 		EDD9ADED1F59C111004DD728 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = EDD9ADEC1F59C111004DD728 /* Credits.rtf */; };
+		EDD9ADF11F5D6F51004DD728 /* ZXSpectrum128.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDD9ADEF1F5D6F51004DD728 /* ZXSpectrum128.cpp */; };
+		EDD9ADF41F5D89AE004DD728 /* 128-0.ROM in Resources */ = {isa = PBXBuildFile; fileRef = EDD9ADF21F5D7E10004DD728 /* 128-0.ROM */; };
+		EDD9ADF51F5D89AE004DD728 /* 128-1.ROM in Resources */ = {isa = PBXBuildFile; fileRef = EDD9ADF31F5D7E10004DD728 /* 128-1.ROM */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -85,6 +88,10 @@
 		EDD9ADE91F54032C004DD728 /* EmulationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmulationView.h; sourceTree = "<group>"; };
 		EDD9ADEA1F54032C004DD728 /* EmulationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmulationView.m; sourceTree = "<group>"; };
 		EDD9ADEC1F59C111004DD728 /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
+		EDD9ADEF1F5D6F51004DD728 /* ZXSpectrum128.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZXSpectrum128.cpp; sourceTree = "<group>"; };
+		EDD9ADF01F5D6F51004DD728 /* ZXSpectrum128.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ZXSpectrum128.hpp; sourceTree = "<group>"; };
+		EDD9ADF21F5D7E10004DD728 /* 128-0.ROM */ = {isa = PBXFileReference; lastKnownFileType = file; path = "128-0.ROM"; sourceTree = "<group>"; };
+		EDD9ADF31F5D7E10004DD728 /* 128-1.ROM */ = {isa = PBXFileReference; lastKnownFileType = file; path = "128-1.ROM"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -276,6 +283,7 @@
 			children = (
 				17A089541F4F691F00CAA178 /* Base */,
 				177E284F1F4DEC5B0053756B /* ZX Spectrum 48k */,
+				EDD9ADEE1F5D6F2F004DD728 /* ZX Spectrum 128k */,
 			);
 			name = Machines;
 			sourceTree = "<group>";
@@ -284,8 +292,19 @@
 			isa = PBXGroup;
 			children = (
 				ED913FD61F30789300316E1A /* 48.ROM */,
+				EDD9ADF21F5D7E10004DD728 /* 128-0.ROM */,
+				EDD9ADF31F5D7E10004DD728 /* 128-1.ROM */,
 			);
 			name = ROMs;
+			sourceTree = "<group>";
+		};
+		EDD9ADEE1F5D6F2F004DD728 /* ZX Spectrum 128k */ = {
+			isa = PBXGroup;
+			children = (
+				EDD9ADF01F5D6F51004DD728 /* ZXSpectrum128.hpp */,
+				EDD9ADEF1F5D6F51004DD728 /* ZXSpectrum128.cpp */,
+			);
+			name = "ZX Spectrum 128k";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -347,6 +366,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EDD9ADF41F5D89AE004DD728 /* 128-0.ROM in Resources */,
+				EDD9ADF51F5D89AE004DD728 /* 128-1.ROM in Resources */,
 				174AAFBC1F585DCC00B75535 /* PixelShader.fsh in Resources */,
 				EDD9ADED1F59C111004DD728 /* Credits.rtf in Resources */,
 				ED913FD71F30789300316E1A /* 48.ROM in Resources */,
@@ -363,6 +384,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EDD9ADF11F5D6F51004DD728 /* ZXSpectrum128.cpp in Sources */,
 				1745BB651F50AE1E003203FE /* FloatingBus.cpp in Sources */,
 				17B5DB971F5B14A7003E7EF3 /* AudioCore.mm in Sources */,
 				17B5DB9A1F5B14D3003E7EF3 /* Audio.cpp in Sources */,

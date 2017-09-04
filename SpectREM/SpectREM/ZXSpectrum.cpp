@@ -23,7 +23,7 @@ ZXSpectrum::~ZXSpectrum()
 
 #pragma mark - Initialise
 
-void ZXSpectrum::initialise(char *romPath)
+void ZXSpectrum::initialise(string romPath)
 {
     cout << "ZXSpectrum::initialise(char *romPath)" << endl;
     
@@ -39,6 +39,8 @@ void ZXSpectrum::initialise(char *romPath)
     screenWidth = machineInfo.pxEmuBorder + machineInfo.pxHorizontalDisplay + machineInfo.pxEmuBorder;
     screenHeight = machineInfo.pxEmuBorder + machineInfo.pxVerticalDisplay + machineInfo.pxEmuBorder;
     screenBufferSize = screenHeight * screenWidth;
+    emuROMPath = romPath;
+    
     
     memoryRom.resize( machineInfo.romSize );
     memoryRam.resize( machineInfo.ramSize );
@@ -47,26 +49,23 @@ void ZXSpectrum::initialise(char *romPath)
     audioSetup(192000, 50);
     displayBuildLineAddressTable();
     displayBuildTsTable();
-    buildContentionTable();
-    buildaudioAYVolumesTable();
-    loadRomWithPath(romPath);
-    resetMachine();
+    ULABuildContentionTable();
+    audioBuildAYVolumesTable();
+    resetMachine(false);
 }
 
-void ZXSpectrum::loadRomWithPath(char *romPath)
+void ZXSpectrum::loadDefaultROM()
 {
-    ifstream romFile(romPath, ios::binary|ios::ate);
-    romFile.seekg(0, ios::beg);
-    romFile.read(memoryRom.data(), memoryRom.size());
+
 }
 
 #pragma mark - Generate a frame
 
-void ZXSpectrum::runFrame()
+void ZXSpectrum::generateFrame()
 {
     int currentFrameTstates = machineInfo.tsPerFrame;
     
-    while (currentFrameTstates > 0 && !paused)
+    while (currentFrameTstates > 0 && !emuPaused)
     {
         int tStates = z80Core.Execute(1, machineInfo.intLength);
         currentFrameTstates -= tStates;
@@ -78,9 +77,9 @@ void ZXSpectrum::runFrame()
             z80Core.ResetTStates( machineInfo.tsPerFrame );
             z80Core.SignalInterrupt();
 
-            displayUpdateWithTs(machineInfo.tsPerFrame - currentDisplayTstates);
+            displayUpdateWithTs(machineInfo.tsPerFrame - emuCurrentDisplayTs);
             
-            frameCounter++;
+            emuFrameCounter++;
             
             displayFrameReset();
             keyboardCheckCapsLockStatus();
@@ -119,26 +118,12 @@ void ZXSpectrum::zxSpectrumDebugWrite(unsigned int address, unsigned char byte, 
 
 unsigned char ZXSpectrum::coreMemoryRead(unsigned short address)
 {
-    if (address < machineInfo.romSize)
-    {
-        return memoryRom[address];
-    }
-    
-    return memoryRam[address - machineInfo.romSize];
+    return 0;
 }
 
 void ZXSpectrum::coreMemoryWrite(unsigned short address, unsigned char data)
 {
-    if (address < machineInfo.romSize)
-    {
-        return;
-    }
-    
-    if (address >= machineInfo.romSize && address < cBITMAP_ADDRESS + cBITMAP_SIZE + cATTR_SIZE){
-        displayUpdateWithTs((z80Core.GetTStates() - currentDisplayTstates) + machineInfo.paperDrawingOffset);
-    }
 
-    memoryRam[address - machineInfo.romSize] = data;
 }
 
 void ZXSpectrum::coreMemoryContention(unsigned short address, unsigned int tStates)
@@ -148,23 +133,23 @@ void ZXSpectrum::coreMemoryContention(unsigned short address, unsigned int tStat
 
 unsigned char ZXSpectrum::coreDebugRead(unsigned int address, void *data)
 {
-    if (address < machineInfo.romSize)
+    if (address < 16384)
     {
         return memoryRom[address];
     }
     
-    return memoryRam[address - machineInfo.romSize];
+    return memoryRam[address];
 }
 
 void ZXSpectrum::coreDebugWrite(unsigned int address, unsigned char byte, void *data)
 {
-    if (address < machineInfo.romSize)
+    if (address < 16384)
     {
         memoryRom[address] = byte;
     }
     else
     {
-        memoryRam[address - machineInfo.romSize] = byte;
+        memoryRam[address] = byte;
     }
 }
 
@@ -205,13 +190,20 @@ void ZXSpectrum::coreIOWrite(unsigned short address, unsigned char data)
 
 #pragma mark - Reset
 
-void ZXSpectrum::resetMachine()
+void ZXSpectrum::resetMachine(bool hard)
 {
-    z80Core.Reset();
+    if (hard)
+    {
+        for (int i = 0; i < machineInfo.ramSize; i++)
+        {
+            memoryRam[i] = arc4random_uniform(255);
+        }
+    }
+    z80Core.Reset(hard);
     keyboardMapReset();
     displayFrameReset();
     audioReset();
-    frameCounter = 0;
+    emuFrameCounter = 0;
 }
 
 #pragma mark - Release

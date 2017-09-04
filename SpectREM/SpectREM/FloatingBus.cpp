@@ -1,5 +1,5 @@
 //
-//  FloatingBus.cpp
+//  ULAFloatingBus.cpp
 //  SpectREM
 //
 //  Created by Michael Daley on 25/08/2017.
@@ -17,7 +17,7 @@ unsigned int ZXSpectrum::ULAFloatingBusValues[] = { 0, 0, 1, 2, 1, 2, 0, 0 };
  predict if the ULA is reading a pixel or attribute byte based on the current t-state.
  This routine works out what would be on the ULA bus for a given tstate and returns the result
  **/
-unsigned char ZXSpectrum::floatingBus()
+unsigned char ZXSpectrum::ULAFloatingBus()
 {
     int cpuTs = z80Core.GetTStates() - 1;
     int currentDisplayLine = (cpuTs / machineInfo.tsPerLine);
@@ -36,12 +36,12 @@ unsigned char ZXSpectrum::floatingBus()
         
         if (ulaValueType == eFloatBusTypeValuePixel)
         {
-            return memoryRam[(cBITMAP_ADDRESS - machineInfo.romSize) + displayLineAddrTable[y] + x];
+            return memoryRam[(cBITMAP_ADDRESS - 16384) + displayLineAddrTable[y] + x];
         }
         
         if (ulaValueType == eFloatBusTypeValueAttribute)
         {
-            return memoryRam[(cBITMAP_ADDRESS - machineInfo.romSize) + cBITMAP_SIZE + ((y >> 3) << 5) + x];
+            return memoryRam[(cBITMAP_ADDRESS - 16384) + cBITMAP_SIZE + ((y >> 3) << 5) + x];
         }
     }
     

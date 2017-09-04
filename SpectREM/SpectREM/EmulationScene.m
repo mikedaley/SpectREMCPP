@@ -7,6 +7,7 @@
 //
 
 #import "EmulationScene.h"
+#import "EmulationViewController.h"
 
 @implementation EmulationScene
 
@@ -29,6 +30,10 @@
 -(void)update:(CFTimeInterval)currentTime
 {
     // Called before each frame is rendered
+    [_emulationScreenTexture modifyPixelDataWithBlock:^(void *pixelData, size_t lengthInBytes) {
+        memcpy(pixelData, [self.emulationViewController getDisplayBuffer], lengthInBytes);
+    }];
+
 }
 
 @end

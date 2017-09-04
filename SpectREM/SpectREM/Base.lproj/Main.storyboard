@@ -158,6 +158,25 @@
                                                 <action selector="resetMachine:" target="Ady-hI-5gd" id="FRG-eM-sss"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Hard Reset" tag="1" id="BRU-6v-WgN" userLabel="Hard Reset">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="resetMachine:" target="Ady-hI-5gd" id="4Yn-KO-c6S"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="Fef-7S-v0P"/>
+                                        <menuItem title="ZX Spectrum 48k" id="Xug-dS-X11" userLabel="ZX Spectrum 48k">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="selectMachine:" target="Ady-hI-5gd" id="j5e-yp-lOg"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="ZX Spectrum 128k" tag="1" id="zKe-kc-rY4">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="selectMachine:" target="Ady-hI-5gd" id="bDc-nQ-tIL"/>
+                                            </connections>
+                                        </menuItem>
                                     </items>
                                 </menu>
                             </menuItem>
@@ -215,7 +234,7 @@
                 <windowController id="B8D-0N-5wS" sceneMemberID="viewController">
                     <window key="window" title="SpectREM" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="IQv-IB-iLA">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
-                        <rect key="contentRect" x="685" y="346" width="368" height="270"/>
+                        <rect key="contentRect" x="685" y="346" width="320" height="256"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
                         <value key="minSize" type="size" width="320" height="256"/>
                     </window>
@@ -232,7 +251,7 @@
             <objects>
                 <viewController identifier="EmulationView" id="XfG-lQ-9wD" customClass="EmulationViewController" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="m2S-Jp-Qdl" customClass="EmulationView">
-                        <rect key="frame" x="0.0" y="0.0" width="390" height="279"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="256"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </view>
                     <connections>

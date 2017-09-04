@@ -63,7 +63,7 @@ void ZXSpectrum::ULAApplyIOContention(unsigned short address, bool contended)
 
 #pragma mark - Build Contention Table
 
-void ZXSpectrum::buildContentionTable()
+void ZXSpectrum::ULABuildContentionTable()
 {
     for (int i = 0; i < machineInfo.tsPerFrame; i++)
     {
