@@ -8,7 +8,7 @@
 
 #include "ZXSpectrum.hpp"
 
-unsigned int ZXSpectrum::floatingBusValues[] = { 0, 0, 1, 2, 1, 2, 0, 0 };
+unsigned int ZXSpectrum::ULAFloatingBusValues[] = { 0, 0, 1, 2, 1, 2, 0, 0 };
 
 /**
  When the Z80 reads from an unattached port, such as 0xFF, it actually reads the data currently on the
@@ -29,7 +29,7 @@ unsigned char ZXSpectrum::floatingBus()
         && currentDisplayLine < (machineInfo.pxVertBorder + machineInfo.pxVerticalBlank + machineInfo.pxVerticalDisplay)
         && currentTs <= machineInfo.tsHorizontalDisplay)
     {
-        unsigned char ulaValueType = floatingBusValues[ currentTs & 0x07 ];
+        unsigned char ulaValueType = ULAFloatingBusValues[ currentTs & 0x07 ];
         
         int y = currentDisplayLine - (machineInfo.pxVertBorder + machineInfo.pxVerticalBlank);
         int x = currentTs >> 2;

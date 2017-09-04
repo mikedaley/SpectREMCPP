@@ -48,7 +48,7 @@ unsigned char ZXSpectrum48::coreIORead(unsigned short address)
         contended = true;
     }
     
-    ZXSpectrum::applyIOContention(address, contended);
+    ZXSpectrum::ULAApplyIOContention(address, contended);
         
     // ULA Un-owned ports
     if (address & 0x01)
@@ -82,7 +82,7 @@ void ZXSpectrum48::coreIOWrite(unsigned short address, unsigned char data)
         contended = true;
     }
     
-    ZXSpectrum::applyIOContention(address, contended);
+    ZXSpectrum::ULAApplyIOContention(address, contended);
 
     // Port: 0xFE
     //   7   6   5   4   3   2   1   0
@@ -91,23 +91,22 @@ void ZXSpectrum48::coreIOWrite(unsigned short address, unsigned char data)
     // +---+---+---+---+---+-----------+
     if (!(address & 0x01))
     {
-        updateScreenWithTstates((z80Core.GetTStates() - currentDisplayTstates) + machineInfo.borderDrawingOffset);
+        displayUpdateWithTs((z80Core.GetTStates() - currentDisplayTstates) + machineInfo.borderDrawingOffset);
         audioEarBit = (data & 0x10) >> 4;
         audioMicBit = (data & 0x08) >> 3;
-        borderColor = data & 0x07;
+        displayBorderColor = data & 0x07;
     }
     
     // AY-3-8912 ports
     if(address == 0xfffd && machineInfo.hasAY)
     {
-//        machine->lastfffd = data;
-        setAYRegister(data);
+        ULAPortFFFDValue = data;
+        audioAYSetRegister(data);
     }
     
     if ((address & 0xc002) == 0x8000 && machineInfo.hasAY)
     {
-        writeAYData(data);
-//        [machine.audioCore writeAYData:data];
+        audioAYWriteData(data);
     }
 
 }
@@ -118,7 +117,7 @@ void ZXSpectrum48::coreMemoryContention(unsigned short address, unsigned int tSt
 {
     if (address >= 16384 && address <= 32767)
     {
-        z80Core.AddContentionTStates( memoryContentionTable[z80Core.GetTStates() % machineInfo.tsPerFrame] );
+        z80Core.AddContentionTStates( ULAMemoryContentionTable[z80Core.GetTStates() % machineInfo.tsPerFrame] );
     }
 }
 

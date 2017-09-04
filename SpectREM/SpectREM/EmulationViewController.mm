@@ -89,17 +89,17 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
 - (void)keyDown:(NSEvent *)event
 {
-    if (!event.isARepeat)
+    if (!event.isARepeat && !(event.modifierFlags & NSEventModifierFlagCommand))
     {
-        machine->keyDown(event.keyCode);
+        machine->keyboardKeyDown(event.keyCode);
     }
 }
 
 - (void)keyUp:(NSEvent *)event
 {
-    if (!event.isARepeat)
+    if (!event.isARepeat && !(event.modifierFlags & NSEventModifierFlagCommand))
     {
-        machine->keyUp(event.keyCode);
+        machine->keyboardKeyUp(event.keyCode);
     }
 }
 
@@ -107,7 +107,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 {
     if (!(event.modifierFlags & NSEventModifierFlagCommand))
     {
-        machine->keyFlagsChanged(event.modifierFlags, event.keyCode);
+        machine->keyboardFlagsChanged(event.modifierFlags, event.keyCode);
     }
 }
 
@@ -131,7 +131,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     
     if ([[url.pathExtension uppercaseString] isEqualToString:@"Z80"])
     {
-        if (machine->loadZ80SnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]))
+        if (machine->snapshotZ80LoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]))
         {
             if (addToRecent)
             {
@@ -145,7 +145,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     }
     else if ([[url.pathExtension uppercaseString] isEqualToString:@"SNA"])
     {
-        if (machine->loadSnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]))
+        if (machine->snapshotSNALoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]))
         {
             if (addToRecent)
             {
@@ -191,7 +191,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
         }
         
         supportDirUrl = [supportDirUrl URLByAppendingPathComponent:cSESSION_FILE_NAME];
-        ZXSpectrum::snap sessionSnapshot = machine->createZ80Snapshot();
+        ZXSpectrum::snap sessionSnapshot = machine->snapshotCreateZ80();
         NSData *data = [NSData dataWithBytes:sessionSnapshot.data length:sessionSnapshot.length];
         [data writeToURL:supportDirUrl atomically:YES];
     }

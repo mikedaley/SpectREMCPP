@@ -8,9 +8,9 @@
 
 #include "ZXSpectrum.hpp"
 
-#pragma mark - Spectrum Palette
+#pragma mark - Spectrum displayPalette
 
-unsigned int ZXSpectrum::palette[] =
+unsigned int ZXSpectrum::displayPalette[] =
 {
     // Normal Colours in AABBGGRR format
     0xff000000, // Black
@@ -35,7 +35,7 @@ unsigned int ZXSpectrum::palette[] =
 
 #pragma mark - Setup
 
-void ZXSpectrum::setupDisplay()
+void ZXSpectrum::displaySetup()
 {
     displayBuffer = new unsigned int[ screenBufferSize ];
     displayBufferCopy = new ScreenBufferData[ machineInfo.tsPerFrame ];
@@ -43,7 +43,7 @@ void ZXSpectrum::setupDisplay()
 
 #pragma mark - Generate Screen
 
-void ZXSpectrum::updateScreenWithTstates(int tStates)
+void ZXSpectrum::displayUpdateWithTs(int tStates)
 {
     // ROM and RAM are held in separate arrays, so we need to reduce the memory location by the size of the machines ROM
     int memoryAddress = (displayPage * cBITMAP_ADDRESS) - machineInfo.romSize;
@@ -58,14 +58,14 @@ void ZXSpectrum::updateScreenWithTstates(int tStates)
         if (action == eDisplayBorder)
         {
             // Only draw the border of the border data has changed
-            if (displayBufferCopy[ currentDisplayTstates ].attribute != borderColor)
+            if (displayBufferCopy[ currentDisplayTstates ].attribute != displayBorderColor)
             {
-                displayBufferCopy[ currentDisplayTstates ].attribute = borderColor;
+                displayBufferCopy[ currentDisplayTstates ].attribute = displayBorderColor;
                 displayBufferCopy[ currentDisplayTstates ].changed = true;
 
                 for (int i = 0; i < 8; i++)
                 {
-                    displayBuffer[displayBufferIndex++] = palette[borderColor];
+                    displayBuffer[displayBufferIndex++] = displayPalette[displayBorderColor];
                 }
             }
             else
@@ -111,11 +111,11 @@ void ZXSpectrum::updateScreenWithTstates(int tStates)
                 {
                     if (pixelByte & i)
                     {
-                        displayBuffer[displayBufferIndex++] = palette[ink];
+                        displayBuffer[displayBufferIndex++] = displayPalette[ink];
                     }
                     else
                     {
-                        displayBuffer[displayBufferIndex++] = palette[paper];
+                        displayBuffer[displayBufferIndex++] = displayPalette[paper];
                     }
                 }
             }
@@ -133,7 +133,7 @@ void ZXSpectrum::updateScreenWithTstates(int tStates)
 
 #pragma mark - Reset Frame
 
-void ZXSpectrum::resetFrame()
+void ZXSpectrum::displayFrameReset()
 {
     currentDisplayTstates = 0;
     displayBufferIndex = 0;
@@ -145,7 +145,7 @@ void ZXSpectrum::resetFrame()
 
 #pragma mark - Build Display Tables
 
-void ZXSpectrum::buildScreenLineAddressTable()
+void ZXSpectrum::displayBuildLineAddressTable()
 {
     for(int i = 0; i < 3; i++)
     {
@@ -159,7 +159,7 @@ void ZXSpectrum::buildScreenLineAddressTable()
     }
 }
 
-void ZXSpectrum::buildDisplayTstateTable()
+void ZXSpectrum::displayBuildTsTable()
 {
     int tsRightBorderStart = (machineInfo.pxEmuBorder / 2) + machineInfo.tsHorizontalDisplay;
     int tsRightBorderEnd = (machineInfo.pxEmuBorder / 2) + machineInfo.tsHorizontalDisplay + (machineInfo.pxEmuBorder / 2);

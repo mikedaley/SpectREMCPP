@@ -18,7 +18,7 @@ unsigned char const     cZ80_V3_PAGE_HEADER_SIZE = 3;
 
 #pragma mark - SNA
 
-ZXSpectrum::snap ZXSpectrum::createSnapshot()
+ZXSpectrum::snap ZXSpectrum::snapshotCreateSNA()
 {
     // We don't want the core running when we take a snapshot
     paused = true;
@@ -68,7 +68,7 @@ ZXSpectrum::snap ZXSpectrum::createSnapshot()
     snap.data[24] = sp >> 8;
     
     snap.data[25] = z80Core.GetIMMode();
-    snap.data[26] = borderColor & 0x07;
+    snap.data[26] = displayBorderColor & 0x07;
     
     int dataIndex = cSNA_HEADER_SIZE;
     for (unsigned int addr = 16384; addr < 16384 + (48 * 1024); addr++)
@@ -86,7 +86,7 @@ ZXSpectrum::snap ZXSpectrum::createSnapshot()
     return snap;
 }
 
-bool ZXSpectrum::loadSnapshotWithPath(const char *path)
+bool ZXSpectrum::snapshotSNALoadWithPath(const char *path)
 {
     FILE *fileHandle;
     
@@ -129,7 +129,7 @@ bool ZXSpectrum::loadSnapshotWithPath(const char *path)
     z80Core.SetRegister(CZ80Core::eREG_SP, ((unsigned short *)&fileBytes[21])[1]);
     
     // Border colour
-    borderColor = fileBytes[26] & 0x07;
+    displayBorderColor = fileBytes[26] & 0x07;
     
     // Set the IM
     z80Core.SetIMMode(fileBytes[25]);
@@ -161,7 +161,7 @@ bool ZXSpectrum::loadSnapshotWithPath(const char *path)
 
 #pragma mark - Z80
 
-ZXSpectrum::snap ZXSpectrum::createZ80Snapshot()
+ZXSpectrum::snap ZXSpectrum::snapshotCreateZ80()
 {
     paused = true;
     
@@ -195,7 +195,7 @@ ZXSpectrum::snap ZXSpectrum::createZ80Snapshot()
     snapData.data[11] = z80Core.GetRegister(CZ80Core::eREG_R) & 0x7f;
     
     unsigned char byte12 = z80Core.GetRegister(CZ80Core::eREG_R) >> 7;
-    byte12 |= (borderColor & 0x07) << 1;
+    byte12 |= (displayBorderColor & 0x07) << 1;
     byte12 &= ~(1 << 5);
     snapData.data[12] = byte12;
     
@@ -316,7 +316,7 @@ ZXSpectrum::snap ZXSpectrum::createZ80Snapshot()
     return snapData;
 }
 
-bool ZXSpectrum::loadZ80SnapshotWithPath(const char *path)
+bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
 {
     FILE *fileHandle;
 
@@ -392,7 +392,7 @@ bool ZXSpectrum::loadZ80SnapshotWithPath(const char *path)
     // For campatibility reasons if byte 12 = 255 then it should be assumed to = 1
     byte12 = (byte12 == 255) ? 1 : byte12;
     
-    borderColor = (fileBytes[12] & 14) >> 1;
+    displayBorderColor = (fileBytes[12] & 14) >> 1;
     bool compressed = fileBytes[12] & 32;
     
     z80Core.SetRegister(CZ80Core::eREG_DE, ((unsigned short *)&fileBytes[13])[0]);
@@ -414,13 +414,13 @@ bool ZXSpectrum::loadZ80SnapshotWithPath(const char *path)
     switch (version) {
         case 1:
             cout << "Hardware Type: 48k" << endl;
-            extractMemoryBlock(fileBytes, 0x4000, 30, compressed, 0xc000);
+            snapshotExtractMemoryBlock(fileBytes, 0x4000, 30, compressed, 0xc000);
             break;
             
         case 2:
         case 3:
             hardwareType = ((unsigned char *)&fileBytes[34])[0];
-            cout << "Hardware Type: " << hardwareTypeForVersion(version, hardwareType) << endl;
+            cout << "Hardware Type: " << snapshotHardwareTypeForVersion(version, hardwareType) << endl;
             
             int16_t additionHeaderBlockLength = 0;
             additionHeaderBlockLength = ((unsigned short *)&fileBytes[30])[0];
@@ -460,13 +460,13 @@ bool ZXSpectrum::loadZ80SnapshotWithPath(const char *path)
                     // 48k
                     switch (pageId) {
                         case 4:
-                            extractMemoryBlock(fileBytes, 0x8000, offset + 3, isCompressed, 0x4000);
+                            snapshotExtractMemoryBlock(fileBytes, 0x8000, offset + 3, isCompressed, 0x4000);
                             break;
                         case 5:
-                            extractMemoryBlock(fileBytes, 0xc000, offset + 3, isCompressed, 0x4000);
+                            snapshotExtractMemoryBlock(fileBytes, 0xc000, offset + 3, isCompressed, 0x4000);
                             break;
                         case 8:
-                            extractMemoryBlock(fileBytes, 0x4000, offset + 3, isCompressed, 0x4000);
+                            snapshotExtractMemoryBlock(fileBytes, 0x4000, offset + 3, isCompressed, 0x4000);
                             break;
                         default:
                             break;
@@ -475,7 +475,7 @@ bool ZXSpectrum::loadZ80SnapshotWithPath(const char *path)
 //                else
 //                {
 //                    // 128k
-//                    [self extractMemoryBlock:fileBytes memAddr:((pageId - 3) * 0x4000) fileOffset:offset + 3 compressed:isCompressed unpackedLength:0x4000 intoMachine:machine];
+//                    [self snapshotExtractMemoryBlock:fileBytes memAddr:((pageId - 3) * 0x4000) fileOffset:offset + 3 compressed:isCompressed unpackedLength:0x4000 intoMachine:machine];
 //                }
                 
                 offset += compressedLength + 3;
@@ -488,7 +488,7 @@ bool ZXSpectrum::loadZ80SnapshotWithPath(const char *path)
     return true;
 }
 
-void ZXSpectrum::extractMemoryBlock(unsigned char *fileBytes, int memAddr, int fileOffset, bool isCompressed, int unpackedLength)
+void ZXSpectrum::snapshotExtractMemoryBlock(unsigned char *fileBytes, int memAddr, int fileOffset, bool isCompressed, int unpackedLength)
 {
     int filePtr = fileOffset;
     int memoryPtr = memAddr - machineInfo.romSize;
@@ -526,7 +526,7 @@ void ZXSpectrum::extractMemoryBlock(unsigned char *fileBytes, int memAddr, int f
 }
 
 
-string ZXSpectrum::hardwareTypeForVersion(int version, int hardwareType)
+string ZXSpectrum::snapshotHardwareTypeForVersion(int version, int hardwareType)
 {
     string hardware = "Unknown";
     if (version == 2)

@@ -108,39 +108,40 @@ public:
 
     void                    loadRomWithPath(char *romPath);
     void                    runFrame();
-    void                    resetFrame();
-    void                    keyDown(unsigned short key);
-    void                    keyUp(unsigned short key);
-    void                    keyFlagsChanged(unsigned long flags, unsigned short key);
-    void                    updateScreenWithTstates(int tStates);
-    void                    applyIOContention(unsigned short address, bool contended);
+    void                    displayFrameReset();
+    void                    keyboardKeyDown(unsigned short key);
+    void                    keyboardKeyUp(unsigned short key);
+    void                    keyboardFlagsChanged(unsigned long flags, unsigned short key);
+    void                    displayUpdateWithTs(int tStates);
+    void                    ULAApplyIOContention(unsigned short address, bool contended);
     unsigned char           floatingBus();
-    bool                    loadZ80SnapshotWithPath(const char *path);
-    bool                    loadSnapshotWithPath(const char *path);
-    snap                    createSnapshot();
-    snap                    createZ80Snapshot();
-    void                    setAYRegister(unsigned char reg);
-    void                    writeAYData(unsigned char data);
-    unsigned char           readAYData();
-    void                    updateAY(int audioSteps);
-    void                    resetAudio();
+    
+    bool                    snapshotZ80LoadWithPath(const char *path);
+    bool                    snapshotSNALoadWithPath(const char *path);
+    snap                    snapshotCreateSNA();
+    snap                    snapshotCreateZ80();
+    
+    void                    audioAYSetRegister(unsigned char reg);
+    void                    audioAYWriteData(unsigned char data);
+    unsigned char           audioAYReadData();
+    void                    audioAYUpdate(int audioSteps);
+    void                    audioReset();
     int                     audioQueueWrite(signed short *buffer, int count);
     int                     audioQueueRead(signed short *buffer, int count);
     int                     audioQueueBufferUsed();
-    void                    audioUpdateWithTstates(int tStates);
+    void                    audioUpdateWithTs(int tStates);
     
 private:
-    void                    generateScreen();
-    void                    buildDisplayTstateTable();
-    void                    buildScreenLineAddressTable();
+    void                    displayBuildTsTable();
+    void                    displayBuildLineAddressTable();
     void                    buildContentionTable();
     void                    buildaudioAYVolumesTable();
-    void                    checkCapsLockStatus();
-    void                    resetKeyboardMap();
-    string                  hardwareTypeForVersion(int version, int hardwareType);
-    void                    extractMemoryBlock(unsigned char *fileBytes, int memAddr, int fileOffset, bool isCompressed, int unpackedLength);
-    void                    setupDisplay();
-    void                    setupAudio(float sampleRate, float fps);
+    void                    keyboardCheckCapsLockStatus();
+    void                    keyboardMapReset();
+    string                  snapshotHardwareTypeForVersion(int version, int hardwareType);
+    void                    snapshotExtractMemoryBlock(unsigned char *fileBytes, int memAddr, int fileOffset, bool isCompressed, int unpackedLength);
+    void                    displaySetup();
+    void                    audioSetup(float sampleRate, float fps);
     
     
     // Core memory/IO functions
@@ -182,9 +183,9 @@ public:
     int                     displayTstateTable[312][228];
     int                     displayLineAddrTable[192];
     int                     displayPage;
+    static unsigned int     displayPalette[];
+    int                     displayBorderColor;
     int                     currentDisplayTstates;
-    static unsigned int     palette[];
-    int                     borderColor;
 
     // Emulation
     int                     frameCounter;
@@ -230,13 +231,14 @@ public:
     // Keyboard
     bool                    keyboardCapsLockPressed;
     
-    // Contention
-    unsigned int            memoryContentionTable[80000];
-    unsigned int            ioContentionTable[80000];
-    static unsigned int     contentionValues[];
+    // ULA
+    unsigned int            ULAMemoryContentionTable[80000];
+    unsigned int            ULAIOContentionTable[80000];
+    static unsigned int     ULAConentionValues[];
+    int                     ULAPortFFFDValue;
 
     // Floating bus
-    static unsigned int     floatingBusValues[];
+    static unsigned int     ULAFloatingBusValues[];
     
 
 };

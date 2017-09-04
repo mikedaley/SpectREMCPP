@@ -76,7 +76,7 @@ ZXSpectrum::KEYBOARD_ENTRY ZXSpectrum::keyboardLookup[] =
     { 11, 7, 4 }    // B
 };
 
-void ZXSpectrum::keyDown(unsigned short key)
+void ZXSpectrum::keyboardKeyDown(unsigned short key)
 {
     switch (key)
     {
@@ -174,7 +174,7 @@ void ZXSpectrum::keyDown(unsigned short key)
     
 }
 
-void ZXSpectrum::keyUp(unsigned short key)
+void ZXSpectrum::keyboardKeyUp(unsigned short key)
 {
     switch (key)
     {
@@ -271,7 +271,7 @@ void ZXSpectrum::keyUp(unsigned short key)
     }
 }
 
-void ZXSpectrum::keyFlagsChanged(unsigned long flags, unsigned short key)
+void ZXSpectrum::keyboardFlagsChanged(unsigned long flags, unsigned short key)
 {
     switch (key)
     {
@@ -326,7 +326,7 @@ void ZXSpectrum::keyFlagsChanged(unsigned long flags, unsigned short key)
     }
 }
 
-void ZXSpectrum::checkCapsLockStatus()
+void ZXSpectrum::keyboardCheckCapsLockStatus()
 {
     // The Caps Lock combination needs to be set for minimum 2 frames for it to be registered by the ROM.
     // Once two frames have passed the key combination can be removed from the keyboard map.
@@ -343,7 +343,7 @@ void ZXSpectrum::checkCapsLockStatus()
     }
 }
 
-void ZXSpectrum::resetKeyboardMap()
+void ZXSpectrum::keyboardMapReset()
 {
     for (int i = 0; i < 8; i++)
     {

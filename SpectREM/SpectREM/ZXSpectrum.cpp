@@ -43,10 +43,10 @@ void ZXSpectrum::initialise(char *romPath)
     memoryRom.resize( machineInfo.romSize );
     memoryRam.resize( machineInfo.ramSize );
     
-    setupDisplay();
-    setupAudio(192000, 50);
-    buildScreenLineAddressTable();
-    buildDisplayTstateTable();
+    displaySetup();
+    audioSetup(192000, 50);
+    displayBuildLineAddressTable();
+    displayBuildTsTable();
     buildContentionTable();
     buildaudioAYVolumesTable();
     loadRomWithPath(romPath);
@@ -71,19 +71,19 @@ void ZXSpectrum::runFrame()
         int tStates = z80Core.Execute(1, machineInfo.intLength);
         currentFrameTstates -= tStates;
         
-        audioUpdateWithTstates(tStates);
+        audioUpdateWithTs(tStates);
         
         if (z80Core.GetTStates() >= machineInfo.tsPerFrame)
         {
             z80Core.ResetTStates( machineInfo.tsPerFrame );
             z80Core.SignalInterrupt();
 
-            updateScreenWithTstates(machineInfo.tsPerFrame - currentDisplayTstates);
+            displayUpdateWithTs(machineInfo.tsPerFrame - currentDisplayTstates);
             
             frameCounter++;
             
-            resetFrame();
-            checkCapsLockStatus();
+            displayFrameReset();
+            keyboardCheckCapsLockStatus();
             
             currentFrameTstates = 0;
         }
@@ -135,7 +135,7 @@ void ZXSpectrum::coreMemoryWrite(unsigned short address, unsigned char data)
     }
     
     if (address >= machineInfo.romSize && address < cBITMAP_ADDRESS + cBITMAP_SIZE + cATTR_SIZE){
-        updateScreenWithTstates((z80Core.GetTStates() - currentDisplayTstates) + machineInfo.paperDrawingOffset);
+        displayUpdateWithTs((z80Core.GetTStates() - currentDisplayTstates) + machineInfo.paperDrawingOffset);
     }
 
     memoryRam[address - machineInfo.romSize] = data;
@@ -208,9 +208,9 @@ void ZXSpectrum::coreIOWrite(unsigned short address, unsigned char data)
 void ZXSpectrum::resetMachine()
 {
     z80Core.Reset();
-    resetKeyboardMap();
-    resetFrame();
-    resetAudio();
+    keyboardMapReset();
+    displayFrameReset();
+    audioReset();
     frameCounter = 0;
 }
 

@@ -8,7 +8,7 @@
 
 #include "ZXSpectrum.hpp"
 
-unsigned int ZXSpectrum::contentionValues[] = { 6, 5, 4, 3, 2, 1, 0, 0 };
+unsigned int ZXSpectrum::ULAConentionValues[] = { 6, 5, 4, 3, 2, 1, 0, 0 };
 
 #pragma mark - IO Contention
 
@@ -25,33 +25,33 @@ unsigned int ZXSpectrum::contentionValues[] = { 6, 5, 4, 3, 2, 1, 0, 0 };
  Yes   |  Reset  | C:1, C:3
  Yes   |   Set   | C:1, C:1, C:1, C:1
  **/
-void ZXSpectrum::applyIOContention(unsigned short address, bool contended)
+void ZXSpectrum::ULAApplyIOContention(unsigned short address, bool contended)
 {
     if (contended)
     {
         if ((address & 0x01) == 0)
         {
-            z80Core.AddContentionTStates( memoryContentionTable[z80Core.GetTStates() % machineInfo.tsPerFrame] );
+            z80Core.AddContentionTStates( ULAMemoryContentionTable[z80Core.GetTStates() % machineInfo.tsPerFrame] );
             z80Core.AddTStates(1);
-            z80Core.AddContentionTStates( memoryContentionTable[z80Core.GetTStates() % machineInfo.tsPerFrame] );
+            z80Core.AddContentionTStates( ULAMemoryContentionTable[z80Core.GetTStates() % machineInfo.tsPerFrame] );
             z80Core.AddTStates(3);
         }
         else
         {
-            z80Core.AddContentionTStates( memoryContentionTable[z80Core.GetTStates() % machineInfo.tsPerFrame] );
+            z80Core.AddContentionTStates( ULAMemoryContentionTable[z80Core.GetTStates() % machineInfo.tsPerFrame] );
             z80Core.AddTStates(1);
-            z80Core.AddContentionTStates( memoryContentionTable[z80Core.GetTStates() % machineInfo.tsPerFrame] );
+            z80Core.AddContentionTStates( ULAMemoryContentionTable[z80Core.GetTStates() % machineInfo.tsPerFrame] );
             z80Core.AddTStates(1);
-            z80Core.AddContentionTStates( memoryContentionTable[z80Core.GetTStates() % machineInfo.tsPerFrame] );
+            z80Core.AddContentionTStates( ULAMemoryContentionTable[z80Core.GetTStates() % machineInfo.tsPerFrame] );
             z80Core.AddTStates(1);
-            z80Core.AddContentionTStates( memoryContentionTable[z80Core.GetTStates() % machineInfo.tsPerFrame] );
+            z80Core.AddContentionTStates( ULAMemoryContentionTable[z80Core.GetTStates() % machineInfo.tsPerFrame] );
             z80Core.AddTStates(1);
         }
     } else {
         if ((address & 0x01) == 0)
         {
             z80Core.AddTStates(1);
-            z80Core.AddContentionTStates( memoryContentionTable[z80Core.GetTStates() % machineInfo.tsPerFrame] );
+            z80Core.AddContentionTStates( ULAMemoryContentionTable[z80Core.GetTStates() % machineInfo.tsPerFrame] );
             z80Core.AddTStates(3);
         }
         else
@@ -67,8 +67,8 @@ void ZXSpectrum::buildContentionTable()
 {
     for (int i = 0; i < machineInfo.tsPerFrame; i++)
     {
-        memoryContentionTable[i] = 0;
-        ioContentionTable[i] = 0;
+        ULAMemoryContentionTable[i] = 0;
+        ULAIOContentionTable[i] = 0;
         
         if (i >= machineInfo.tsToOrigin)
         {
@@ -77,8 +77,8 @@ void ZXSpectrum::buildContentionTable()
             
             if (line < machineInfo.pxVerticalDisplay && ts < 128)
             {
-                memoryContentionTable[i] = contentionValues[ ts & 0x07 ];
-                ioContentionTable[i] = contentionValues[ ts & 0x07 ];
+                ULAMemoryContentionTable[i] = ULAConentionValues[ ts & 0x07 ];
+                ULAIOContentionTable[i] = ULAConentionValues[ ts & 0x07 ];
             }
         }
     }

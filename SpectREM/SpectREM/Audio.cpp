@@ -40,7 +40,7 @@ void ZXSpectrum::buildaudioAYVolumesTable()
     }
 }
 
-void ZXSpectrum::setupAudio(float sampleRate, float fps)
+void ZXSpectrum::audioSetup(float sampleRate, float fps)
 {
     audioBufferSize = (sampleRate / fps) * 6;
     audioBuffer = new short[ audioBufferSize ];
@@ -52,7 +52,7 @@ void ZXSpectrum::setupAudio(float sampleRate, float fps)
     audioQueueBuffer = new short[ audioQueueBufferCapacity << 2 ];
 }
 
-void ZXSpectrum::resetAudio()
+void ZXSpectrum::audioReset()
 {
     audioBufferIndex = 0;
     audioTsCounter = 0;
@@ -76,14 +76,14 @@ void ZXSpectrum::resetAudio()
     
     for (int i = 0; i < eAY_MAX_REGISTERS; i++)
     {
-        setAYRegister(i);
-        writeAYData(0);
+        audioAYSetRegister(i);
+        audioAYWriteData(0);
     }
 }
 
 #pragma mark - Audio Update
 
-void ZXSpectrum::audioUpdateWithTstates(int tStates)
+void ZXSpectrum::audioUpdateWithTs(int tStates)
 {
     if (paused)
     {
@@ -101,7 +101,7 @@ void ZXSpectrum::audioUpdateWithTstates(int tStates)
     {
         if (audioAYTs++ >= audioAYTsStep)
         {
-            updateAY(1);
+            audioAYUpdate(1);
             
             beeperLevelLeft += audioAYChannelOutput[0];
             beeperLevelLeft += audioAYChannelOutput[1];
@@ -151,7 +151,7 @@ void ZXSpectrum::audioUpdateWithTstates(int tStates)
 
 #pragma mark - AY Chip
 
-void ZXSpectrum::setAYRegister(unsigned char reg)
+void ZXSpectrum::audioAYSetRegister(unsigned char reg)
 {
     if (reg < eAY_MAX_REGISTERS)
     {
@@ -165,7 +165,7 @@ void ZXSpectrum::setAYRegister(unsigned char reg)
     }
 }
 
-void ZXSpectrum::writeAYData(unsigned char data)
+void ZXSpectrum::audioAYWriteData(unsigned char data)
 {
     switch (audioAYCurrentRegister) {
         case eAYREGISTER_A_FINE:
@@ -220,12 +220,12 @@ void ZXSpectrum::writeAYData(unsigned char data)
     audioAYRegisters[ audioAYCurrentRegister ] = data;
 }
 
-unsigned char ZXSpectrum::readAYData()
+unsigned char ZXSpectrum::audioAYReadData()
 {
     return audioAYRegisters[ audioAYCurrentRegister ];
 }
 
-void ZXSpectrum::updateAY(int audioSteps)
+void ZXSpectrum::audioAYUpdate(int audioSteps)
 {
     if (!audioAYaudioAYaudioAYEnvelopeHolding)
     {
