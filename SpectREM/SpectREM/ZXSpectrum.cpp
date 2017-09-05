@@ -71,6 +71,12 @@ void ZXSpectrum::generateFrame()
     while (currentFrameTstates > 0 && !emuPaused)
     {
         int tStates = z80Core.Execute(1, machineInfo.intLength);
+        
+        if (tapePlaying)
+        {
+            tapeUpdateWithTs(tStates);
+        }
+
         currentFrameTstates -= tStates;
         
         audioUpdateWithTs(tStates);
@@ -183,6 +189,8 @@ unsigned char ZXSpectrum::coreIORead(unsigned short address)
         }
     }
     
+    result = (result & 191) | (audioEarBit << 6) | (tapeInputBit << 6);
+    
     return result;
 }
 
@@ -207,6 +215,7 @@ void ZXSpectrum::resetMachine(bool hard)
     keyboardMapReset();
     displayFrameReset();
     audioReset();
+    tapeReset(true);
     emuFrameCounter = 0;
 }
 

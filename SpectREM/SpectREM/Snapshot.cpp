@@ -153,7 +153,7 @@ bool ZXSpectrum::snapshotSNALoadWithPath(const char *path)
         z80Core.SetRegister(CZ80Core::eREG_SP, z80Core.GetRegister(CZ80Core::eREG_SP) + 2);
     }
     
-    emuPaused = false;
+    emuPaused = true;
     
     return true;
     
@@ -595,7 +595,7 @@ int ZXSpectrum::snapshotMachineInSnapshotWithPath(const char *path)
     {
         cout << "ERROR LOADING SNAPSHOT: " << path << endl;
         fclose(fileHandle);
-        return false;
+        return -1;
     }
     
     emuPaused = true;

@@ -7,14 +7,10 @@
 //
 
 #import "EmulationWindowController.h"
-#import <CoreImage/CoreImage.h>
 
-static CGFloat const MIN_DISTANCE = 75;
-static CGFloat const MAX_DISTNACE = 200;
 
 @interface EmulationWindowController () <NSWindowDelegate>
 
-@property (nonatomic, strong) NSTrackingArea *trackingArea;
 
 @end
 

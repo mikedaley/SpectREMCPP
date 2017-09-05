@@ -178,6 +178,11 @@ public:
     
     bool                    tapeLoadWithPath(const char *);
     void                    tapeUpdateWithTs(int tStates);
+    void                    tapeStartPlaying();
+    void                    tapeStopPlaying();
+    void                    tapeRewind();
+    void                    tapeReset(bool clearBlocks);
+private:
     void                    tapeGenerateHeaderPilotWithTs(int tStates);
     void                    tapeGenerateSync1WithTs(int tStates);
     void                    tapeGenerateSync2WithTs(int tStates);
@@ -186,7 +191,8 @@ public:
     void                    tapeGenerateHeaderDataStreamWithTs(int tStates);
     void                    tapeGenerateDataBitWithTs(int tStates);
     void                    tapeBlockPauseWithTs(int tStates);
-    
+
+public:
     void                    audioAYSetRegister(unsigned char reg);
     void                    audioAYWriteData(unsigned char data);
     unsigned char           audioAYReadData();

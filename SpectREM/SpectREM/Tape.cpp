@@ -155,6 +155,26 @@ unsigned char DataBlock::getChecksum()
 
 #pragma mark - TAP Processing
 
+void ZXSpectrum::tapeReset(bool clearBlocks)
+{
+    tapeInputBit = 0;
+    tapeCurrentBytePtr = 0;
+    tapeCurrentDataBit = 0;
+    tapePilotPulseTStates = 0;
+    tapePilotPulses = 0;
+    tapeDataPulseTStates = 0;
+    tapeFlipTapeBit = true;
+    tapePlaying = false;
+    tapeNewBlock = true;
+    tapeCurrentBytePtr = 0;
+    tapeCurrentBlockIndex = 0;
+    
+    if (clearBlocks)
+    {
+        tapeBlocks.clear();
+    }
+}
+
 bool ZXSpectrum::tapeLoadWithPath(const char *path)
 {
     FILE *fileHandle;
@@ -177,11 +197,7 @@ bool ZXSpectrum::tapeLoadWithPath(const char *path)
     
     fread(&fileBytes, 1, size, fileHandle);
 
-    tapePlaying = false;
-    tapeCurrentBytePtr = 0;
-    tapeCurrentBlockIndex = 0;
-    tapeNewBlock = true;
-    tapeBlocks.clear();
+    tapeReset(true);
     
     unsigned short blockLength = 0;
     unsigned char flag = 0;
@@ -247,7 +263,7 @@ bool ZXSpectrum::tapeLoadWithPath(const char *path)
 
 void ZXSpectrum::tapeUpdateWithTs(int tStates)
 {
-    if (tapeCurrentBlockIndex > tapeBlocks.size())
+    if (tapeCurrentBlockIndex > tapeBlocks.size() - 1)
     {
         cout << "TAPE STOPPED" << endl;
         tapePlaying = false;
@@ -265,8 +281,7 @@ void ZXSpectrum::tapeUpdateWithTs(int tStates)
         if (tapeCurrentBlock->blockType == ePROGRAM_HEADER ||
             tapeCurrentBlock->blockType == eNUMERIC_DATA_HEADER ||
             tapeCurrentBlock->blockType == eALPHANUMERIC_DATA_HEADER ||
-            tapeCurrentBlock->blockType == eBYTE_HEADER ||
-            tapeCurrentBlock->blockType)
+            tapeCurrentBlock->blockType == eBYTE_HEADER)
         {
             tapeProcessingState = eHEADER_PILOT;
             tapeNextProcessingState = eHEADER_DATA_STREAM;
@@ -277,33 +292,40 @@ void ZXSpectrum::tapeUpdateWithTs(int tStates)
             tapeNextProcessingState = eDATA_STREAM;
         }
         
-        switch (tapeProcessingState)
-        {
-            case eHEADER_PILOT:
-                tapeGenerateHeaderPilotWithTs(tStates);
-                break;
-            case eSYNC1:
-                tapeGenerateSync1WithTs(tStates);
-                break;
-            case eSYNC2:
-                tapeGenerateSync2WithTs(tStates);
-                break;
-            case eDATA_PILOT:
-                tapeGenerateDataPilotWithTs(tStates);
-                break;
-            case eDATA_STREAM:
-                tapeGenerateDataStreamWithTs(tStates);
-                break;
-            case eHEADER_DATA_STREAM:
-                tapeGenerateHeaderDataStreamWithTs(tStates);
-                break;
-            case eDATA_BIT:
-                tapeGenerateDataBitWithTs(tStates);
-                break;
-            case eBLOCK_PAUSE:
-                tapeBlockPauseWithTs(tStates);
-                break;
-        }
+        tapeCurrentBytePtr = 0;
+        tapeCurrentDataBit = 0;
+        tapePilotPulseTStates = 0;
+        tapePilotPulses = 0;
+        tapeDataPulseTStates = 0;
+        tapeFlipTapeBit = true;
+    }
+    
+    switch (tapeProcessingState)
+    {
+        case eHEADER_PILOT:
+            tapeGenerateHeaderPilotWithTs(tStates);
+            break;
+        case eSYNC1:
+            tapeGenerateSync1WithTs(tStates);
+            break;
+        case eSYNC2:
+            tapeGenerateSync2WithTs(tStates);
+            break;
+        case eDATA_PILOT:
+            tapeGenerateDataPilotWithTs(tStates);
+            break;
+        case eDATA_STREAM:
+            tapeGenerateDataStreamWithTs(tStates);
+            break;
+        case eHEADER_DATA_STREAM:
+            tapeGenerateHeaderDataStreamWithTs(tStates);
+            break;
+        case eDATA_BIT:
+            tapeGenerateDataBitWithTs(tStates);
+            break;
+        case eBLOCK_PAUSE:
+            tapeBlockPauseWithTs(tStates);
+            break;
     }
 }
 
@@ -404,7 +426,7 @@ void ZXSpectrum::tapeGenerateSync2WithTs(int tStates)
 void ZXSpectrum::tapeGenerateDataStreamWithTs(int tStates)
 {
     int currentBlockLength = tapeBlocks[ tapeCurrentBlockIndex ].getDataLength();
-    unsigned char byte = tapeBlocks[ tapeCurrentBlockIndex ].blockData[ tapeCurrentBlockIndex ];
+    unsigned char byte = tapeBlocks[ tapeCurrentBlockIndex ].blockData[ tapeCurrentBytePtr ];
     unsigned char bit = (byte << tapeCurrentDataBit) & 128;
     
     tapeCurrentDataBit += 1;
@@ -437,7 +459,7 @@ void ZXSpectrum::tapeGenerateDataStreamWithTs(int tStates)
 void ZXSpectrum::tapeGenerateHeaderDataStreamWithTs(int tStates)
 {
     int currentBlockLength = cHEADER_BLOCK_LENGTH;
-    unsigned char byte = tapeBlocks[ tapeCurrentBlockIndex ].blockData[ tapeCurrentBlockIndex ];
+    unsigned char byte = tapeBlocks[ tapeCurrentBlockIndex ].blockData[ tapeCurrentBytePtr ];
     unsigned char bit = (byte << tapeCurrentDataBit) & 128;
     
     tapeCurrentDataBit += 1;
@@ -512,8 +534,32 @@ void ZXSpectrum::tapeBlockPauseWithTs(int tStates)
     }
 }
 
+#pragma mark - Tape controls
 
+void ZXSpectrum::tapeStartPlaying()
+{
+    if (tapeLoaded)
+    {
+        tapePlaying = true;
+    }
+}
 
+void ZXSpectrum::tapeStopPlaying()
+{
+    if (tapeLoaded)
+    {
+        tapePlaying = false;
+        tapeInputBit = 0;
+    }
+}
+
+void ZXSpectrum::tapeRewind()
+{
+    if (tapeLoaded)
+    {
+        tapeReset(false);
+    }
+}
 
 
 

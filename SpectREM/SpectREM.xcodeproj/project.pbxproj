@@ -36,6 +36,7 @@
 		EDB7F7FC1F5ED3EF003053E3 /* EmulationWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = EDB7F7FB1F5ED3EF003053E3 /* EmulationWindowController.m */; };
 		EDB7F7FE1F5EE2E4003053E3 /* Tape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDB7F7FD1F5EE2E4003053E3 /* Tape.cpp */; };
 		EDB7F8001F5EF904003053E3 /* cool.TAP in Resources */ = {isa = PBXBuildFile; fileRef = EDB7F7FF1F5EF904003053E3 /* cool.TAP */; };
+		EDB7F8021F5F1D7F003053E3 /* aticatac.tap in Resources */ = {isa = PBXBuildFile; fileRef = EDB7F8011F5F1D7F003053E3 /* aticatac.tap */; };
 		EDD9ADEB1F54032C004DD728 /* EmulationView.m in Sources */ = {isa = PBXBuildFile; fileRef = EDD9ADEA1F54032C004DD728 /* EmulationView.m */; };
 		EDD9ADED1F59C111004DD728 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = EDD9ADEC1F59C111004DD728 /* Credits.rtf */; };
 		EDD9ADF11F5D6F51004DD728 /* ZXSpectrum128.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDD9ADEF1F5D6F51004DD728 /* ZXSpectrum128.cpp */; };
@@ -92,6 +93,7 @@
 		EDB7F7FB1F5ED3EF003053E3 /* EmulationWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmulationWindowController.m; sourceTree = "<group>"; };
 		EDB7F7FD1F5EE2E4003053E3 /* Tape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Tape.cpp; sourceTree = "<group>"; };
 		EDB7F7FF1F5EF904003053E3 /* cool.TAP */ = {isa = PBXFileReference; lastKnownFileType = file; path = cool.TAP; sourceTree = "<group>"; };
+		EDB7F8011F5F1D7F003053E3 /* aticatac.tap */ = {isa = PBXFileReference; lastKnownFileType = file; path = aticatac.tap; sourceTree = "<group>"; };
 		EDD9ADE91F54032C004DD728 /* EmulationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmulationView.h; sourceTree = "<group>"; };
 		EDD9ADEA1F54032C004DD728 /* EmulationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmulationView.m; sourceTree = "<group>"; };
 		EDD9ADEC1F59C111004DD728 /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
@@ -186,6 +188,7 @@
 			isa = PBXGroup;
 			children = (
 				EDB7F7FF1F5EF904003053E3 /* cool.TAP */,
+				EDB7F8011F5F1D7F003053E3 /* aticatac.tap */,
 				ED913FB41F30762600316E1A /* App Delegate */,
 				ED913FB31F30761B00316E1A /* StoryBoard */,
 				ED913FB71F30765D00316E1A /* Emulation Scene */,
@@ -390,6 +393,7 @@
 				174AAFBC1F585DCC00B75535 /* PixelShader.fsh in Resources */,
 				EDD9ADED1F59C111004DD728 /* Credits.rtf in Resources */,
 				ED913FD71F30789300316E1A /* 48.ROM in Resources */,
+				EDB7F8021F5F1D7F003053E3 /* aticatac.tap in Resources */,
 				EDB7F8001F5EF904003053E3 /* cool.TAP in Resources */,
 				ED913FA91F30759300316E1A /* Assets.xcassets in Resources */,
 				ED913FAC1F30759300316E1A /* Main.storyboard in Resources */,

@@ -143,6 +143,28 @@
                                     </items>
                                 </menu>
                             </menuItem>
+                            <menuItem title="Tape" id="Hmi-AY-oje" userLabel="Tape">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Tape" id="v70-NU-HNk">
+                                    <items>
+                                        <menuItem title="Play" keyEquivalent="P" id="4Ja-Xy-vBr" userLabel="Play">
+                                            <connections>
+                                                <action selector="startPlayingTape:" target="Ady-hI-5gd" id="7tl-sY-UMb"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Stop" keyEquivalent="S" id="fkM-ar-WrT" userLabel="Stop">
+                                            <connections>
+                                                <action selector="stopPlayingTape:" target="Ady-hI-5gd" id="szb-7U-dAH"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Rewind" keyEquivalent="W" id="wJE-1D-JwQ" userLabel="Rewind">
+                                            <connections>
+                                                <action selector="rewindTape:" target="Ady-hI-5gd" id="Hn7-1e-aKb"/>
+                                            </connections>
+                                        </menuItem>
+                                    </items>
+                                </menu>
+                            </menuItem>
                             <menuItem title="Window" id="aUF-d1-5bR">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Window" systemMenu="window" id="Td7-aD-5lo">

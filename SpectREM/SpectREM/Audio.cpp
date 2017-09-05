@@ -87,7 +87,7 @@ void ZXSpectrum::audioUpdateWithTs(int tStates)
 
     // Grab the current state of the audio ear output & the tapeLevel which is used to register input when loading tapes.
     // Only need to do this once per audio update
-    int localBeeperLevel = audioEarBit * cBEEPER_VOLUME_MULTIPLIER;
+    int localBeeperLevel = (audioEarBit | tapeInputBit) * cBEEPER_VOLUME_MULTIPLIER;
     int beeperLevelLeft = localBeeperLevel;
     int beeperLevelRight = localBeeperLevel;
     

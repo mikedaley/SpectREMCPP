@@ -17,6 +17,7 @@
 
 NSString *const cSNA_EXTENSION = @"SNA";
 NSString *const cZ80_EXTENSION = @"Z80";
+NSString *const cTAP_EXTENSION = @"TAP";
 
 int const cAUDIO_SAMPLE_RATE = 192000;
 float const cFRAMES_PER_SECOND = 50;
@@ -51,8 +52,11 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     mainBundlePath = [[NSBundle mainBundle] bundlePath];
     [self initMachineWithRomPath:mainBundlePath machineType:eZXSpectrum48];
     
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"cool" ofType:@"TAP"];
-    machine->tapeLoadWithPath([path cStringUsingEncoding:NSUTF8StringEncoding]);
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"aticatac" ofType:@"tap"];
+    if (!machine->tapeLoadWithPath([path cStringUsingEncoding:NSUTF8StringEncoding]))
+    {
+        NSLog(@"UNABLE TO LOAD TAPE");
+    }
     
     _scene = (EmulationScene *)[SKScene nodeWithFileNamed:@"EmulationScene"];
     
@@ -128,7 +132,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
 - (void)loadFileWithURL:(NSURL *)url addToRecent:(BOOL)addToRecent
 {
-    BOOL error = NO;
+    BOOL success = NO;
     
     int snapshotMachineType = machine->snapshotMachineInSnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
     
@@ -137,43 +141,32 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
         [self initMachineWithRomPath:mainBundlePath machineType:snapshotMachineType];
     }
     
-    if ([[url.pathExtension uppercaseString] isEqualToString:@"Z80"])
+    if ([[url.pathExtension uppercaseString] isEqualToString:cZ80_EXTENSION])
     {
-        if (machine->snapshotZ80LoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]))
-        {
-            if (addToRecent)
-            {
-                [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:url];
-            }
-        }
-        else
-        {
-            error = YES;
-        }
+        success = machine->snapshotZ80LoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
     }
-    else if ([[url.pathExtension uppercaseString] isEqualToString:@"SNA"])
+    else if ([[url.pathExtension uppercaseString] isEqualToString:cSNA_EXTENSION])
     {
-        if (machine->snapshotSNALoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]))
-        {
-            if (addToRecent)
-            {
-                [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:url];
-            }
-        }
-        else
-        {
-            error = YES;
-        }
+        success = machine->snapshotSNALoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+    }
+    else if ([[url.pathExtension uppercaseString] isEqualToString:cTAP_EXTENSION])
+    {
+        success = machine->tapeLoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+    }
+
+    if (addToRecent && success)
+    {
+        [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:url];
     }
     
-    if (error)
+    if (!success)
     {
         NSWindow *window = [[NSApplication sharedApplication] mainWindow];
         NSAlert *alert = [NSAlert new];
         alert.informativeText = [NSString stringWithFormat:@"An error occurred trying to open %@", url.path];
         [alert addButtonWithTitle:@"OK"];
         [alert beginSheetModalForWindow:window completionHandler:^(NSModalResponse returnCode) {
-            // No need to do
+            // No need to do anything
         }];
     }
 }
@@ -290,6 +283,23 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
             [self initMachineWithRomPath:mainBundlePath machineType:eZXSpectrum128];
             break;
     }
+}
+
+#pragma mark - Tape Menu Items
+
+- (IBAction)startPlayingTape:(id)sender
+{
+    machine->tapeStartPlaying();
+}
+
+- (IBAction)stopPlayingTape:(id)sender
+{
+    machine->tapeStopPlaying();
+}
+
+- (IBAction)rewindTape:(id)sender
+{
+    machine->tapeRewind();
 }
 
 #pragma mark - Getters
