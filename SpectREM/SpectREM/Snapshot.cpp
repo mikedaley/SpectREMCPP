@@ -654,6 +654,10 @@ int ZXSpectrum::snapshotMachineInSnapshotWithPath(const char *path)
         {
             return eZXSpectrum128;
         }
+        else
+        {
+            return eZXSpectrum48;
+        }
     }
     
     if (version == 3)
