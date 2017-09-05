@@ -66,22 +66,17 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     
     [audioCore start];
     
-//    [self restoreSession];
+    [self restoreSession];
 }
 
 #pragma mark - Init/Switch Machine
 
 - (void)initMachineWithRomPath:(NSString *)romPath machineType:(int)machineType
 {
-    if (audioCore)
-    {
-        [audioCore stop];
-    }
+    [scene setPaused:YES];
     
-    if (machine)
-    {
-        delete machine;
-    }
+    if (audioCore) { [audioCore stop]; }
+    if (machine) { delete machine; }
     
     if (machineType == eZXSpectrum48)
     {
@@ -97,11 +92,8 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     audioCore = [[AudioCore alloc] initWithSampleRate:cAUDIO_SAMPLE_RATE framesPerSecond:cFRAMES_PER_SECOND machine:machine];
     
     [audioCore start];
-}
-
-- (void *)getDisplayBuffer
-{
-    return machine->displayBuffer;
+    
+    [scene setPaused:NO];
 }
 
 #pragma mark - Keyboard
@@ -135,6 +127,13 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 - (void)loadFileWithURL:(NSURL *)url addToRecent:(BOOL)addToRecent
 {
     BOOL error = NO;
+    
+    int snapshotMachineType = machine->snapshotMachineInSnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+    
+    if (machine->machineInfo.machineType != snapshotMachineType)
+    {
+        [self initMachineWithRomPath:mainBundlePath machineType:snapshotMachineType];
+    }
     
     if ([[url.pathExtension uppercaseString] isEqualToString:@"Z80"])
     {
@@ -289,6 +288,13 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
             [self initMachineWithRomPath:mainBundlePath machineType:eZXSpectrum128];
             break;
     }
+}
+
+#pragma mark - Getters
+
+- (void *)getDisplayBuffer
+{
+    return machine->displayBuffer;
 }
 
 @end

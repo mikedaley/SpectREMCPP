@@ -25,9 +25,9 @@
 	@param fps being rendered which is used to calculate the frame capacity for each audio buffer
  */
 - (instancetype)initWithSampleRate:(int)sampleRate framesPerSecond:(float)fps machine:(ZXSpectrum *)machine;
+
 - (void)stop;
 - (void)start;
-
 - (BOOL)isRunning;
 
 @end

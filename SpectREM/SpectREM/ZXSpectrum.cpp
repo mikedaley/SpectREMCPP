@@ -202,6 +202,7 @@ void ZXSpectrum::resetMachine(bool hard)
             memoryRam[i] = arc4random_uniform(255);
         }
     }
+    
     z80Core.Reset(hard);
     keyboardMapReset();
     displayFrameReset();

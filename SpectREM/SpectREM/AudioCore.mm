@@ -75,6 +75,7 @@ static OSStatus renderAudio(void *inRefCon,
     self = [super init];
     if (self)
     {
+        NSLog(@"Allocating AudioCore");
         samplesPerFrame = sampleRate / fps;
     
         CheckError(NewAUGraph(&_graph), "NewAUGraph");
@@ -156,8 +157,8 @@ static OSStatus renderAudio(void *inRefCon,
         AUGraphNodeInfo(_graph, _highPassNode, 0, &_highPassFilterUnit);
 
         
-        AudioUnitSetParameter(_lowPassFilterUnit, 0, kAudioUnitScope_Global, 0, 3500, 0);
-        AudioUnitSetParameter(_highPassFilterUnit, 0, kAudioUnitScope_Global, 0, 1, 0);
+        AudioUnitSetParameter(_lowPassFilterUnit, 0, kAudioUnitScope_Global, 0, 5000, 0);
+        AudioUnitSetParameter(_highPassFilterUnit, 0, kAudioUnitScope_Global, 0, 0, 0);
         AudioUnitSetParameter(_mixerUnit, kMultiChannelMixerParam_Volume, kAudioUnitScope_Output, 0, 1, 0);
     }
     return self;

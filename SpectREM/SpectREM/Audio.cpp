@@ -45,23 +45,23 @@ void ZXSpectrum::audioBuildAYVolumesTable()
 void ZXSpectrum::audioSetup(float sampleRate, float fps)
 {
     audioBufferSize = (sampleRate / fps) * 6;
-    audioBuffer = new short[ audioBufferSize ];
+    audioBuffer = new short[ audioBufferSize ]();
     
     audioBeeperTsStep = machineInfo.tsPerFrame / (sampleRate / fps);
     audioAYTsStep = 32;
     
     audioQueueBufferCapacity = 1 << kExponent;
-    audioQueueBuffer = new short[ audioQueueBufferCapacity << 2 ];
+    audioQueueBuffer = new short[ audioQueueBufferCapacity << 2 ]();
 }
 
 void ZXSpectrum::audioReset()
 {
-    audioBufferIndex = 0;
-    audioTsCounter = 0;
-    audioTsStepCounter = 0;
-    audioBeeperLeft = 0;
-    audioBeeperRight = 0;
-    memset(audioBuffer, 0, audioBufferSize);
+//    audioBufferIndex = 0;
+//    audioTsCounter = 0;
+//    audioTsStepCounter = 0;
+//    audioBeeperLeft = 0;
+//    audioBeeperRight = 0;
+//    memset(audioBuffer, 0, audioBufferSize);
 
     audioAYOutput = 0;
     audioAYrandom = 1;

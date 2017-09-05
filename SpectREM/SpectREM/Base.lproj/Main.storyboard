@@ -174,7 +174,7 @@
                                         <menuItem title="ZX Spectrum 128k" tag="1" id="zKe-kc-rY4">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
-                                                <action selector="selectMachine:" target="Ady-hI-5gd" id="bDc-nQ-tIL"/>
+                                                <action selector="selectMachine:" target="Ady-hI-5gd" id="B7e-tP-UIm"/>
                                             </connections>
                                         </menuItem>
                                     </items>
