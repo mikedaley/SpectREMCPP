@@ -19,6 +19,29 @@
 
 using namespace std;
 
+#pragma mark - Base TapeBlock class
+
+class TapeBlock
+{
+public:
+    ~TapeBlock();
+    
+public:
+    virtual unsigned char   getFlag();
+    virtual unsigned char   getDataType();
+    virtual const char      *getFilename();
+    virtual unsigned short  getDataLength();
+    virtual unsigned char   getChecksum();
+    
+public:
+    unsigned short          blockLength;
+    unsigned char           *blockData;
+    int                     blockType;
+    int                     currentByte;
+};
+
+#pragma mark - Base ZXSpectrum class
+
 class ZXSpectrum
 {
 
@@ -91,12 +114,39 @@ public:
         eAY_MAX_REGISTERS
     };
     
+    // AY chip envelope flag type
     enum
     {
         eENVFLAG_HOLD = 0x01,
         eENVFLAG_ALTERNATE = 0x02,
         eENVFLAG_ATTACK = 0x04,
         eENVFLAG_CONTINUE = 0x08
+    };
+    
+    // TAPE block types
+    enum
+    {
+        ePROGRAM_HEADER = 0,
+        eNUMERIC_DATA_HEADER,
+        eALPHANUMERIC_DATA_HEADER,
+        eBYTE_HEADER,
+        eDATA_BLOCK,
+        eFRAGMENTED_DATA_BLOCK,
+        eUNKNOWN_BLOCK = 99
+    };
+    
+    // TAP Processing states
+    enum
+    {
+        eNO_TAPE = 0,
+        eHEADER_PILOT,
+        eSYNC1,
+        eSYNC2,
+        eDATA_PILOT,
+        eBLOCK_PAUSE,
+        eDATA_STREAM,
+        eHEADER_DATA_STREAM,
+        eDATA_BIT
     };
 
 public:
@@ -125,6 +175,17 @@ public:
     int                     snapshotMachineInSnapshotWithPath(const char *path);
     snap                    snapshotCreateSNA();
     snap                    snapshotCreateZ80();
+    
+    bool                    tapeLoadWithPath(const char *);
+    void                    tapeUpdateWithTs(int tStates);
+    void                    tapeGenerateHeaderPilotWithTs(int tStates);
+    void                    tapeGenerateSync1WithTs(int tStates);
+    void                    tapeGenerateSync2WithTs(int tStates);
+    void                    tapeGenerateDataPilotWithTs(int tStates);
+    void                    tapeGenerateDataStreamWithTs(int tStates);
+    void                    tapeGenerateHeaderDataStreamWithTs(int tStates);
+    void                    tapeGenerateDataBitWithTs(int tStates);
+    void                    tapeBlockPauseWithTs(int tStates);
     
     void                    audioAYSetRegister(unsigned char reg);
     void                    audioAYWriteData(unsigned char data);
@@ -199,6 +260,28 @@ public:
     bool                    emuDisablePaging;
     string                  emuROMPath;
     
+    // Tape Processing
+    bool                    tapeLoaded;
+    bool                    tapePlaying;
+    int                     tapeCurrentBytePtr;
+    int                     tapeCurrentBlockIndex;
+    int                     tapeNewBlock;
+    vector<TapeBlock>       tapeBlocks;
+    int                     tapeInputBit;
+    
+    int                     tapePilotPulseTStates;          // How many Ts have passed since the start of the pilot pulses
+    int                     tapePilotPulses;                // How many pilot pulses have been generated
+    int                     tapeSyncPulseTStates;           // Sync pulse tStates
+    int                     tapeDataPulseTStates;           // How many Ts have passed since the start of the data pulse
+    bool                    tapeFlipTapeBit;                // Should the tape bit be flipped
+    int                     tapeProcessingState;            // Current processing state e.g. generating pilot, streaming data
+    int                     tapeNextProcessingState;        // Next processing state to be used
+    int                     tapeCurrentDataBit;             // Which bit of the current byte in the data stream is being processed
+    int                     tapeBlockPauseTStates;          // How many tStates have passed since starting the pause between data blocks
+    int                     tapeDataBitTStates;             // How many tStates to pause when processing data bit pulses
+    int                     tapeDataPulseCount;             // How many pulses have been generated for the current data bit;
+    TapeBlock               *tapeCurrentBlock;              // Current tape block
+    
     // Audio
     int                     audioEarBit;
     int                     audioMicBit;
@@ -242,13 +325,60 @@ public:
     // ULA
     unsigned int            ULAMemoryContentionTable[80000];
     unsigned int            ULAIOContentionTable[80000];
-    static unsigned int     ULAConentionValues[];
+    const static unsigned int     ULAConentionValues[];
     int                     ULAPortFFFDValue;
 
     // Floating bus
-    static unsigned int     ULAFloatingBusValues[];
+    const static unsigned int ULAFloatingBusValues[];
     
 
+};
+
+#pragma mark - Program Header
+
+class ProgramHeader : public TapeBlock
+{
+public:
+    unsigned short          getAutoStartLine();
+    unsigned short          getProgramLength();
+    virtual unsigned short  getBlockLength();
+};
+
+#pragma mark - Numeric Data Header
+
+class NumericDataHeader : public TapeBlock
+{
+public:
+    unsigned char           getVariableName();
+    virtual unsigned short  getDataLength();
+};
+
+#pragma mark - Alphanumeric Data Header
+
+class AlphanumericDataHeader : public TapeBlock
+{
+public:
+    unsigned char           getVariableName();
+    virtual unsigned short  getDataLength();
+};
+
+#pragma mark - Byte Header Block
+
+class ByteHeader : public TapeBlock
+{
+public:
+    unsigned short          getStartAddress();
+    virtual unsigned char   getChecksum();
+};
+
+#pragma mark - Data Block
+
+class DataBlock : public TapeBlock
+{
+public:
+    unsigned char           *getDataBlock();
+    virtual unsigned char   getDataType();
+    virtual unsigned char   getChecksum();
 };
 
 #endif /* ZXSpectrum_hpp */

@@ -8,7 +8,7 @@
 
 #include "ZXSpectrum.hpp"
 
-unsigned int ZXSpectrum::ULAFloatingBusValues[] = { 0, 0, 1, 2, 1, 2, 0, 0 };
+const unsigned int ZXSpectrum::ULAFloatingBusValues[] = { 0, 0, 1, 2, 1, 2, 0, 0 };
 
 /**
  When the Z80 reads from an unattached port, such as 0xFF, it actually reads the data currently on the

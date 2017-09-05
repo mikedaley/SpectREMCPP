@@ -8,7 +8,7 @@
 
 #include "ZXSpectrum.hpp"
 
-unsigned int ZXSpectrum::ULAConentionValues[] = { 6, 5, 4, 3, 2, 1, 0, 0 };
+const unsigned int ZXSpectrum::ULAConentionValues[] = { 6, 5, 4, 3, 2, 1, 0, 0 };
 
 #pragma mark - IO Contention
 

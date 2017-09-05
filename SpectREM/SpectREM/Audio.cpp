@@ -13,7 +13,7 @@
 #define kSpace (audioQueueBufferCapacity - 1 - kUsed)
 #define kSize (audioQueueBufferCapacity - 1)
 
-const int cBEEPER_VOLUME_MULTIPLIER = 384;
+const int cBEEPER_VOLUME_MULTIPLIER = 300;
 
 static float fAYVolBase[] = {
     0.0000,
@@ -38,7 +38,7 @@ void ZXSpectrum::audioBuildAYVolumesTable()
 {
     for (int i = 0; i < 16; i++)
     {
-        audioAYVolumes[i] = (unsigned short)(fAYVolBase[i] * 8192);
+        audioAYVolumes[i] = (unsigned short)(fAYVolBase[i] * 4096);
     }
 }
 
@@ -56,13 +56,6 @@ void ZXSpectrum::audioSetup(float sampleRate, float fps)
 
 void ZXSpectrum::audioReset()
 {
-//    audioBufferIndex = 0;
-//    audioTsCounter = 0;
-//    audioTsStepCounter = 0;
-//    audioBeeperLeft = 0;
-//    audioBeeperRight = 0;
-//    memset(audioBuffer, 0, audioBufferSize);
-
     audioAYOutput = 0;
     audioAYrandom = 1;
     audioAYChannelOutput[0] = 0;

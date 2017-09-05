@@ -46,7 +46,7 @@ void ZXSpectrum::displaySetup()
 void ZXSpectrum::displayUpdateWithTs(int tStates)
 {
     // ROM and RAM are held in separate arrays, so we need to reduce the memory location by the size of the machines ROM
-    int memoryAddress = (emuDisplayPage * cBITMAP_ADDRESS);
+    const int memoryAddress = (emuDisplayPage * cBITMAP_ADDRESS);
     
     while (tStates > 0)
     {
@@ -55,75 +55,83 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
 
         int action = displayTstateTable[line][ts];
 
-        if (action == eDisplayBorder)
-        {
-            // Only draw the border of the border data has changed
-            if (displayBufferCopy[ emuCurrentDisplayTs ].attribute != displayBorderColor)
+        switch (action) {
+            case eDisplayBorder:
             {
-                displayBufferCopy[ emuCurrentDisplayTs ].attribute = displayBorderColor;
-                displayBufferCopy[ emuCurrentDisplayTs ].changed = true;
-
-                for (int i = 0; i < 8; i++)
+                // Only draw the border of the border data has changed
+                if (displayBufferCopy[ emuCurrentDisplayTs ].attribute != displayBorderColor)
                 {
-                    displayBuffer[displayBufferIndex++] = displayPalette[displayBorderColor];
-                }
-            }
-            else
-            {
-                displayBufferCopy [ emuCurrentDisplayTs ].changed = false;
-                displayBufferIndex += 8;
-            }
-        }
-        else if (action == eDisplayPaper)
-        {
-            int y = line - (machineInfo.pxVerticalBlank + machineInfo.pxVertBorder);
-            int x = (ts >> 2) - 4;
-            
-            uint pixelAddress = displayLineAddrTable[y] + x;
-            uint attributeAddress = cBITMAP_SIZE + ((y >> 3) << 5) + x;
-            
-            int pixelByte = memoryRam[memoryAddress + pixelAddress];
-            int attributeByte = memoryRam[memoryAddress + attributeAddress];
-
-            // Only draw the bitmap if the bitmap data has changed
-            if (displayBufferCopy[ emuCurrentDisplayTs ].pixels != pixelByte ||
-                displayBufferCopy[ emuCurrentDisplayTs ].attribute != attributeByte ||
-                (attributeByte & 0x80))
-            {
-                displayBufferCopy[ emuCurrentDisplayTs ].pixels = pixelByte;
-                displayBufferCopy[ emuCurrentDisplayTs ].attribute = attributeByte;
-                displayBufferCopy[ emuCurrentDisplayTs ].changed = true;
-                
-
-                // Extract the ink and paper colours from the attribute byte read in
-                int ink = (attributeByte & 0x07) + ((attributeByte & 0x40) >> 3);
-                int paper = ((attributeByte >> 3) & 0x07) + ((attributeByte & 0x40) >> 3);
-                
-                // Switch ink and paper if the flash phase has changed
-                if ((emuFrameCounter & 16) && (attributeByte & 0x80))
-                {
-                    int tempPaper = paper;
-                    paper = ink;
-                    ink = tempPaper;
-                }
-                
-                for (int i = 0x80; i; i >>= 1)
-                {
-                    if (pixelByte & i)
+                    displayBufferCopy[ emuCurrentDisplayTs ].attribute = displayBorderColor;
+                    displayBufferCopy[ emuCurrentDisplayTs ].changed = true;
+                    
+                    for (int i = 0; i < 8; i++)
                     {
-                        displayBuffer[displayBufferIndex++] = displayPalette[ink];
-                    }
-                    else
-                    {
-                        displayBuffer[displayBufferIndex++] = displayPalette[paper];
+                        displayBuffer[displayBufferIndex++] = displayPalette[displayBorderColor];
                     }
                 }
+                else
+                {
+                    displayBufferCopy [ emuCurrentDisplayTs ].changed = false;
+                    displayBufferIndex += 8;
+                }
+                break;
             }
-            else
+                
+            case eDisplayPaper:
             {
-                displayBufferCopy[ emuCurrentDisplayTs ].changed = false;
-                displayBufferIndex += 8;
+                const int y = line - (machineInfo.pxVerticalBlank + machineInfo.pxVertBorder);
+                const int x = (ts >> 2) - 4;
+                
+                const uint pixelAddress = displayLineAddrTable[y] + x;
+                const uint attributeAddress = cBITMAP_SIZE + ((y >> 3) << 5) + x;
+                
+                const int pixelByte = memoryRam[memoryAddress + pixelAddress];
+                const int attributeByte = memoryRam[memoryAddress + attributeAddress];
+                
+                // Only draw the bitmap if the bitmap data has changed
+                if (displayBufferCopy[ emuCurrentDisplayTs ].pixels != pixelByte ||
+                    displayBufferCopy[ emuCurrentDisplayTs ].attribute != attributeByte ||
+                    (attributeByte & 0x80))
+                {
+                    displayBufferCopy[ emuCurrentDisplayTs ].pixels = pixelByte;
+                    displayBufferCopy[ emuCurrentDisplayTs ].attribute = attributeByte;
+                    displayBufferCopy[ emuCurrentDisplayTs ].changed = true;
+                    
+                    
+                    // Extract the ink and paper colours from the attribute byte read in
+                    int ink = (attributeByte & 0x07) + ((attributeByte & 0x40) >> 3);
+                    int paper = ((attributeByte >> 3) & 0x07) + ((attributeByte & 0x40) >> 3);
+                    
+                    // Switch ink and paper if the flash phase has changed
+                    if ((emuFrameCounter & 16) && (attributeByte & 0x80))
+                    {
+                        const int tempPaper = paper;
+                        paper = ink;
+                        ink = tempPaper;
+                    }
+                    
+                    for (int i = 0x80; i; i >>= 1)
+                    {
+                        if (pixelByte & i)
+                        {
+                            displayBuffer[displayBufferIndex++] = displayPalette[ink];
+                        }
+                        else
+                        {
+                            displayBuffer[displayBufferIndex++] = displayPalette[paper];
+                        }
+                    }
+                }
+                else
+                {
+                    displayBufferCopy[ emuCurrentDisplayTs ].changed = false;
+                    displayBufferIndex += 8;
+                }
+                break;
             }
+                
+            default:
+                break;
         }
         
         emuCurrentDisplayTs += machineInfo.tsPerChar;

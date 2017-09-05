@@ -8,8 +8,18 @@
 
 #import "EmulationScene.h"
 #import "EmulationViewController.h"
+#import "EmulationWindowController.h"
+
+#pragma mark - Constants
+
+static NSString *const cU_BORDER_SIZE   =          @"u_borderSize";
+
+#pragma mark - Implementation 
 
 @implementation EmulationScene
+{
+    SKShader *shader;
+}
 
 - (void)didMoveToView:(SKView *)view
 {
@@ -23,16 +33,55 @@
     
     _backingNode = (SKSpriteNode *)[self childNodeWithName:@"//backingNode"];
     
-    SKShader *shader = [SKShader shaderWithFileNamed:@"PixelShader.fsh"];
+    shader = [SKShader shaderWithFileNamed:@"PixelShader.fsh"];
     _emulationScreen.shader = shader;
+    
+    [self setupShaderAttributes];
+    [self setupObservers];
+
+    [self setValue:@32 forKey:@"borderSize"];
+
 }
 
 -(void)update:(CFTimeInterval)currentTime
 {
-    // Called before each frame is rendered
     [_emulationScreenTexture modifyPixelDataWithBlock:^(void *pixelData, size_t lengthInBytes) {
         memcpy(pixelData, [self.emulationViewController getDisplayBuffer], lengthInBytes);
     }];
 }
+
+- (void)setupObservers
+{
+    [self addObserver:self forKeyPath:@"borderSize" options:NSKeyValueObservingOptionNew context:NULL];
+}
+
+- (void)setupShaderAttributes
+{
+    shader.attributes = @[
+                          [SKAttribute attributeWithName:cU_BORDER_SIZE type:SKAttributeTypeFloat]
+                          ];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"borderSize"])
+    {
+        [_emulationScreen setValue:[SKAttributeValue valueWithFloat:[change[NSKeyValueChangeNewKey] floatValue]] forAttributeNamed:cU_BORDER_SIZE];
+    }
+}
+
+#pragma mark - Mouse Events
+
+- (void)mouseMoved:(NSEvent *)event
+{
+
+}
+
+- (void)mouseDown:(NSEvent *)event
+{
+    [self.view.window performWindowDragWithEvent:event];
+}
+
+
 
 @end

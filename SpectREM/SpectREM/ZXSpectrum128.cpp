@@ -101,8 +101,7 @@ unsigned char ZXSpectrum128::coreIORead(unsigned short address)
         else if ((address & 0xc002) == 0xc000 && machineInfo.hasAY)
         {
             return audioAYReadData();
-        }
-        
+        }        
         
         // Getting here means that nothing has handled that port read so based on a real Spectrum
         // return the floating bus value

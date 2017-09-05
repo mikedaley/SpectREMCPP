@@ -20,4 +20,6 @@
 
 @property (strong, nonatomic) EmulationViewController *emulationViewController;
 
+@property (assign, nonatomic) CGFloat borderSize;
+
 @end

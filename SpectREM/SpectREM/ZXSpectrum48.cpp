@@ -76,6 +76,12 @@ unsigned char ZXSpectrum48::coreIORead(unsigned short address)
             return 0x0;
         }
         
+        // AY-3-8912 ports
+        else if ((address & 0xc002) == 0xc000 && machineInfo.hasAY)
+        {
+            return audioAYReadData();
+        }
+
         // Getting here means that nothing has handled that port read so based on a real Spectrum
         // return the floating bus value
         return ULAFloatingBus();

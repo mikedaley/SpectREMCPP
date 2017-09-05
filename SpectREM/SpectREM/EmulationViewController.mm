@@ -28,7 +28,6 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 @interface EmulationViewController()
 {
 @public
-    EmulationScene      *scene;
     ZXSpectrum          *machine;
     AudioCore           *audioCore;
     dispatch_source_t   displayTimer;
@@ -52,15 +51,18 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     mainBundlePath = [[NSBundle mainBundle] bundlePath];
     [self initMachineWithRomPath:mainBundlePath machineType:eZXSpectrum48];
     
-    scene = (EmulationScene *)[SKScene nodeWithFileNamed:@"EmulationScene"];
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"cool" ofType:@"TAP"];
+    machine->tapeLoadWithPath([path cStringUsingEncoding:NSUTF8StringEncoding]);
+    
+    _scene = (EmulationScene *)[SKScene nodeWithFileNamed:@"EmulationScene"];
     
     // Remember to do this before presenting the scene or it goes all wierd !!!
-    scene.scaleMode = SKSceneScaleModeFill;
+    _scene.scaleMode = SKSceneScaleModeFill;
     
-    scene.nextResponder = self;
-    scene.emulationViewController = self;
+    _scene.nextResponder = self;
+    _scene.emulationViewController = self;
 
-    [self.skView presentScene:scene];
+    [self.skView presentScene:_scene];
     
     audioCore = [[AudioCore alloc] initWithSampleRate:cAUDIO_SAMPLE_RATE framesPerSecond:cFRAMES_PER_SECOND machine:machine];
     
@@ -73,7 +75,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
 - (void)initMachineWithRomPath:(NSString *)romPath machineType:(int)machineType
 {
-    [scene setPaused:YES];
+    [self.scene setPaused:YES];
     
     if (audioCore) { [audioCore stop]; }
     if (machine) { delete machine; }
@@ -93,7 +95,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     
     [audioCore start];
     
-    [scene setPaused:NO];
+    [self.scene setPaused:NO];
 }
 
 #pragma mark - Keyboard

@@ -31,22 +31,6 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SpectREM/Snapshot.cpp"
-            timestampString = "526300330.769712"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "91"
-            endingLineNumber = "91"
-            landmarkName = "ZXSpectrum::snapshotSNALoadWithPath(const char *path)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "SpectREM/Snapshot.cpp"
             timestampString = "526300418.848185"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"

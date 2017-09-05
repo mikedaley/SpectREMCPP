@@ -10,7 +10,7 @@ void main()
 {
     const float w = 320;
     const float h = 256;
-    const float border = 0;
+    const float border = 32 - u_borderSize;
     const float new_w = w - (border * 2);
     const float new_h = h - (border * 2);
     
