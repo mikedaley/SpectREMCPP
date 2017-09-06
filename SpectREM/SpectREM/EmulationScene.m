@@ -12,7 +12,8 @@
 
 #pragma mark - Constants
 
-static NSString *const cU_BORDER_SIZE   =          @"u_borderSize";
+static NSString *const cU_FILTER_VALUE  =           @"u_filterValue";
+static NSString *const cU_BORDER_SIZE   =           @"u_borderSize";
 
 #pragma mark - Implementation 
 
@@ -39,9 +40,11 @@ static NSString *const cU_BORDER_SIZE   =          @"u_borderSize";
     [self setupShaderAttributes];
     [self setupObservers];
 
-    [self setValue:@32 forKey:@"borderSize"];
-
+//    [self setValue:@32 forKey:@"displayBorderWidth"];
+//    [self setValue:@0.25 forKey:@"displayFilterValue"];
 }
+
+#pragma mark - Scene Update
 
 -(void)update:(CFTimeInterval)currentTime
 {
@@ -50,32 +53,38 @@ static NSString *const cU_BORDER_SIZE   =          @"u_borderSize";
     }];
 }
 
+#pragma marl - Observers
+
 - (void)setupObservers
 {
-    [self addObserver:self forKeyPath:@"borderSize" options:NSKeyValueObservingOptionNew context:NULL];
-}
-
-- (void)setupShaderAttributes
-{
-    shader.attributes = @[
-                          [SKAttribute attributeWithName:cU_BORDER_SIZE type:SKAttributeTypeFloat]
-                          ];
+    [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:@"displayBorderSize" options:NSKeyValueObservingOptionNew context:NULL];
+    [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:@"displayFilterValue" options:NSKeyValueObservingOptionNew context:NULL];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
 {
-    if ([keyPath isEqualToString:@"borderSize"])
+    if ([keyPath isEqualToString:@"displayBorderSize"])
     {
         [_emulationScreen setValue:[SKAttributeValue valueWithFloat:[change[NSKeyValueChangeNewKey] floatValue]] forAttributeNamed:cU_BORDER_SIZE];
     }
+
+    else if ([keyPath isEqualToString:@"displayFilterValue"])
+    {
+        [_emulationScreen setValue:[SKAttributeValue valueWithFloat:[change[NSKeyValueChangeNewKey] floatValue]] forAttributeNamed:cU_FILTER_VALUE];
+    }
+}
+
+#pragma mark - Shader Setup
+
+- (void)setupShaderAttributes
+{
+    shader.attributes = @[
+                          [SKAttribute attributeWithName:cU_BORDER_SIZE type:SKAttributeTypeFloat],
+                          [SKAttribute attributeWithName:cU_FILTER_VALUE type:SKAttributeTypeFloat]
+                          ];
 }
 
 #pragma mark - Mouse Events
-
-- (void)mouseMoved:(NSEvent *)event
-{
-
-}
 
 - (void)mouseDown:(NSEvent *)event
 {

@@ -7,11 +7,14 @@
 //
 
 #import "EmulationViewController.h"
-#import "AudioCore.h"
-#import "EmulationScene.h"
 #import "ZXSpectrum.hpp"
 #import "ZXSpectrum48.hpp"
 #import "ZXSpectrum128.hpp"
+
+#import "AudioCore.h"
+#import "EmulationScene.h"
+
+#import "ConfigurationViewController.h"
 
 #pragma mark - Constants
 
@@ -29,10 +32,13 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 @interface EmulationViewController()
 {
 @public
-    ZXSpectrum          *machine;
-    AudioCore           *audioCore;
-    dispatch_source_t   displayTimer;
-    NSString            *mainBundlePath;
+    ZXSpectrum                      *machine;
+    AudioCore                       *audioCore;
+    dispatch_source_t               displayTimer;
+    NSString                        *mainBundlePath;
+    
+    NSStoryboard                    *storyBoard;
+    ConfigurationViewController     *configViewController;
 }
 @end
 
@@ -49,16 +55,21 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 {
     [super viewDidLoad];
 
-    mainBundlePath = [[NSBundle mainBundle] bundlePath];
-    [self initMachineWithRomPath:mainBundlePath machineType:eZXSpectrum48];
-    
+    storyBoard = [NSStoryboard storyboardWithName:@"Main" bundle:nil];
     _scene = (EmulationScene *)[SKScene nodeWithFileNamed:@"EmulationScene"];
+    
+    mainBundlePath = [[NSBundle mainBundle] bundlePath];
+    
+    [self initMachineWithRomPath:mainBundlePath machineType:eZXSpectrum48];
     
     // Remember to do this before presenting the scene or it goes all wierd !!!
     _scene.scaleMode = SKSceneScaleModeFill;
     
     _scene.nextResponder = self;
     _scene.emulationViewController = self;
+    
+    [self setupConfigView];
+    
 
     [self.skView presentScene:_scene];
     
@@ -71,7 +82,17 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
 - (void)viewWillAppear
 {
-    [self.view.window setTitle:[NSString stringWithCString:machine->machineInfo.machineName encoding:NSUTF8StringEncoding]];
+    [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@", [NSString stringWithCString:machine->machineInfo.machineName encoding:NSUTF8StringEncoding]]];
+}
+
+#pragma mark - View/Controller Setup
+
+- (void)setupConfigView
+{
+    configViewController = [storyBoard instantiateControllerWithIdentifier:@"CONFIG_VIEW_CONTROLLER"];
+    self.configEffectsView.frame.origin = (CGPoint){0, 0};
+//    self.configEffectsView.alphaValue = 0;
+    self.configScrollView.documentView = configViewController.view;
 }
 
 #pragma mark - Init/Switch Machine
@@ -97,17 +118,14 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
         machine = new ZXSpectrum128();
     }
     
+    // Initialise the new machine and audio core which is used to drive it
     machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
     audioCore = [[AudioCore alloc] initWithSampleRate:cAUDIO_SAMPLE_RATE framesPerSecond:cFRAMES_PER_SECOND machine:machine];
-    
-    // Not doing this causes a crash when switching to 128k mode at times. This ensures the display frame is reset before
-    // starting the emulation and rendering
-    machine->displayFrameReset();
-    
     [audioCore start];
-    [self.scene setPaused:NO];
-    [self.view.window setTitle:[NSString stringWithCString:machine->machineInfo.machineName encoding:NSUTF8StringEncoding]];
     
+    [self.scene setPaused:NO];
+    
+    [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@", [NSString stringWithCString:machine->machineInfo.machineName encoding:NSUTF8StringEncoding]]];
 }
 
 #pragma mark - Keyboard

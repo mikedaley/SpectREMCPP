@@ -16,6 +16,9 @@
 		17B5DB971F5B14A7003E7EF3 /* AudioCore.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17B5DB951F5B14A7003E7EF3 /* AudioCore.mm */; };
 		17B5DB9A1F5B14D3003E7EF3 /* Audio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17B5DB991F5B14D3003E7EF3 /* Audio.cpp */; };
 		17EC89101F5B1FC500B6EFAF /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17EC890F1F5B1FC500B6EFAF /* AudioToolbox.framework */; };
+		ED2A6D051F6036D3003CD6CE /* ConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D041F6036D3003CD6CE /* ConfigurationViewController.m */; };
+		ED2A6D0A1F603D18003CD6CE /* NSClipView+Flipped.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D091F603D18003CD6CE /* NSClipView+Flipped.m */; };
+		ED2A6D0C1F604CD0003CD6CE /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = ED2A6D0B1F604CD0003CD6CE /* Defaults.plist */; };
 		ED504A621F4EE9D500BD289E /* EmulationScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = ED504A611F4EE9D500BD289E /* EmulationScene.sks */; };
 		ED504A641F51BBFF00BD289E /* Snapshot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED504A631F51BBFF00BD289E /* Snapshot.cpp */; };
 		ED913F9A1F30759300316E1A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = ED913F991F30759300316E1A /* AppDelegate.m */; };
@@ -35,8 +38,6 @@
 		ED913FD71F30789300316E1A /* 48.ROM in Resources */ = {isa = PBXBuildFile; fileRef = ED913FD61F30789300316E1A /* 48.ROM */; };
 		EDB7F7FC1F5ED3EF003053E3 /* EmulationWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = EDB7F7FB1F5ED3EF003053E3 /* EmulationWindowController.m */; };
 		EDB7F7FE1F5EE2E4003053E3 /* Tape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDB7F7FD1F5EE2E4003053E3 /* Tape.cpp */; };
-		EDB7F8001F5EF904003053E3 /* cool.TAP in Resources */ = {isa = PBXBuildFile; fileRef = EDB7F7FF1F5EF904003053E3 /* cool.TAP */; };
-		EDB7F8021F5F1D7F003053E3 /* aticatac.tap in Resources */ = {isa = PBXBuildFile; fileRef = EDB7F8011F5F1D7F003053E3 /* aticatac.tap */; };
 		EDD9ADEB1F54032C004DD728 /* EmulationView.m in Sources */ = {isa = PBXBuildFile; fileRef = EDD9ADEA1F54032C004DD728 /* EmulationView.m */; };
 		EDD9ADED1F59C111004DD728 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = EDD9ADEC1F59C111004DD728 /* Credits.rtf */; };
 		EDD9ADF11F5D6F51004DD728 /* ZXSpectrum128.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDD9ADEF1F5D6F51004DD728 /* ZXSpectrum128.cpp */; };
@@ -58,6 +59,11 @@
 		17B5DB991F5B14D3003E7EF3 /* Audio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Audio.cpp; sourceTree = "<group>"; };
 		17B5DB9C1F5B1CCE003E7EF3 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		17EC890F1F5B1FC500B6EFAF /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		ED2A6D031F6036D3003CD6CE /* ConfigurationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigurationViewController.h; sourceTree = "<group>"; };
+		ED2A6D041F6036D3003CD6CE /* ConfigurationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigurationViewController.m; sourceTree = "<group>"; };
+		ED2A6D081F603D18003CD6CE /* NSClipView+Flipped.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSClipView+Flipped.h"; sourceTree = "<group>"; };
+		ED2A6D091F603D18003CD6CE /* NSClipView+Flipped.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSClipView+Flipped.m"; sourceTree = "<group>"; };
+		ED2A6D0B1F604CD0003CD6CE /* Defaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Defaults.plist; sourceTree = "<group>"; };
 		ED504A611F4EE9D500BD289E /* EmulationScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = EmulationScene.sks; sourceTree = "<group>"; };
 		ED504A631F51BBFF00BD289E /* Snapshot.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Snapshot.cpp; sourceTree = "<group>"; };
 		ED913F951F30759300316E1A /* SpectREM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpectREM.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -92,8 +98,6 @@
 		EDB7F7FA1F5ED3EF003053E3 /* EmulationWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmulationWindowController.h; sourceTree = "<group>"; };
 		EDB7F7FB1F5ED3EF003053E3 /* EmulationWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmulationWindowController.m; sourceTree = "<group>"; };
 		EDB7F7FD1F5EE2E4003053E3 /* Tape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Tape.cpp; sourceTree = "<group>"; };
-		EDB7F7FF1F5EF904003053E3 /* cool.TAP */ = {isa = PBXFileReference; lastKnownFileType = file; path = cool.TAP; sourceTree = "<group>"; };
-		EDB7F8011F5F1D7F003053E3 /* aticatac.tap */ = {isa = PBXFileReference; lastKnownFileType = file; path = aticatac.tap; sourceTree = "<group>"; };
 		EDD9ADE91F54032C004DD728 /* EmulationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmulationView.h; sourceTree = "<group>"; };
 		EDD9ADEA1F54032C004DD728 /* EmulationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmulationView.m; sourceTree = "<group>"; };
 		EDD9ADEC1F59C111004DD728 /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
@@ -167,6 +171,24 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		ED2A6D061F6036D8003CD6CE /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				ED2A6D031F6036D3003CD6CE /* ConfigurationViewController.h */,
+				ED2A6D041F6036D3003CD6CE /* ConfigurationViewController.m */,
+			);
+			name = Configuration;
+			sourceTree = "<group>";
+		};
+		ED2A6D071F603D0F003CD6CE /* Class Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				ED2A6D081F603D18003CD6CE /* NSClipView+Flipped.h */,
+				ED2A6D091F603D18003CD6CE /* NSClipView+Flipped.m */,
+			);
+			name = "Class Extensions";
+			sourceTree = "<group>";
+		};
 		ED913F8C1F30759300316E1A = {
 			isa = PBXGroup;
 			children = (
@@ -187,8 +209,7 @@
 		ED913F971F30759300316E1A /* SpectREM */ = {
 			isa = PBXGroup;
 			children = (
-				EDB7F7FF1F5EF904003053E3 /* cool.TAP */,
-				EDB7F8011F5F1D7F003053E3 /* aticatac.tap */,
+				ED2A6D071F603D0F003CD6CE /* Class Extensions */,
 				ED913FB41F30762600316E1A /* App Delegate */,
 				ED913FB31F30761B00316E1A /* StoryBoard */,
 				ED913FB71F30765D00316E1A /* Emulation Scene */,
@@ -234,6 +255,7 @@
 			children = (
 				174AAFBD1F58626E00B75535 /* Shader */,
 				ED913FB81F30767A00316E1A /* Emulation */,
+				ED2A6D061F6036D8003CD6CE /* Configuration */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -244,6 +266,7 @@
 				EDD9ADEC1F59C111004DD728 /* Credits.rtf */,
 				ED913FA81F30759300316E1A /* Assets.xcassets */,
 				ED913FAD1F30759300316E1A /* Info.plist */,
+				ED2A6D0B1F604CD0003CD6CE /* Defaults.plist */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -388,13 +411,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ED2A6D0C1F604CD0003CD6CE /* Defaults.plist in Resources */,
 				EDD9ADF41F5D89AE004DD728 /* 128-0.ROM in Resources */,
 				EDD9ADF51F5D89AE004DD728 /* 128-1.ROM in Resources */,
 				174AAFBC1F585DCC00B75535 /* PixelShader.fsh in Resources */,
 				EDD9ADED1F59C111004DD728 /* Credits.rtf in Resources */,
 				ED913FD71F30789300316E1A /* 48.ROM in Resources */,
-				EDB7F8021F5F1D7F003053E3 /* aticatac.tap in Resources */,
-				EDB7F8001F5EF904003053E3 /* cool.TAP in Resources */,
 				ED913FA91F30759300316E1A /* Assets.xcassets in Resources */,
 				ED913FAC1F30759300316E1A /* Main.storyboard in Resources */,
 				ED504A621F4EE9D500BD289E /* EmulationScene.sks in Resources */,
@@ -422,6 +444,7 @@
 				ED913FC91F30781000316E1A /* Z80Core_CBOpcodes.cpp in Sources */,
 				ED913FA41F30759300316E1A /* EmulationScene.m in Sources */,
 				ED913FD41F30787000316E1A /* ZXSpectrum.cpp in Sources */,
+				ED2A6D0A1F603D18003CD6CE /* NSClipView+Flipped.m in Sources */,
 				17A089511F4F5B2700CAA178 /* Keyboard.cpp in Sources */,
 				ED913FCE1F30781000316E1A /* Z80Core_MainOpcodes.cpp in Sources */,
 				ED913FA71F30759300316E1A /* EmulationViewController.mm in Sources */,
@@ -432,6 +455,7 @@
 				EDB7F7FC1F5ED3EF003053E3 /* EmulationWindowController.m in Sources */,
 				17A089531F4F677200CAA178 /* Display.cpp in Sources */,
 				ED504A641F51BBFF00BD289E /* Snapshot.cpp in Sources */,
+				ED2A6D051F6036D3003CD6CE /* ConfigurationViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -20,7 +20,7 @@ void main()
 
     // Apply parametric nearest filtering
     vec2 vUv = vec2(u, v);
-    vec2 alpha = vec2(0.28); // 0.5 = Linear, 0.0 = Nearest
+    vec2 alpha = vec2(u_filterValue); // 0.5 = Linear, 0.0 = Nearest
     vec2 x = fract(vUv);
     vec2 x_ = clamp(0.5 / alpha * x, 0.0, 0.5) + clamp(0.5 / alpha * (x - 1.0) + 0.5, 0.0, 0.5);
     

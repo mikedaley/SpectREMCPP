@@ -57,7 +57,9 @@ void ZXSpectrum::initialise(string romPath)
     audioSetup(192000, 50);
     audioBuildAYVolumesTable();
     
-    resetMachine(false);
+    displayFrameReset();
+    audioReset();
+    tapeReset(true);
 }
 
 void ZXSpectrum::loadDefaultROM()
