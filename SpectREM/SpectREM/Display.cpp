@@ -10,7 +10,7 @@
 
 #pragma mark - Spectrum displayPalette
 
-unsigned int ZXSpectrum::displayPalette[] =
+const unsigned int displayPalette[] =
 {
     // Normal Colours in AABBGGRR format
     0xff000000, // Black
@@ -45,7 +45,6 @@ void ZXSpectrum::displaySetup()
 
 void ZXSpectrum::displayUpdateWithTs(int tStates)
 {
-    // ROM and RAM are held in separate arrays, so we need to reduce the memory location by the size of the machines ROM
     const int memoryAddress = (emuDisplayPage * cBITMAP_ADDRESS);
     
     while (tStates > 0)
