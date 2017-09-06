@@ -253,7 +253,7 @@ public:
     int                     screenBufferSize;
     int                     displayTstateTable[312][228];
     int                     displayLineAddrTable[192];
-    static unsigned int     displayPalette[];
+//    const unsigned int      displayPalette[];
     int                     displayBorderColor;
 
     // Emulation
