@@ -129,6 +129,12 @@
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="Fef-7S-v0P"/>
+                                        <menuItem title="Configuration" tag="1" keyEquivalent="c" id="jlO-ZM-lTC" userLabel="Configuration">
+                                            <connections>
+                                                <action selector="showConfigPanel:" target="Ady-hI-5gd" id="Z2H-4Y-ng6"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="Q1d-5J-qUV"/>
                                         <menuItem title="ZX Spectrum 48k" id="Xug-dS-X11" userLabel="ZX Spectrum 48k">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>

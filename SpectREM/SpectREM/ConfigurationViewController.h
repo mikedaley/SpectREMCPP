@@ -18,11 +18,4 @@ extern NSString *const cDISPLAY_FILTER_VALUE;
 
 @interface ConfigurationViewController : NSViewController
 
-// Machine
-@property (assign)  NSInteger   selectedMachine;
-
-// Display
-@property (assign)  float       displayBorderWidth;
-@property (assign)  float       displayFilterValue;
-
 @end

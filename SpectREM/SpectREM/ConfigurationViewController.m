@@ -32,16 +32,8 @@ NSString *const cDISPLAY_FILTER_VALUE           = @"displayFilterValue";
         NSDictionary *userDefaults = [NSDictionary dictionaryWithContentsOfFile:userDefaultsPath];
         [[NSUserDefaults standardUserDefaults] registerDefaults:userDefaults];
         [self.userDefaultController setInitialValues:userDefaults];
-        [self setupBindings];
     }
     return self;
-}
-
-- (void)setupBindings
-{
-//    [self bind:cSELECTED_MACHINE toObject:self.userDefaultController withKeyPath:@"values.selectedMachine" options:nil];
-//    [self bind:cDISPLAY_BORDER_WIDTH toObject:self.userDefaultController withKeyPath:@"values.displayBorderWidth" options:nil];
-//    [self bind:cDISPLAY_FILTER_VALUE toObject:self.userDefaultController withKeyPath:@"values.displayFilterValue" options:nil];
 }
 
 @end

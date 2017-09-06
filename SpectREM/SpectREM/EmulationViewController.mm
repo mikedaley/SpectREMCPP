@@ -6,6 +6,7 @@
 //  Copyright © 2017 71Squared Ltd. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
 #import "EmulationViewController.h"
 #import "ZXSpectrum.hpp"
 #import "ZXSpectrum48.hpp"
@@ -36,6 +37,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     AudioCore                       *audioCore;
     dispatch_source_t               displayTimer;
     NSString                        *mainBundlePath;
+    bool                            configViewVisible;
     
     NSStoryboard                    *storyBoard;
     ConfigurationViewController     *configViewController;
@@ -70,14 +72,13 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     
     [self setupConfigView];
     
-
-    [self.skView presentScene:_scene];
-    
     audioCore = [[AudioCore alloc] initWithSampleRate:cAUDIO_SAMPLE_RATE framesPerSecond:cFRAMES_PER_SECOND machine:machine];
     
     [audioCore start];
     
     [self restoreSession];
+    [self.skView presentScene:_scene];
+
 }
 
 - (void)viewWillAppear
@@ -90,8 +91,8 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 - (void)setupConfigView
 {
     configViewController = [storyBoard instantiateControllerWithIdentifier:@"CONFIG_VIEW_CONTROLLER"];
-    self.configEffectsView.frame.origin = (CGPoint){0, 0};
-//    self.configEffectsView.alphaValue = 0;
+    [self.configEffectsView setFrameOrigin:(CGPoint){-self.configEffectsView.frame.size.width, 0}];
+    self.configEffectsView.alphaValue = 0;
     self.configScrollView.documentView = configViewController.view;
 }
 
@@ -311,6 +312,31 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
             [self initMachineWithRomPath:mainBundlePath machineType:eZXSpectrum128];
             break;
     }
+}
+
+- (IBAction)showConfigPanel:(id)sender
+{
+    NSRect configFrame = self.configEffectsView.frame;
+    configFrame.origin.y = 0;
+    if (configFrame.origin.x < 0)
+    {
+        configFrame.origin.x = 0;
+        configFrame.origin.y = 0;
+    }
+    else
+    {
+        configFrame.origin.x = -configFrame.size.width;
+        configFrame.origin.y = 0;
+    }
+    
+    [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+        context.duration = 0.3;
+        context.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+        [self.configEffectsView.animator setAlphaValue:(self.configEffectsView.alphaValue) ? 0 : 1];
+        [self.configEffectsView.animator setFrame:configFrame];
+    }  completionHandler:^{
+        
+    }];
 }
 
 #pragma mark - Tape Menu Items

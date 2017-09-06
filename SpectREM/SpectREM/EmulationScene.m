@@ -40,8 +40,6 @@ static NSString *const cU_BORDER_SIZE   =           @"u_borderSize";
     [self setupShaderAttributes];
     [self setupObservers];
 
-//    [self setValue:@32 forKey:@"displayBorderWidth"];
-//    [self setValue:@0.25 forKey:@"displayFilterValue"];
 }
 
 #pragma mark - Scene Update
