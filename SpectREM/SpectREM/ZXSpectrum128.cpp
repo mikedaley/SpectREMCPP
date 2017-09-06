@@ -111,7 +111,7 @@ unsigned char ZXSpectrum128::coreIORead(unsigned short address)
     // The base classes virtual function deals with owned ULA ports such as the keyboard ports
     unsigned char result = ZXSpectrum::coreIORead(address);
     
-    return (result & 191);
+    return result;
 }
 
 void ZXSpectrum128::coreIOWrite(unsigned short address, unsigned char data)

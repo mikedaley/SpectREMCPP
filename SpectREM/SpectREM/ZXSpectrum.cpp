@@ -13,6 +13,9 @@
 ZXSpectrum::ZXSpectrum()
 {
     cout << "ZXSpectrum::Constructor" << endl;
+    displayFrameReset();
+    audioReset();
+    tapeReset(true);
 }
 
 ZXSpectrum::~ZXSpectrum()
