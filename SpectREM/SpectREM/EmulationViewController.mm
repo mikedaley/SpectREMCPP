@@ -52,12 +52,6 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     mainBundlePath = [[NSBundle mainBundle] bundlePath];
     [self initMachineWithRomPath:mainBundlePath machineType:eZXSpectrum48];
     
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"aticatac" ofType:@"tap"];
-    if (!machine->tapeLoadWithPath([path cStringUsingEncoding:NSUTF8StringEncoding]))
-    {
-        NSLog(@"UNABLE TO LOAD TAPE");
-    }
-    
     _scene = (EmulationScene *)[SKScene nodeWithFileNamed:@"EmulationScene"];
     
     // Remember to do this before presenting the scene or it goes all wierd !!!
@@ -75,13 +69,23 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     [self restoreSession];
 }
 
+- (void)viewWillAppear
+{
+    [self.view.window setTitle:[NSString stringWithCString:machine->machineInfo.machineName encoding:NSUTF8StringEncoding]];
+}
+
 #pragma mark - Init/Switch Machine
 
 - (void)initMachineWithRomPath:(NSString *)romPath machineType:(int)machineType
 {
     [self.scene setPaused:YES];
     
-    if (audioCore) { [audioCore stop]; }
+    if (audioCore)
+    {
+        [audioCore stop];
+        while (audioCore.isRunning) { };
+    }
+    
     if (machine) { delete machine; }
     
     if (machineType == eZXSpectrum48)
@@ -94,12 +98,16 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     }
     
     machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
-
     audioCore = [[AudioCore alloc] initWithSampleRate:cAUDIO_SAMPLE_RATE framesPerSecond:cFRAMES_PER_SECOND machine:machine];
     
-    [audioCore start];
+    // Not doing this causes a crash when switching to 128k mode at times. This ensures the display frame is reset before
+    // starting the emulation and rendering
+    machine->displayFrameReset();
     
+    [audioCore start];
     [self.scene setPaused:NO];
+    [self.view.window setTitle:[NSString stringWithCString:machine->machineInfo.machineName encoding:NSUTF8StringEncoding]];
+    
 }
 
 #pragma mark - Keyboard
@@ -134,11 +142,13 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 {
     BOOL success = NO;
     
-    int snapshotMachineType = machine->snapshotMachineInSnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
-    
-    if (machine->machineInfo.machineType != snapshotMachineType)
+    if ([[url.pathExtension uppercaseString]isEqualToString:cZ80_EXTENSION] || [[url.pathExtension  uppercaseString] isEqualToString:cSNA_EXTENSION])
     {
-        [self initMachineWithRomPath:mainBundlePath machineType:snapshotMachineType];
+        int snapshotMachineType = machine->snapshotMachineInSnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+        if (machine->machineInfo.machineType != snapshotMachineType)
+        {
+            [self initMachineWithRomPath:mainBundlePath machineType:snapshotMachineType];
+        }
     }
     
     if ([[url.pathExtension uppercaseString] isEqualToString:cZ80_EXTENSION])
