@@ -153,7 +153,7 @@ bool ZXSpectrum::snapshotSNALoadWithPath(const char *path)
         z80Core.SetRegister(CZ80Core::eREG_SP, z80Core.GetRegister(CZ80Core::eREG_SP) + 2);
     }
     
-    emuPaused = true;
+    emuPaused = false;
     
     return true;
     
