@@ -47,14 +47,16 @@ typedef struct
     int romSize;                // 21
     int ramSize;                // 22
     
-    int machineType;            // 23
+    const char *machineName ;    // 23
+    
+    int machineType;            // 24
     
 } MachineInfo;
 
 static MachineInfo machines[] = {
-    //1   2      3      4    5      6     7      8    9  10 11  12   13   14   15   16  17     18     19  20  21     22      23
-    { 32, 69888, 14335, 224, 12544, 1792, 43008, 128, 4, 56, 8, 256, 192, 448, 312, 32, true, false, 10, 16, 16384, 65536,  eZXSpectrum48 },
-    { 36, 70908, 14362, 228, 12768, 1596, 43776, 128, 4, 56, 7, 256, 192, 448, 311, 32, true,  true,  12, 16, 32768, 131072, eZXSpectrum128 }
+    //1   2      3      4    5      6     7      8    9  10 11  12   13   14   15   16  17    18      19  20  21     22      23                  24
+    { 32, 69888, 14335, 224, 12544, 1792, 43008, 128, 4, 56, 8, 256, 192, 448, 312, 32, true, false,  10, 16, 16384, 65536,  "ZX Spectrum 48k",  eZXSpectrum48 },
+    { 36, 70908, 14362, 228, 12768, 1596, 43776, 128, 4, 56, 7, 256, 192, 448, 311, 32, true,  true,  12, 16, 32768, 131072, "ZX Spectrum 128k", eZXSpectrum128 }
 };
 
 #endif /* MachineDetails_h */
