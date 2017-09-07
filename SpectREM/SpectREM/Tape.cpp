@@ -22,7 +22,7 @@ static const int cDATA_BIT_ONE_PULSE_TSTATE_DELAY = 1710;
 
 static const int cHEADER_FLAG_OFFSET = 0;
 static const int cHEADER_DATA_TYPE_OFFSET = 1;
-static const int cHEADER_FILENAME_OFFSET = 2;
+//static const int cHEADER_FILENAME_OFFSET = 2;
 //static int cHEADER_DATA_LENGTH_OFFSET = 12;
 static const int cHEADER_CHECKSUM_OFFSET = 17;
 
@@ -43,7 +43,7 @@ static const int cBYTE_HEADER_START_ADDRESS_OFFSET = 14;
 
 static const int cDATA_BLOCK_DATA_LENGTH_OFFSET = 1;
 
-static const int cHEADER_FILENAME_LENGTH = 10;
+//static const int cHEADER_FILENAME_LENGTH = 10;
 
 static const int cHEADER_BLOCK_LENGTH = 19;
 
@@ -62,13 +62,6 @@ unsigned char TapeBlock::getFlag()
 unsigned char TapeBlock::getDataType()
 {
     return blockData[ cHEADER_DATA_TYPE_OFFSET ];
-}
-
-const char * TapeBlock::getFilename()
-{
-    const char *filename = (char *)calloc(cHEADER_FILENAME_LENGTH, sizeof(char));
-    memcpy(&filename, &blockData[ cHEADER_FILENAME_OFFSET ], cHEADER_FILENAME_LENGTH);
-    return filename;
 }
 
 unsigned short TapeBlock::getDataLength()

@@ -174,6 +174,11 @@ ZXSpectrum::Snap ZXSpectrum::snapshotCreateZ80()
     {
         snapshotSize = (128 * 1024) + cZ80_V3_HEADER_SIZE + (cZ80_V3_PAGE_HEADER_SIZE * 8);
     }
+    else
+    {
+        cout << "Unknown machine type" << endl;
+        exit(1);
+    }
     
     // Structure to be returned containing the length and size of the snapshot
     Snap snapData;
@@ -383,10 +388,10 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
     //    Bit 4  : 1=Basic SamRom switched in
     //    Bit 5  : 1=Block of data is compressed
     //    Bit 6-7: No meaning
-    unsigned char byte12 = fileBytes[12];
+//    unsigned char byte12 = fileBytes[12];
     
     // For campatibility reasons if byte 12 = 255 then it should be assumed to = 1
-    byte12 = (byte12 == 255) ? 1 : byte12;
+//    byte12 = (byte12 == 255) ? 1 : byte12;
     
     displayBorderColor = (fileBytes[12] & 14) >> 1;
     bool compressed = fileBytes[12] & 32;
@@ -631,7 +636,6 @@ int ZXSpectrum::snapshotMachineInSnapshotWithPath(const char *path)
     if (pc == 0)
     {
         version = 2;
-        pc = ((unsigned short *)&fileBytes[32])[0];
     }
     
     if (version == 1)

@@ -24,12 +24,11 @@ using namespace std;
 class TapeBlock
 {
 public:
-    ~TapeBlock();
+    virtual ~TapeBlock();
     
 public:
     virtual unsigned char   getFlag();
     virtual unsigned char   getDataType();
-    virtual const char      *getFilename();
     virtual unsigned short  getDataLength();
     virtual unsigned char   getChecksum();
     
@@ -150,14 +149,14 @@ public:
     
 public:
     ZXSpectrum();
-    ~ZXSpectrum();
+    virtual ~ZXSpectrum() = 0;
 
 public:
     virtual void            initialise(string romPath);
     virtual void            resetMachine(bool hard = true);
     virtual void            release();
 
-    virtual void            loadDefaultROM();
+    virtual void            loadDefaultROM() = 0;
 
     void                    generateFrame();
     void                    displayFrameReset();
@@ -218,7 +217,6 @@ private:
     void                    displaySetup();
     void                    audioSetup(float sampleRate, float fps);
     
-    
     // Core memory/IO functions
     static unsigned char    zxSpectrumMemoryRead(unsigned short address, void *param);
     static void             zxSpectrumMemoryWrite(unsigned short address, unsigned char data, void *param);
@@ -229,13 +227,14 @@ private:
     static void             zxSpectrumIOWrite(unsigned short address, unsigned char data, void *param);
 
 public:
-    virtual unsigned char   coreMemoryRead(unsigned short address);
-    virtual void            coreMemoryWrite(unsigned short address, unsigned char data);
-    virtual void            coreMemoryContention(unsigned short address, unsigned int tStates);
-    virtual unsigned char   coreDebugRead(unsigned int address, void *data);
-    virtual void            coreDebugWrite(unsigned int address, unsigned char byte, void *data);
-    virtual unsigned char   coreIORead(unsigned short address);
-    virtual void            coreIOWrite(unsigned short address, unsigned char data);
+    virtual unsigned char   coreMemoryRead(unsigned short address) = 0;
+    virtual void            coreMemoryWrite(unsigned short address, unsigned char data) = 0;
+    virtual void            coreMemoryContention(unsigned short address, unsigned int tStates) = 0;
+    virtual unsigned char   coreIORead(unsigned short address) = 0;
+    virtual void            coreIOWrite(unsigned short address, unsigned char data) = 0;
+
+    virtual unsigned char   coreDebugRead(unsigned int address, void *data) = 0;
+    virtual void            coreDebugWrite(unsigned int address, unsigned char byte, void *data) = 0;
 
 
     CZ80Core                z80Core;

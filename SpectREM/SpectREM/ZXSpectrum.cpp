@@ -21,7 +21,6 @@ ZXSpectrum::ZXSpectrum()
 ZXSpectrum::~ZXSpectrum()
 {
     cout << "ZXSpectrum::Destructor" << endl;
-    release();
 }
 
 #pragma mark - Initialise
@@ -62,11 +61,6 @@ void ZXSpectrum::initialise(string romPath)
     audioReset();
     keyboardMapReset();
     tapeReset(true);
-}
-
-void ZXSpectrum::loadDefaultROM()
-{
-
 }
 
 #pragma mark - Generate a frame
@@ -143,19 +137,6 @@ void ZXSpectrum::zxSpectrumDebugWrite(unsigned int address, unsigned char byte, 
     ((ZXSpectrum *) param)->coreDebugWrite(address, byte, data);
 }
 
-unsigned char ZXSpectrum::coreMemoryRead(unsigned short address)
-{
-    return 0;
-}
-
-void ZXSpectrum::coreMemoryWrite(unsigned short address, unsigned char data) { }
-
-void ZXSpectrum::coreMemoryContention(unsigned short address, unsigned int tStates) { }
-
-unsigned char ZXSpectrum::coreDebugRead(unsigned int address, void *data) { return 0; }
-
-void ZXSpectrum::coreDebugWrite(unsigned int address, unsigned char byte, void *data) { }
-
 #pragma mark - IO Access
 
 unsigned char ZXSpectrum::zxSpectrumIORead(unsigned short address, void *param)
@@ -166,31 +147,6 @@ unsigned char ZXSpectrum::zxSpectrumIORead(unsigned short address, void *param)
 void ZXSpectrum::zxSpectrumIOWrite(unsigned short address, unsigned char data, void *param)
 {
     ((ZXSpectrum *) param)->coreIOWrite(address, data);
-}
-
-unsigned char ZXSpectrum::coreIORead(unsigned short address)
-{
-    // Check to see if the keyboard is being read and if so return any keys currently pressed
-    unsigned char result = 0xff;
-    if (address & 0xfe)
-    {
-        for (int i = 0; i < 8; i++)
-        {
-            if (!(address & (0x100 << i)))
-            {
-                result &= keyboardMap[i];
-            }
-        }
-    }
-    
-    result = (result & 191) | (audioEarBit << 6) | (tapeInputBit << 6);
-    
-    return result;
-}
-
-void ZXSpectrum::coreIOWrite(unsigned short address, unsigned char data)
-{
-    // Nothing to see here. Most likely implemented in the 
 }
 
 #pragma mark - Pause/Resume

@@ -111,8 +111,20 @@ unsigned char ZXSpectrum128::coreIORead(unsigned short address)
         return ULAFloatingBus();
     }
     
-    // The base classes virtual function deals with owned ULA ports such as the keyboard ports
-    unsigned char result = ZXSpectrum::coreIORead(address);
+    // Check to see if the keyboard is being read and if so return any keys currently pressed
+    unsigned char result = 0xff;
+    if (address & 0xfe)
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            if (!(address & (0x100 << i)))
+            {
+                result &= keyboardMap[i];
+            }
+        }
+    }
+    
+    result = (result & 191) | (audioEarBit << 6) | (tapeInputBit << 6);
     
     return result;
 }
@@ -238,7 +250,7 @@ unsigned char ZXSpectrum128::coreMemoryRead(unsigned short address)
 
 #pragma mark - Debug Memory Read/Write
 
-void ZXSpectrum128::coreDebugWrite(unsigned short address, unsigned char byte, void *data)
+void ZXSpectrum128::coreDebugWrite(unsigned int address, unsigned char byte, void *data)
 {
     int memoryPage = address / cMEMORY_PAGE_SIZE;
     address &= 16383;
@@ -259,14 +271,9 @@ void ZXSpectrum128::coreDebugWrite(unsigned short address, unsigned char byte, v
     {
         memoryRam[(emuRAMPage * cMEMORY_PAGE_SIZE) + address] = byte;
     }
-    
-    // Only update screen if display memory has been written too
-    if (address >= 16384 && address < cBITMAP_ADDRESS + cBITMAP_SIZE + cATTR_SIZE){
-        displayUpdateWithTs((z80Core.GetTStates() - emuCurrentDisplayTs) + machineInfo.paperDrawingOffset);
-    }
 }
 
-unsigned char ZXSpectrum128::coreDebugRead(unsigned short address, void *data)
+unsigned char ZXSpectrum128::coreDebugRead(unsigned int address, void *data)
 {
     int page = address / cMEMORY_PAGE_SIZE;
     address &= 16383;

@@ -90,8 +90,20 @@ unsigned char ZXSpectrum48::coreIORead(unsigned short address)
         return ULAFloatingBus();
     }
 
-    // The base classes virtual function deals with owned ULA ports such as the keyboard ports
-    unsigned char result = ZXSpectrum::coreIORead(address);
+    // Check to see if the keyboard is being read and if so return any keys currently pressed
+    unsigned char result = 0xff;
+    if (address & 0xfe)
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            if (!(address & (0x100 << i)))
+            {
+                result &= keyboardMap[i];
+            }
+        }
+    }
+    
+    result = (result & 191) | (audioEarBit << 6) | (tapeInputBit << 6);
     
     return result;
 }
@@ -162,9 +174,9 @@ unsigned char ZXSpectrum48::coreMemoryRead(unsigned short address)
 
 #pragma mark - Debug Memory Read/Write
 
-unsigned char ZXSpectrum48::coreDebugRead(unsigned short address, void *data)
+unsigned char ZXSpectrum48::coreDebugRead(unsigned int address, void *data)
 {
-    if (address < 16384)
+    if (address < cROM_SIZE)
     {
         return memoryRom[address];
     }
@@ -172,9 +184,9 @@ unsigned char ZXSpectrum48::coreDebugRead(unsigned short address, void *data)
     return memoryRam[address];
 }
 
-void ZXSpectrum48::coreDebugWrite(unsigned short address, unsigned char byte, void *data)
+void ZXSpectrum48::coreDebugWrite(unsigned int address, unsigned char byte, void *data)
 {
-    if (address < 16384)
+    if (address < cROM_SIZE)
     {
         memoryRom[address] = byte;
     }

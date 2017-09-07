@@ -150,6 +150,11 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     {
         machine = new ZXSpectrum128();
     }
+    else
+    {
+        cout << "Unknown machine type" << endl;
+        return;
+    }
     
     // Initialise the new machine and audio core which is used to drive it
     machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
@@ -295,7 +300,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     NSOpenPanel *openPanel = [NSOpenPanel new];
     openPanel.canChooseDirectories = NO;
     openPanel.allowsMultipleSelection = NO;
-    openPanel.allowedFileTypes = @[cSNA_EXTENSION, cZ80_EXTENSION];
+    openPanel.allowedFileTypes = @[cSNA_EXTENSION, cZ80_EXTENSION, cTAP_EXTENSION];
     
     [openPanel beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger result) {
         if (result == NSModalResponseOK)
@@ -333,15 +338,16 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
            {
                snapshot = machine->snapshotCreateZ80();
                url = [[url URLByDeletingPathExtension] URLByAppendingPathExtension:cZ80_EXTENSION];
+               NSData *data = [NSData dataWithBytes:snapshot.data length:snapshot.length];
+               [data writeToURL:url atomically:YES];
            }
            else if (saveAccessoryController.exportType == cSNA_SNAPSHOT_TYPE)
            {
                snapshot = machine->snapshotCreateSNA();
                url = [[url URLByDeletingPathExtension] URLByAppendingPathExtension:cSNA_EXTENSION];
+               NSData *data = [NSData dataWithBytes:snapshot.data length:snapshot.length];
+               [data writeToURL:url atomically:YES];
            }
-           
-           NSData *data = [NSData dataWithBytes:snapshot.data length:snapshot.length];
-           [data writeToURL:url atomically:YES];
        }
     }];
 }

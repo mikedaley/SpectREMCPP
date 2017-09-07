@@ -231,21 +231,24 @@ static void CheckError(OSStatus error, const char *operation)
     {
         return;
     }
-    
-    char str[20];
-    *(UInt32 *) (str + 1) = CFSwapInt32HostToBig(error);
-    if (isprint(str[1]) && isprint(str[2]) && isprint(str[3]) && isprint(str[4]))
-    {
-        str[0] = str[5] = '\'';
-        str[6] = '\0';
-    }
-    else
-    {
-        sprintf(str, "%d", (int)error);
-    }
-    
-    fprintf(stderr, "[Error] %s (%s)\n", operation, str);
+
+    cout << "Error setting up audio" << endl;
     exit(1);
+    
+//    char str[20];
+//    *(UInt32 *) (str + 1) = CFSwapInt32HostToBig(error);
+//    if (isprint(str[1]) && isprint(str[2]) && isprint(str[3]) && isprint(str[4]))
+//    {
+//        str[0] = str[5] = '\'';
+//        str[6] = '\0';
+//    }
+//    else
+//    {
+//        sprintf(str, "%d", (int)error);
+//    }
+//    
+//    fprintf(stderr, "[Error] %s (%s)\n", operation, str);
+//    exit(1);
 }
 
 @end

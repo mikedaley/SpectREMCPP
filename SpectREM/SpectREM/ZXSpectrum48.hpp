@@ -19,17 +19,20 @@ public:
     virtual ~ZXSpectrum48();
     
 public:
-    virtual void            initialise(string romPath);
-    virtual void            loadDefaultROM();
-    virtual void            release();
-    virtual void            resetMachine(bool hard = true);
-    virtual void            coreMemoryWrite(unsigned short address, unsigned char data);
-    virtual unsigned char   coreMemoryRead(unsigned short address);
-    virtual void            coreMemoryContention(unsigned short address, unsigned int tStates);
-    virtual unsigned char   coreIORead(unsigned short address);
-    virtual void            coreIOWrite(unsigned short address, unsigned char data);
-    virtual unsigned char   coreDebugRead(unsigned short address, void *data);
-    virtual void            coreDebugWrite(unsigned short address, unsigned char byte, void *data);
+    virtual void            initialise(string romPath) override;
+    virtual void            loadDefaultROM() override;
+    virtual void            release() override;
+    virtual void            resetMachine(bool hard = true) override;
+    
+    virtual void            coreMemoryWrite(unsigned short address, unsigned char data) override;
+    virtual unsigned char   coreMemoryRead(unsigned short address) override;
+    virtual void            coreMemoryContention(unsigned short address, unsigned int tStates) override;
+    virtual unsigned char   coreIORead(unsigned short address) override;
+    virtual void            coreIOWrite(unsigned short address, unsigned char data) override;
+    
+    virtual unsigned char   coreDebugRead(unsigned int address, void *data) override;
+    virtual void            coreDebugWrite(unsigned int address, unsigned char byte, void *data) override;
+    
     static bool             opcodeCallback(unsigned char opcode, unsigned short address, void *param);
 };
 
