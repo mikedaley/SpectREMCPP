@@ -28,7 +28,7 @@ static const int cHEADER_CHECKSUM_OFFSET = 17;
 
 static const int cPROGRAM_HEADER_AUTOSTART_LINE_OFFSET = 14;
 static const int cPROGRAM_HEADER_PROGRAM_LENGTH_OFFSET = 16;
-//static int cPROGRAM_HEADER_CHECKSUM_OFFSET = 18;
+static int cPROGRAM_HEADER_CHECKSUM_OFFSET = 18;
 
 //static int cNUMERIC_DATA_HEADER_UNUSED_1_OFFSET = 14;
 static const int cNUMERIC_DATA_HEADER_VARIBABLE_NAME_OFFSET = 15;
@@ -85,15 +85,20 @@ unsigned char TapeBlock::getChecksum()
 
 unsigned short ProgramHeader::getAutoStartLine()
 {
-    return blockData[ cPROGRAM_HEADER_AUTOSTART_LINE_OFFSET ];
+    return ((unsigned short *)&blockData[ cPROGRAM_HEADER_AUTOSTART_LINE_OFFSET ])[0];
 }
 
 unsigned short ProgramHeader::getProgramLength()
 {
-    return blockData[ cPROGRAM_HEADER_PROGRAM_LENGTH_OFFSET ];
+    return ((unsigned short *)&blockData[ cPROGRAM_HEADER_PROGRAM_LENGTH_OFFSET ])[0];
 }
 
-unsigned short ProgramHeader::getBlockLength()
+unsigned char ProgramHeader::getChecksum()
+{
+    return blockData[ cPROGRAM_HEADER_CHECKSUM_OFFSET ];
+}
+
+unsigned short ProgramHeader::getDataLength()
 {
     return cHEADER_BLOCK_LENGTH;
 }
@@ -132,6 +137,11 @@ unsigned short ByteHeader::getStartAddress()
 unsigned char ByteHeader::getChecksum()
 {
     return blockData[ blockLength - 1 ];
+}
+
+unsigned short ByteHeader::getDataLength()
+{
+    return cHEADER_BLOCK_LENGTH - 2;
 }
 
 #pragma mark - Data Block
@@ -251,7 +261,7 @@ bool ZXSpectrum::tapeLoadWithPath(const char *path)
         newTapeBlock->blockData = (unsigned char *)calloc(blockLength, sizeof(unsigned char));
         memcpy(newTapeBlock->blockData, &fileBytes[ tapeCurrentBytePtr ], blockLength);
         
-        tapeBlocks.push_back(*newTapeBlock);
+        tapeBlocks.push_back(newTapeBlock);
         
         tapeCurrentBytePtr += blockLength;
     }
@@ -276,7 +286,7 @@ void ZXSpectrum::tapeUpdateWithTs(int tStates)
     {
         tapeNewBlock = false;
         
-        tapeCurrentBlock = &tapeBlocks[ tapeCurrentBlockIndex ];
+        tapeCurrentBlock = tapeBlocks[ tapeCurrentBlockIndex ];
         
         if (tapeCurrentBlock->blockType == ePROGRAM_HEADER ||
             tapeCurrentBlock->blockType == eNUMERIC_DATA_HEADER ||
@@ -425,8 +435,8 @@ void ZXSpectrum::tapeGenerateSync2WithTs(int tStates)
 
 void ZXSpectrum::tapeGenerateDataStreamWithTs(int tStates)
 {
-    int currentBlockLength = tapeBlocks[ tapeCurrentBlockIndex ].getDataLength();
-    unsigned char byte = tapeBlocks[ tapeCurrentBlockIndex ].blockData[ tapeCurrentBytePtr ];
+    int currentBlockLength = tapeBlocks[ tapeCurrentBlockIndex ]->getDataLength();
+    unsigned char byte = tapeBlocks[ tapeCurrentBlockIndex ]->blockData[ tapeCurrentBytePtr ];
     unsigned char bit = (byte << tapeCurrentDataBit) & 128;
     
     tapeCurrentDataBit += 1;
@@ -459,7 +469,7 @@ void ZXSpectrum::tapeGenerateDataStreamWithTs(int tStates)
 void ZXSpectrum::tapeGenerateHeaderDataStreamWithTs(int tStates)
 {
     int currentBlockLength = cHEADER_BLOCK_LENGTH;
-    unsigned char byte = tapeBlocks[ tapeCurrentBlockIndex ].blockData[ tapeCurrentBytePtr ];
+    unsigned char byte = tapeBlocks[ tapeCurrentBlockIndex ]->blockData[ tapeCurrentBytePtr ];
     unsigned char bit = (byte << tapeCurrentDataBit) & 128;
     
     tapeCurrentDataBit += 1;
@@ -532,6 +542,68 @@ void ZXSpectrum::tapeBlockPauseWithTs(int tStates)
     {
         tapeInputBit ^= 1;
     }
+}
+
+#pragma mark - Instant Tape Load
+
+void ZXSpectrum::tapeLoadBlock()
+{
+    if (tapeCurrentBlockIndex >= tapeBlocks.size())
+    {
+        emuLoadTrapTriggered = false;
+        z80Core.SetRegister(CZ80Core::eREG_F, z80Core.GetRegister(CZ80Core::eREG_F) & ~CZ80Core::FLAG_C);
+        z80Core.SetRegister(CZ80Core::eREG_PC, 0x05e2);
+        return;
+    }
+    
+    int expectedBlockType = z80Core.GetRegister(CZ80Core::eREG_ALT_A);
+    int startAddress = z80Core.GetRegister(CZ80Core::eREG_IX);
+    
+    // Some TAP files have blocks which are shorter that what is expected in DE (Chuckie Egg 2)
+    // so just take the smallest value
+    int blockLength = z80Core.GetRegister(CZ80Core::eREG_DE);
+    int tapBlockLength = tapeBlocks[ tapeCurrentBlockIndex ]->getDataLength();
+    blockLength = (blockLength < tapBlockLength) ? blockLength : tapBlockLength;
+    int success = 1;
+    
+    if (tapeBlocks[ tapeCurrentBlockIndex ]->getFlag() == expectedBlockType)
+    {
+        if (z80Core.GetRegister(CZ80Core::eREG_ALT_F) & CZ80Core::FLAG_C)
+        {
+            tapeCurrentBytePtr = cHEADER_DATA_TYPE_OFFSET;
+            int checksum = expectedBlockType;
+            
+            for (int i = 0; i < blockLength; i++)
+            {
+                unsigned char tapByte = tapeBlocks[ tapeCurrentBlockIndex ]->blockData[ tapeCurrentBytePtr ];
+                z80Core.Z80CoreDebugMemWrite(startAddress + i, tapByte, NULL);
+                checksum ^= tapByte;
+                tapeCurrentBytePtr++;
+            }
+            
+            int expectedChecksum = tapeBlocks[ tapeCurrentBlockIndex ]->getChecksum();
+            if (expectedChecksum != checksum)
+            {
+                success = 0;
+            }
+        }
+        else
+        {
+            success = 1;
+        }
+    }
+    
+    if (success)
+    {
+        z80Core.SetRegister(CZ80Core::eREG_F, (z80Core.GetRegister(CZ80Core::eREG_F) | CZ80Core::FLAG_C));
+    }
+    else
+    {
+        z80Core.SetRegister(CZ80Core::eREG_F, (z80Core.GetRegister(CZ80Core::eREG_F) & ~CZ80Core::FLAG_C));
+    }
+    
+    tapeCurrentBlockIndex++;
+    z80Core.SetRegister(CZ80Core::eREG_PC, 0x05e2);
 }
 
 #pragma mark - Tape controls

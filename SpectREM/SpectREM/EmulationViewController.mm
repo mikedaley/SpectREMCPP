@@ -16,6 +16,7 @@
 #import "EmulationScene.h"
 
 #import "ConfigurationViewController.h"
+#import "ExportAccessoryViewController.h"
 
 #pragma mark - Constants
 
@@ -41,6 +42,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     
     NSStoryboard                    *storyBoard;
     ConfigurationViewController     *configViewController;
+    ExportAccessoryViewController   *saveAccessoryController;
 }
 @end
 
@@ -73,6 +75,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     
     [self setupObservers];
     [self setupConfigView];
+    [self setupControllers];
     [self restoreSession];
     
 }
@@ -92,22 +95,33 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     self.configScrollView.documentView = configViewController.view;
 }
 
+- (void)setupControllers
+{
+    saveAccessoryController = [storyBoard instantiateControllerWithIdentifier:@"SAVE_ACCESSORY_VIEW_CONTROLLER"];
+}
+
 #pragma mark - Observers
 
 - (void)setupObservers
 {
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
     [userDefaults addObserver:self forKeyPath:cSELECTED_MACHINE options:NSKeyValueObservingOptionNew context:NULL];
+    [userDefaults addObserver:self forKeyPath:cMACHINE_INSTANT_TAPE_LOADING options:NSKeyValueObservingOptionNew context:NULL];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
 {
     if ([keyPath isEqualToString:cSELECTED_MACHINE])
     {
+        // No point in changing machine if they already match
         if (machine->machineInfo.machineType != [change[NSKeyValueChangeNewKey] intValue])
         {
             [self initMachineWithRomPath:mainBundlePath machineType:[change[NSKeyValueChangeNewKey] intValue]];
         }
+    }
+    else if ([keyPath isEqualToString:cMACHINE_INSTANT_TAPE_LOADING])
+    {
+        machine->emuTapeInstantLoad = [change[NSKeyValueChangeNewKey] boolValue];
     }
 }
 
@@ -124,7 +138,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     }
     
     if (machine) {
-        machine->emuPaused = true;
+        machine->pause();
         delete machine;
     }
     
@@ -143,7 +157,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     [audioCore start];
     
     [self.scene setPaused:NO];
-    machine->emuPaused = false;
+    machine->resume();
     
     [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@", [NSString stringWithCString:machine->machineInfo.machineName encoding:NSUTF8StringEncoding]]];
 }
@@ -241,7 +255,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
         }
         
         supportDirUrl = [supportDirUrl URLByAppendingPathComponent:cSESSION_FILE_NAME];
-        ZXSpectrum::snap sessionSnapshot = machine->snapshotCreateZ80();
+        ZXSpectrum::Snap sessionSnapshot = machine->snapshotCreateZ80();
         NSData *data = [NSData dataWithBytes:sessionSnapshot.data length:sessionSnapshot.length];
         [data writeToURL:supportDirUrl atomically:YES];
     }
@@ -270,7 +284,6 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
         else
         {
             NSLog(@"No session to restore.");
-//            [self initMachineWithRomPath:mainBundlePath machineType:eZXSpectrum48];
         }
     }
 }
@@ -290,6 +303,52 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
             [self loadFileWithURL:openPanel.URLs[0] addToRecent:YES];
         }
     }];
+}
+
+- (IBAction)exportSnapshot:(id)sender
+{
+    NSSavePanel *savePanel = [NSSavePanel new];
+    
+    if (machine->machineInfo.machineType == eZXSpectrum48)
+    {
+        [[saveAccessoryController.exportPopup itemAtIndex:cSNA_SNAPSHOT_TYPE] setEnabled:YES];
+        savePanel.allowedFileTypes = @[cZ80_EXTENSION, cSNA_EXTENSION];
+    }
+    else
+    {
+        [[saveAccessoryController.exportPopup itemAtIndex:cSNA_SNAPSHOT_TYPE] setEnabled:NO];
+        [saveAccessoryController.exportPopup selectItemAtIndex:cZ80_SNAPSHOT_TYPE];
+        savePanel.allowedFileTypes = @[cZ80_EXTENSION];
+    }
+    
+    savePanel.accessoryView = saveAccessoryController.view;
+    
+    [savePanel beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger result) {
+       if (result == NSModalResponseOK)
+       {
+           ZXSpectrum::Snap snapshot;
+           NSURL *url = savePanel.URL;
+           
+           if (saveAccessoryController.exportType == cZ80_SNAPSHOT_TYPE)
+           {
+               snapshot = machine->snapshotCreateZ80();
+               url = [[url URLByDeletingPathExtension] URLByAppendingPathExtension:cZ80_EXTENSION];
+           }
+           else if (saveAccessoryController.exportType == cSNA_SNAPSHOT_TYPE)
+           {
+               snapshot = machine->snapshotCreateSNA();
+               url = [[url URLByDeletingPathExtension] URLByAppendingPathExtension:cSNA_EXTENSION];
+           }
+           
+           NSData *data = [NSData dataWithBytes:snapshot.data length:snapshot.length];
+           [data writeToURL:url atomically:YES];
+       }
+    }];
+}
+
+- (IBAction)resetPreferences:(id)sender
+{
+    [[NSUserDefaultsController sharedUserDefaultsController] revertToInitialValues:NULL];
 }
 
 #pragma mark - View Menu Items
@@ -323,16 +382,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 - (IBAction)selectMachine:(id)sender
 {
     NSMenuItem *menuItem = (NSMenuItem *)sender;
-    
-    switch (menuItem.tag)
-    {
-        case eZXSpectrum48:
-            [self initMachineWithRomPath:mainBundlePath machineType:eZXSpectrum48];
-            break;
-        case eZXSpectrum128:
-            [self initMachineWithRomPath:mainBundlePath machineType:eZXSpectrum128];
-            break;
-    }
+    [[NSUserDefaults standardUserDefaults] setObject:@(menuItem.tag) forKey:cSELECTED_MACHINE];
 }
 
 - (IBAction)showConfigPanel:(id)sender

@@ -75,7 +75,7 @@ private:
     
 public:
     // Holds the data returned when creating a Snapshot or Z80 snapshot
-    struct snap {
+    struct Snap {
         int length;
         unsigned char *data;
     };
@@ -147,7 +147,7 @@ public:
         eHEADER_DATA_STREAM,
         eDATA_BIT
     };
-
+    
 public:
     ZXSpectrum();
     ~ZXSpectrum();
@@ -161,21 +161,25 @@ public:
 
     void                    generateFrame();
     void                    displayFrameReset();
+    void                    emuReset();
     void                    displayUpdateWithTs(int tStates);
     void                    keyboardKeyDown(unsigned short key);
     void                    keyboardKeyUp(unsigned short key);
     void                    keyboardFlagsChanged(unsigned long flags, unsigned short key);
-
+    void                    pause();
+    void                    resume();
+    
     void                    ULAApplyIOContention(unsigned short address, bool contended);
     unsigned char           ULAFloatingBus();
     
     bool                    snapshotZ80LoadWithPath(const char *path);
     bool                    snapshotSNALoadWithPath(const char *path);
     int                     snapshotMachineInSnapshotWithPath(const char *path);
-    snap                    snapshotCreateSNA();
-    snap                    snapshotCreateZ80();
+    Snap                    snapshotCreateSNA();
+    Snap                    snapshotCreateZ80();
     
     bool                    tapeLoadWithPath(const char *);
+    void                    tapeLoadBlock();
     void                    tapeUpdateWithTs(int tStates);
     void                    tapeStartPlaying();
     void                    tapeStopPlaying();
@@ -233,6 +237,7 @@ public:
     virtual unsigned char   coreIORead(unsigned short address);
     virtual void            coreIOWrite(unsigned short address, unsigned char data);
 
+
     CZ80Core                z80Core;
     vector<char>            memoryRom;
     vector<char>            memoryRam;
@@ -264,6 +269,9 @@ public:
     int                     emuDisplayPage;
     bool                    emuDisablePaging;
     string                  emuROMPath;
+    bool                    emuTapeInstantLoad;
+    bool                    emuLoadTrapTriggered;
+    bool                    emuSaveTrapTriggered;
     
     // Tape Processing
     bool                    tapeLoaded;
@@ -271,7 +279,7 @@ public:
     int                     tapeCurrentBytePtr;
     int                     tapeCurrentBlockIndex;
     int                     tapeNewBlock;
-    vector<TapeBlock>       tapeBlocks;
+    vector<TapeBlock*>      tapeBlocks;
     int                     tapeInputBit;
     
     int                     tapePilotPulseTStates;          // How many Ts have passed since the start of the pilot pulses
@@ -346,7 +354,8 @@ class ProgramHeader : public TapeBlock
 public:
     unsigned short          getAutoStartLine();
     unsigned short          getProgramLength();
-    virtual unsigned short  getBlockLength();
+    virtual unsigned short  getDataLength();
+    virtual unsigned char   getChecksum();
 };
 
 #pragma mark - Numeric Data Header
@@ -374,6 +383,7 @@ class ByteHeader : public TapeBlock
 public:
     unsigned short          getStartAddress();
     virtual unsigned char   getChecksum();
+    virtual unsigned short  getDataLength();
 };
 
 #pragma mark - Data Block

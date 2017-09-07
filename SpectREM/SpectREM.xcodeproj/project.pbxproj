@@ -19,6 +19,7 @@
 		ED2A6D051F6036D3003CD6CE /* ConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D041F6036D3003CD6CE /* ConfigurationViewController.m */; };
 		ED2A6D0A1F603D18003CD6CE /* NSClipView+Flipped.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D091F603D18003CD6CE /* NSClipView+Flipped.m */; };
 		ED2A6D0C1F604CD0003CD6CE /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = ED2A6D0B1F604CD0003CD6CE /* Defaults.plist */; };
+		ED2A6D101F616C43003CD6CE /* ExportAccessoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D0F1F616C43003CD6CE /* ExportAccessoryViewController.m */; };
 		ED504A621F4EE9D500BD289E /* EmulationScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = ED504A611F4EE9D500BD289E /* EmulationScene.sks */; };
 		ED504A641F51BBFF00BD289E /* Snapshot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED504A631F51BBFF00BD289E /* Snapshot.cpp */; };
 		ED913F9A1F30759300316E1A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = ED913F991F30759300316E1A /* AppDelegate.m */; };
@@ -64,6 +65,8 @@
 		ED2A6D081F603D18003CD6CE /* NSClipView+Flipped.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSClipView+Flipped.h"; sourceTree = "<group>"; };
 		ED2A6D091F603D18003CD6CE /* NSClipView+Flipped.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSClipView+Flipped.m"; sourceTree = "<group>"; };
 		ED2A6D0B1F604CD0003CD6CE /* Defaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Defaults.plist; sourceTree = "<group>"; };
+		ED2A6D0E1F616C43003CD6CE /* ExportAccessoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExportAccessoryViewController.h; sourceTree = "<group>"; };
+		ED2A6D0F1F616C43003CD6CE /* ExportAccessoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExportAccessoryViewController.m; sourceTree = "<group>"; };
 		ED504A611F4EE9D500BD289E /* EmulationScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = EmulationScene.sks; sourceTree = "<group>"; };
 		ED504A631F51BBFF00BD289E /* Snapshot.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Snapshot.cpp; sourceTree = "<group>"; };
 		ED913F951F30759300316E1A /* SpectREM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpectREM.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -189,6 +192,15 @@
 			name = "Class Extensions";
 			sourceTree = "<group>";
 		};
+		ED2A6D0D1F616C1A003CD6CE /* Export Accessory View Controller */ = {
+			isa = PBXGroup;
+			children = (
+				ED2A6D0E1F616C43003CD6CE /* ExportAccessoryViewController.h */,
+				ED2A6D0F1F616C43003CD6CE /* ExportAccessoryViewController.m */,
+			);
+			name = "Export Accessory View Controller";
+			sourceTree = "<group>";
+		};
 		ED913F8C1F30759300316E1A = {
 			isa = PBXGroup;
 			children = (
@@ -256,6 +268,7 @@
 				174AAFBD1F58626E00B75535 /* Shader */,
 				ED913FB81F30767A00316E1A /* Emulation */,
 				ED2A6D061F6036D8003CD6CE /* Configuration */,
+				ED2A6D0D1F616C1A003CD6CE /* Export Accessory View Controller */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -434,6 +447,7 @@
 				1745BB651F50AE1E003203FE /* FloatingBus.cpp in Sources */,
 				17B5DB971F5B14A7003E7EF3 /* AudioCore.mm in Sources */,
 				EDB7F7FE1F5EE2E4003053E3 /* Tape.cpp in Sources */,
+				ED2A6D101F616C43003CD6CE /* ExportAccessoryViewController.m in Sources */,
 				17B5DB9A1F5B14D3003E7EF3 /* Audio.cpp in Sources */,
 				1745BB631F50876E003203FE /* Contention.cpp in Sources */,
 				ED913FCB1F30781000316E1A /* Z80Core_DDOpcodes.cpp in Sources */,

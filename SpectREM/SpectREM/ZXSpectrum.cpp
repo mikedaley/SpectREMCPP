@@ -57,8 +57,10 @@ void ZXSpectrum::initialise(string romPath)
     audioSetup(192000, 50);
     audioBuildAYVolumesTable();
     
+    emuReset();
     displayFrameReset();
     audioReset();
+    keyboardMapReset();
     tapeReset(true);
 }
 
@@ -81,24 +83,31 @@ void ZXSpectrum::generateFrame()
         {
             tapeUpdateWithTs(tStates);
         }
-
-        currentFrameTstates -= tStates;
         
-        audioUpdateWithTs(tStates);
-        
-        if (z80Core.GetTStates() >= machineInfo.tsPerFrame)
+        if (emuLoadTrapTriggered && tapeLoaded)
         {
-            z80Core.ResetTStates( machineInfo.tsPerFrame );
-            z80Core.SignalInterrupt();
-
-            displayUpdateWithTs(machineInfo.tsPerFrame - emuCurrentDisplayTs);
+            tapeLoadBlock();
+        }
+        else
+        {
+            currentFrameTstates -= tStates;
             
-            emuFrameCounter++;
+            audioUpdateWithTs(tStates);
             
-            displayFrameReset();
-            keyboardCheckCapsLockStatus();
-            
-            currentFrameTstates = 0;
+            if (z80Core.GetTStates() >= machineInfo.tsPerFrame)
+            {
+                z80Core.ResetTStates( machineInfo.tsPerFrame );
+                z80Core.SignalInterrupt();
+                
+                displayUpdateWithTs(machineInfo.tsPerFrame - emuCurrentDisplayTs);
+                
+                emuFrameCounter++;
+                
+                displayFrameReset();
+                keyboardCheckCapsLockStatus();
+                
+                currentFrameTstates = 0;
+            }
         }
     }
 }
@@ -204,6 +213,18 @@ void ZXSpectrum::coreIOWrite(unsigned short address, unsigned char data)
     // Nothing to see here. Most likely implemented in the 
 }
 
+#pragma mark - Pause/Resume
+
+void ZXSpectrum::pause()
+{
+    emuPaused = true;
+}
+
+void ZXSpectrum::resume()
+{
+    emuPaused = false;
+}
+
 #pragma mark - Reset
 
 void ZXSpectrum::resetMachine(bool hard)
@@ -224,6 +245,13 @@ void ZXSpectrum::resetMachine(bool hard)
     emuFrameCounter = 0;
 }
 
+void ZXSpectrum::emuReset()
+{
+    emuSaveTrapTriggered = false;
+    emuLoadTrapTriggered = false;
+    emuTapeInstantLoad = false;
+}
+
 #pragma mark - Release
 
 void ZXSpectrum::release()
@@ -233,6 +261,7 @@ void ZXSpectrum::release()
     delete audioBuffer;
     delete audioQueueBuffer;
 }
+
 
 
 

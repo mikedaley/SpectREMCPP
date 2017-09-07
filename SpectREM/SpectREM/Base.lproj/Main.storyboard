@@ -23,6 +23,13 @@
                                                 <action selector="orderFrontStandardAboutPanel:" target="Ady-hI-5gd" id="Exp-CZ-Vem"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="6TO-46-01u"/>
+                                        <menuItem title="Reset Preferences" id="1ZX-xt-247" userLabel="Reset Preferences">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="resetPreferences:" target="Ady-hI-5gd" id="4nn-9A-gdI"/>
+                                            </connections>
+                                        </menuItem>
                                         <menuItem isSeparatorItem="YES" id="VOq-y0-SEH"/>
                                         <menuItem title="Services" id="NMo-om-nkz">
                                             <modifierMask key="keyEquivalentModifierMask"/>
@@ -78,6 +85,11 @@
                                             </menu>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="m54-Is-iLE"/>
+                                        <menuItem title="Export Snapshot" keyEquivalent="e" id="zZ9-Bj-eLk">
+                                            <connections>
+                                                <action selector="exportSnapshot:" target="Ady-hI-5gd" id="nBi-Je-tsU"/>
+                                            </connections>
+                                        </menuItem>
                                     </items>
                                 </menu>
                             </menuItem>
@@ -220,6 +232,50 @@
             </objects>
             <point key="canvasLocation" x="75" y="0.0"/>
         </scene>
+        <!--Save Accessory View Controller-->
+        <scene sceneID="dit-0R-Eoe">
+            <objects>
+                <viewController title="Save Accessory View Controller" storyboardIdentifier="SAVE_ACCESSORY_VIEW_CONTROLLER" id="glc-z0-5wN" customClass="ExportAccessoryViewController" sceneMemberID="viewController">
+                    <view key="view" id="XEe-ET-0q4">
+                        <rect key="frame" x="0.0" y="0.0" width="278" height="57"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zgA-Zn-p53">
+                                <rect key="frame" x="18" y="20" width="107" height="17"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Snapshot Type:" id="lSY-ky-5IL">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pTu-6h-s0h">
+                                <rect key="frame" x="129" y="14" width="132" height="26"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <popUpButtonCell key="cell" type="push" title="Z80" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" autoenablesItems="NO" selectedItem="t2N-YP-Q5J" id="Lws-Su-VqE">
+                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="menu"/>
+                                    <menu key="menu" autoenablesItems="NO" id="Hms-kd-7Hs">
+                                        <items>
+                                            <menuItem title="Z80" state="on" id="t2N-YP-Q5J"/>
+                                            <menuItem title="SNA" id="9OZ-dI-JE3"/>
+                                        </items>
+                                    </menu>
+                                </popUpButtonCell>
+                                <connections>
+                                    <binding destination="glc-z0-5wN" name="selectedIndex" keyPath="self.exportType" id="ZkW-Rz-J4e"/>
+                                </connections>
+                            </popUpButton>
+                        </subviews>
+                    </view>
+                    <connections>
+                        <outlet property="exportPopup" destination="pTu-6h-s0h" id="hLp-sn-mbF"/>
+                    </connections>
+                </viewController>
+                <customObject id="47O-3Q-XlD" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-243" y="341"/>
+        </scene>
         <!--Window Controller-->
         <scene sceneID="R2V-B0-nI4">
             <objects>
@@ -321,6 +377,9 @@
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="smallSystem"/>
                                             </buttonCell>
+                                            <connections>
+                                                <binding destination="SIc-Bz-mzc" name="value" keyPath="values.machineInstantTapeLoading" id="4vn-6S-Fxc"/>
+                                            </connections>
                                         </button>
                                     </subviews>
                                 </view>

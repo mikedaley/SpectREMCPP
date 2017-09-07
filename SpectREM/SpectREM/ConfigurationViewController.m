@@ -13,6 +13,7 @@
 NSString *const cSELECTED_MACHINE               = @"selectedMachine";
 NSString *const cDISPLAY_BORDER_WIDTH           = @"displayBorderWidth";
 NSString *const cDISPLAY_FILTER_VALUE           = @"displayFilterValue";
+NSString *const cMACHINE_INSTANT_TAPE_LOADING   = @"machineInstantTapeLoading";
 
 @interface ConfigurationViewController ()
 

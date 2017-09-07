@@ -38,7 +38,7 @@ void ZXSpectrum::audioBuildAYVolumesTable()
 {
     for (int i = 0; i < 16; i++)
     {
-        audioAYVolumes[i] = (unsigned short)(fAYVolBase[i] * 4096);
+        audioAYVolumes[i] = (unsigned short)(fAYVolBase[i] * 8192);
     }
 }
 

@@ -8,5 +8,7 @@
 	<integer>32</integer>
 	<key>displayFilterValue</key>
 	<real>0.212</real>
+	<key>machineInstantTapeLoading</key>
+	<true/>
 </dict>
 </plist>

@@ -28,6 +28,7 @@ public:
     virtual void            coreMemoryContention(unsigned short address, unsigned int tStates);
     virtual unsigned char   coreIORead(unsigned short address);
     virtual void            coreIOWrite(unsigned short address, unsigned char data);
+    static bool             opcodeCallback(unsigned char opcode, unsigned short address, void *param);
 };
 
 #endif /* ZXSpectrum48_h */

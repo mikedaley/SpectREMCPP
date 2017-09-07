@@ -37,6 +37,9 @@ void ZXSpectrum48::initialise(string romPath)
     machineInfo = machines[ eZXSpectrum48 ];
 
     ZXSpectrum::initialise(romPath);
+    
+    z80Core.RegisterOpcodeCallback(ZXSpectrum48::opcodeCallback);
+    
     loadDefaultROM();
     
     emuDisplayPage = 1;
@@ -178,6 +181,43 @@ void ZXSpectrum48::resetMachine(bool hard)
 {
     ZXSpectrum::resetMachine(hard);
 }
+
+#pragma mark - Opcode Callback Function
+
+bool ZXSpectrum48::opcodeCallback(unsigned char opcode, unsigned short address, void *param)
+{
+    ZXSpectrum48 *machine = static_cast<ZXSpectrum48*>(param);
+    
+    // Trap ROM tape SAVING
+    if (opcode == 0x08 && address == 0x04d0)
+    {
+        machine->emuSaveTrapTriggered = true;
+        return true;
+    }
+    else if (machine->emuSaveTrapTriggered)
+    {
+        machine->emuSaveTrapTriggered = false;
+        return false;
+    }
+    
+    // Trap ROM tap LOADING
+    if (opcode == 0xc0 && (address == 0x056b || address == 0x0111) && machine->emuTapeInstantLoad)
+    {
+        machine->emuLoadTrapTriggered = true;
+        return true;
+    }
+    else if (machine->emuLoadTrapTriggered)
+    {
+        machine->emuLoadTrapTriggered = false;
+    }
+    
+    return false;
+}
+
+
+
+
+
 
 
 

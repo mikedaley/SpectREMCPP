@@ -12,6 +12,12 @@
 
 @class EmulationScene;
 
+enum
+{
+    cZ80_SNAPSHOT_TYPE = 0,
+    cSNA_SNAPSHOT_TYPE
+};
+
 @interface EmulationViewController : NSViewController
 
 #pragma mark - Properties

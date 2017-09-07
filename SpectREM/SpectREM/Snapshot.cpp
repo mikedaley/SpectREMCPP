@@ -18,12 +18,12 @@ unsigned char const     cZ80_V3_PAGE_HEADER_SIZE = 3;
 
 #pragma mark - SNA
 
-ZXSpectrum::snap ZXSpectrum::snapshotCreateSNA()
+ZXSpectrum::Snap ZXSpectrum::snapshotCreateSNA()
 {
     // We don't want the core running when we take a snapshot
-    emuPaused = true;
+    pause();
     
-    snap snap;
+    Snap snap;
     snap.length = (48 * 1024) + cSNA_HEADER_SIZE;
     snap.data = (unsigned char*)calloc(snap.length, sizeof(unsigned char));
     
@@ -81,7 +81,7 @@ ZXSpectrum::snap ZXSpectrum::snapshotCreateSNA()
     snap.data[sp - 16384 + cSNA_HEADER_SIZE] = pc & 0xff;
     snap.data[sp - 16384 + cSNA_HEADER_SIZE + 1] = pc >> 8;
     
-    emuPaused = false;
+    resume();
     
     return snap;
 }
@@ -99,7 +99,7 @@ bool ZXSpectrum::snapshotSNALoadWithPath(const char *path)
         return false;
     }
     
-    emuPaused = true;
+    pause();
     
     ZXSpectrum::resetMachine();
     
@@ -153,7 +153,7 @@ bool ZXSpectrum::snapshotSNALoadWithPath(const char *path)
         z80Core.SetRegister(CZ80Core::eREG_SP, z80Core.GetRegister(CZ80Core::eREG_SP) + 2);
     }
     
-    emuPaused = false;
+    resume();
     
     return true;
     
@@ -161,9 +161,9 @@ bool ZXSpectrum::snapshotSNALoadWithPath(const char *path)
 
 #pragma mark - Z80
 
-ZXSpectrum::snap ZXSpectrum::snapshotCreateZ80()
+ZXSpectrum::Snap ZXSpectrum::snapshotCreateZ80()
 {
-    emuPaused = true;
+    pause();
     
     int snapshotSize = 0;
     if (machineInfo.machineType == eZXSpectrum48)
@@ -176,7 +176,7 @@ ZXSpectrum::snap ZXSpectrum::snapshotCreateZ80()
     }
     
     // Structure to be returned containing the length and size of the snapshot
-    snap snapData;
+    Snap snapData;
     snapData.length = snapshotSize;
     snapData.data = (unsigned char*)calloc(snapshotSize, sizeof(unsigned char));
     
@@ -307,7 +307,7 @@ ZXSpectrum::snap ZXSpectrum::snapshotCreateZ80()
         }
     }
     
-    emuPaused = false;
+    resume();
     
     return snapData;
 }
@@ -325,7 +325,7 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
         return false;
     }
     
-    emuPaused = true;
+    pause();
     
     displayFrameReset();
     
@@ -479,7 +479,7 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
             break;
     }
     
-    emuPaused = false;
+    resume();
     
     return true;
 }
@@ -597,10 +597,6 @@ int ZXSpectrum::snapshotMachineInSnapshotWithPath(const char *path)
         fclose(fileHandle);
         return -1;
     }
-    
-    emuPaused = true;
-    
-    ZXSpectrum::resetMachine();
     
     fseek(fileHandle, 0, SEEK_END);
     long size = ftell(fileHandle);
