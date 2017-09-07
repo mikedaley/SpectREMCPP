@@ -84,7 +84,6 @@ public:
     struct ScreenBufferData {
         unsigned char pixels;
         unsigned char attribute;
-        bool changed;
     };
     
     enum

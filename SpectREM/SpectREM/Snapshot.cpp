@@ -327,7 +327,7 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
     
     emuPaused = true;
     
-    ZXSpectrum::resetMachine();
+    displayFrameReset();
     
     fseek(fileHandle, 0, SEEK_END);
     long size = ftell(fileHandle);

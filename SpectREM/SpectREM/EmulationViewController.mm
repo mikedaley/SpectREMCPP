@@ -55,30 +55,26 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
 - (void)viewDidLoad
 {
+    NSLog(@"VIEW DID LOAD");
+    
     [super viewDidLoad];
 
-    storyBoard = [NSStoryboard storyboardWithName:@"Main" bundle:nil];
-    _scene = (EmulationScene *)[SKScene nodeWithFileNamed:@"EmulationScene"];
-    
     mainBundlePath = [[NSBundle mainBundle] bundlePath];
-    
-    [self initMachineWithRomPath:mainBundlePath machineType:eZXSpectrum48];
-    
-    // Remember to do this before presenting the scene or it goes all wierd !!!
-    _scene.scaleMode = SKSceneScaleModeFill;
-    
+
+    storyBoard = [NSStoryboard storyboardWithName:@"Main" bundle:nil];
+
+    _scene = (EmulationScene *)[SKScene nodeWithFileNamed:@"EmulationScene"];
     _scene.nextResponder = self;
     _scene.emulationViewController = self;
-    
-    [self setupConfigView];
-    
-    audioCore = [[AudioCore alloc] initWithSampleRate:cAUDIO_SAMPLE_RATE framesPerSecond:cFRAMES_PER_SECOND machine:machine];
-    
-    [audioCore start];
-    
-    [self restoreSession];
+    _scene.scaleMode = SKSceneScaleModeFill;
     [self.skView presentScene:_scene];
-
+    
+    [self initMachineWithRomPath:mainBundlePath machineType:[[[NSUserDefaults standardUserDefaults] valueForKey:cSELECTED_MACHINE] intValue]];
+    
+    [self setupObservers];
+    [self setupConfigView];
+    [self restoreSession];
+    
 }
 
 - (void)viewWillAppear
@@ -96,6 +92,25 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     self.configScrollView.documentView = configViewController.view;
 }
 
+#pragma mark - Observers
+
+- (void)setupObservers
+{
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    [userDefaults addObserver:self forKeyPath:cSELECTED_MACHINE options:NSKeyValueObservingOptionNew context:NULL];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:cSELECTED_MACHINE])
+    {
+        if (machine->machineInfo.machineType != [change[NSKeyValueChangeNewKey] intValue])
+        {
+            [self initMachineWithRomPath:mainBundlePath machineType:[change[NSKeyValueChangeNewKey] intValue]];
+        }
+    }
+}
+
 #pragma mark - Init/Switch Machine
 
 - (void)initMachineWithRomPath:(NSString *)romPath machineType:(int)machineType
@@ -108,7 +123,10 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
         while (audioCore.isRunning) { };
     }
     
-    if (machine) { delete machine; }
+    if (machine) {
+        machine->emuPaused = true;
+        delete machine;
+    }
     
     if (machineType == eZXSpectrum48)
     {
@@ -125,6 +143,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     [audioCore start];
     
     [self.scene setPaused:NO];
+    machine->emuPaused = false;
     
     [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@", [NSString stringWithCString:machine->machineInfo.machineName encoding:NSUTF8StringEncoding]]];
 }
@@ -161,12 +180,13 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 {
     BOOL success = NO;
     
-    if ([[url.pathExtension uppercaseString]isEqualToString:cZ80_EXTENSION] || [[url.pathExtension  uppercaseString] isEqualToString:cSNA_EXTENSION])
+    NSString *urlPath = [url.pathExtension uppercaseString];
+    if (([urlPath isEqualToString:cZ80_EXTENSION] || [urlPath isEqualToString:cSNA_EXTENSION]))
     {
         int snapshotMachineType = machine->snapshotMachineInSnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
         if (machine->machineInfo.machineType != snapshotMachineType)
         {
-            [self initMachineWithRomPath:mainBundlePath machineType:snapshotMachineType];
+            [[NSUserDefaults standardUserDefaults] setObject:@(snapshotMachineType) forKey:cSELECTED_MACHINE];
         }
     }
     
@@ -249,7 +269,8 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
         }
         else
         {
-            NSLog(@"No session to restore");
+            NSLog(@"No session to restore.");
+//            [self initMachineWithRomPath:mainBundlePath machineType:eZXSpectrum48];
         }
     }
 }

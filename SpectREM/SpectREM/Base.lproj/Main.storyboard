@@ -269,6 +269,9 @@
                                                     </items>
                                                 </menu>
                                             </popUpButtonCell>
+                                            <connections>
+                                                <binding destination="SIc-Bz-mzc" name="selectedIndex" keyPath="values.selectedMachine" id="QKU-Li-uKB"/>
+                                            </connections>
                                         </popUpButton>
                                         <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ype-Qt-n0x">
                                             <rect key="frame" x="111" y="43" width="92" height="18"/>

@@ -61,7 +61,6 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
                 if (displayBufferCopy[ emuCurrentDisplayTs ].attribute != displayBorderColor)
                 {
                     displayBufferCopy[ emuCurrentDisplayTs ].attribute = displayBorderColor;
-                    displayBufferCopy[ emuCurrentDisplayTs ].changed = true;
                     
                     for (int i = 0; i < 8; i++)
                     {
@@ -70,7 +69,6 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
                 }
                 else
                 {
-                    displayBufferCopy [ emuCurrentDisplayTs ].changed = false;
                     displayBufferIndex += 8;
                 }
                 break;
@@ -94,8 +92,6 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
                 {
                     displayBufferCopy[ emuCurrentDisplayTs ].pixels = pixelByte;
                     displayBufferCopy[ emuCurrentDisplayTs ].attribute = attributeByte;
-                    displayBufferCopy[ emuCurrentDisplayTs ].changed = true;
-                    
                     
                     // Extract the ink and paper colours from the attribute byte read in
                     int ink = (attributeByte & 0x07) + ((attributeByte & 0x40) >> 3);
@@ -113,17 +109,16 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
                     {
                         if (pixelByte & i)
                         {
-                            displayBuffer[displayBufferIndex++] = displayPalette[ink];
+                            displayBuffer[ displayBufferIndex++ ] = displayPalette[ink];
                         }
                         else
                         {
-                            displayBuffer[displayBufferIndex++] = displayPalette[paper];
+                            displayBuffer[ displayBufferIndex++ ] = displayPalette[paper];
                         }
                     }
                 }
                 else
                 {
-                    displayBufferCopy[ emuCurrentDisplayTs ].changed = false;
                     displayBufferIndex += 8;
                 }
                 break;
