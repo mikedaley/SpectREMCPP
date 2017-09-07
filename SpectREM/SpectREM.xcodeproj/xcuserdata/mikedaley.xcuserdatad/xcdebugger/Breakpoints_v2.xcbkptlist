@@ -27,16 +27,32 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "No"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SpectREM/Tape.cpp"
-            timestampString = "526487464.951183"
+            timestampString = "526496372.427467"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "266"
-            endingLineNumber = "266"
-            landmarkName = "ZXSpectrum::tapeLoadWithPath(const char *path)"
+            startingLineNumber = "551"
+            endingLineNumber = "551"
+            landmarkName = "ZXSpectrum::tapeLoadBlock()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "SpectREM/Tape.cpp"
+            timestampString = "526496614.506239"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "584"
+            endingLineNumber = "584"
+            landmarkName = "ZXSpectrum::tapeLoadBlock()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

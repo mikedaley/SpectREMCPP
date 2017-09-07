@@ -131,7 +131,7 @@ unsigned short AlphanumericDataHeader::getDataLength()
 
 unsigned short ByteHeader::getStartAddress()
 {
-    return ((unsigned char *)&blockData[ cBYTE_HEADER_START_ADDRESS_OFFSET ])[0];
+    return ((unsigned short *)&blockData[ cBYTE_HEADER_START_ADDRESS_OFFSET ])[0];
 }
 
 unsigned char ByteHeader::getChecksum()
