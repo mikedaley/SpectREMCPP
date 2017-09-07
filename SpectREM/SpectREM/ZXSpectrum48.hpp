@@ -28,6 +28,8 @@ public:
     virtual void            coreMemoryContention(unsigned short address, unsigned int tStates);
     virtual unsigned char   coreIORead(unsigned short address);
     virtual void            coreIOWrite(unsigned short address, unsigned char data);
+    virtual unsigned char   coreDebugRead(unsigned short address, void *data);
+    virtual void            coreDebugWrite(unsigned short address, unsigned char byte, void *data);
     static bool             opcodeCallback(unsigned char opcode, unsigned short address, void *param);
 };
 

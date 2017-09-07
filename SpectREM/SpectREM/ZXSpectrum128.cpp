@@ -37,6 +37,9 @@ void ZXSpectrum128::initialise(string romPath)
     machineInfo = machines[ eZXSpectrum128 ];
     
     ZXSpectrum::initialise(romPath);
+    
+    z80Core.RegisterOpcodeCallback(opcodeCallback);
+    
     loadDefaultROM();
     
     emuROMPage = 0;
@@ -233,6 +236,61 @@ unsigned char ZXSpectrum128::coreMemoryRead(unsigned short address)
     return 0;
 }
 
+#pragma mark - Debug Memory Read/Write
+
+void ZXSpectrum128::coreDebugWrite(unsigned short address, unsigned char byte, void *data)
+{
+    int memoryPage = address / cMEMORY_PAGE_SIZE;
+    address &= 16383;
+    
+    if (memoryPage == 0)
+    {
+        return;
+    }
+    else if (memoryPage == 1)
+    {
+        memoryRam[(5 * cMEMORY_PAGE_SIZE) + address] = byte;
+    }
+    else if (memoryPage == 2)
+    {
+        memoryRam[(2 * cMEMORY_PAGE_SIZE) + address] = byte;
+    }
+    else if (memoryPage == 3)
+    {
+        memoryRam[(emuRAMPage * cMEMORY_PAGE_SIZE) + address] = byte;
+    }
+    
+    // Only update screen if display memory has been written too
+    if (address >= 16384 && address < cBITMAP_ADDRESS + cBITMAP_SIZE + cATTR_SIZE){
+        displayUpdateWithTs((z80Core.GetTStates() - emuCurrentDisplayTs) + machineInfo.paperDrawingOffset);
+    }
+}
+
+unsigned char ZXSpectrum128::coreDebugRead(unsigned short address, void *data)
+{
+    int page = address / cMEMORY_PAGE_SIZE;
+    address &= 16383;
+    
+    if (page == 0)
+    {
+        return (memoryRom[(emuROMPage * cMEMORY_PAGE_SIZE) + address]);
+    }
+    else if (page == 1)
+    {
+        return (memoryRam[(5 * cMEMORY_PAGE_SIZE) + address]);
+    }
+    else if (page == 2)
+    {
+        return (memoryRam[(2 * cMEMORY_PAGE_SIZE) + address]);
+    }
+    else if (page == 3)
+    {
+        return (memoryRam[(emuRAMPage * cMEMORY_PAGE_SIZE) + address]);
+    }
+    
+    return 0;
+}
+
 #pragma mark - Memory Contention
 
 void ZXSpectrum128::coreMemoryContention(unsigned short address, unsigned int tStates)
@@ -264,6 +322,39 @@ void ZXSpectrum128::resetMachine(bool hard)
     ZXSpectrum::resetMachine(hard);
 }
 
+#pragma mark - Opcode Callback Function
+
+bool ZXSpectrum128::opcodeCallback(unsigned char opcode, unsigned short address, void *param)
+{
+    ZXSpectrum128 *machine = static_cast<ZXSpectrum128*>(param);
+    
+    // Trap ROM tape SAVING
+    if (opcode == 0x08 && address == 0x04d0)
+    {
+        machine->emuSaveTrapTriggered = true;
+        return true;
+    }
+    else if (machine->emuSaveTrapTriggered)
+    {
+        machine->emuSaveTrapTriggered = false;
+    }
+    
+    // Trap ROM tap LOADING
+//    if (machine->emuTapeInstantLoad)
+//    {
+        if (opcode == 0xc0 && (address == 0x056b || address == 0x0111))
+        {
+            machine->emuLoadTrapTriggered = true;
+            return true;
+        }
+        else if (machine->emuLoadTrapTriggered)
+        {
+            machine->emuLoadTrapTriggered = false;
+        }
+//    }
+    
+    return false;
+}
 
 
 

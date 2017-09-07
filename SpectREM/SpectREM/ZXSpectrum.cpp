@@ -84,7 +84,11 @@ void ZXSpectrum::generateFrame()
             tapeUpdateWithTs(tStates);
         }
         
-        if (emuLoadTrapTriggered && tapeLoaded)
+        if (emuSaveTrapTriggered)
+        {
+            
+        }
+        else if (emuLoadTrapTriggered && tapeLoaded)
         {
             tapeLoadBlock();
         }
@@ -144,37 +148,13 @@ unsigned char ZXSpectrum::coreMemoryRead(unsigned short address)
     return 0;
 }
 
-void ZXSpectrum::coreMemoryWrite(unsigned short address, unsigned char data)
-{
+void ZXSpectrum::coreMemoryWrite(unsigned short address, unsigned char data) { }
 
-}
+void ZXSpectrum::coreMemoryContention(unsigned short address, unsigned int tStates) { }
 
-void ZXSpectrum::coreMemoryContention(unsigned short address, unsigned int tStates)
-{
-    // Nothing to see here
-}
+unsigned char ZXSpectrum::coreDebugRead(unsigned int address, void *data) { return 0; }
 
-unsigned char ZXSpectrum::coreDebugRead(unsigned int address, void *data)
-{
-    if (address < 16384)
-    {
-        return memoryRom[address];
-    }
-    
-    return memoryRam[address];
-}
-
-void ZXSpectrum::coreDebugWrite(unsigned int address, unsigned char byte, void *data)
-{
-    if (address < 16384)
-    {
-        memoryRom[address] = byte;
-    }
-    else
-    {
-        memoryRam[address] = byte;
-    }
-}
+void ZXSpectrum::coreDebugWrite(unsigned int address, unsigned char byte, void *data) { }
 
 #pragma mark - IO Access
 

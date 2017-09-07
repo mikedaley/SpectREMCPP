@@ -160,6 +160,30 @@ unsigned char ZXSpectrum48::coreMemoryRead(unsigned short address)
     return memoryRam[address];
 }
 
+#pragma mark - Debug Memory Read/Write
+
+unsigned char ZXSpectrum48::coreDebugRead(unsigned short address, void *data)
+{
+    if (address < 16384)
+    {
+        return memoryRom[address];
+    }
+    
+    return memoryRam[address];
+}
+
+void ZXSpectrum48::coreDebugWrite(unsigned short address, unsigned char byte, void *data)
+{
+    if (address < 16384)
+    {
+        memoryRom[address] = byte;
+    }
+    else
+    {
+        memoryRam[address] = byte;
+    }
+}
+
 #pragma mark - Memory Contention
 
 void ZXSpectrum48::coreMemoryContention(unsigned short address, unsigned int tStates)
