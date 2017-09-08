@@ -10,6 +10,7 @@
 
 #import "AudioCore.h"
 #import "ZXSpectrum.hpp"
+#import "EmulationViewController.h"
 
 #pragma mark - Private interface
 
@@ -70,7 +71,7 @@ static OSStatus renderAudio(void *inRefCon,
     
 }
 
-- (instancetype)initWithSampleRate:(int)sampleRate framesPerSecond:(float)fps machine:(ZXSpectrum *)machine
+- (instancetype)initWithSampleRate:(int)sampleRate framesPerSecond:(float)fps callback:(EmulationViewController *)callback
 {
     self = [super init];
     if (self)
@@ -144,7 +145,7 @@ static OSStatus renderAudio(void *inRefCon,
         // define the callback for rendering audio
         AURenderCallbackStruct renderCallbackStruct;
         renderCallbackStruct.inputProc = renderAudio;
-        renderCallbackStruct.inputProcRefCon = machine;
+        renderCallbackStruct.inputProcRefCon = (__bridge void*)callback;
         
         // Attach the audio callback to the converterNode
         CheckError(AUGraphSetNodeInputCallback(_graph, _converterNode, 0, &renderCallbackStruct), "AUGraphNodeInputCallback");
@@ -197,22 +198,14 @@ static OSStatus renderAudio(void *inRefCon, AudioUnitRenderActionFlags *ioAction
                             const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber, UInt32 inNumberFrames,
                             AudioBufferList *ioData)
 {
-    ZXSpectrum *machine = (ZXSpectrum *)inRefCon;
+    EmulationViewController *callback = (__bridge EmulationViewController *)inRefCon;
     
     // Grab the buffer that core audio has passed in and reset its contents to 0.
     // The format being used has 4 bytes per frame so multiply inNumberFrames by 4
     short *buffer = (short *)ioData->mBuffers[0].mData;
     memset(buffer, 0, inNumberFrames << 2);
     
-    // Update the queue with the reset buffer
-    machine->audioQueueRead(buffer, (inNumberFrames << 1));
-    
-    // Check if we have used a frames worth of buffer storage and if so then its time to generate another frame.
-    if (machine->audioQueueBufferUsed() < 7680)
-    {
-        machine->generateFrame();
-        machine->audioQueueWrite(machine->audioBuffer, 7680);
-    }
+    [callback audioCallback:inNumberFrames buffer:buffer];
     
     // Set the size of the buffer to be the number of frames requested by the Core Audio callback. This is
     // multiplied by the number of bytes per frame which is 4.

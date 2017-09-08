@@ -25,7 +25,8 @@ ZXSpectrum::Snap ZXSpectrum::snapshotCreateSNA()
     
     Snap snap;
     snap.length = (48 * 1024) + cSNA_HEADER_SIZE;
-    snap.data = (unsigned char*)calloc(snap.length, sizeof(unsigned char));
+    snap.data = new unsigned char[snap.length];
+//    snap.data = (unsigned char*)calloc(snap.length, sizeof(unsigned char));
     
     snap.data[0] = z80Core.GetRegister(CZ80Core::eREG_I);
     snap.data[1] = z80Core.GetRegister(CZ80Core::eREG_ALT_HL) & 0xff;
@@ -101,7 +102,8 @@ bool ZXSpectrum::snapshotSNALoadWithPath(const char *path)
     
     pause();
     
-    ZXSpectrum::resetMachine();
+    displayFrameReset();
+    audioReset();
     
     fseek(fileHandle, 0, SEEK_END);
     long size = ftell(fileHandle);
@@ -183,7 +185,8 @@ ZXSpectrum::Snap ZXSpectrum::snapshotCreateZ80()
     // Structure to be returned containing the length and size of the snapshot
     Snap snapData;
     snapData.length = snapshotSize;
-    snapData.data = (unsigned char*)calloc(snapshotSize, sizeof(unsigned char));
+    snapData.data = new unsigned char[snapshotSize];
+//    snapData.data = (unsigned char*)calloc(snapshotSize, sizeof(unsigned char));
     
     // Header
     snapData.data[0] = z80Core.GetRegister(CZ80Core::eREG_A);
@@ -333,6 +336,7 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
     pause();
     
     displayFrameReset();
+    audioReset();
     
     fseek(fileHandle, 0, SEEK_END);
     long size = ftell(fileHandle);

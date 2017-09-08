@@ -71,13 +71,33 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     _scene.scaleMode = SKSceneScaleModeFill;
     [self.skView presentScene:_scene];
     
+    audioCore = [[AudioCore alloc] initWithSampleRate:cAUDIO_SAMPLE_RATE framesPerSecond:cFRAMES_PER_SECOND callback:self];
+
     [self initMachineWithRomPath:mainBundlePath machineType:[[[NSUserDefaults standardUserDefaults] valueForKey:cSELECTED_MACHINE] intValue]];
     
     [self setupObservers];
     [self setupConfigView];
     [self setupControllers];
     [self restoreSession];
-    
+
+//    [audioCore start];
+
+}
+
+- (void)audioCallback:(int)inNumberFrames buffer:(short *)buffer
+{
+    if (machine)
+    {    
+        // Update the queue with the reset buffer
+        machine->audioQueueRead(buffer, (inNumberFrames << 1));
+        
+        // Check if we have used a frames worth of buffer storage and if so then its time to generate another frame.
+        if (machine->audioQueueBufferUsed() < 7680)
+        {
+            machine->generateFrame();
+            machine->audioQueueWrite(machine->audioBuffer, 7680);
+        }
+    }
 }
 
 - (void)viewWillAppear
@@ -158,9 +178,8 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     
     // Initialise the new machine and audio core which is used to drive it
     machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
-    audioCore = [[AudioCore alloc] initWithSampleRate:cAUDIO_SAMPLE_RATE framesPerSecond:cFRAMES_PER_SECOND machine:machine];
-    [audioCore start];
     
+    [audioCore start];
     [self.scene setPaused:NO];
     machine->resume();
     

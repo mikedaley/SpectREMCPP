@@ -51,7 +51,7 @@ static const int cHEADER_BLOCK_LENGTH = 19;
 
 TapeBlock::~TapeBlock()
 {
-
+    delete blockData;
 }
 
 unsigned char TapeBlock::getFlag()
@@ -141,7 +141,10 @@ unsigned short ByteHeader::getDataLength()
 
 unsigned char *DataBlock::getDataBlock()
 {
-    unsigned char *dataBlock = (unsigned char *)calloc(getDataLength(), sizeof(unsigned char));
+    cout << "datablock" << endl;
+    unsigned char *dataBlock = new unsigned char[ getDataLength() ];
+    cout << "datablock done" << endl;
+//    unsigned char *dataBlock = (unsigned char *)calloc(getDataLength(), sizeof(unsigned char));
     memcpy(dataBlock, &blockData[cDATA_BLOCK_DATA_LENGTH_OFFSET], sizeof(unsigned char) * getDataLength());
     return dataBlock;
 }
@@ -251,7 +254,8 @@ bool ZXSpectrum::tapeLoadWithPath(const char *path)
         }
         
         newTapeBlock->blockLength = blockLength;
-        newTapeBlock->blockData = (unsigned char *)calloc(blockLength, sizeof(unsigned char));
+        newTapeBlock->blockData = new unsigned char[blockLength];
+//        newTapeBlock->blockData = (unsigned char *)calloc(blockLength, sizeof(unsigned char));
         memcpy(newTapeBlock->blockData, &fileBytes[ tapeCurrentBytePtr ], blockLength);
         
         tapeBlocks.push_back(newTapeBlock);

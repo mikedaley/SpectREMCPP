@@ -24,7 +24,7 @@
 	@param sampleRate to be used for audio
 	@param fps being rendered which is used to calculate the frame capacity for each audio buffer
  */
-- (instancetype)initWithSampleRate:(int)sampleRate framesPerSecond:(float)fps machine:(ZXSpectrum *)machine;
+- (instancetype)initWithSampleRate:(int)sampleRate framesPerSecond:(float)fps callback:(EmulationViewController *)callback;
 
 - (void)stop;
 - (void)start;

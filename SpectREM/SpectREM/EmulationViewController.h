@@ -31,6 +31,7 @@ enum
 
 - (void *)getDisplayBuffer;
 - (void)loadFileWithURL:(NSURL *)url addToRecent:(BOOL)addToRecent;
+- (void)audioCallback:(int)inNumberFrames buffer:(short *)buffer;
 
 @end
 

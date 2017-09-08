@@ -46,7 +46,6 @@ void ZXSpectrum::audioSetup(float sampleRate, float fps)
 {
     audioBufferSize = (sampleRate / fps) * 6;
     audioBuffer = new short[ audioBufferSize ]();
-    
     audioBeeperTsStep = machineInfo.tsPerFrame / (sampleRate / fps);
     audioAYTsStep = 32;
     
@@ -56,6 +55,10 @@ void ZXSpectrum::audioSetup(float sampleRate, float fps)
 
 void ZXSpectrum::audioReset()
 {
+    audioBufferIndex = 0;
+    audioTsCounter = 0;
+    audioTsStepCounter = 0;
+    audioBeeperLeft = audioBeeperRight = 0;
     audioAYOutput = 0;
     audioAYrandom = 1;
     audioAYChannelOutput[0] = 0;
