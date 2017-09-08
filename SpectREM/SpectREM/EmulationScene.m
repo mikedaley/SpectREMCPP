@@ -24,8 +24,6 @@ static NSString *const cU_BORDER_SIZE   =           @"u_borderSize";
 
 - (void)didMoveToView:(SKView *)view
 {
-    NSLog(@"SCENE DID LOAD");
-
     _emulationScreenTexture = [SKMutableTexture mutableTextureWithSize:CGSizeMake(320, 256)];
     _emulationScreenTexture.filteringMode = SKTextureFilteringLinear;
     

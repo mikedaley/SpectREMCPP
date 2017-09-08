@@ -43,7 +43,6 @@ void ZXSpectrum48::initialise(string romPath)
     loadDefaultROM();
     
     emuDisplayPage = 1;
-    cout << "1" << endl;
 }
 
 void ZXSpectrum48::loadDefaultROM()

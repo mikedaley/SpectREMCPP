@@ -136,11 +136,15 @@ static OSStatus renderAudio(void *inRefCon,
         bufferFormat.mBytesPerPacket = formatBytesPerPacket;
         
         CheckError(AUGraphNodeInfo(_graph, _converterNode, NULL, &_convertUnit), "AUGraphNodeInfo");
-        CheckError(AudioUnitSetProperty(_convertUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, &bufferFormat, sizeof(bufferFormat)), "AudioUnitSetProperty[kAudioUnitProperty_StreamFormat]");
+        CheckError(AudioUnitSetProperty(_convertUnit, kAudioUnitProperty_StreamFormat,
+                                        kAudioUnitScope_Input, 0, &bufferFormat,
+                                        sizeof(bufferFormat)), "AudioUnitSetProperty[kAudioUnitProperty_StreamFormat]");
         
         // Set the frames per slice property on the converter node
         uint32 framesPerSlice = 882;
-        CheckError(AudioUnitSetProperty(_convertUnit, kAudioUnitProperty_MaximumFramesPerSlice, kAudioUnitScope_Input, 0, &framesPerSlice, sizeof(framesPerSlice)), "AudioUnitSetProperty[kAudioUnitProperty_MaximumFramesPerSlice]");
+        CheckError(AudioUnitSetProperty(_convertUnit, kAudioUnitProperty_MaximumFramesPerSlice,
+                                        kAudioUnitScope_Input, 0, &framesPerSlice,
+                                        sizeof(framesPerSlice)), "AudioUnitSetProperty[kAudioUnitProperty_MaximumFramesPerSlice]");
 
         // define the callback for rendering audio
         AURenderCallbackStruct renderCallbackStruct;
@@ -157,7 +161,6 @@ static OSStatus renderAudio(void *inRefCon,
         AUGraphNodeInfo(_graph, _lowPassNode, 0, &_lowPassFilterUnit);
         AUGraphNodeInfo(_graph, _highPassNode, 0, &_highPassFilterUnit);
 
-        
         AudioUnitSetParameter(_lowPassFilterUnit, 0, kAudioUnitScope_Global, 0, 5000, 0);
         AudioUnitSetParameter(_highPassFilterUnit, 0, kAudioUnitScope_Global, 0, 0, 0);
         AudioUnitSetParameter(_mixerUnit, kMultiChannelMixerParam_Volume, kAudioUnitScope_Output, 0, 1, 0);

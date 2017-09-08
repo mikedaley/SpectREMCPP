@@ -72,7 +72,8 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     // The AudioCore uses the sound buffer to identify when a new frame should be drawn for accurate timing.
     audioCore = [[AudioCore alloc] initWithSampleRate:cAUDIO_SAMPLE_RATE framesPerSecond:cFRAMES_PER_SECOND callback:self];
 
-    [self initMachineWithRomPath:mainBundlePath machineType:[[[NSUserDefaults standardUserDefaults] valueForKey:cSELECTED_MACHINE] intValue]];
+    int defaultsSelectMachine = [[[[NSUserDefaultsController sharedUserDefaultsController] values] valueForKey:cSELECTED_MACHINE] intValue];
+    [self initMachineWithRomPath:mainBundlePath machineType:defaultsSelectMachine];
     
     [self setupObservers];
     [self setupConfigView];
@@ -144,8 +145,8 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 {
     if (machine)
     {
-        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-        machine->emuTapeInstantLoad = [userDefaults valueForKey:cMACHINE_INSTANT_TAPE_LOADING];
+        NSUserDefaultsController *udc = [NSUserDefaultsController sharedUserDefaultsController];
+        machine->emuTapeInstantLoad = [[[udc values] valueForKey:cMACHINE_INSTANT_TAPE_LOADING] boolValue];
     }
 }
 
@@ -180,16 +181,18 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
         return;
     }
     
-    // Initialise the new machine and audio core which is used to drive it
     machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
     
+    // Need to do this to make sure the current default values are applied to the new machine
     [self applyDefaultsToMachine];
     
     [audioCore start];
     [self.scene setPaused:NO];
     machine->resume();
     
-    [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@", [NSString stringWithCString:machine->machineInfo.machineName encoding:NSUTF8StringEncoding]]];
+    [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@",
+                                [NSString stringWithCString:machine->machineInfo.machineName
+                                                   encoding:NSUTF8StringEncoding]]];
 }
 
 #pragma mark - Keyboard
@@ -230,7 +233,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
         int snapshotMachineType = machine->snapshotMachineInSnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
         if (machine->machineInfo.machineType != snapshotMachineType)
         {
-            [[NSUserDefaults standardUserDefaults] setObject:@(snapshotMachineType) forKey:cSELECTED_MACHINE];
+            [[[NSUserDefaultsController sharedUserDefaultsController] values] setValue:@(snapshotMachineType) forKey:cSELECTED_MACHINE];
         }
     }
     
@@ -268,17 +271,10 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
 - (void)viewWillDisappear
 {
-    NSString *bundleID = [[NSBundle mainBundle] bundleIdentifier];
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    
-    NSArray *supportDir = [fileManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask];
-    
-    if (supportDir.count > 0)
+    if (NSURL *supportDirUrl = [self getSupportDirUrl])
     {
-        NSURL *supportDirUrl = [[supportDir objectAtIndex:0] URLByAppendingPathComponent:bundleID];
-        
         NSError *error = nil;
-        if (![fileManager createDirectoryAtURL:supportDirUrl withIntermediateDirectories:YES attributes:nil error:&error])
+        if (![[NSFileManager defaultManager] createDirectoryAtURL:supportDirUrl withIntermediateDirectories:YES attributes:nil error:&error])
         {
             NSLog(@"ERROR: creating support directory.");
             return;
@@ -295,6 +291,19 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
 - (void)restoreSession
 {
+    if (NSURL *supportDirUrl = [self getSupportDirUrl])
+    {
+        // Load the last session file it if exists
+        supportDirUrl = [supportDirUrl URLByAppendingPathComponent:cSESSION_FILE_NAME];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:supportDirUrl.path])
+        {
+            [self loadFileWithURL:supportDirUrl addToRecent:NO];
+        }
+    }
+}
+
+- (NSURL *)getSupportDirUrl
+{
     NSString *bundleID = [[NSBundle mainBundle] bundleIdentifier];
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
@@ -302,20 +311,10 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     
     if (supportDir.count > 0)
     {
-        NSURL *supportDirUrl = [[supportDir objectAtIndex:0] URLByAppendingPathComponent:bundleID];
-        
-        // Load the last session file it if exists
-        supportDirUrl = [supportDirUrl URLByAppendingPathComponent:cSESSION_FILE_NAME];
-        if ([fileManager fileExistsAtPath:supportDirUrl.path])
-        {
-            NSLog(@"Restoring session");
-            [self loadFileWithURL:supportDirUrl addToRecent:NO];
-        }
-        else
-        {
-            NSLog(@"No session to restore.");
-        }
+        return [[supportDir objectAtIndex:0] URLByAppendingPathComponent:bundleID];
     }
+    
+    return nil;
 }
 
 #pragma mark - File Menu Items
