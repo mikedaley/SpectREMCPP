@@ -172,7 +172,7 @@ void ZXSpectrum128::coreIOWrite(unsigned short address, unsigned char data)
     }
     
     // Memory paging port
-    if ( address == 0x7ffd && emuDisablePaging != true)
+    if ( address == 0x7ffd && emuDisablePaging == false)
     {
         // Save the last byte set, used when generating a Z80 snapshot
         ULAPortFFFDValue = data;
@@ -183,7 +183,7 @@ void ZXSpectrum128::coreIOWrite(unsigned short address, unsigned char data)
         }
         
         // You should only be able to disable paging once. To enable paging again then a reset is necessary.
-        if (data & 0x20 && emuDisablePaging == false)
+        if (data & 0x20 && emuDisablePaging != true)
         {
             emuDisablePaging = true;
         }
@@ -206,20 +206,22 @@ void ZXSpectrum128::coreMemoryWrite(unsigned short address, unsigned char data)
     }
     else if (memoryPage == 1)
     {
+        displayUpdateWithTs((z80Core.GetTStates() - emuCurrentDisplayTs) + machineInfo.paperDrawingOffset);
         memoryRam[(5 * cMEMORY_PAGE_SIZE) + address] = data;
     }
     else if (memoryPage == 2)
     {
+        displayUpdateWithTs((z80Core.GetTStates() - emuCurrentDisplayTs) + machineInfo.paperDrawingOffset);
         memoryRam[(2 * cMEMORY_PAGE_SIZE) + address] = data;
     }
     else if (memoryPage == 3)
     {
+        displayUpdateWithTs((z80Core.GetTStates() - emuCurrentDisplayTs) + machineInfo.paperDrawingOffset);
         memoryRam[(emuRAMPage * cMEMORY_PAGE_SIZE) + address] = data;
     }
     
     // Only update screen if display memory has been written too
     if (address >= 16384 && address < cBITMAP_ADDRESS + cBITMAP_SIZE + cATTR_SIZE){
-        displayUpdateWithTs((z80Core.GetTStates() - emuCurrentDisplayTs) + machineInfo.paperDrawingOffset);
     }
 }
 
