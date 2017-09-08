@@ -211,17 +211,11 @@ void ZXSpectrum128::coreMemoryWrite(unsigned short address, unsigned char data)
     }
     else if (memoryPage == 2)
     {
-        displayUpdateWithTs((z80Core.GetTStates() - emuCurrentDisplayTs) + machineInfo.paperDrawingOffset);
         memoryRam[(2 * cMEMORY_PAGE_SIZE) + address] = data;
     }
     else if (memoryPage == 3)
     {
-        displayUpdateWithTs((z80Core.GetTStates() - emuCurrentDisplayTs) + machineInfo.paperDrawingOffset);
         memoryRam[(emuRAMPage * cMEMORY_PAGE_SIZE) + address] = data;
-    }
-    
-    // Only update screen if display memory has been written too
-    if (address >= 16384 && address < cBITMAP_ADDRESS + cBITMAP_SIZE + cATTR_SIZE){
     }
 }
 
@@ -349,8 +343,8 @@ bool ZXSpectrum128::opcodeCallback(unsigned char opcode, unsigned short address,
     }
     
     // Trap ROM tap LOADING
-//    if (machine->emuTapeInstantLoad)
-//    {
+    if (machine->emuTapeInstantLoad)
+    {
         if (opcode == 0xc0 && (address == 0x056b || address == 0x0111))
         {
             machine->emuLoadTrapTriggered = true;
@@ -360,8 +354,8 @@ bool ZXSpectrum128::opcodeCallback(unsigned char opcode, unsigned short address,
         {
             machine->emuLoadTrapTriggered = false;
         }
-//    }
-    
+    }
+
     return false;
 }
 

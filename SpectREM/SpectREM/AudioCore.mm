@@ -214,10 +214,6 @@ static OSStatus renderAudio(void *inRefCon, AudioUnitRenderActionFlags *ioAction
     return noErr;
 }
 
-// Routine to help detect and display OSStatus errors generated when using the Core Audio API
-// It works out of the error is a C string to be displayed or an integer value. This allows them
-// to be logged in a consistent manor.
-// Taken from "Learning Core Audio" by Chris Adams and Kevin Avila
 static void CheckError(OSStatus error, const char *operation)
 {
     if (error == noErr)
@@ -225,23 +221,8 @@ static void CheckError(OSStatus error, const char *operation)
         return;
     }
 
-    cout << "Error setting up audio" << endl;
+    cout << "AUDIO ERROR:  " << operation << endl;
     exit(1);
-    
-//    char str[20];
-//    *(UInt32 *) (str + 1) = CFSwapInt32HostToBig(error);
-//    if (isprint(str[1]) && isprint(str[2]) && isprint(str[3]) && isprint(str[4]))
-//    {
-//        str[0] = str[5] = '\'';
-//        str[6] = '\0';
-//    }
-//    else
-//    {
-//        sprintf(str, "%d", (int)error);
-//    }
-//    
-//    fprintf(stderr, "[Error] %s (%s)\n", operation, str);
-//    exit(1);
 }
 
 @end

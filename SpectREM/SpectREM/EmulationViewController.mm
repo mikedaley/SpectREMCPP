@@ -57,8 +57,6 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
 - (void)viewDidLoad
 {
-    NSLog(@"VIEW DID LOAD");
-    
     [super viewDidLoad];
 
     mainBundlePath = [[NSBundle mainBundle] bundlePath];
@@ -71,6 +69,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     _scene.scaleMode = SKSceneScaleModeFill;
     [self.skView presentScene:_scene];
     
+    // The AudioCore uses the sound buffer to identify when a new frame should be drawn for accurate timing.
     audioCore = [[AudioCore alloc] initWithSampleRate:cAUDIO_SAMPLE_RATE framesPerSecond:cFRAMES_PER_SECOND callback:self];
 
     [self initMachineWithRomPath:mainBundlePath machineType:[[[NSUserDefaults standardUserDefaults] valueForKey:cSELECTED_MACHINE] intValue]];
@@ -79,9 +78,6 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     [self setupConfigView];
     [self setupControllers];
     [self restoreSession];
-
-//    [audioCore start];
-
 }
 
 - (void)audioCallback:(int)inNumberFrames buffer:(short *)buffer
@@ -89,7 +85,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     if (machine)
     {    
         // Update the queue with the reset buffer
-        machine->audioQueueRead(buffer, (inNumberFrames << 1));
+        machine->audioQueueRead(buffer, (inNumberFrames * 2));
         
         // Check if we have used a frames worth of buffer storage and if so then its time to generate another frame.
         if (machine->audioQueueBufferUsed() < 7680)
@@ -133,7 +129,6 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 {
     if ([keyPath isEqualToString:cSELECTED_MACHINE])
     {
-        // No point in changing machine if they already match
         if (machine->machineInfo.machineType != [change[NSKeyValueChangeNewKey] intValue])
         {
             [self initMachineWithRomPath:mainBundlePath machineType:[change[NSKeyValueChangeNewKey] intValue]];
@@ -142,6 +137,15 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     else if ([keyPath isEqualToString:cMACHINE_INSTANT_TAPE_LOADING])
     {
         machine->emuTapeInstantLoad = [change[NSKeyValueChangeNewKey] boolValue];
+    }
+}
+
+- (void)applyDefaultsToMachine
+{
+    if (machine)
+    {
+        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+        machine->emuTapeInstantLoad = [userDefaults valueForKey:cMACHINE_INSTANT_TAPE_LOADING];
     }
 }
 
@@ -178,6 +182,8 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     
     // Initialise the new machine and audio core which is used to drive it
     machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
+    
+    [self applyDefaultsToMachine];
     
     [audioCore start];
     [self.scene setPaused:NO];

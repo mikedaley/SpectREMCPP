@@ -326,7 +326,7 @@
                                                 </menu>
                                             </popUpButtonCell>
                                             <connections>
-                                                <binding destination="SIc-Bz-mzc" name="selectedIndex" keyPath="values.selectedMachine" id="QKU-Li-uKB"/>
+                                                <binding destination="AMq-qH-5OO" name="selectedIndex" keyPath="values.selectedMachine" id="8a3-cl-Rry"/>
                                             </connections>
                                         </popUpButton>
                                         <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ype-Qt-n0x">
@@ -378,7 +378,7 @@
                                                 <font key="font" metaFont="smallSystem"/>
                                             </buttonCell>
                                             <connections>
-                                                <binding destination="SIc-Bz-mzc" name="value" keyPath="values.machineInstantTapeLoading" id="4vn-6S-Fxc"/>
+                                                <binding destination="AMq-qH-5OO" name="value" keyPath="values.machineInstantTapeLoading" id="cCr-Uv-OsG"/>
                                             </connections>
                                         </button>
                                     </subviews>
@@ -396,7 +396,7 @@
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" maxValue="0.5" doubleValue="0.25" tickMarkPosition="above" numberOfTickMarks="2" sliderType="linear" id="khQ-ms-eKa"/>
                                             <connections>
-                                                <binding destination="SIc-Bz-mzc" name="value" keyPath="values.displayFilterValue" id="SgC-1c-Pvv"/>
+                                                <binding destination="AMq-qH-5OO" name="value" keyPath="values.displayFilterValue" id="DqY-VP-70O"/>
                                             </connections>
                                         </slider>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pW4-6K-kuY">
@@ -413,7 +413,7 @@
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" maxValue="32" doubleValue="32" tickMarkPosition="above" numberOfTickMarks="2" sliderType="linear" id="EmC-MO-oPl"/>
                                             <connections>
-                                                <binding destination="SIc-Bz-mzc" name="value" keyPath="values.displayBorderSize" id="wwb-vl-NCa"/>
+                                                <binding destination="AMq-qH-5OO" name="value" keyPath="values.displayBorderSize" id="vWd-kj-Rb0"/>
                                             </connections>
                                         </slider>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ue5-zC-kV5">
@@ -433,6 +433,7 @@
                 </viewController>
                 <customObject id="8WS-NX-rkm" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <userDefaultsController id="SIc-Bz-mzc"/>
+                <userDefaultsController representsSharedInstance="YES" id="AMq-qH-5OO"/>
             </objects>
             <point key="canvasLocation" x="-251.5" y="832.5"/>
         </scene>
@@ -468,7 +469,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
                                         <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="AWO-V8-9AM">
-                                            <rect key="frame" x="244" y="1" width="16" height="254"/>
+                                            <rect key="frame" x="-16" y="0.0" width="16" height="0.0"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
                                     </scrollView>
@@ -483,7 +484,6 @@
                     </connections>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
-                <userDefaultsController representsSharedInstance="YES" id="2Yu-23-LMG"/>
             </objects>
             <point key="canvasLocation" x="75" y="658"/>
         </scene>
