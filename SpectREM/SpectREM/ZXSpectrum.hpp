@@ -31,6 +31,7 @@ public:
     virtual unsigned char   getDataType();
     virtual unsigned short  getDataLength();
     virtual unsigned char   getChecksum();
+    virtual const char *    getBlockName() = 0;
     
 public:
     unsigned short          blockLength;
@@ -38,6 +39,10 @@ public:
     int                     blockType;
     int                     currentByte;
 };
+
+#pragma mark - TypeDefs
+
+typedef void (*SpectrumTapeCallback)(int blockIndex, int bytes);
 
 #pragma mark - Base ZXSpectrum class
 
@@ -236,7 +241,6 @@ public:
     virtual unsigned char   coreDebugRead(unsigned int address, void *data) = 0;
     virtual void            coreDebugWrite(unsigned int address, unsigned char byte, void *data) = 0;
 
-
     CZ80Core                z80Core;
     vector<char>            memoryRom;
     vector<char>            memoryRam;
@@ -343,6 +347,7 @@ public:
     // Floating bus
     const static unsigned int ULAFloatingBusValues[];
     
+    SpectrumTapeCallback    tapeCallback;
 
 };
 
@@ -355,6 +360,7 @@ public:
     unsigned short          getProgramLength();
     virtual unsigned short  getDataLength();
     virtual unsigned char   getChecksum();
+    virtual const char *    getBlockName();
 };
 
 #pragma mark - Numeric Data Header
@@ -364,6 +370,7 @@ class NumericDataHeader : public TapeBlock
 public:
     unsigned char           getVariableName();
     virtual unsigned short  getDataLength();
+    virtual const char *    getBlockName();
 };
 
 #pragma mark - Alphanumeric Data Header
@@ -373,6 +380,7 @@ class AlphanumericDataHeader : public TapeBlock
 public:
     unsigned char           getVariableName();
     virtual unsigned short  getDataLength();
+    virtual const char *    getBlockName();
 };
 
 #pragma mark - Byte Header Block
@@ -383,6 +391,7 @@ public:
     unsigned short          getStartAddress();
     virtual unsigned char   getChecksum();
     virtual unsigned short  getDataLength();
+    virtual const char *    getBlockName();
 };
 
 #pragma mark - Data Block
@@ -393,6 +402,7 @@ public:
     unsigned char           *getDataBlock();
     virtual unsigned char   getDataType();
     virtual unsigned char   getChecksum();
+    virtual const char *    getBlockName();
 };
 
 #endif /* ZXSpectrum_hpp */

@@ -42,7 +42,6 @@ void ZXSpectrum48::initialise(string romPath)
     
     loadDefaultROM();
     
-    emuDisplayPage = 1;
 }
 
 void ZXSpectrum48::loadDefaultROM()
@@ -215,6 +214,7 @@ void ZXSpectrum48::release()
 
 void ZXSpectrum48::resetMachine(bool hard)
 {
+    emuDisplayPage = 1;
     ZXSpectrum::resetMachine(hard);
 }
 

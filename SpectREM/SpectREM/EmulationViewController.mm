@@ -17,6 +17,7 @@
 
 #import "ConfigurationViewController.h"
 #import "ExportAccessoryViewController.h"
+#import "TapeBrowserViewController.h"
 
 #pragma mark - Constants
 
@@ -43,6 +44,8 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     NSStoryboard                    *storyBoard;
     ConfigurationViewController     *configViewController;
     ExportAccessoryViewController   *saveAccessoryController;
+    NSWindowController              *tapeBrowserWindowController;
+    TapeBrowserViewController       *tapeBrowserViewController;
 }
 @end
 
@@ -115,6 +118,9 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 - (void)setupControllers
 {
     saveAccessoryController = [storyBoard instantiateControllerWithIdentifier:@"SAVE_ACCESSORY_VIEW_CONTROLLER"];
+    tapeBrowserWindowController = [storyBoard instantiateControllerWithIdentifier:@"TAPE_BROWSER_WINDOW"];
+    tapeBrowserViewController = (TapeBrowserViewController *)tapeBrowserWindowController.contentViewController;
+    tapeBrowserViewController.emulationViewController = self;
 }
 
 #pragma mark - Observers
@@ -182,6 +188,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     }
     
     machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
+    machine->tapeCallback = tapeCallback;
     
     // Need to do this to make sure the current default values are applied to the new machine
     [self applyDefaultsToMachine];
@@ -193,6 +200,12 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@",
                                 [NSString stringWithCString:machine->machineInfo.machineName
                                                    encoding:NSUTF8StringEncoding]]];
+}
+
+static void tapeCallback(int blockIndex, int bytes)
+{
+    cout << "Tape Callback: " << blockIndex << endl;
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"TAPE_CHANGED_NOTIFICATION" object:NULL];
 }
 
 #pragma mark - Keyboard
@@ -248,6 +261,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     else if ([[url.pathExtension uppercaseString] isEqualToString:cTAP_EXTENSION])
     {
         success = machine->tapeLoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"TAPE_CHANGED_NOTIFICATION" object:NULL];
     }
 
     if (addToRecent && success)
@@ -315,6 +329,34 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     }
     
     return nil;
+}
+
+#pragma mark - Tape Browser Methods
+
+- (NSInteger)numberOfTapeBlocks
+{
+    return machine->tapeBlocks.size();
+}
+
+- (NSString *)blockNameForTapeBlockIndex:(NSInteger)blockIndex
+{
+    return [NSString stringWithCString:machine->tapeBlocks[ blockIndex ]->getBlockName() encoding:NSUTF8StringEncoding ];
+}
+
+- (NSInteger)selectedTapeBlock
+{
+    return machine->tapeCurrentBlockIndex;
+}
+
+- (BOOL)isTapePlaying
+{
+    return machine->tapePlaying;
+}
+
+- (void)setCurrentTapeBlock:(NSInteger)blockIndex
+{
+    machine->tapeCurrentBlockIndex = static_cast<int>(blockIndex);
+    machine->tapePlaying = false;
 }
 
 #pragma mark - File Menu Items
@@ -441,6 +483,11 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 }
 
 #pragma mark - Tape Menu Items
+
+- (IBAction)showTapeBrowser:(id)sender
+{
+    [tapeBrowserWindowController showWindow:nil];
+}
 
 - (IBAction)startPlayingTape:(id)sender
 {

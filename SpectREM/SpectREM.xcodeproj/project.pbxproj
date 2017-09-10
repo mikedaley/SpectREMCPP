@@ -15,6 +15,8 @@
 		17A089531F4F677200CAA178 /* Display.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A089521F4F677200CAA178 /* Display.cpp */; };
 		17B5DB971F5B14A7003E7EF3 /* AudioCore.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17B5DB951F5B14A7003E7EF3 /* AudioCore.mm */; };
 		17B5DB9A1F5B14D3003E7EF3 /* Audio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17B5DB991F5B14D3003E7EF3 /* Audio.cpp */; };
+		17C33DFA1F6578E600720A06 /* TapeBrowserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 17C33DF91F6578E600720A06 /* TapeBrowserViewController.m */; };
+		17C33DFE1F6583A400720A06 /* TapeCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 17C33DFD1F6583A400720A06 /* TapeCellView.m */; };
 		17EC89101F5B1FC500B6EFAF /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17EC890F1F5B1FC500B6EFAF /* AudioToolbox.framework */; };
 		ED2A6D051F6036D3003CD6CE /* ConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D041F6036D3003CD6CE /* ConfigurationViewController.m */; };
 		ED2A6D0A1F603D18003CD6CE /* NSClipView+Flipped.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D091F603D18003CD6CE /* NSClipView+Flipped.m */; };
@@ -59,6 +61,10 @@
 		17B5DB951F5B14A7003E7EF3 /* AudioCore.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AudioCore.mm; sourceTree = "<group>"; };
 		17B5DB991F5B14D3003E7EF3 /* Audio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Audio.cpp; sourceTree = "<group>"; };
 		17B5DB9C1F5B1CCE003E7EF3 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		17C33DF81F6578E600720A06 /* TapeBrowserViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TapeBrowserViewController.h; sourceTree = "<group>"; };
+		17C33DF91F6578E600720A06 /* TapeBrowserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TapeBrowserViewController.m; sourceTree = "<group>"; };
+		17C33DFC1F6583A400720A06 /* TapeCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TapeCellView.h; sourceTree = "<group>"; };
+		17C33DFD1F6583A400720A06 /* TapeCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TapeCellView.m; sourceTree = "<group>"; };
 		17EC890F1F5B1FC500B6EFAF /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		ED2A6D031F6036D3003CD6CE /* ConfigurationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigurationViewController.h; sourceTree = "<group>"; };
 		ED2A6D041F6036D3003CD6CE /* ConfigurationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigurationViewController.m; sourceTree = "<group>"; };
@@ -174,6 +180,26 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		17C33DF71F65788F00720A06 /* Tape Browser */ = {
+			isa = PBXGroup;
+			children = (
+				17C33DF81F6578E600720A06 /* TapeBrowserViewController.h */,
+				17C33DF91F6578E600720A06 /* TapeBrowserViewController.m */,
+				17C33DFC1F6583A400720A06 /* TapeCellView.h */,
+				17C33DFD1F6583A400720A06 /* TapeCellView.m */,
+			);
+			name = "Tape Browser";
+			sourceTree = "<group>";
+		};
+		17C33DFB1F657CDB00720A06 /* Main Window */ = {
+			isa = PBXGroup;
+			children = (
+				EDB7F7FA1F5ED3EF003053E3 /* EmulationWindowController.h */,
+				EDB7F7FB1F5ED3EF003053E3 /* EmulationWindowController.m */,
+			);
+			name = "Main Window";
+			sourceTree = "<group>";
+		};
 		ED2A6D061F6036D8003CD6CE /* Configuration */ = {
 			isa = PBXGroup;
 			children = (
@@ -265,7 +291,6 @@
 		ED913FB51F30763500316E1A /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				174AAFBD1F58626E00B75535 /* Shader */,
 				ED913FB81F30767A00316E1A /* Emulation */,
 				ED2A6D061F6036D8003CD6CE /* Configuration */,
 				ED2A6D0D1F616C1A003CD6CE /* Export Accessory View Controller */,
@@ -290,6 +315,7 @@
 				ED913FA21F30759300316E1A /* EmulationScene.h */,
 				ED913FA31F30759300316E1A /* EmulationScene.m */,
 				ED504A611F4EE9D500BD289E /* EmulationScene.sks */,
+				174AAFBD1F58626E00B75535 /* Shader */,
 			);
 			name = "Emulation Scene";
 			sourceTree = "<group>";
@@ -350,8 +376,8 @@
 		EDB7F7F91F5ED3D7003053E3 /* Window Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				EDB7F7FA1F5ED3EF003053E3 /* EmulationWindowController.h */,
-				EDB7F7FB1F5ED3EF003053E3 /* EmulationWindowController.m */,
+				17C33DFB1F657CDB00720A06 /* Main Window */,
+				17C33DF71F65788F00720A06 /* Tape Browser */,
 			);
 			name = "Window Controllers";
 			sourceTree = "<group>";
@@ -457,6 +483,7 @@
 				ED913FCD1F30781000316E1A /* Z80Core_FDOpcodes.cpp in Sources */,
 				ED913FC91F30781000316E1A /* Z80Core_CBOpcodes.cpp in Sources */,
 				ED913FA41F30759300316E1A /* EmulationScene.m in Sources */,
+				17C33DFE1F6583A400720A06 /* TapeCellView.m in Sources */,
 				ED913FD41F30787000316E1A /* ZXSpectrum.cpp in Sources */,
 				ED2A6D0A1F603D18003CD6CE /* NSClipView+Flipped.m in Sources */,
 				17A089511F4F5B2700CAA178 /* Keyboard.cpp in Sources */,
@@ -470,6 +497,7 @@
 				17A089531F4F677200CAA178 /* Display.cpp in Sources */,
 				ED504A641F51BBFF00BD289E /* Snapshot.cpp in Sources */,
 				ED2A6D051F6036D3003CD6CE /* ConfigurationViewController.m in Sources */,
+				17C33DFA1F6578E600720A06 /* TapeBrowserViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

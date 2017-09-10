@@ -8,7 +8,6 @@
 
 #import <Cocoa/Cocoa.h>
 #import <SpriteKit/SpriteKit.h>
-#import <GameplayKit/GameplayKit.h>
 
 @class EmulationScene;
 
@@ -33,5 +32,11 @@ enum
 - (void)loadFileWithURL:(NSURL *)url addToRecent:(BOOL)addToRecent;
 - (void)audioCallback:(int)inNumberFrames buffer:(short *)buffer;
 
-@end
+// Methods used to get informaiton from the current machine for the tape browser
+- (NSInteger)numberOfTapeBlocks;
+- (NSString *)blockNameForTapeBlockIndex:(NSInteger)blockIndex;
+- (NSInteger)selectedTapeBlock;
+- (BOOL)isTapePlaying;
+- (void)setCurrentTapeBlock:(NSInteger)blockIndex;
 
+@end

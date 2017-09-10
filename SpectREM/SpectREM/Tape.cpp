@@ -76,6 +76,11 @@ unsigned char TapeBlock::getChecksum()
 
 #pragma mark - Program Header
 
+const char * ProgramHeader::getBlockName()
+{
+    return "Program Header";
+}
+
 unsigned short ProgramHeader::getAutoStartLine()
 {
     return ((unsigned short *)&blockData[ cPROGRAM_HEADER_AUTOSTART_LINE_OFFSET ])[0];
@@ -98,6 +103,11 @@ unsigned short ProgramHeader::getDataLength()
 
 #pragma mark - Numeric Header
 
+const char * NumericDataHeader::getBlockName()
+{
+    return "Numeric Data Header";
+}
+
 unsigned char NumericDataHeader::getVariableName()
 {
     return blockData[ cNUMERIC_DATA_HEADER_VARIBABLE_NAME_OFFSET ];
@@ -110,6 +120,11 @@ unsigned short NumericDataHeader::getDataLength()
 
 #pragma mark - Alphanumeric Header
 
+const char * AlphanumericDataHeader::getBlockName()
+{
+    return "Alphanumeric Data Header";
+}
+
 unsigned char AlphanumericDataHeader::getVariableName()
 {
     return blockData[ cALPHA_NUMERIC_DATA_HEADER_VARIABLE_NAME_OFFSET ];
@@ -121,6 +136,11 @@ unsigned short AlphanumericDataHeader::getDataLength()
 }
 
 #pragma mark - Byter Header
+
+const char * ByteHeader::getBlockName()
+{
+    return "Byte Header";
+}
 
 unsigned short ByteHeader::getStartAddress()
 {
@@ -138,6 +158,11 @@ unsigned short ByteHeader::getDataLength()
 }
 
 #pragma mark - Data Block
+
+const char * DataBlock::getBlockName()
+{
+    return "Data Block";
+}
 
 unsigned char *DataBlock::getDataBlock()
 {
@@ -255,7 +280,6 @@ bool ZXSpectrum::tapeLoadWithPath(const char *path)
         
         newTapeBlock->blockLength = blockLength;
         newTapeBlock->blockData = new unsigned char[blockLength];
-//        newTapeBlock->blockData = (unsigned char *)calloc(blockLength, sizeof(unsigned char));
         memcpy(newTapeBlock->blockData, &fileBytes[ tapeCurrentBytePtr ], blockLength);
         
         tapeBlocks.push_back(newTapeBlock);
@@ -276,11 +300,22 @@ void ZXSpectrum::tapeUpdateWithTs(int tStates)
         tapePlaying = false;
         tapeInputBit = 0;
         tapeCurrentBlockIndex = static_cast<int>(tapeBlocks.size()) - 1;
+
+        if (tapeCallback)
+        {
+            tapeCallback(tapeCurrentBlockIndex, 0);
+        }
+
         return;
     }
     
     if (tapeNewBlock)
     {
+        if (tapeCallback)
+        {
+            tapeCallback(tapeCurrentBlockIndex, 0);
+        }
+
         tapeNewBlock = false;
         
         tapeCurrentBlock = tapeBlocks[ tapeCurrentBlockIndex ];
@@ -334,6 +369,7 @@ void ZXSpectrum::tapeUpdateWithTs(int tStates)
             tapeBlockPauseWithTs(tStates);
             break;
     }
+    
 }
 
 void ZXSpectrum::tapeGenerateHeaderPilotWithTs(int tStates)
@@ -610,6 +646,10 @@ void ZXSpectrum::tapeStartPlaying()
     if (tapeLoaded)
     {
         tapePlaying = true;
+        if (tapeCallback)
+        {
+            tapeCallback(tapeCurrentBlockIndex, 0);
+        }
     }
 }
 
@@ -619,6 +659,10 @@ void ZXSpectrum::tapeStopPlaying()
     {
         tapePlaying = false;
         tapeInputBit = 0;
+        if (tapeCallback)
+        {
+            tapeCallback(tapeCurrentBlockIndex, 0);
+        }
     }
 }
 
@@ -627,6 +671,10 @@ void ZXSpectrum::tapeRewind()
     if (tapeLoaded)
     {
         tapeReset(false);
+    }
+    if (tapeCallback)
+    {
+        tapeCallback(tapeCurrentBlockIndex, 0);
     }
 }
 

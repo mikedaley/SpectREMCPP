@@ -13,9 +13,7 @@
 ZXSpectrum::ZXSpectrum()
 {
     cout << "ZXSpectrum::Constructor" << endl;
-    displayFrameReset();
-    audioReset();
-    tapeReset(true);
+    tapeCallback = NULL;
 }
 
 ZXSpectrum::~ZXSpectrum()
@@ -168,6 +166,11 @@ void ZXSpectrum::resetMachine(bool hard)
             memoryRam[i] = arc4random_uniform(255);
         }
     }
+    
+    delete [] displayBuffer;
+    delete [] displayBufferCopy;
+    
+    displaySetup();
     
     z80Core.Reset(hard);
     emuReset();

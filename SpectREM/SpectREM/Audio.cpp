@@ -13,9 +13,9 @@
 #define kSpace (audioQueueBufferCapacity - 1 - kUsed)
 #define kSize (audioQueueBufferCapacity - 1)
 
-const int cBEEPER_VOLUME_MULTIPLIER = 300;
+const int cBEEPER_VOLUME_MULTIPLIER = 256;
 
-static float fAYVolBase[] = {
+static const float fAYVolBase[] = {
     0.0000,
     0.0079,
     0.0141,
