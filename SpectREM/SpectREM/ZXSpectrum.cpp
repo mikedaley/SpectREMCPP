@@ -37,10 +37,12 @@ void ZXSpectrum::initialise(string romPath)
                        zxSpectrumDebugRead,
                        zxSpectrumDebugWrite,
                        this);
+    
+    emuROMPath = romPath;
+
     screenWidth = machineInfo.pxEmuBorder + machineInfo.pxHorizontalDisplay + machineInfo.pxEmuBorder;
     screenHeight = machineInfo.pxEmuBorder + machineInfo.pxVerticalDisplay + machineInfo.pxEmuBorder;
     screenBufferSize = screenHeight * screenWidth;
-    emuROMPath = romPath;
     
     memoryRom.resize( machineInfo.romSize );
     memoryRam.resize( machineInfo.ramSize );
@@ -54,11 +56,7 @@ void ZXSpectrum::initialise(string romPath)
     audioSetup(192000, 50);
     audioBuildAYVolumesTable();
     
-    emuReset();
-    displayFrameReset();
-    audioReset();
-    keyboardMapReset();
-    tapeReset(true);
+    resetMachine(true);
 }
 
 #pragma mark - Generate a frame
@@ -172,15 +170,16 @@ void ZXSpectrum::resetMachine(bool hard)
     }
     
     z80Core.Reset(hard);
+    emuReset();
     keyboardMapReset();
     displayFrameReset();
     audioReset();
     tapeReset(true);
-    emuFrameCounter = 0;
 }
 
 void ZXSpectrum::emuReset()
 {
+    emuFrameCounter = 0;
     emuSaveTrapTriggered = false;
     emuLoadTrapTriggered = false;
     emuTapeInstantLoad = false;
