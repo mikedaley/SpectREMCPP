@@ -12,10 +12,6 @@
 
 @interface AudioCore : NSObject
 
-@property (assign) double lowPassFilter;
-@property (assign) double highPassFilter;
-@property (assign) double soundVolume;
-
 #pragma mark - Methods
 
 /*! @method initWithSampleRate:fps

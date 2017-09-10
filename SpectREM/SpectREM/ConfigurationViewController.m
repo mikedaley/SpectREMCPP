@@ -15,6 +15,10 @@ NSString *const cDISPLAY_BORDER_WIDTH           = @"displayBorderWidth";
 NSString *const cDISPLAY_FILTER_VALUE           = @"displayFilterValue";
 NSString *const cMACHINE_INSTANT_TAPE_LOADING   = @"machineInstantTapeLoading";
 
+NSString *const cAUDIO_VOLUME                   = @"audioVolume";
+NSString *const cAUDIO_HIGH_PASS_FILTER         = @"audioHighPassFilter";
+NSString *const cAUDIO_LOW_PASS_FILTER          = @"audioLowPassFilter";
+
 @interface ConfigurationViewController ()
 
 @property (strong) NSUserDefaultsController *userDefaultController;

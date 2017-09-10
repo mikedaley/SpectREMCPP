@@ -10,5 +10,11 @@
 	<real>0.212</real>
 	<key>machineInstantTapeLoading</key>
 	<true/>
+	<key>audioVolume</key>
+	<real>1</real>
+	<key>audioHighPassFilter</key>
+	<integer>0</integer>
+	<key>audioLowPassFilter</key>
+	<integer>5000</integer>
 </dict>
 </plist>

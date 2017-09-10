@@ -11,6 +11,7 @@
 #import "AudioCore.h"
 #import "ZXSpectrum.hpp"
 #import "EmulationViewController.h"
+#import "ConfigurationViewController.h"
 
 #pragma mark - Private interface
 
@@ -164,9 +165,13 @@ static OSStatus renderAudio(void *inRefCon,
         AudioUnitSetParameter(_lowPassFilterUnit, 0, kAudioUnitScope_Global, 0, 5000, 0);
         AudioUnitSetParameter(_highPassFilterUnit, 0, kAudioUnitScope_Global, 0, 0, 0);
         AudioUnitSetParameter(_mixerUnit, kMultiChannelMixerParam_Volume, kAudioUnitScope_Output, 0, 1, 0);
+        
+        [self setupObservers];
     }
     return self;
 }
+
+#pragma mark - Audio Core Controler
 
 - (void)stop
 {
@@ -195,6 +200,32 @@ static OSStatus renderAudio(void *inRefCon,
     return running;
 }
 
+#pragma mark - Observers
+
+- (void)setupObservers
+{
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    [userDefaults addObserver:self forKeyPath:cAUDIO_VOLUME options:NSKeyValueObservingOptionNew context:NULL];
+    [userDefaults addObserver:self forKeyPath:cAUDIO_HIGH_PASS_FILTER options:NSKeyValueObservingOptionNew context:NULL];
+    [userDefaults addObserver:self forKeyPath:cAUDIO_LOW_PASS_FILTER options:NSKeyValueObservingOptionNew context:NULL];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:cAUDIO_VOLUME])
+    {
+        AudioUnitSetParameter(_mixerUnit, kMultiChannelMixerParam_Volume, kAudioUnitScope_Output, 0, [change[NSKeyValueChangeNewKey] doubleValue], 0);
+    }
+    else if ([keyPath isEqualToString:cAUDIO_LOW_PASS_FILTER])
+    {
+        AudioUnitSetParameter(_lowPassFilterUnit, 0, kAudioUnitScope_Global, 0, [change[NSKeyValueChangeNewKey] doubleValue], 0);
+    }
+    else if ([keyPath isEqualToString:cAUDIO_HIGH_PASS_FILTER])
+    {
+        AudioUnitSetParameter(_highPassFilterUnit, 0, kAudioUnitScope_Global, 0, [change[NSKeyValueChangeNewKey] doubleValue], 0);
+    }
+}
+
 #pragma mark - Audio Render
 
 static OSStatus renderAudio(void *inRefCon, AudioUnitRenderActionFlags *ioActionFlags,
@@ -203,10 +234,8 @@ static OSStatus renderAudio(void *inRefCon, AudioUnitRenderActionFlags *ioAction
 {
     EmulationViewController *callback = (__bridge EmulationViewController *)inRefCon;
     
-    // Grab the buffer that core audio has passed in and reset its contents to 0.
-    // The format being used has 4 bytes per frame so multiply inNumberFrames by 4
+    // Grab the buffer that core audio has passed in.
     short *buffer = (short *)ioData->mBuffers[0].mData;
-    memset(buffer, 0, inNumberFrames << 2);
     
     [callback audioCallback:inNumberFrames buffer:buffer];
     
