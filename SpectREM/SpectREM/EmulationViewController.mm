@@ -75,9 +75,9 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     int defaultsSelectMachine = [[[[NSUserDefaultsController sharedUserDefaultsController] values] valueForKey:cSELECTED_MACHINE] intValue];
     [self initMachineWithRomPath:mainBundlePath machineType:defaultsSelectMachine];
     
-    [self setupObservers];
     [self setupConfigView];
     [self setupControllers];
+    [self setupObservers];
     [self restoreSession];
 }
 
@@ -177,7 +177,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     }
     else
     {
-        cout << "Unknown machine type" << endl;
+        NSLog(@"Unknown machine type!");
         return;
     }
     

@@ -278,7 +278,7 @@ public:
     int                     tapeCurrentBytePtr;
     int                     tapeCurrentBlockIndex;
     int                     tapeNewBlock;
-    vector<TapeBlock*>      tapeBlocks;
+    vector<TapeBlock *>     tapeBlocks;
     int                     tapeInputBit;
     
     int                     tapePilotPulseTStates;          // How many Ts have passed since the start of the pilot pulses

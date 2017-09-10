@@ -45,27 +45,31 @@ void ZXSpectrum::displaySetup()
 
 void ZXSpectrum::displayUpdateWithTs(int tStates)
 {
-    const int memoryAddress = (emuDisplayPage * cBITMAP_ADDRESS);
+    const int memoryAddress = emuDisplayPage * cBITMAP_ADDRESS;
     
     while (tStates > 0)
     {
         int line = emuCurrentDisplayTs / machineInfo.tsPerLine;
         int ts = emuCurrentDisplayTs % machineInfo.tsPerLine;
 
-        int action = displayTstateTable[line][ts];
+        int action = displayTstateTable[ line ][ ts ];
 
         switch (action) {
+                
             case eDisplayBorder:
             {
-                // Only draw the border of the border data has changed
                 if (displayBufferCopy[ emuCurrentDisplayTs ].attribute != displayBorderColor)
                 {
                     displayBufferCopy[ emuCurrentDisplayTs ].attribute = displayBorderColor;
                     
-                    for (int i = 0; i < 8; i++)
-                    {
-                        displayBuffer[displayBufferIndex++] = displayPalette[displayBorderColor];
-                    }
+                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayBorderColor ];
+                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayBorderColor ];
+                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayBorderColor ];
+                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayBorderColor ];
+                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayBorderColor ];
+                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayBorderColor ];
+                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayBorderColor ];
+                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayBorderColor ];
                 }
                 else
                 {
@@ -82,8 +86,8 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
                 const uint pixelAddress = displayLineAddrTable[y] + x;
                 const uint attributeAddress = cBITMAP_SIZE + ((y >> 3) << 5) + x;
                 
-                const int pixelByte = memoryRam[memoryAddress + pixelAddress];
-                const int attributeByte = memoryRam[memoryAddress + attributeAddress];
+                const int pixelByte = memoryRam[ memoryAddress + pixelAddress ];
+                const int attributeByte = memoryRam[ memoryAddress + attributeAddress ];
                 
                 // Only draw the bitmap if the bitmap data has changed
                 if (displayBufferCopy[ emuCurrentDisplayTs ].pixels != pixelByte ||
