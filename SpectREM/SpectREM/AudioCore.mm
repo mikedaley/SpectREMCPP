@@ -237,6 +237,9 @@ static OSStatus renderAudio(void *inRefCon, AudioUnitRenderActionFlags *ioAction
     // Grab the buffer that core audio has passed in.
     short *buffer = (short *)ioData->mBuffers[0].mData;
     
+    // Reset the buffer to prevent any odd noises being played when a machine starts up
+    memset(buffer, 0, inNumberFrames << 1);
+    
     [callback audioCallback:inNumberFrames buffer:buffer];
     
     // Set the size of the buffer to be the number of frames requested by the Core Audio callback. This is
