@@ -344,20 +344,28 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 
 - (NSString *)blockNameForTapeBlockIndex:(NSInteger)blockIndex
 {
-    NSString *blockName = @(tape->blocks[ blockIndex ]->getBlockName());
-
-    if (tape->blocks[ blockIndex ]->getFilename())
+    NSString *blockName = @(tape->blocks[ blockIndex ]->getBlockName().c_str());
+    
+    if ([blockName isEqualToString:@"Program Header"])
     {
-        NSString *filename = @(tape->blocks[ blockIndex ]->getFilename());
-        int lineNumber = tape->blocks [blockIndex ]->getAutolineStart();
-        if (lineNumber == 32768)
-        {
-            lineNumber = 0;
-        }
-        return [NSString stringWithFormat:@"%@: '%@' Line %i", blockName, filename, tape->blocks[ blockIndex ]->getAutolineStart()];
+        NSString *filename = @(tape->blocks[ blockIndex ]->getFilename().c_str());
+        int lineNumber = tape->blocks [blockIndex ]->getAutoStartLine();
+        lineNumber = (lineNumber == 32768) ? 0 : lineNumber;
+        blockName = [NSString stringWithFormat:@"%@: '%@' Line %i", blockName, filename, lineNumber];
+    }
+    else if ([blockName isEqualToString:@"Byte Header"])
+    {
+        NSString *filename = @(tape->blocks[ blockIndex ]->getFilename().c_str());
+        unsigned short startAddress = tape->blocks[ blockIndex ]->getStartAddress();
+        blockName = [NSString stringWithFormat:@"%@: '%@'  Start Address: %i", blockName, filename, startAddress];
+    }
+    else if ([blockName isEqualToString:@"Data Block"])
+    {
+        unsigned short blockLength = tape->blocks[ blockIndex ]->getDataLength();
+        blockName = [NSString stringWithFormat:@"Data Block: Length: %i", blockLength];
     }
 
-    return [NSString stringWithFormat:@"%@", blockName];
+    return blockName;
 }
 
 - (NSInteger)selectedTapeBlock

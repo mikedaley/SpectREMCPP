@@ -46,7 +46,6 @@
     if (view)
     {
         view.textField.stringValue = [ self.emulationViewController blockNameForTapeBlockIndex:row ];
-        view.progressIndicator.usesThreadedAnimation = YES;
         if (row == [self.emulationViewController selectedTapeBlock])
         {
             if ([self.emulationViewController isplaying])

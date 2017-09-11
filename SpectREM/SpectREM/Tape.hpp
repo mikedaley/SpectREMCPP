@@ -15,11 +15,15 @@
 
 using namespace std;
 
+
 #pragma mark - TypeDefs
+
 
 typedef void (*TapeStatusCallback)(int blockIndex, int bytes);
 
+
 #pragma mark - Tape Block
+
 
 class TapeBlock
 {
@@ -31,9 +35,10 @@ public:
     virtual unsigned char   getDataType();
     virtual unsigned short  getDataLength();
     virtual unsigned char   getChecksum();
-    virtual const char *    getBlockName() = 0;
-    virtual unsigned short  getAutolineStart();
-    virtual char *          getFilename();
+    virtual unsigned short  getAutoStartLine();
+    virtual unsigned short  getStartAddress();
+    virtual string          getBlockName() = 0;
+    virtual string          getFilename();
     
 public:
     unsigned short          blockLength;
@@ -42,54 +47,56 @@ public:
     int                     currentByte;
 };
 
+
 #pragma mark - Tape Program Header Block
+
 
 class ProgramHeader : public TapeBlock
 {
 public:
-    unsigned short          getAutoStartLine();
-    unsigned short          getProgramLength();
+    virtual unsigned short  getAutoStartLine();
+    virtual unsigned short  getProgramLength();
     virtual unsigned short  getDataLength();
     virtual unsigned char   getChecksum();
-    virtual const char *    getBlockName();
-    virtual char *          getFilename();
+    virtual string          getBlockName();
 };
 
+
 #pragma mark - Tape Numeric Data Header Block
+
 
 class NumericDataHeader : public TapeBlock
 {
 public:
-    unsigned char           getVariableName();
-    virtual unsigned short  getDataLength();
-    virtual const char *    getBlockName();
-    virtual char *          getFilename();
+    virtual string          getBlockName();
 };
 
+
 #pragma mark - Tape Alphanumeric Data Header Block
+
 
 class AlphanumericDataHeader : public TapeBlock
 {
 public:
-    unsigned char           getVariableName();
-    virtual unsigned short  getDataLength();
-    virtual const char *    getBlockName();
-    virtual char *          getFilename();
+    virtual string          getBlockName();
 };
 
+
 #pragma mark - Tape Byte Header Block Block
+
 
 class ByteHeader : public TapeBlock
 {
 public:
     unsigned short          getStartAddress();
     virtual unsigned char   getChecksum();
-    virtual unsigned short  getDataLength();
-    virtual const char *    getBlockName();
-    virtual char *          getFilename();
+//    virtual unsigned short  getDataLength();
+    virtual string          getBlockName();
 };
 
+
 #pragma mark - Tape Data Block Block
+
 
 class DataBlock : public TapeBlock
 {
@@ -97,11 +104,12 @@ public:
     unsigned char           *getDataBlock();
     virtual unsigned char   getDataType();
     virtual unsigned char   getChecksum();
-    virtual const char *    getBlockName();
-    virtual char *          getFilename();
+    virtual string          getBlockName();
 };
 
+
 #pragma mark - Main Tape Processing Class
+
 
 class Tape
 {
@@ -145,6 +153,10 @@ public:
     void                    rewindBlock();
     void                    reset(bool clearBlocks);
     void                    updateStatus();
+    unsigned long           numberOfTapeBlocks();
+    void                    setSelectedBlock(int blockIndex);
+    
+private:
     void                    generateHeaderPilotWithTs(int tStates);
     void                    generateSync1WithTs(int tStates);
     void                    generateSync2WithTs(int tStates);
@@ -153,8 +165,6 @@ public:
     void                    generateHeaderDataStreamWithTs(int tStates);
     void                    generateDataBitWithTs(int tStates);
     void                    tapeBlockPauseWithTs(int tStates);
-    unsigned long           numberOfTapeBlocks();
-    void                    setSelectedBlock(int blockIndex);
     
 public:
     bool                    loaded;
@@ -165,6 +175,7 @@ public:
     vector<TapeBlock *>     blocks;
     int                     inputBit;
     
+private:
     int                     pilotPulseTStates;          // How many Ts have passed since the start of the pilot pulses
     int                     pilotPulses;                // How many pilot pulses have been generated
     int                     syncPulseTStates;           // Sync pulse tStates
@@ -176,8 +187,9 @@ public:
     int                     blockPauseTStates;          // How many tStates have passed since starting the pause between data blocks
     int                     dataBitTStates;             // How many tStates to pause when processing data bit pulses
     int                     dataPulseCount;             // How many pulses have been generated for the current data bit;
-    TapeBlock               *tapeCurrentBlock;              // Current tape block
+    TapeBlock               *tapeCurrentBlock;          // Current tape block
     
+    // Function called whenever the status of the tape changes e.g. new block, rewind, stop etc
     TapeStatusCallback      updateStatusCallback;
 };
 

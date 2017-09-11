@@ -32,11 +32,11 @@ static const int cPROGRAM_HEADER_PROGRAM_LENGTH_OFFSET = 16;
 static int cPROGRAM_HEADER_CHECKSUM_OFFSET = 18;
 
 //static int cNUMERIC_DATA_HEADER_UNUSED_1_OFFSET = 14;
-static const int cNUMERIC_DATA_HEADER_VARIBABLE_NAME_OFFSET = 15;
+//static const int cNUMERIC_DATA_HEADER_VARIBABLE_NAME_OFFSET = 15;
 //static int cNUMERIC_DATA_HEADER_UNUSED_2_OFFSET = 16;
 
 //static int cALPHA_NUMERIC_DATA_HEADER_UNUSED_1_OFFSET = 14;
-static const int cALPHA_NUMERIC_DATA_HEADER_VARIABLE_NAME_OFFSET = 15;
+//static const int cALPHA_NUMERIC_DATA_HEADER_VARIABLE_NAME_OFFSET = 15;
 //static int cALPHA_NUMERIC_DATA_HEADER_UNUSED_2_OFFSET = 16;
 
 static const int cBYTE_HEADER_START_ADDRESS_OFFSET = 14;
@@ -48,7 +48,9 @@ static const int cHEADER_FILENAME_LENGTH = 10;
 
 static const int cHEADER_BLOCK_LENGTH = 19;
 
+
 #pragma mark - TapeBlock
+
 
 TapeBlock::~TapeBlock()
 {
@@ -75,21 +77,30 @@ unsigned char TapeBlock::getChecksum()
     return blockData[ cHEADER_CHECKSUM_OFFSET ];
 }
 
-unsigned short TapeBlock::getAutolineStart()
+unsigned short TapeBlock::getAutoStartLine()
 {
     return 0;
 }
 
-char * TapeBlock::getFilename()
+unsigned short TapeBlock::getStartAddress()
 {
     return 0;
 }
+
+string TapeBlock::getFilename()
+{
+    string filename(&blockData[ cHEADER_FILENAME_OFFSET ], &blockData[ cHEADER_FILENAME_OFFSET ] + cHEADER_FILENAME_LENGTH);
+    return filename;
+}
+
 
 #pragma mark - Program Header
 
-const char * ProgramHeader::getBlockName()
+
+string ProgramHeader::getBlockName()
 {
-    return "Program Header";
+    string blockName = "Program Header";
+    return blockName;
 }
 
 unsigned short ProgramHeader::getAutoStartLine()
@@ -112,60 +123,29 @@ unsigned short ProgramHeader::getDataLength()
     return cHEADER_BLOCK_LENGTH;
 }
 
-char * ProgramHeader::getFilename()
-{
-    char *filename = (char *)(calloc(cHEADER_FILENAME_LENGTH, sizeof(char)));
-    memcpy(filename, &blockData[ cHEADER_FILENAME_OFFSET ], cHEADER_FILENAME_LENGTH);
-    return filename;
-}
 
 #pragma mark - Numeric Header
 
-const char * NumericDataHeader::getBlockName()
+
+string NumericDataHeader::getBlockName()
 {
     return "Numeric Data Header";
 }
 
-unsigned char NumericDataHeader::getVariableName()
-{
-    return blockData[ cNUMERIC_DATA_HEADER_VARIBABLE_NAME_OFFSET ];
-}
-
-unsigned short NumericDataHeader::getDataLength()
-{
-    return cHEADER_BLOCK_LENGTH - 2;
-}
-
-char * NumericDataHeader::getFilename()
-{
-    return 0;
-}
 
 #pragma mark - Alphanumeric Header
 
-const char * AlphanumericDataHeader::getBlockName()
+
+string AlphanumericDataHeader::getBlockName()
 {
     return "Alphanumeric Data Header";
 }
 
-unsigned char AlphanumericDataHeader::getVariableName()
-{
-    return blockData[ cALPHA_NUMERIC_DATA_HEADER_VARIABLE_NAME_OFFSET ];
-}
-
-unsigned short AlphanumericDataHeader::getDataLength()
-{
-    return cHEADER_BLOCK_LENGTH - 2;
-}
-
-char * AlphanumericDataHeader::getFilename()
-{
-    return 0;
-}
 
 #pragma mark - Byter Header
 
-const char * ByteHeader::getBlockName()
+
+string ByteHeader::getBlockName()
 {
     return "Byte Header";
 }
@@ -180,19 +160,11 @@ unsigned char ByteHeader::getChecksum()
     return blockData[ blockLength - 1 ];
 }
 
-unsigned short ByteHeader::getDataLength()
-{
-    return cHEADER_BLOCK_LENGTH - 2;
-}
-
-char * ByteHeader::getFilename()
-{
-    return 0;
-}
 
 #pragma mark - Data Block
 
-const char * DataBlock::getBlockName()
+
+string DataBlock::getBlockName()
 {
     return "Data Block";
 }
@@ -214,12 +186,9 @@ unsigned char DataBlock::getChecksum()
     return blockData[ blockLength - 1 ];
 }
 
-char * DataBlock::getFilename()
-{
-    return 0;
-}
 
 #pragma mark - TAP Processing
+
 
 Tape::Tape(TapeStatusCallback callback)
 {
@@ -235,7 +204,7 @@ Tape::Tape(TapeStatusCallback callback)
 
 Tape::~Tape()
 {
-    
+
 }
 
 void Tape::reset(bool clearBlocks)
@@ -634,7 +603,9 @@ void Tape::tapeBlockPauseWithTs(int tStates)
     }
 }
 
+
 #pragma mark - Instant Tape Load
+
 
 void Tape::loadBlock(void *m)
 {
@@ -695,7 +666,9 @@ void Tape::loadBlock(void *m)
     }
 }
 
+
 #pragma mark - Tape controls
+
 
 void Tape::startPlaying()
 {
@@ -758,7 +731,9 @@ void  Tape::setSelectedBlock(int blockIndex)
     currentBlockIndex = blockIndex;
 }
 
+
 #pragma mark - Tape Callback
+
 
 void Tape::updateStatus()
 {
