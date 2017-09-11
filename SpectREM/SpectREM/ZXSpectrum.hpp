@@ -32,6 +32,8 @@ public:
     virtual unsigned short  getDataLength();
     virtual unsigned char   getChecksum();
     virtual const char *    getBlockName() = 0;
+    virtual unsigned short  getAutolineStart();
+    virtual char *          getFilename();
     
 public:
     unsigned short          blockLength;
@@ -361,6 +363,7 @@ public:
     virtual unsigned short  getDataLength();
     virtual unsigned char   getChecksum();
     virtual const char *    getBlockName();
+    virtual char *          getFilename();
 };
 
 #pragma mark - Numeric Data Header
@@ -371,6 +374,7 @@ public:
     unsigned char           getVariableName();
     virtual unsigned short  getDataLength();
     virtual const char *    getBlockName();
+    virtual char *          getFilename();
 };
 
 #pragma mark - Alphanumeric Data Header
@@ -381,6 +385,7 @@ public:
     unsigned char           getVariableName();
     virtual unsigned short  getDataLength();
     virtual const char *    getBlockName();
+    virtual char *          getFilename();
 };
 
 #pragma mark - Byte Header Block
@@ -392,6 +397,7 @@ public:
     virtual unsigned char   getChecksum();
     virtual unsigned short  getDataLength();
     virtual const char *    getBlockName();
+    virtual char *          getFilename();
 };
 
 #pragma mark - Data Block
@@ -403,6 +409,7 @@ public:
     virtual unsigned char   getDataType();
     virtual unsigned char   getChecksum();
     virtual const char *    getBlockName();
+    virtual char *          getFilename();
 };
 
 #endif /* ZXSpectrum_hpp */

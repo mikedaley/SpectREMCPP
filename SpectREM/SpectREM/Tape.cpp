@@ -22,7 +22,7 @@ static const int cDATA_BIT_ONE_PULSE_TSTATE_DELAY = 1710;
 
 static const int cHEADER_FLAG_OFFSET = 0;
 static const int cHEADER_DATA_TYPE_OFFSET = 1;
-//static const int cHEADER_FILENAME_OFFSET = 2;
+static const int cHEADER_FILENAME_OFFSET = 2;
 //static int cHEADER_DATA_LENGTH_OFFSET = 12;
 static const int cHEADER_CHECKSUM_OFFSET = 17;
 
@@ -43,7 +43,7 @@ static const int cBYTE_HEADER_START_ADDRESS_OFFSET = 14;
 
 static const int cDATA_BLOCK_DATA_LENGTH_OFFSET = 1;
 
-//static const int cHEADER_FILENAME_LENGTH = 10;
+static const int cHEADER_FILENAME_LENGTH = 10;
 
 static const int cHEADER_BLOCK_LENGTH = 19;
 
@@ -74,6 +74,16 @@ unsigned char TapeBlock::getChecksum()
     return blockData[ cHEADER_CHECKSUM_OFFSET ];
 }
 
+unsigned short TapeBlock::getAutolineStart()
+{
+    return 0;
+}
+
+char * TapeBlock::getFilename()
+{
+    return 0;
+}
+
 #pragma mark - Program Header
 
 const char * ProgramHeader::getBlockName()
@@ -101,6 +111,13 @@ unsigned short ProgramHeader::getDataLength()
     return cHEADER_BLOCK_LENGTH;
 }
 
+char * ProgramHeader::getFilename()
+{
+    char *filename = (char *)(calloc(cHEADER_FILENAME_LENGTH, sizeof(char)));
+    memcpy(filename, &blockData[ cHEADER_FILENAME_OFFSET ], cHEADER_FILENAME_LENGTH);
+    return filename;
+}
+
 #pragma mark - Numeric Header
 
 const char * NumericDataHeader::getBlockName()
@@ -118,6 +135,11 @@ unsigned short NumericDataHeader::getDataLength()
     return cHEADER_BLOCK_LENGTH - 2;
 }
 
+char * NumericDataHeader::getFilename()
+{
+    return 0;
+}
+
 #pragma mark - Alphanumeric Header
 
 const char * AlphanumericDataHeader::getBlockName()
@@ -133,6 +155,11 @@ unsigned char AlphanumericDataHeader::getVariableName()
 unsigned short AlphanumericDataHeader::getDataLength()
 {
     return cHEADER_BLOCK_LENGTH - 2;
+}
+
+char * AlphanumericDataHeader::getFilename()
+{
+    return 0;
 }
 
 #pragma mark - Byter Header
@@ -157,6 +184,11 @@ unsigned short ByteHeader::getDataLength()
     return cHEADER_BLOCK_LENGTH - 2;
 }
 
+char * ByteHeader::getFilename()
+{
+    return 0;
+}
+
 #pragma mark - Data Block
 
 const char * DataBlock::getBlockName()
@@ -166,10 +198,7 @@ const char * DataBlock::getBlockName()
 
 unsigned char *DataBlock::getDataBlock()
 {
-    cout << "datablock" << endl;
     unsigned char *dataBlock = new unsigned char[ getDataLength() ];
-    cout << "datablock done" << endl;
-//    unsigned char *dataBlock = (unsigned char *)calloc(getDataLength(), sizeof(unsigned char));
     memcpy(dataBlock, &blockData[cDATA_BLOCK_DATA_LENGTH_OFFSET], sizeof(unsigned char) * getDataLength());
     return dataBlock;
 }
@@ -182,6 +211,11 @@ unsigned char DataBlock::getDataType()
 unsigned char DataBlock::getChecksum()
 {
     return blockData[ blockLength - 1 ];
+}
+
+char * DataBlock::getFilename()
+{
+    return 0;
 }
 
 #pragma mark - TAP Processing
@@ -637,6 +671,11 @@ void ZXSpectrum::tapeLoadBlock()
     
     tapeCurrentBlockIndex++;
     z80Core.SetRegister(CZ80Core::eREG_PC, 0x05e2);
+    
+    if (tapeCallback)
+    {
+        tapeCallback(tapeCurrentBlockIndex, 0);
+    }
 }
 
 #pragma mark - Tape controls

@@ -340,7 +340,20 @@ static void tapeCallback(int blockIndex, int bytes)
 
 - (NSString *)blockNameForTapeBlockIndex:(NSInteger)blockIndex
 {
-    return [NSString stringWithCString:machine->tapeBlocks[ blockIndex ]->getBlockName() encoding:NSUTF8StringEncoding ];
+    NSString *blockName = @(machine->tapeBlocks[ blockIndex ]->getBlockName());
+
+    if (machine->tapeBlocks[ blockIndex ]->getFilename())
+    {
+        NSString *filename = @(machine->tapeBlocks[ blockIndex ]->getFilename());
+        int lineNumber = machine->tapeBlocks [blockIndex ]->getAutolineStart();
+        if (lineNumber == 32768)
+        {
+            lineNumber = 0;
+        }
+        return [NSString stringWithFormat:@"%@: '%@' Line %i", blockName, filename, machine->tapeBlocks[ blockIndex ]->getAutolineStart()];
+    }
+
+    return [NSString stringWithFormat:@"%@", blockName];
 }
 
 - (NSInteger)selectedTapeBlock
