@@ -73,6 +73,7 @@
 		ED2A6D0B1F604CD0003CD6CE /* Defaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Defaults.plist; sourceTree = "<group>"; };
 		ED2A6D0E1F616C43003CD6CE /* ExportAccessoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExportAccessoryViewController.h; sourceTree = "<group>"; };
 		ED2A6D0F1F616C43003CD6CE /* ExportAccessoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExportAccessoryViewController.m; sourceTree = "<group>"; };
+		ED2A6D131F669CB7003CD6CE /* Tape.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Tape.hpp; sourceTree = "<group>"; };
 		ED504A611F4EE9D500BD289E /* EmulationScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = EmulationScene.sks; sourceTree = "<group>"; };
 		ED504A631F51BBFF00BD289E /* Snapshot.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Snapshot.cpp; sourceTree = "<group>"; };
 		ED913F951F30759300316E1A /* SpectREM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpectREM.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -156,7 +157,6 @@
 				1745BB621F50876E003203FE /* Contention.cpp */,
 				1745BB641F50AE1E003203FE /* FloatingBus.cpp */,
 				ED504A631F51BBFF00BD289E /* Snapshot.cpp */,
-				EDB7F7FD1F5EE2E4003053E3 /* Tape.cpp */,
 				17B5DB991F5B14D3003E7EF3 /* Audio.cpp */,
 			);
 			name = Base;
@@ -225,6 +225,15 @@
 				ED2A6D0F1F616C43003CD6CE /* ExportAccessoryViewController.m */,
 			);
 			name = "Export Accessory View Controller";
+			sourceTree = "<group>";
+		};
+		ED2A6D111F669C27003CD6CE /* Tape */ = {
+			isa = PBXGroup;
+			children = (
+				ED2A6D131F669CB7003CD6CE /* Tape.hpp */,
+				EDB7F7FD1F5EE2E4003053E3 /* Tape.cpp */,
+			);
+			name = Tape;
 			sourceTree = "<group>";
 		};
 		ED913F8C1F30759300316E1A = {
@@ -356,6 +365,7 @@
 		ED913FD01F30785100316E1A /* Machines */ = {
 			isa = PBXGroup;
 			children = (
+				ED2A6D111F669C27003CD6CE /* Tape */,
 				17A089541F4F691F00CAA178 /* Base */,
 				177E284F1F4DEC5B0053756B /* ZX Spectrum 48k */,
 				EDD9ADEE1F5D6F2F004DD728 /* ZX Spectrum 128k */,

@@ -11,6 +11,7 @@
 #import "ZXSpectrum.hpp"
 #import "ZXSpectrum48.hpp"
 #import "ZXSpectrum128.hpp"
+#import "Tape.hpp"
 
 #import "AudioCore.h"
 #import "EmulationScene.h"
@@ -36,6 +37,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 {
 @public
     ZXSpectrum                      *machine;
+    Tape                            *tape;
     AudioCore                       *audioCore;
     dispatch_source_t               displayTimer;
     NSString                        *mainBundlePath;
@@ -75,6 +77,9 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     // The AudioCore uses the sound buffer to identify when a new frame should be drawn for accurate timing.
     audioCore = [[AudioCore alloc] initWithSampleRate:cAUDIO_SAMPLE_RATE framesPerSecond:cFRAMES_PER_SECOND callback:self];
 
+    //Create a tape instance
+    tape = new Tape(tapeStatusCallback);
+    
     int defaultsSelectMachine = [[[[NSUserDefaultsController sharedUserDefaultsController] values] valueForKey:cSELECTED_MACHINE] intValue];
     [self initMachineWithRomPath:mainBundlePath machineType:defaultsSelectMachine];
     
@@ -175,11 +180,11 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     
     if (machineType == eZXSpectrum48)
     {
-        machine = new ZXSpectrum48();
+        machine = new ZXSpectrum48(tape);
     }
     else if (machineType == eZXSpectrum128)
     {
-        machine = new ZXSpectrum128();
+        machine = new ZXSpectrum128(tape);
     }
     else
     {
@@ -188,7 +193,6 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     }
     
     machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
-    machine->tapeCallback = tapeCallback;
     
     // Need to do this to make sure the current default values are applied to the new machine
     [self applyDefaultsToMachine];
@@ -202,7 +206,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
                                                    encoding:NSUTF8StringEncoding]]];
 }
 
-static void tapeCallback(int blockIndex, int bytes)
+static void tapeStatusCallback(int blockIndex, int bytes)
 {
     cout << "Tape Callback: " << blockIndex << endl;
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TAPE_CHANGED_NOTIFICATION" object:NULL];
@@ -260,7 +264,7 @@ static void tapeCallback(int blockIndex, int bytes)
     }
     else if ([[url.pathExtension uppercaseString] isEqualToString:cTAP_EXTENSION])
     {
-        success = machine->tapeLoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+        success = tape->loadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
         [[NSNotificationCenter defaultCenter] postNotificationName:@"TAPE_CHANGED_NOTIFICATION" object:NULL];
     }
 
@@ -333,24 +337,24 @@ static void tapeCallback(int blockIndex, int bytes)
 
 #pragma mark - Tape Browser Methods
 
-- (NSInteger)numberOfTapeBlocks
+- (NSInteger)numberOfblocks
 {
-    return machine->tapeBlocks.size();
+    return tape->numberOfTapeBlocks();
 }
 
 - (NSString *)blockNameForTapeBlockIndex:(NSInteger)blockIndex
 {
-    NSString *blockName = @(machine->tapeBlocks[ blockIndex ]->getBlockName());
+    NSString *blockName = @(tape->blocks[ blockIndex ]->getBlockName());
 
-    if (machine->tapeBlocks[ blockIndex ]->getFilename())
+    if (tape->blocks[ blockIndex ]->getFilename())
     {
-        NSString *filename = @(machine->tapeBlocks[ blockIndex ]->getFilename());
-        int lineNumber = machine->tapeBlocks [blockIndex ]->getAutolineStart();
+        NSString *filename = @(tape->blocks[ blockIndex ]->getFilename());
+        int lineNumber = tape->blocks [blockIndex ]->getAutolineStart();
         if (lineNumber == 32768)
         {
             lineNumber = 0;
         }
-        return [NSString stringWithFormat:@"%@: '%@' Line %i", blockName, filename, machine->tapeBlocks[ blockIndex ]->getAutolineStart()];
+        return [NSString stringWithFormat:@"%@: '%@' Line %i", blockName, filename, tape->blocks[ blockIndex ]->getAutolineStart()];
     }
 
     return [NSString stringWithFormat:@"%@", blockName];
@@ -358,18 +362,19 @@ static void tapeCallback(int blockIndex, int bytes)
 
 - (NSInteger)selectedTapeBlock
 {
-    return machine->tapeCurrentBlockIndex;
+    return tape->currentBlockIndex;
 }
 
-- (BOOL)isTapePlaying
+- (BOOL)isplaying
 {
-    return machine->tapePlaying;
+    return tape->playing;
 }
 
-- (void)setCurrentTapeBlock:(NSInteger)blockIndex
+- (void)setSelectedTapeBlock:(NSInteger)blockIndex
 {
-    machine->tapeCurrentBlockIndex = static_cast<int>(blockIndex);
-    machine->tapePlaying = false;
+    tape->setSelectedBlock( static_cast<int>(blockIndex) );
+    tape->rewindBlock();
+    tape->stopPlaying();
 }
 
 #pragma mark - File Menu Items
@@ -504,17 +509,17 @@ static void tapeCallback(int blockIndex, int bytes)
 
 - (IBAction)startPlayingTape:(id)sender
 {
-    machine->tapeStartPlaying();
+    tape->startPlaying();
 }
 
 - (IBAction)stopPlayingTape:(id)sender
 {
-    machine->tapeStopPlaying();
+    tape->stopPlaying();
 }
 
 - (IBAction)rewindTape:(id)sender
 {
-    machine->tapeRewind();
+    tape->rewindTape();
 }
 
 #pragma mark - Getters

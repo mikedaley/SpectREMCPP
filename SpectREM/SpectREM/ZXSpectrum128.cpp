@@ -17,9 +17,17 @@ const int cROM_SIZE = 16384;
 
 #pragma mark - Constructor/Destructor
 
-ZXSpectrum128::ZXSpectrum128() : ZXSpectrum()
+ZXSpectrum128::ZXSpectrum128(Tape *t) : ZXSpectrum()
 {
     cout << "ZXSpectrum128::Constructor" << endl;
+    if (t)
+    {
+        tape = t;
+    }
+    else
+    {
+        tape = NULL;
+    }
 }
 
 ZXSpectrum128::~ZXSpectrum128()
@@ -124,7 +132,7 @@ unsigned char ZXSpectrum128::coreIORead(unsigned short address)
         }
     }
     
-    result = (result & 191) | (audioEarBit << 6) | (tapeInputBit << 6);
+    result = (result & 191) | (audioEarBit << 6) | (tape->inputBit << 6);
     
     return result;
 }

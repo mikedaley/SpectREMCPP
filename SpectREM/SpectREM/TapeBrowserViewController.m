@@ -37,7 +37,7 @@
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView
 {
-    return [self.emulationViewController numberOfTapeBlocks];
+    return [self.emulationViewController numberOfblocks];
 }
 
 -(NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
@@ -49,7 +49,7 @@
         view.progressIndicator.usesThreadedAnimation = YES;
         if (row == [self.emulationViewController selectedTapeBlock])
         {
-            if ([self.emulationViewController isTapePlaying])
+            if ([self.emulationViewController isplaying])
             {
                 view.imageView.image = [NSImage imageNamed:NSImageNameStatusAvailable];
             }
@@ -68,7 +68,7 @@
 
 - (void)tableViewSelectionDidChange:(NSNotification *)notification
 {
-    [self.emulationViewController setCurrentTapeBlock:self.tableView.selectedRow];
+    [self.emulationViewController setSelectedTapeBlock:self.tableView.selectedRow];
     [self.tableView reloadData];
 }
 

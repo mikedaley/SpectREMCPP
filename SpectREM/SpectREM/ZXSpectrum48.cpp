@@ -17,9 +17,17 @@ const int cROM_SIZE = 16384;
 
 #pragma mark - Constructor/Destructor
 
-ZXSpectrum48::ZXSpectrum48() : ZXSpectrum()
+ZXSpectrum48::ZXSpectrum48(Tape *t) : ZXSpectrum()
 {
     cout << "ZXSpectrum48::Constructor" << endl;
+    if (t)
+    {
+        tape = t;
+    }
+    else
+    {
+        tape = NULL;
+    }
 }
 
 ZXSpectrum48::~ZXSpectrum48()
@@ -102,7 +110,7 @@ unsigned char ZXSpectrum48::coreIORead(unsigned short address)
         }
     }
     
-    result = (result & 191) | (audioEarBit << 6) | (tapeInputBit << 6);
+    result = (result & 191) | (audioEarBit << 6) | (tape->inputBit << 6);
     
     return result;
 }
@@ -228,11 +236,13 @@ bool ZXSpectrum48::opcodeCallback(unsigned char opcode, unsigned short address, 
     if (opcode == 0x08 && address == 0x04d0)
     {
         machine->emuSaveTrapTriggered = true;
+        machine->tape->updateStatus();
         return true;
     }
     else if (machine->emuSaveTrapTriggered)
     {
         machine->emuSaveTrapTriggered = false;
+        machine->tape->updateStatus();
         return false;
     }
     
@@ -240,20 +250,17 @@ bool ZXSpectrum48::opcodeCallback(unsigned char opcode, unsigned short address, 
     if (opcode == 0xc0 && (address == 0x056b || address == 0x0111) && machine->emuTapeInstantLoad)
     {
         machine->emuLoadTrapTriggered = true;
+        machine->tape->updateStatus();
         return true;
     }
     else if (machine->emuLoadTrapTriggered)
     {
         machine->emuLoadTrapTriggered = false;
+        machine->tape->updateStatus();
     }
     
     return false;
 }
-
-
-
-
-
 
 
 

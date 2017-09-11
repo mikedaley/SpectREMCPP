@@ -15,7 +15,7 @@ class ZXSpectrum48 : public ZXSpectrum
 {
     
 public:
-    ZXSpectrum48();
+    ZXSpectrum48(Tape *t);
     virtual ~ZXSpectrum48();
     
 public:

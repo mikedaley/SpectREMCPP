@@ -13,7 +13,6 @@
 ZXSpectrum::ZXSpectrum()
 {
     cout << "ZXSpectrum::Constructor" << endl;
-    tapeCallback = NULL;
 }
 
 ZXSpectrum::~ZXSpectrum()
@@ -67,18 +66,24 @@ void ZXSpectrum::generateFrame()
     {
         int tStates = z80Core.Execute(1, machineInfo.intLength);
         
-        if (tapePlaying)
+        if (tape->playing)
         {
-            tapeUpdateWithTs(tStates);
+            if (tape)
+            {
+                tape->updateWithTs(tStates);
+            }
         }
         
         if (emuSaveTrapTriggered)
         {
             
         }
-        else if (emuLoadTrapTriggered && tapeLoaded)
+        else if (emuLoadTrapTriggered && tape->loaded)
         {
-            tapeLoadBlock();
+            if (tape)
+            {
+                tape->loadBlock(this);
+            }
         }
         else
         {
@@ -177,7 +182,6 @@ void ZXSpectrum::resetMachine(bool hard)
     keyboardMapReset();
     displayFrameReset();
     audioReset();
-    tapeReset(true);
 }
 
 void ZXSpectrum::emuReset()
@@ -185,7 +189,6 @@ void ZXSpectrum::emuReset()
     emuFrameCounter = 0;
     emuSaveTrapTriggered = false;
     emuLoadTrapTriggered = false;
-    emuTapeInstantLoad = false;
 }
 
 #pragma mark - Release

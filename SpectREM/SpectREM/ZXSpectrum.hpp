@@ -16,35 +16,12 @@
 
 #include "Z80Core.h"
 #include "MachineDetails.h"
+#include "Tape.hpp"
 
 using namespace std;
 
-#pragma mark - Base TapeBlock class
-
-class TapeBlock
-{
-public:
-    virtual ~TapeBlock();
-    
-public:
-    virtual unsigned char   getFlag();
-    virtual unsigned char   getDataType();
-    virtual unsigned short  getDataLength();
-    virtual unsigned char   getChecksum();
-    virtual const char *    getBlockName() = 0;
-    virtual unsigned short  getAutolineStart();
-    virtual char *          getFilename();
-    
-public:
-    unsigned short          blockLength;
-    unsigned char           *blockData;
-    int                     blockType;
-    int                     currentByte;
-};
-
 #pragma mark - TypeDefs
 
-typedef void (*SpectrumTapeCallback)(int blockIndex, int bytes);
 
 #pragma mark - Base ZXSpectrum class
 
@@ -128,35 +105,9 @@ public:
         eENVFLAG_CONTINUE = 0x08
     };
     
-    // TAPE block types
-    enum
-    {
-        ePROGRAM_HEADER = 0,
-        eNUMERIC_DATA_HEADER,
-        eALPHANUMERIC_DATA_HEADER,
-        eBYTE_HEADER,
-        eDATA_BLOCK,
-        eFRAGMENTED_DATA_BLOCK,
-        eUNKNOWN_BLOCK = 99
-    };
-    
-    // TAP Processing states
-    enum
-    {
-        eNO_TAPE = 0,
-        eHEADER_PILOT,
-        eSYNC1,
-        eSYNC2,
-        eDATA_PILOT,
-        eBLOCK_PAUSE,
-        eDATA_STREAM,
-        eHEADER_DATA_STREAM,
-        eDATA_BIT
-    };
-    
 public:
     ZXSpectrum();
-    virtual ~ZXSpectrum() = 0;
+    virtual ~ZXSpectrum();
 
 public:
     virtual void            initialise(string romPath);
@@ -184,23 +135,6 @@ public:
     Snap                    snapshotCreateSNA();
     Snap                    snapshotCreateZ80();
     
-    bool                    tapeLoadWithPath(const char *);
-    void                    tapeLoadBlock();
-    void                    tapeUpdateWithTs(int tStates);
-    void                    tapeStartPlaying();
-    void                    tapeStopPlaying();
-    void                    tapeRewind();
-    void                    tapeReset(bool clearBlocks);
-private:
-    void                    tapeGenerateHeaderPilotWithTs(int tStates);
-    void                    tapeGenerateSync1WithTs(int tStates);
-    void                    tapeGenerateSync2WithTs(int tStates);
-    void                    tapeGenerateDataPilotWithTs(int tStates);
-    void                    tapeGenerateDataStreamWithTs(int tStates);
-    void                    tapeGenerateHeaderDataStreamWithTs(int tStates);
-    void                    tapeGenerateDataBitWithTs(int tStates);
-    void                    tapeBlockPauseWithTs(int tStates);
-
 public:
     void                    audioAYSetRegister(unsigned char reg);
     void                    audioAYWriteData(unsigned char data);
@@ -251,21 +185,8 @@ public:
     int                     keyboardCapsLockFrames;
     
 public:
-    MachineInfo             machineInfo;
-
-    // Display
-    unsigned int            *displayBuffer;
-    ScreenBufferData        *displayBufferCopy;
-    unsigned int            displayBufferIndex;
-    int                     screenWidth;
-    int                     screenHeight;
-    int                     screenBufferSize;
-    int                     displayTstateTable[312][228];
-    int                     displayLineAddrTable[192];
-//    const unsigned int      displayPalette[];
-    int                     displayBorderColor;
-
     // Emulation
+    MachineInfo             machineInfo;
     int                     emuCurrentDisplayTs;
     int                     emuFrameCounter;
     bool                    emuPaused;
@@ -277,29 +198,18 @@ public:
     bool                    emuTapeInstantLoad;
     bool                    emuLoadTrapTriggered;
     bool                    emuSaveTrapTriggered;
-    
-    // Tape Processing
-    bool                    tapeLoaded;
-    bool                    tapePlaying;
-    int                     tapeCurrentBytePtr;
-    int                     tapeCurrentBlockIndex;
-    int                     tapeNewBlock;
-    vector<TapeBlock *>     tapeBlocks;
-    int                     tapeInputBit;
-    
-    int                     tapePilotPulseTStates;          // How many Ts have passed since the start of the pilot pulses
-    int                     tapePilotPulses;                // How many pilot pulses have been generated
-    int                     tapeSyncPulseTStates;           // Sync pulse tStates
-    int                     tapeDataPulseTStates;           // How many Ts have passed since the start of the data pulse
-    bool                    tapeFlipTapeBit;                // Should the tape bit be flipped
-    int                     tapeProcessingState;            // Current processing state e.g. generating pilot, streaming data
-    int                     tapeNextProcessingState;        // Next processing state to be used
-    int                     tapeCurrentDataBit;             // Which bit of the current byte in the data stream is being processed
-    int                     tapeBlockPauseTStates;          // How many tStates have passed since starting the pause between data blocks
-    int                     tapeDataBitTStates;             // How many tStates to pause when processing data bit pulses
-    int                     tapeDataPulseCount;             // How many pulses have been generated for the current data bit;
-    TapeBlock               *tapeCurrentBlock;              // Current tape block
-    
+
+    // Display
+    unsigned int            *displayBuffer;
+    ScreenBufferData        *displayBufferCopy;
+    unsigned int            displayBufferIndex;
+    int                     screenWidth;
+    int                     screenHeight;
+    int                     screenBufferSize;
+    int                     displayTstateTable[312][228];
+    int                     displayLineAddrTable[192];
+    int                     displayBorderColor;
+
     // Audio
     int                     audioEarBit;
     int                     audioMicBit;
@@ -349,68 +259,11 @@ public:
     // Floating bus
     const static unsigned int ULAFloatingBusValues[];
     
-    SpectrumTapeCallback    tapeCallback;
+    // Tape object
+    Tape                    *tape;
 
 };
 
-#pragma mark - Program Header
-
-class ProgramHeader : public TapeBlock
-{
-public:
-    unsigned short          getAutoStartLine();
-    unsigned short          getProgramLength();
-    virtual unsigned short  getDataLength();
-    virtual unsigned char   getChecksum();
-    virtual const char *    getBlockName();
-    virtual char *          getFilename();
-};
-
-#pragma mark - Numeric Data Header
-
-class NumericDataHeader : public TapeBlock
-{
-public:
-    unsigned char           getVariableName();
-    virtual unsigned short  getDataLength();
-    virtual const char *    getBlockName();
-    virtual char *          getFilename();
-};
-
-#pragma mark - Alphanumeric Data Header
-
-class AlphanumericDataHeader : public TapeBlock
-{
-public:
-    unsigned char           getVariableName();
-    virtual unsigned short  getDataLength();
-    virtual const char *    getBlockName();
-    virtual char *          getFilename();
-};
-
-#pragma mark - Byte Header Block
-
-class ByteHeader : public TapeBlock
-{
-public:
-    unsigned short          getStartAddress();
-    virtual unsigned char   getChecksum();
-    virtual unsigned short  getDataLength();
-    virtual const char *    getBlockName();
-    virtual char *          getFilename();
-};
-
-#pragma mark - Data Block
-
-class DataBlock : public TapeBlock
-{
-public:
-    unsigned char           *getDataBlock();
-    virtual unsigned char   getDataType();
-    virtual unsigned char   getChecksum();
-    virtual const char *    getBlockName();
-    virtual char *          getFilename();
-};
 
 #endif /* ZXSpectrum_hpp */
 
