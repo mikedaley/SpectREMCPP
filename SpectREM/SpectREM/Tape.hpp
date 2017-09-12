@@ -151,6 +151,7 @@ public:
     void                    stopPlaying();
     void                    rewindTape();
     void                    rewindBlock();
+    void                    eject();
     void                    reset(bool clearBlocks);
     void                    updateStatus();
     unsigned long           numberOfTapeBlocks();

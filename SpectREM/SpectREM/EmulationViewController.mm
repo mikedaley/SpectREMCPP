@@ -503,7 +503,7 @@ static void tapeStatusCallback(int blockIndex, int bytes)
         context.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
         [self.configEffectsView.animator setAlphaValue:(self.configEffectsView.alphaValue) ? 0 : 1];
         [self.configEffectsView.animator setFrame:configFrame];
-    }  completionHandler:^{
+}  completionHandler:^{
         
     }];
 }
@@ -512,7 +512,7 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 
 - (IBAction)showTapeBrowser:(id)sender
 {
-    [tapeBrowserWindowController showWindow:nil];
+    [tapeBrowserWindowController showWindow:self.view.window];
 }
 
 - (IBAction)startPlayingTape:(id)sender
@@ -528,6 +528,11 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 - (IBAction)rewindTape:(id)sender
 {
     tape->rewindTape();
+}
+
+- (IBAction)ejectTape:(id)sender
+{
+    tape->eject();
 }
 
 #pragma mark - Getters

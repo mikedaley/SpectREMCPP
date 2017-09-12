@@ -127,4 +127,32 @@
 }
 
 
+#pragma mark - Button Methods
+
+- (IBAction)play:(id)sender
+{
+    [self.emulationViewController startPlayingTape:nil];
+}
+
+- (IBAction)stop:(id)sender
+{
+    [self.emulationViewController stopPlayingTape:nil];
+}
+
+- (IBAction)rewind:(id)sender
+{
+    [self.emulationViewController rewindTape:nil];
+}
+
+- (IBAction)eject:(id)sender
+{
+    [self.emulationViewController ejectTape:nil];
+}
+
+- (IBAction)save:(id)sender
+{
+    
+}
+
+
 @end

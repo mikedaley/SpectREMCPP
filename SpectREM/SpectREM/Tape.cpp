@@ -589,7 +589,7 @@ void Tape::generateDataBitWithTs(int tStates)
 void Tape::tapeBlockPauseWithTs(int tStates)
 {
     blockPauseTStates += tStates;
-    if (blockPauseTStates > 3500000 * 2)
+    if (blockPauseTStates > 3500000 * 3)
     {
         currentBlockIndex += 1;
         newBlock = true;
@@ -719,6 +719,12 @@ void Tape::rewindBlock()
         dataPulseTStates = 0;
         flipTapeBit = true;
     }
+}
+
+void Tape::eject()
+{
+    reset(true);
+    loaded = false;
 }
 
 unsigned long Tape::numberOfTapeBlocks()

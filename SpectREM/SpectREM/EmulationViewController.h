@@ -43,4 +43,10 @@ enum
 - (BOOL)tapeIsplaying;
 - (void)tapeSetCurrentBlock:(NSInteger)blockIndex;
 
+- (IBAction)showTapeBrowser:(id)sender;
+- (IBAction)startPlayingTape:(id)sender;
+- (IBAction)stopPlayingTape:(id)sender;
+- (IBAction)rewindTape:(id)sender;
+- (IBAction)ejectTape:(id)sender;
+
 @end
