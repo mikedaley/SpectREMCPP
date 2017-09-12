@@ -29,10 +29,10 @@ class ZXSpectrum
 {
 
 public:
-    static const int        cBITMAP_ADDRESS = 16384;
-    static const int        cBITMAP_SIZE = 6144;
-    static const int        cATTR_SIZE = 768;
-    static const int        cMEMORY_PAGE_SIZE = 16384;
+    static const int    cBITMAP_ADDRESS = 16384;
+    static const int    cBITMAP_SIZE = 6144;
+    static const int    cATTR_SIZE = 768;
+    static const int    cMEMORY_PAGE_SIZE = 16384;
 
 private:
     enum
@@ -114,11 +114,7 @@ public:
     virtual void            resetMachine(bool hard = true);
     virtual void            release();
 
-    virtual void            loadDefaultROM() = 0;
-
     void                    generateFrame();
-    void                    displayFrameReset();
-    void                    emuReset();
     void                    displayUpdateWithTs(int tStates);
     void                    keyboardKeyDown(unsigned short key);
     void                    keyboardKeyUp(unsigned short key);
@@ -126,24 +122,26 @@ public:
     void                    pause();
     void                    resume();
     
-    void                    ULAApplyIOContention(unsigned short address, bool contended);
-    unsigned char           ULAFloatingBus();
-    
     bool                    snapshotZ80LoadWithPath(const char *path);
     bool                    snapshotSNALoadWithPath(const char *path);
     int                     snapshotMachineInSnapshotWithPath(const char *path);
     Snap                    snapshotCreateSNA();
     Snap                    snapshotCreateZ80();
     
-public:
+protected:
+    void                    emuReset();
+    virtual void            loadDefaultROM() = 0;
+    
+    void                    displayFrameReset();
+
+    void                    ULAApplyIOContention(unsigned short address, bool contended);
+    unsigned char           ULAFloatingBus();
+
     void                    audioAYSetRegister(unsigned char reg);
     void                    audioAYWriteData(unsigned char data);
     unsigned char           audioAYReadData();
     void                    audioAYUpdate(int audioSteps);
     void                    audioReset();
-    int                     audioQueueWrite(signed short *buffer, int count);
-    int                     audioQueueRead(signed short *buffer, int count);
-    int                     audioQueueBufferUsed();
     void                    audioUpdateWithTs(int tStates);
     
 private:
@@ -241,19 +239,14 @@ public:
     unsigned int            audioAYAttackEndVol;
     float                   audioAYTsStep;
     int                     audioAYTs;
-    
-    short                   *audioQueueBuffer;
-    int                     audioQueueBufferRead;
-    int                     audioQueueBufferWritten;
-    int                     audioQueueBufferCapacity;
-    
+        
     // Keyboard
     bool                    keyboardCapsLockPressed;
     
     // ULA
     unsigned int            ULAMemoryContentionTable[80000];
     unsigned int            ULAIOContentionTable[80000];
-    const static unsigned int     ULAConentionValues[];
+    const static unsigned int ULAConentionValues[];
     int                     ULAPortFFFDValue;
 
     // Floating bus

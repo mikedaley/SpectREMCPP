@@ -12,6 +12,7 @@
 #import "ZXSpectrum48.hpp"
 #import "ZXSpectrum128.hpp"
 #import "Tape.hpp"
+#import "AudioQueue.hpp"
 
 #import "AudioCore.h"
 #import "EmulationScene.h"
@@ -42,6 +43,8 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     dispatch_source_t               displayTimer;
     NSString                        *mainBundlePath;
     bool                            configViewVisible;
+    
+    AudioQueue                      *audioQueue;
     
     NSStoryboard                    *storyBoard;
     ConfigurationViewController     *configViewController;
@@ -74,9 +77,11 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     _scene.scaleMode = SKSceneScaleModeFill;
     [self.skView presentScene:_scene];
     
-    // The AudioCore uses the sound buffer to identify when a new frame should be drawn for accurate timing.
+    // The AudioCore uses the sound buffer to identify when a new frame should be drawn for accurate timing. The AudioQueue
+    // is used to help measure usage of the audio buffer
     audioCore = [[AudioCore alloc] initWithSampleRate:cAUDIO_SAMPLE_RATE framesPerSecond:cFRAMES_PER_SECOND callback:self];
-
+    audioQueue = new AudioQueue();
+    
     //Create a tape instance
     tape = new Tape(tapeStatusCallback);
     
@@ -94,13 +99,13 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     if (machine)
     {    
         // Update the queue with the reset buffer
-        machine->audioQueueRead(buffer, (inNumberFrames * 2));
+        audioQueue->read(buffer, (inNumberFrames * 2));
         
         // Check if we have used a frames worth of buffer storage and if so then its time to generate another frame.
-        if (machine->audioQueueBufferUsed() < 7680)
+        if (audioQueue->bufferUsed() < 7680)
         {
             machine->generateFrame();
-            machine->audioQueueWrite(machine->audioBuffer, 7680);
+            audioQueue->write(machine->audioBuffer, 7680);
         }
     }
 }
