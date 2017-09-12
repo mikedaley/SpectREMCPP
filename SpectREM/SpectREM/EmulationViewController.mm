@@ -206,12 +206,6 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
                                                    encoding:NSUTF8StringEncoding]]];
 }
 
-static void tapeStatusCallback(int blockIndex, int bytes)
-{
-    cout << "Tape Callback: " << blockIndex << endl;
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"TAPE_CHANGED_NOTIFICATION" object:NULL];
-}
-
 #pragma mark - Keyboard
 
 - (void)keyDown:(NSEvent *)event
@@ -337,52 +331,58 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 
 #pragma mark - Tape Browser Methods
 
-- (NSInteger)numberOfblocks
+- (NSInteger)tapeNumberOfblocks
 {
     return tape->numberOfTapeBlocks();
 }
 
-- (NSString *)blockNameForTapeBlockIndex:(NSInteger)blockIndex
+- (NSString *)tapeBlockTypeForIndex:(NSInteger)blockIndex
 {
-    NSString *blockName = @(tape->blocks[ blockIndex ]->getBlockName().c_str());
-    
-    if ([blockName isEqualToString:@"Program Header"])
-    {
-        NSString *filename = @(tape->blocks[ blockIndex ]->getFilename().c_str());
-        int lineNumber = tape->blocks [blockIndex ]->getAutoStartLine();
-        lineNumber = (lineNumber == 32768) ? 0 : lineNumber;
-        blockName = [NSString stringWithFormat:@"%@: '%@' Line %i", blockName, filename, lineNumber];
-    }
-    else if ([blockName isEqualToString:@"Byte Header"])
-    {
-        NSString *filename = @(tape->blocks[ blockIndex ]->getFilename().c_str());
-        unsigned short startAddress = tape->blocks[ blockIndex ]->getStartAddress();
-        blockName = [NSString stringWithFormat:@"%@: '%@'  Start Address: %i", blockName, filename, startAddress];
-    }
-    else if ([blockName isEqualToString:@"Data Block"])
-    {
-        unsigned short blockLength = tape->blocks[ blockIndex ]->getDataLength();
-        blockName = [NSString stringWithFormat:@"Data Block: Length: %i", blockLength];
-    }
-
-    return blockName;
+    return @(tape->blocks[ blockIndex ]->getBlockName().c_str());
 }
 
-- (NSInteger)selectedTapeBlock
+- (NSString *)tapeFilenameForIndex:(NSInteger)blockIndex
+{
+    return @(tape->blocks[ blockIndex ]->getFilename().c_str());
+}
+
+- (int)tapeAutostartLineForIndex:(NSInteger)blockIndex
+{
+    int lineNumber = tape->blocks [blockIndex ]->getAutoStartLine();
+    return (lineNumber == 32768) ? 0 : lineNumber;
+}
+
+- (unsigned short)tapeBlockStartAddressForIndex:(NSInteger)blockIndex
+{
+    return tape->blocks[ blockIndex ]->getStartAddress();
+}
+
+- (unsigned short)tapeBlockLengthForIndex:(NSInteger)blockIndex
+{
+    return tape->blocks[ blockIndex ]->getDataLength();
+}
+
+- (NSInteger)tapeCurrentBlock
 {
     return tape->currentBlockIndex;
 }
 
-- (BOOL)isplaying
+- (BOOL)tapeIsplaying
 {
     return tape->playing;
 }
 
-- (void)setSelectedTapeBlock:(NSInteger)blockIndex
+- (void)tapeSetCurrentBlock:(NSInteger)blockIndex
 {
     tape->setSelectedBlock( static_cast<int>(blockIndex) );
     tape->rewindBlock();
     tape->stopPlaying();
+}
+
+static void tapeStatusCallback(int blockIndex, int bytes)
+{
+    cout << "Tape Callback: " << blockIndex << endl;
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"TAPE_CHANGED_NOTIFICATION" object:NULL];
 }
 
 #pragma mark - File Menu Items

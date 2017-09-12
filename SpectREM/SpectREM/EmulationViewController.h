@@ -33,10 +33,14 @@ enum
 - (void)audioCallback:(int)inNumberFrames buffer:(short *)buffer;
 
 // Methods used to get informaiton from the current machine for the tape browser
-- (NSInteger)numberOfblocks;
-- (NSString *)blockNameForTapeBlockIndex:(NSInteger)blockIndex;
-- (NSInteger)selectedTapeBlock;
-- (BOOL)isplaying;
-- (void)setSelectedTapeBlock:(NSInteger)blockIndex;
+- (NSInteger)tapeNumberOfblocks;
+- (NSString *)tapeBlockTypeForIndex:(NSInteger)blockIndex;
+- (NSString *)tapeFilenameForIndex:(NSInteger)blockIndex;
+- (int)tapeAutostartLineForIndex:(NSInteger)blockIndex;
+- (unsigned short)tapeBlockStartAddressForIndex:(NSInteger)blockIndex;
+- (unsigned short)tapeBlockLengthForIndex:(NSInteger)blockIndex;
+- (NSInteger)tapeCurrentBlock;
+- (BOOL)tapeIsplaying;
+- (void)tapeSetCurrentBlock:(NSInteger)blockIndex;
 
 @end
