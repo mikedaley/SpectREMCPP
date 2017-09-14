@@ -181,7 +181,8 @@ public:
     unsigned char           keyboardMap[8];
     static KEYBOARD_ENTRY   keyboardLookup[];
     int                     keyboardCapsLockFrames;
-    
+    short                   *audioBuffer;
+  
 public:
     // Emulation
     MachineInfo             machineInfo;
@@ -211,7 +212,6 @@ public:
     // Audio
     int                     audioEarBit;
     int                     audioMicBit;
-    short                   *audioBuffer;
     int                     audioBufferSize;
     int                     audioBufferIndex;
     int                     audioTsCounter;

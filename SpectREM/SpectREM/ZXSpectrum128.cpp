@@ -13,7 +13,9 @@
 
 #pragma mark - Constants
 
-const int cROM_SIZE = 16384;
+static const int cROM_SIZE = 16384;
+static const char *cROM0 = "128-0.ROM";
+static const char *cROM1 = "128-1.ROM";
 
 #pragma mark - Constructor/Destructor
 
@@ -61,7 +63,7 @@ void ZXSpectrum128::initialise(string romPath)
 void ZXSpectrum128::loadDefaultROM()
 {
     string romPath = emuROMPath;
-    romPath.append("/Contents/Resources/128-0.ROM");
+    romPath.append( cROM0 );
     
     ifstream romFile0(romPath, ios::binary|ios::ate);
     romFile0.seekg(0, ios::beg);
@@ -69,7 +71,7 @@ void ZXSpectrum128::loadDefaultROM()
     romFile0.close();
     
     string romPath1 = emuROMPath;
-    romPath1.append("/Contents/Resources/128-1.ROM");
+    romPath1.append( cROM1 );
     
     ifstream romFile1(romPath1, ios::binary|ios::ate);
     romFile1.seekg(0, ios::beg);

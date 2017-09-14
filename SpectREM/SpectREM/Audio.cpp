@@ -47,6 +47,11 @@ void ZXSpectrum::audioSetup(float sampleRate, float fps)
 
 void ZXSpectrum::audioReset()
 {
+    if (audioBuffer)
+    {
+        delete audioBuffer;
+    }
+    
     audioBuffer = new short[ audioBufferSize ]();
     audioBufferIndex = 0;
     audioTsCounter = 0;

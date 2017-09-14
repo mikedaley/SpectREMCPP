@@ -34,6 +34,7 @@ public:
     virtual void            coreDebugWrite(unsigned int address, unsigned char byte, void *data) override;
     
     static bool             opcodeCallback(unsigned char opcode, unsigned short address, void *param);
+    
 };
 
 #endif /* ZXSpectrum128_hpp */

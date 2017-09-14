@@ -13,7 +13,8 @@
 
 #pragma mark - Constants
 
-const int cROM_SIZE = 16384;
+static const int cROM_SIZE = 16384;
+static const char *cROM0 = "48.ROM";
 
 #pragma mark - Constructor/Destructor
 
@@ -54,7 +55,7 @@ void ZXSpectrum48::initialise(string romPath)
 
 void ZXSpectrum48::loadDefaultROM()
 {
-    string romPath = emuROMPath.append("/Contents/Resources/48.ROM");
+    string romPath = emuROMPath.append( cROM0 );
     
     ifstream romFile(romPath, ios::binary|ios::ate);
     romFile.seekg(0, ios::beg);

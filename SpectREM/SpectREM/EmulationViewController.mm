@@ -45,6 +45,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     bool                            configViewVisible;
     
     AudioQueue                      *audioQueue;
+    short                           audioBuffer;
     
     NSStoryboard                    *storyBoard;
     ConfigurationViewController     *configViewController;
@@ -67,7 +68,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 {
     [super viewDidLoad];
 
-    mainBundlePath = [[NSBundle mainBundle] bundlePath];
+    mainBundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/Contents/Resources/"];
 
     storyBoard = [NSStoryboard storyboardWithName:@"Main" bundle:nil];
 
