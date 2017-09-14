@@ -338,7 +338,7 @@
                                         <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ype-Qt-n0x">
                                             <rect key="frame" x="111" y="43" width="92" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <sliderCell key="cell" controlSize="small" state="on" alignment="left" minValue="1" maxValue="5" doubleValue="1" tickMarkPosition="above" numberOfTickMarks="5" allowsTickMarkValuesOnly="YES" sliderType="linear" id="QHk-2L-OoX"/>
+                                            <sliderCell key="cell" controlSize="small" enabled="NO" state="on" alignment="left" minValue="1" maxValue="5" doubleValue="1" tickMarkPosition="above" numberOfTickMarks="5" allowsTickMarkValuesOnly="YES" sliderType="linear" id="QHk-2L-OoX"/>
                                         </slider>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hOh-6o-kYI">
                                             <rect key="frame" x="18" y="44" width="85" height="14"/>
@@ -861,7 +861,7 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="save:" target="maC-Hf-vn8" id="mY5-8u-99O"/>
+                                    <action selector="saveTape:" target="Qmb-ES-Gb8" id="lxf-av-M6Z"/>
                                 </connections>
                             </button>
                         </subviews>

@@ -777,6 +777,20 @@ void Tape::eject()
     loaded = false;
 }
 
+vector<unsigned char> Tape::getTapeData()
+{
+    vector<unsigned char> tapeData;
+    for (int i = 0; i < blocks.size() - 1; i++)
+    {
+        for (int j = 0; j < blocks[ i ]->getDataLength() - 1; j++)
+        {
+            tapeData.push_back(blocks[ i ]->blockData[ j ]);
+        }
+    }
+    
+    return tapeData;
+}
+
 unsigned long Tape::numberOfTapeBlocks()
 {
     return blocks.size();

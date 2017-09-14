@@ -157,6 +157,7 @@ public:
     void                    updateStatus();
     unsigned long           numberOfTapeBlocks();
     void                    setSelectedBlock(int blockIndex);
+    vector<unsigned char>   getTapeData();
     
 private:
     bool                    processData(unsigned char *fileBytes, long size);

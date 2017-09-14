@@ -541,6 +541,11 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     tape->eject();
 }
 
+- (IBAction)saveTape:(id)sender
+{
+    vector<unsigned char> tapeData = tape->getTapeData();
+}
+
 #pragma mark - Getters
 
 - (void *)getDisplayBuffer
