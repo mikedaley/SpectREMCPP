@@ -47,6 +47,7 @@ void ZXSpectrum::audioSetup(float sampleRate, float fps)
 
 void ZXSpectrum::audioReset()
 {
+    audioBuffer = new short[ audioBufferSize ]();
     audioBufferIndex = 0;
     audioTsCounter = 0;
     audioTsStepCounter = 0;

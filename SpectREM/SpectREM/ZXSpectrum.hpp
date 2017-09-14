@@ -115,7 +115,6 @@ public:
     virtual void            release();
 
     void                    generateFrame();
-    void                    displayUpdateWithTs(int tStates);
     void                    keyboardKeyDown(unsigned short key);
     void                    keyboardKeyUp(unsigned short key);
     void                    keyboardFlagsChanged(unsigned long flags, unsigned short key);
@@ -133,6 +132,7 @@ protected:
     virtual void            loadDefaultROM() = 0;
     
     void                    displayFrameReset();
+    void                    displayUpdateWithTs(int tStates);
 
     void                    ULAApplyIOContention(unsigned short address, bool contended);
     unsigned char           ULAFloatingBus();

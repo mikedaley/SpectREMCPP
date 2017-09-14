@@ -185,8 +185,7 @@ ZXSpectrum::Snap ZXSpectrum::snapshotCreateZ80()
     // Structure to be returned containing the length and size of the snapshot
     Snap snapData;
     snapData.length = snapshotSize;
-    snapData.data = new unsigned char[snapshotSize];
-//    snapData.data = (unsigned char*)calloc(snapshotSize, sizeof(unsigned char));
+    snapData.data = new unsigned char[ snapshotSize ];
     
     // Header
     snapData.data[0] = z80Core.GetRegister(CZ80Core::eREG_A);
@@ -342,7 +341,7 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
     long size = ftell(fileHandle);
     fseek(fileHandle, 0, SEEK_SET);
 
-    unsigned char fileBytes[size];
+    unsigned char fileBytes[ size ];
     
     fread(&fileBytes, 1, size, fileHandle);
     
@@ -392,13 +391,13 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
     //    Bit 4  : 1=Basic SamRom switched in
     //    Bit 5  : 1=Block of data is compressed
     //    Bit 6-7: No meaning
-//    unsigned char byte12 = fileBytes[12];
+    unsigned char byte12 = fileBytes[12];
     
     // For campatibility reasons if byte 12 = 255 then it should be assumed to = 1
-//    byte12 = (byte12 == 255) ? 1 : byte12;
+    byte12 = (byte12 == 255) ? 1 : byte12;
     
-    displayBorderColor = (fileBytes[12] & 14) >> 1;
-    bool compressed = fileBytes[12] & 32;
+    displayBorderColor = (byte12 & 14) >> 1;
+    bool compressed = byte12 & 32;
     
     z80Core.SetRegister(CZ80Core::eREG_DE, ((unsigned short *)&fileBytes[13])[0]);
     z80Core.SetRegister(CZ80Core::eREG_ALT_BC, ((unsigned short *)&fileBytes[13])[1]);
@@ -411,9 +410,6 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
     z80Core.SetIFF1((unsigned char)fileBytes[27] & 1);
     z80Core.SetIFF2((unsigned char)fileBytes[28] & 1);
     z80Core.SetIMMode((unsigned char)fileBytes[29] & 3);
-    
-//    NSLog(@"RB7: %i Border: %i SamRom: %i Compressed: %i", byte12 & 1, (byte12 & 14) >> 1, byte12 & 16, byte12 & 32);
-//    NSLog(@"IFF1: %i IM Mode: %i", (unsigned char)fileBytes[27] & 1, (unsigned char)fileBytes[29] & 3);
     
     // Based on the version number of the snapshot, decode the memory contents
     switch (version) {
@@ -489,7 +485,7 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
     }
     
     resume();
-    
+
     return true;
 }
 
