@@ -68,22 +68,16 @@ void ZXSpectrum::generateFrame()
         
         if (tape->playing)
         {
-            if (tape)
-            {
-                tape->updateWithTs(tStates);
-            }
+            tape->updateWithTs(tStates);
         }
         
         if (emuSaveTrapTriggered)
         {
-            
+            tape->saveBlock(this);
         }
         else if (emuLoadTrapTriggered && tape->loaded)
         {
-            if (tape)
-            {
-                tape->loadBlock(this);
-            }
+            tape->loadBlock(this);
         }
         else
         {

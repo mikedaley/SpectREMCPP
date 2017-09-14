@@ -146,6 +146,7 @@ public:
 public:
     bool                    loadWithPath(const char *);
     void                    loadBlock(void *m);
+    void                    saveBlock(void *m);
     void                    updateWithTs(int tStates);
     void                    startPlaying();
     void                    stopPlaying();
@@ -158,6 +159,7 @@ public:
     void                    setSelectedBlock(int blockIndex);
     
 private:
+    bool                    processData(unsigned char *fileBytes, long size);
     void                    generateHeaderPilotWithTs(int tStates);
     void                    generateSync1WithTs(int tStates);
     void                    generateSync2WithTs(int tStates);

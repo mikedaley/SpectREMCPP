@@ -256,66 +256,13 @@ bool Tape::loadWithPath(const char *path)
 
     reset(true);
     
-    unsigned short blockLength = 0;
-    unsigned char flag = 0;
-    unsigned char dataType = 0;
-    
-    while (currentBytePtr < size)
+    if (processData(fileBytes, size))
     {
-        blockLength = ((unsigned short *)&fileBytes[ currentBytePtr ])[0];
-        
-        // Move the byte pointer to the top of the actual TAP block
-        currentBytePtr += 2;
-        
-        flag = fileBytes[ currentBytePtr  + cHEADER_FLAG_OFFSET ];
-        dataType = fileBytes[ currentBytePtr + cHEADER_DATA_TYPE_OFFSET ];
-        
-        TapeBlock *newTapeBlock;
-        
-        if (dataType == ePROGRAM_HEADER && flag != 0xff)
-        {
-            newTapeBlock = new ProgramHeader;
-            newTapeBlock->blockType = ePROGRAM_HEADER;
-        }
-        else if (dataType == eNUMERIC_DATA_HEADER && flag != 0xff)
-        {
-            newTapeBlock = new NumericDataHeader;
-            newTapeBlock->blockType = eNUMERIC_DATA_HEADER;
-        }
-        else if (dataType == eALPHANUMERIC_DATA_HEADER && flag != 0xff)
-        {
-            newTapeBlock = new AlphanumericDataHeader;
-            newTapeBlock->blockType = eALPHANUMERIC_DATA_HEADER;
-        }
-        else if (dataType == eBYTE_HEADER && flag != 0xff)
-        {
-            newTapeBlock = new ByteHeader;
-            newTapeBlock->blockType = eBYTE_HEADER;
-        }
-        else
-        {
-            newTapeBlock = new DataBlock;
-            newTapeBlock->blockType = eDATA_BLOCK;
-        }
-        
-        if (!newTapeBlock)
-        {
-            cout << "INVALID FLAG FOUND PROCESSING TAP" << endl;
-            return false;
-        }
-        
-        newTapeBlock->blockLength = blockLength;
-        newTapeBlock->blockData = new unsigned char[blockLength];
-        memcpy(newTapeBlock->blockData, &fileBytes[ currentBytePtr ], blockLength);
-        
-        blocks.push_back(newTapeBlock);
-        
-        currentBytePtr += blockLength;
+        loaded = true;
+        return true;
     }
     
-    loaded = true;
-    
-    return true;
+    return false;
 }
 
 void Tape::updateWithTs(int tStates)
@@ -603,6 +550,70 @@ void Tape::tapeBlockPauseWithTs(int tStates)
     }
 }
 
+#pragma mark - Process Tape Data
+
+bool Tape::processData(unsigned char *dataBytes, long size)
+{
+    unsigned short blockLength = 0;
+    unsigned char flag = 0;
+    unsigned char dataType = 0;
+    currentBytePtr = 0;
+    
+    while (currentBytePtr < size)
+    {
+        blockLength = ((unsigned short *)&dataBytes[ currentBytePtr ])[0];
+        
+        // Move the byte pointer to the top of the actual TAP block
+        currentBytePtr += 2;
+        
+        flag = dataBytes[ currentBytePtr  + cHEADER_FLAG_OFFSET ];
+        dataType = dataBytes[ currentBytePtr + cHEADER_DATA_TYPE_OFFSET ];
+        
+        TapeBlock *newTapeBlock;
+        
+        if (dataType == ePROGRAM_HEADER && flag != 0xff)
+        {
+            newTapeBlock = new ProgramHeader;
+            newTapeBlock->blockType = ePROGRAM_HEADER;
+        }
+        else if (dataType == eNUMERIC_DATA_HEADER && flag != 0xff)
+        {
+            newTapeBlock = new NumericDataHeader;
+            newTapeBlock->blockType = eNUMERIC_DATA_HEADER;
+        }
+        else if (dataType == eALPHANUMERIC_DATA_HEADER && flag != 0xff)
+        {
+            newTapeBlock = new AlphanumericDataHeader;
+            newTapeBlock->blockType = eALPHANUMERIC_DATA_HEADER;
+        }
+        else if (dataType == eBYTE_HEADER && flag != 0xff)
+        {
+            newTapeBlock = new ByteHeader;
+            newTapeBlock->blockType = eBYTE_HEADER;
+        }
+        else
+        {
+            newTapeBlock = new DataBlock;
+            newTapeBlock->blockType = eDATA_BLOCK;
+        }
+        
+        if (!newTapeBlock)
+        {
+            cout << "INVALID FLAG FOUND PROCESSING TAP" << endl;
+            return false;
+        }
+        
+        newTapeBlock->blockLength = blockLength;
+        newTapeBlock->blockData = new unsigned char[blockLength];
+        memcpy(newTapeBlock->blockData, &dataBytes[ currentBytePtr ], blockLength);
+        
+        blocks.push_back(newTapeBlock);
+        
+        currentBytePtr += blockLength;
+    }
+    
+    return true;
+}
 
 #pragma mark - Instant Tape Load
 
@@ -664,6 +675,45 @@ void Tape::loadBlock(void *m)
     {
         updateStatusCallback(currentBlockIndex, 0);
     }
+}
+
+#pragma mark - ROM Save
+
+void Tape::saveBlock(void *m)
+{
+    ZXSpectrum *machine = static_cast<ZXSpectrum *>(m);
+
+    char parity = 0;
+    short length = machine->z80Core.GetRegister(CZ80Core::eREG_DE) + 2;
+    short dataIndex = 0;
+    loaded = true;
+    
+    unsigned char data[ length ];
+    
+    data[ dataIndex++ ] = length & 255;
+    data[ dataIndex++ ] = length >> 8;
+
+    parity = machine->z80Core.GetRegister(CZ80Core::eREG_A);
+
+    data[ dataIndex++ ] = parity;
+    
+    for (int i = 0; i < machine->z80Core.GetRegister(CZ80Core::eREG_DE); i++)
+    {
+        // Read memory using the debug read from the core which takes into account any paging
+        // on the 128k Spectrum
+        char byte = machine->z80Core.Z80CoreDebugMemRead(machine->z80Core.GetRegister(CZ80Core::eREG_IX) + i, NULL);
+        parity ^= byte;
+        data[ dataIndex++ ] = byte;
+    }
+    
+    data[ dataIndex++ ] = parity;
+    
+    processData(data, length);
+    
+    // Once a block has been saved this is the RET address
+    machine->z80Core.SetRegister(CZ80Core::eREG_PC, 0x053e);
+    
+    newBlock = true;
 }
 
 
