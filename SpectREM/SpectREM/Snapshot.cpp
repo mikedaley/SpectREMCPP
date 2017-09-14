@@ -26,7 +26,6 @@ ZXSpectrum::Snap ZXSpectrum::snapshotCreateSNA()
     Snap snap;
     snap.length = (48 * 1024) + cSNA_HEADER_SIZE;
     snap.data = new unsigned char[snap.length];
-//    snap.data = (unsigned char*)calloc(snap.length, sizeof(unsigned char));
     
     snap.data[0] = z80Core.GetRegister(CZ80Core::eREG_I);
     snap.data[1] = z80Core.GetRegister(CZ80Core::eREG_ALT_HL) & 0xff;
@@ -249,8 +248,16 @@ ZXSpectrum::Snap ZXSpectrum::snapshotCreateZ80()
     }
     
     snapData.data[36] = 0; // Interface 1 ROM
-    snapData.data[37] = 0; // AY Sound
-    snapData.data[38] = 0; // Last OUT fffd
+    snapData.data[37] = 4; // AY Sound
+    snapData.data[38] = ULAPortFFFDValue; // Last OUT fffd
+    
+    // Save the AY register values
+    int dataIndex = 39;
+    for (int i = 0; i < 16; i++)
+    {
+        audioAYSetRegister(i);
+        snapData.data[dataIndex++] = audioAYReadData();
+    }
     
     int quarterStates = machineInfo.tsPerFrame / 4;
     int lowTStates = quarterStates - (z80Core.GetTStates() % quarterStates) - 1;
@@ -411,6 +418,16 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
     z80Core.SetIFF2((unsigned char)fileBytes[28] & 1);
     z80Core.SetIMMode((unsigned char)fileBytes[29] & 3);
     
+    // Load AY register values
+    int fileBytesIndex = 39;
+    for (int i = 0; i < 16; i++)
+    {
+        audioAYSetRegister(i);
+        audioAYWriteData(fileBytes[fileBytesIndex++]);
+    }
+
+    audioAYSetRegister((unsigned char)fileBytes[38]);
+
     // Based on the version number of the snapshot, decode the memory contents
     switch (version) {
         case 1:
