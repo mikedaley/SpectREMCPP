@@ -244,7 +244,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
         int snapshotMachineType = machine->snapshotMachineInSnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
         if (machine->machineInfo.machineType != snapshotMachineType)
         {
-//            [[[NSUserDefaultsController sharedUserDefaultsController] values] setValue:@(snapshotMachineType) forKey:cSELECTED_MACHINE];
+            self.defaults.machineSelectedModel = snapshotMachineType;
         }
     }
     
