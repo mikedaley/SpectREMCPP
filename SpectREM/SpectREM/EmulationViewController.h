@@ -30,7 +30,7 @@ enum
 
 - (void *)getDisplayBuffer;
 - (void)loadFileWithURL:(NSURL *)url addToRecent:(BOOL)addToRecent;
-- (void)audioCallback:(int)inNumberFrames buffer:(short *)buffer;
+- (void)audioCallback:(int)inNumberFrames buffer:(unsigned short *)buffer;
 
 // Methods used to get informaiton from the current machine for the tape browser
 - (NSInteger)tapeNumberOfblocks;

@@ -21,8 +21,8 @@ public:
     AudioQueue();
     ~AudioQueue();
 
-    int             write(signed short *buffer, int count);
-    int             read(signed short *buffer, int count);
+    int             write(unsigned short *buffer, int count);
+    int             read(unsigned short *buffer, int count);
     int             bufferUsed();
 
 private:

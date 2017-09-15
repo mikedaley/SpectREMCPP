@@ -33,6 +33,13 @@ const unsigned int displayPalette[] =
     0xffffffff
 };
 
+enum
+{
+    eDisplayBorder = 1,
+    eDisplayPaper,
+    eDisplayRetrace
+};
+
 #pragma mark - Setup
 
 void ZXSpectrum::displaySetup()

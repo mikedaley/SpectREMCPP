@@ -28,6 +28,11 @@
     return self;
 }
 
+- (BOOL)acceptsFirstResponder
+{
+    return NO;
+}
+
 - (void)tapeChangedNotification:(NSNotification *)notification
 {
     dispatch_async(dispatch_get_main_queue(), ^{

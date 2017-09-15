@@ -8,7 +8,16 @@
 
 #include "ZXSpectrum.hpp"
 
-const int cBEEPER_VOLUME_MULTIPLIER = 128;
+const int cBEEPER_VOLUME_MULTIPLIER = 200;
+
+// AY chip envelope flag type
+enum
+{
+    eENVFLAG_HOLD = 0x01,
+    eENVFLAG_ALTERNATE = 0x02,
+    eENVFLAG_ATTACK = 0x04,
+    eENVFLAG_CONTINUE = 0x08
+};
 
 static const float fAYVolBase[] = {
     0.0000,
@@ -33,14 +42,14 @@ void ZXSpectrum::audioBuildAYVolumesTable()
 {
     for (int i = 0; i < 16; i++)
     {
-        audioAYVolumes[ i ] = (unsigned short)(fAYVolBase[ i ] * (1024 * 5));
+        audioAYVolumes[ i ] = (unsigned short)(fAYVolBase[ i ] * 5120);
     }
 }
 
 void ZXSpectrum::audioSetup(float sampleRate, float fps)
 {
-    audioBufferSize = (sampleRate / fps) * 6;
-    audioBuffer = new short[ audioBufferSize ]();
+    audioBufferSize = (sampleRate / fps) * 5;
+    audioBuffer = new unsigned short[ audioBufferSize ]();
     audioBeeperTsStep = machineInfo.tsPerFrame / (sampleRate / fps);
     audioAYTsStep = 32;
 }
@@ -52,7 +61,7 @@ void ZXSpectrum::audioReset()
         delete audioBuffer;
     }
     
-    audioBuffer = new short[ audioBufferSize ]();
+    audioBuffer = new unsigned short[ audioBufferSize ]();
     audioBufferIndex = 0;
     audioTsCounter = 0;
     audioTsStepCounter = 0;
@@ -106,6 +115,11 @@ void ZXSpectrum::audioUpdateWithTs(int tStates)
             beeperLevelRight += audioAYChannelOutput[1];
             beeperLevelRight += audioAYChannelOutput[2];
             
+            if (beeperLevelLeft > 16384)
+            {
+                cout << beeperLevelLeft << endl;
+            }
+
             audioAYChannelOutput[0] = 0;
             audioAYChannelOutput[1] = 0;
             audioAYChannelOutput[2] = 0;
@@ -142,6 +156,7 @@ void ZXSpectrum::audioUpdateWithTs(int tStates)
         }
         
         beeperLevelLeft = beeperLevelRight = localBeeperLevel;
+        
     }
 }
 

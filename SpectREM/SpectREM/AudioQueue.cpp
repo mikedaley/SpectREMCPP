@@ -27,7 +27,7 @@ AudioQueue::~AudioQueue()
 }
 
 // Write the supplied number of bytes into the queues buffer from the supplied buffer pointer
-int AudioQueue::write(signed short *buffer, int count)
+int AudioQueue::write(unsigned short *buffer, int count)
 {
     if (!count) {
         return 0;
@@ -63,7 +63,7 @@ int AudioQueue::write(signed short *buffer, int count)
 }
 
 // Read the supplied number of bytes from the queues buffer into the supplied buffer pointer
-int AudioQueue::read(signed short *buffer, int count)
+int AudioQueue::read(unsigned short *buffer, int count)
 {
     int t;
     int i;

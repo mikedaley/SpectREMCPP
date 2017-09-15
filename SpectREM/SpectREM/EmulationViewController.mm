@@ -95,7 +95,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     [self restoreSession];
 }
 
-- (void)audioCallback:(int)inNumberFrames buffer:(short *)buffer
+- (void)audioCallback:(int)inNumberFrames buffer:(unsigned short *)buffer
 {
     if (machine)
     {    

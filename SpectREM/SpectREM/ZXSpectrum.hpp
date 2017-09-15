@@ -20,9 +20,6 @@
 
 using namespace std;
 
-#pragma mark - TypeDefs
-
-
 #pragma mark - Base ZXSpectrum class
 
 class ZXSpectrum
@@ -34,41 +31,6 @@ public:
     static const int    cATTR_SIZE = 768;
     static const int    cMEMORY_PAGE_SIZE = 16384;
 
-private:
-    enum
-    {
-        eDisplayBorder = 1,
-        eDisplayPaper,
-        eDisplayRetrace
-    };
-    
-    enum
-    {
-        eFloatBusTypeValuePixel = 1,
-        eFloatBusTypeValueAttribute
-    };
-    
-    // Holds details of the host platforms key codes and how they map to the spectrum keyboard matrix
-    typedef struct
-    {
-        int                 key;
-        int                 mapEntry;
-        int                 mapBit;
-    } KEYBOARD_ENTRY;
-    
-public:
-    // Holds the data returned when creating a Snapshot or Z80 snapshot
-    struct Snap {
-        int length;
-        unsigned char *data;
-    };
-    
-    // Previous frames screen buffer contents
-    struct ScreenBufferData {
-        unsigned char pixels;
-        unsigned char attribute;
-    };
-    
     enum
     {
         eAYREGISTER_A_FINE = 0,
@@ -96,15 +58,29 @@ public:
         eAY_MAX_REGISTERS
     };
     
-    // AY chip envelope flag type
-    enum
+private:    
+    
+    // Holds details of the host platforms key codes and how they map to the spectrum keyboard matrix
+    typedef struct
     {
-        eENVFLAG_HOLD = 0x01,
-        eENVFLAG_ALTERNATE = 0x02,
-        eENVFLAG_ATTACK = 0x04,
-        eENVFLAG_CONTINUE = 0x08
+        int                 key;
+        int                 mapEntry;
+        int                 mapBit;
+    } KEYBOARD_ENTRY;
+    
+public:
+    
+    // Holds the data returned when creating a Snapshot or Z80 snapshot
+    struct Snap {
+        int length;
+        unsigned char *data;
     };
     
+    struct ScreenBufferData {
+        unsigned char pixels;
+        unsigned char attribute;
+    };
+        
 public:
     ZXSpectrum();
     virtual ~ZXSpectrum();
@@ -181,7 +157,7 @@ public:
     unsigned char           keyboardMap[8];
     static KEYBOARD_ENTRY   keyboardLookup[];
     int                     keyboardCapsLockFrames;
-    short                   *audioBuffer;
+    unsigned short                   *audioBuffer;
   
 public:
     // Emulation
