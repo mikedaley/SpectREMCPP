@@ -817,7 +817,7 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="play:" target="maC-Hf-vn8" id="cyX-6O-psf"/>
+                                    <action selector="play:" target="Qmb-ES-Gb8" id="07l-dK-cEt"/>
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ms8-5q-E2z">
@@ -828,7 +828,7 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="stop:" target="maC-Hf-vn8" id="00d-aa-WV2"/>
+                                    <action selector="stop:" target="Qmb-ES-Gb8" id="gJd-yA-vtB"/>
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="11o-xh-Ibq">
@@ -839,7 +839,7 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="rewind:" target="maC-Hf-vn8" id="MF2-M3-TQX"/>
+                                    <action selector="rewind:" target="Qmb-ES-Gb8" id="LZR-T7-iLq"/>
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nH5-YE-sWT">
@@ -850,7 +850,7 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="eject:" target="maC-Hf-vn8" id="34u-6X-E6z"/>
+                                    <action selector="eject:" target="Qmb-ES-Gb8" id="27T-cV-rdz"/>
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sYW-H3-Xgt">
@@ -861,7 +861,7 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="saveTape:" target="Qmb-ES-Gb8" id="lxf-av-M6Z"/>
+                                    <action selector="saveTape:" target="Qmb-ES-Gb8" id="vzj-SN-HI1"/>
                                 </connections>
                             </button>
                         </subviews>

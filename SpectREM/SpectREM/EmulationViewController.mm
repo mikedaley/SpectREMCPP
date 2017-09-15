@@ -544,6 +544,16 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 - (IBAction)saveTape:(id)sender
 {
     vector<unsigned char> tapeData = tape->getTapeData();
+    
+    NSMutableArray *saveData = [NSMutableArray new];
+    
+    for (int i = 0; i < tapeData.size(); i++)
+    {
+        saveData[ i ] = @(tapeData[ i ]);
+    }
+    
+    [saveData writeToFile:@"/Users/mikeda/Desktop/test.tap" atomically:NO];
+    
 }
 
 #pragma mark - Getters

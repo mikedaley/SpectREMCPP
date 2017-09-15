@@ -48,5 +48,6 @@ enum
 - (IBAction)stopPlayingTape:(id)sender;
 - (IBAction)rewindTape:(id)sender;
 - (IBAction)ejectTape:(id)sender;
+- (IBAction)saveTape:(id)sender;
 
 @end
