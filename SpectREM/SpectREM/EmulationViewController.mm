@@ -543,17 +543,17 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 
 - (IBAction)saveTape:(id)sender
 {
-    vector<unsigned char> tapeData = tape->getTapeData();
-    
-    NSMutableArray *saveData = [NSMutableArray new];
-    
-    for (int i = 0; i < tapeData.size(); i++)
-    {
-        saveData[ i ] = @(tapeData[ i ]);
-    }
-    
-    [saveData writeToFile:@"/Users/mikeda/Desktop/test.tap" atomically:NO];
-    
+    NSSavePanel *savePanel = [NSSavePanel new];
+    savePanel.allowedFileTypes = @[ cTAP_EXTENSION ];
+    [savePanel beginSheetModalForWindow:tapeBrowserWindowController.window completionHandler:^(NSInteger result) {
+        if (result == NSModalResponseOK)
+        {
+            vector<unsigned char> tapeData = tape->getTapeData();
+            NSMutableData *saveData = [NSMutableData new];
+            [saveData appendBytes:tapeData.data() length:tapeData.size()];
+            [saveData writeToURL:savePanel.URL atomically:YES];
+        }
+    }];
 }
 
 #pragma mark - Getters

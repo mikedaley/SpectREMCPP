@@ -144,22 +144,33 @@ public:
     virtual ~Tape();
     
 public:
+    // Load a TAP file
     bool                    loadWithPath(const char *);
+    
+    // Loads/Saves the block controlled by performing a ROM load or save
     void                    loadBlock(void *m);
     void                    saveBlock(void *m);
+    
+    // Updates the tape to generate the tape output. Tstates passed in should be the tStates used in each opcode executed
     void                    updateWithTs(int tStates);
+    
+    // Functions used to control the state of the currently loaded tape
     void                    startPlaying();
     void                    stopPlaying();
     void                    rewindTape();
     void                    rewindBlock();
     void                    eject();
-    void                    reset(bool clearBlocks);
-    void                    updateStatus();
+    
+    // Functions used to get details of the loaded tape that can then be used in a UI to display those details
+    void                    updateStatus(); // Called when the internal status of the current tape changes
     unsigned long           numberOfTapeBlocks();
     void                    setSelectedBlock(int blockIndex);
+    
+    // Returns a vector that contains the current tape data ready to write to disk
     vector<unsigned char>   getTapeData();
     
 private:
+    void                    reset(bool clearBlocks);
     bool                    processData(unsigned char *fileBytes, long size);
     void                    generateHeaderPilotWithTs(int tStates);
     void                    generateSync1WithTs(int tStates);

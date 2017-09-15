@@ -345,11 +345,13 @@ bool ZXSpectrum128::opcodeCallback(unsigned char opcode, unsigned short address,
     if (opcode == 0x08 && address == 0x04d0)
     {
         machine->emuSaveTrapTriggered = true;
+        machine->tape->updateStatus();
         return true;
     }
     else if (machine->emuSaveTrapTriggered)
     {
         machine->emuSaveTrapTriggered = false;
+        machine->tape->updateStatus();
     }
     
     // Trap ROM tap LOADING
@@ -358,11 +360,13 @@ bool ZXSpectrum128::opcodeCallback(unsigned char opcode, unsigned short address,
         if (opcode == 0xc0 && (address == 0x056b || address == 0x0111))
         {
             machine->emuLoadTrapTriggered = true;
+            machine->tape->updateStatus();
             return true;
         }
         else if (machine->emuLoadTrapTriggered)
         {
             machine->emuLoadTrapTriggered = false;
+            machine->tape->updateStatus();
         }
     }
 

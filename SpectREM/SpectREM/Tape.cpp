@@ -782,7 +782,10 @@ vector<unsigned char> Tape::getTapeData()
     vector<unsigned char> tapeData;
     for (int i = 0; i < blocks.size(); i++)
     {
-        for (int j = 0; j < blocks[ i ]->getDataLength(); j++)
+        unsigned short blockLength = blocks[ i ]->getDataLength();
+        tapeData.push_back(blockLength & 0xff);
+        tapeData.push_back(blockLength >> 8);
+        for (int j = 0; j < blockLength; j++)
         {
             tapeData.push_back(blocks[ i ]->blockData[ j ]);
         }
