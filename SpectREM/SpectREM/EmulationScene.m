@@ -9,6 +9,7 @@
 #import "EmulationScene.h"
 #import "EmulationViewController.h"
 #import "EmulationWindowController.h"
+#import "Defaults.h"
 
 #pragma mark - Constants
 
@@ -16,6 +17,13 @@ static NSString *const cU_FILTER_VALUE  =           @"u_filterValue";
 static NSString *const cU_BORDER_SIZE   =           @"u_borderSize";
 
 #pragma mark - Implementation 
+
+@interface EmulationScene()
+
+@property (strong) Defaults *defaults;
+
+@end
+
 
 @implementation EmulationScene
 {
@@ -37,6 +45,8 @@ static NSString *const cU_BORDER_SIZE   =           @"u_borderSize";
     shader = [SKShader shaderWithFileNamed:@"PixelShader.fsh"];
     _emulationScreen.shader = shader;
     
+    _defaults = [Defaults defaults];
+    
     [self setupShaderAttributes];
     [self setupObservers];
 
@@ -55,18 +65,22 @@ static NSString *const cU_BORDER_SIZE   =           @"u_borderSize";
 
 - (void)setupObservers
 {
-    [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:@"displayBorderSize" options:NSKeyValueObservingOptionNew context:NULL];
-    [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:@"displayFilterValue" options:NSKeyValueObservingOptionNew context:NULL];
+    [self.defaults addObserver:self forKeyPath:DisplayPixelFilterLevel options:NSKeyValueObservingOptionNew context:NULL];
+    [self.defaults addObserver:self forKeyPath:DisplayBorderSize options:NSKeyValueObservingOptionNew context:NULL];
+    
+    // Apply current defaults
+    [_emulationScreen setValue:[SKAttributeValue valueWithFloat:self.defaults.displayBorderSize] forAttributeNamed:cU_BORDER_SIZE];
+    [_emulationScreen setValue:[SKAttributeValue valueWithFloat:self.defaults.displayPixelFilterLevel] forAttributeNamed:cU_FILTER_VALUE];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
 {
-    if ([keyPath isEqualToString:@"displayBorderSize"])
+    if ([keyPath isEqualToString:DisplayBorderSize])
     {
         [_emulationScreen setValue:[SKAttributeValue valueWithFloat:[change[NSKeyValueChangeNewKey] floatValue]] forAttributeNamed:cU_BORDER_SIZE];
     }
 
-    else if ([keyPath isEqualToString:@"displayFilterValue"])
+    else if ([keyPath isEqualToString:DisplayPixelFilterLevel])
     {
         [_emulationScreen setValue:[SKAttributeValue valueWithFloat:[change[NSKeyValueChangeNewKey] floatValue]] forAttributeNamed:cU_FILTER_VALUE];
     }

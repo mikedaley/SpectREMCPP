@@ -10,14 +10,6 @@
 
 #pragma mark - Key Path Constants
 
-NSString *const cSELECTED_MACHINE               = @"selectedMachine";
-NSString *const cDISPLAY_BORDER_WIDTH           = @"displayBorderWidth";
-NSString *const cDISPLAY_FILTER_VALUE           = @"displayFilterValue";
-NSString *const cMACHINE_INSTANT_TAPE_LOADING   = @"machineInstantTapeLoading";
-
-NSString *const cAUDIO_VOLUME                   = @"audioVolume";
-NSString *const cAUDIO_HIGH_PASS_FILTER         = @"audioHighPassFilter";
-NSString *const cAUDIO_LOW_PASS_FILTER          = @"audioLowPassFilter";
 
 @interface ConfigurationViewController ()
 
@@ -32,11 +24,7 @@ NSString *const cAUDIO_LOW_PASS_FILTER          = @"audioLowPassFilter";
     self = [super initWithCoder:coder];
     if (self)
     {
-        self.userDefaultController = [NSUserDefaultsController sharedUserDefaultsController];
-        NSString *userDefaultsPath = [[NSBundle mainBundle] pathForResource:@"Defaults" ofType:@"plist"];
-        NSDictionary *userDefaults = [NSDictionary dictionaryWithContentsOfFile:userDefaultsPath];
-        [[NSUserDefaults standardUserDefaults] registerDefaults:userDefaults];
-        [self.userDefaultController setInitialValues:userDefaults];
+        _defaults = [Defaults defaults];
     }
     return self;
 }

@@ -8,6 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import <SpriteKit/SpriteKit.h>
+#import "Defaults.h"
 
 @class EmulationScene;
 
@@ -25,6 +26,7 @@ enum
 @property (strong)              EmulationScene      *scene;
 @property (weak)    IBOutlet    NSVisualEffectView  *configEffectsView;
 @property (weak)    IBOutlet    NSScrollView        *configScrollView;
+@property (strong)              Defaults            *defaults;
 
 #pragma mark - Methods
 

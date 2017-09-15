@@ -86,8 +86,10 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     //Create a tape instance
     tape = new Tape(tapeStatusCallback);
     
-    int defaultsSelectMachine = [[[[NSUserDefaultsController sharedUserDefaultsController] values] valueForKey:cSELECTED_MACHINE] intValue];
-    [self initMachineWithRomPath:mainBundlePath machineType:defaultsSelectMachine];
+    [Defaults setupDefaults];
+    _defaults = [Defaults defaults];
+    
+    [self initMachineWithRomPath:mainBundlePath machineType:(int)_defaults.machineSelectedModel];
     
     [self setupConfigView];
     [self setupControllers];
@@ -116,6 +118,26 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@", [NSString stringWithCString:machine->machineInfo.machineName encoding:NSUTF8StringEncoding]]];
 }
 
+#pragma mark - Observers
+
+- (void)setupObservers
+{
+    [self.defaults addObserver:self forKeyPath:MachineSelectedModel options:NSKeyValueObservingOptionNew context:NULL];
+    [self.defaults addObserver:self forKeyPath:MachineTapeInstantLoad options:NSKeyValueObservingOptionNew context:NULL];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:MachineSelectedModel])
+    {
+        [self initMachineWithRomPath:mainBundlePath machineType:(int)self.defaults.machineSelectedModel];
+    }
+    else if ([keyPath isEqualToString:MachineTapeInstantLoad])
+    {
+        machine->emuTapeInstantLoad = [change[NSKeyValueChangeNewKey] boolValue];
+    }
+}
+
 #pragma mark - View/Controller Setup
 
 - (void)setupConfigView
@@ -134,37 +156,9 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     tapeBrowserViewController.emulationViewController = self;
 }
 
-#pragma mark - Observers
-
-- (void)setupObservers
-{
-    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-    [userDefaults addObserver:self forKeyPath:cSELECTED_MACHINE options:NSKeyValueObservingOptionNew context:NULL];
-    [userDefaults addObserver:self forKeyPath:cMACHINE_INSTANT_TAPE_LOADING options:NSKeyValueObservingOptionNew context:NULL];
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
-{
-    if ([keyPath isEqualToString:cSELECTED_MACHINE])
-    {
-        if (machine->machineInfo.machineType != [change[NSKeyValueChangeNewKey] intValue])
-        {
-            [self initMachineWithRomPath:mainBundlePath machineType:[change[NSKeyValueChangeNewKey] intValue]];
-        }
-    }
-    else if ([keyPath isEqualToString:cMACHINE_INSTANT_TAPE_LOADING])
-    {
-        machine->emuTapeInstantLoad = [change[NSKeyValueChangeNewKey] boolValue];
-    }
-}
-
 - (void)applyDefaultsToMachine
 {
-    if (machine)
-    {
-        NSUserDefaultsController *udc = [NSUserDefaultsController sharedUserDefaultsController];
-        machine->emuTapeInstantLoad = [[[udc values] valueForKey:cMACHINE_INSTANT_TAPE_LOADING] boolValue];
-    }
+    machine->emuTapeInstantLoad = self.defaults.machineTapeInstantLoad;
 }
 
 #pragma mark - Init/Switch Machine
@@ -201,7 +195,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
     
     // Need to do this to make sure the current default values are applied to the new machine
-    [self applyDefaultsToMachine];
+//    [self applyDefaultsToMachine];
     
     [audioCore start];
     [self.scene setPaused:NO];
@@ -250,7 +244,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
         int snapshotMachineType = machine->snapshotMachineInSnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
         if (machine->machineInfo.machineType != snapshotMachineType)
         {
-            [[[NSUserDefaultsController sharedUserDefaultsController] values] setValue:@(snapshotMachineType) forKey:cSELECTED_MACHINE];
+//            [[[NSUserDefaultsController sharedUserDefaultsController] values] setValue:@(snapshotMachineType) forKey:cSELECTED_MACHINE];
         }
     }
     
@@ -486,7 +480,7 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 - (IBAction)selectMachine:(id)sender
 {
     NSMenuItem *menuItem = (NSMenuItem *)sender;
-    [[NSUserDefaults standardUserDefaults] setObject:@(menuItem.tag) forKey:cSELECTED_MACHINE];
+//    [[NSUserDefaults standardUserDefaults] setObject:@(menuItem.tag) forKey:cSELECTED_MACHINE];
 }
 
 - (IBAction)showConfigPanel:(id)sender

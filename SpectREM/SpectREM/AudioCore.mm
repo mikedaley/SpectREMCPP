@@ -12,6 +12,7 @@
 #import "ZXSpectrum.hpp"
 #import "EmulationViewController.h"
 #import "ConfigurationViewController.h"
+#import "Defaults.h"
 
 #pragma mark - Private interface
 
@@ -41,6 +42,8 @@
 @property (assign) AudioUnit mixerUnit;
 @property (assign) AudioUnit lowPassFilterUnit;
 @property (assign) AudioUnit highPassFilterUnit;
+
+@property (strong) Defaults *defaults;
 
 // Signature of the CoreAudio render callback. This is called by CoreAudio when it needs more data in its buffer.
 // By using AudioQueue we can generate another new frame of data at 50.08 fps making sure that the audio stays in
@@ -77,6 +80,8 @@ static OSStatus renderAudio(void *inRefCon,
     self = [super init];
     if (self)
     {
+        _defaults = [Defaults defaults];
+        
         NSLog(@"Allocating AudioCore");
         samplesPerFrame = sampleRate / fps;
     
@@ -204,23 +209,27 @@ static OSStatus renderAudio(void *inRefCon,
 
 - (void)setupObservers
 {
-    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-    [userDefaults addObserver:self forKeyPath:cAUDIO_VOLUME options:NSKeyValueObservingOptionNew context:NULL];
-    [userDefaults addObserver:self forKeyPath:cAUDIO_HIGH_PASS_FILTER options:NSKeyValueObservingOptionNew context:NULL];
-    [userDefaults addObserver:self forKeyPath:cAUDIO_LOW_PASS_FILTER options:NSKeyValueObservingOptionNew context:NULL];
+    [self.defaults addObserver:self forKeyPath:AudioMasterVolume options:NSKeyValueObservingOptionNew context:NULL];
+    [self.defaults addObserver:self forKeyPath:AudioHighPassFilter options:NSKeyValueObservingOptionNew context:NULL];
+    [self.defaults addObserver:self forKeyPath:AudioLowPassFilter options:NSKeyValueObservingOptionNew context:NULL];
+    
+    AudioUnitSetParameter(_mixerUnit, kMultiChannelMixerParam_Volume, kAudioUnitScope_Output, 0, self.defaults.audioMasterVolume, 0);
+    AudioUnitSetParameter(_lowPassFilterUnit, 0, kAudioUnitScope_Global, 0, self.defaults.audioLowPassFilter, 0);
+    AudioUnitSetParameter(_highPassFilterUnit, 0, kAudioUnitScope_Global, 0, self.defaults.audioHighPassFilter, 0);
+    
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
 {
-    if ([keyPath isEqualToString:cAUDIO_VOLUME])
+    if ([keyPath isEqualToString:AudioMasterVolume])
     {
         AudioUnitSetParameter(_mixerUnit, kMultiChannelMixerParam_Volume, kAudioUnitScope_Output, 0, [change[NSKeyValueChangeNewKey] doubleValue], 0);
     }
-    else if ([keyPath isEqualToString:cAUDIO_LOW_PASS_FILTER])
+    else if ([keyPath isEqualToString:AudioLowPassFilter])
     {
         AudioUnitSetParameter(_lowPassFilterUnit, 0, kAudioUnitScope_Global, 0, [change[NSKeyValueChangeNewKey] doubleValue], 0);
     }
-    else if ([keyPath isEqualToString:cAUDIO_HIGH_PASS_FILTER])
+    else if ([keyPath isEqualToString:AudioHighPassFilter])
     {
         AudioUnitSetParameter(_highPassFilterUnit, 0, kAudioUnitScope_Global, 0, [change[NSKeyValueChangeNewKey] doubleValue], 0);
     }
