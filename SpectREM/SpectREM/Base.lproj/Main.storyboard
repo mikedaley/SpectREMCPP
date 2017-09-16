@@ -122,6 +122,17 @@
                                                 <action selector="setWindowSize:" target="Ady-hI-5gd" id="5vB-W2-gJ8"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="sOb-oV-KRQ"/>
+                                        <menuItem title="Screen 4:3" keyEquivalent="f" id="99D-wr-lWt" userLabel="Screen 4:3">
+                                            <connections>
+                                                <action selector="setScreenRatio:" target="Ady-hI-5gd" id="xGW-tv-M6v"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Screen Fill" tag="1" keyEquivalent="F" id="IFo-ra-ag6" userLabel="Screen Fill">
+                                            <connections>
+                                                <action selector="setScreenRatio:" target="Ady-hI-5gd" id="r1f-jv-CNo"/>
+                                            </connections>
+                                        </menuItem>
                                     </items>
                                 </menu>
                             </menuItem>

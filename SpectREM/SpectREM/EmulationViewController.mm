@@ -32,6 +32,9 @@ float const cFRAMES_PER_SECOND = 50;
 
 static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
+static const int cSCREEN_4_3 = 0;
+static const int cSCREEN_FILL = 1;
+
 #pragma mark - Private Interface
 
 @interface EmulationViewController()
@@ -107,6 +110,7 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
         // Check if we have used a frames worth of buffer storage and if so then its time to generate another frame.
         if (audioQueue->bufferUsed() < 7680)
         {
+            
             machine->generateFrame();
             audioQueue->write(machine->audioBuffer, 7680);
         }
@@ -193,9 +197,6 @@ static NSString  *const cSESSION_FILE_NAME = @"session.z80";
     }
     
     machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
-    
-    // Need to do this to make sure the current default values are applied to the new machine
-//    [self applyDefaultsToMachine];
     
     [audioCore start];
     [self.scene setPaused:NO];
@@ -462,6 +463,19 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     }
 }
 
+- (IBAction)setScreenRatio:(id)sender
+{
+    NSMenuItem *menuItem = (NSMenuItem *)sender;
+    if (menuItem.tag == cSCREEN_4_3)
+    {
+        self.scene.scaleMode = SKSceneScaleModeAspectFit;
+    }
+    else if (menuItem.tag == cSCREEN_FILL)
+    {
+        self.scene.scaleMode = SKSceneScaleModeFill;
+    }
+}
+
 #pragma mark - Machine Menu Items
 
 - (IBAction)resetMachine:(id)sender
@@ -480,7 +494,10 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 - (IBAction)selectMachine:(id)sender
 {
     NSMenuItem *menuItem = (NSMenuItem *)sender;
-//    [[NSUserDefaults standardUserDefaults] setObject:@(menuItem.tag) forKey:cSELECTED_MACHINE];
+    if (menuItem.tag != self.defaults.machineSelectedModel)
+    {
+        self.defaults.machineSelectedModel = menuItem.tag;
+    }
 }
 
 - (IBAction)showConfigPanel:(id)sender
