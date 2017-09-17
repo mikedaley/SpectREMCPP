@@ -20,22 +20,8 @@ enum
 };
 
 static const float fAYVolBase[] = {
-    0.0000,
-    0.0079,
-    0.0141,
-    0.0202,
-    0.0299,
-    0.0404,
-    0.0580,
-    0.0773,
-    0.1107,
-    0.1485,
-    0.2109,
-    0.2812,
-    0.4007,
-    0.5351,
-    0.7583,
-    1.0000
+    0.0000, 0.0137, 0.0205, 0.0291, 0.0423, 0.0618, 0.0847, 0.1369,
+    0.1691, 0.2647, 0.3527, 0.4499, 0.5704, 0.6873, 0.8482, 1.0000
 };
 
 void ZXSpectrum::audioBuildAYVolumesTable()
@@ -115,11 +101,6 @@ void ZXSpectrum::audioUpdateWithTs(int tStates)
             beeperLevelRight += audioAYChannelOutput[1];
             beeperLevelRight += audioAYChannelOutput[2];
             
-            if (beeperLevelLeft > 16384)
-            {
-                cout << beeperLevelLeft << endl;
-            }
-
             audioAYChannelOutput[0] = 0;
             audioAYChannelOutput[1] = 0;
             audioAYChannelOutput[2] = 0;

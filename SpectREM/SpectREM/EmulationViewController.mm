@@ -11,6 +11,7 @@
 #import "ZXSpectrum.hpp"
 #import "ZXSpectrum48.hpp"
 #import "ZXSpectrum128.hpp"
+#import "ZXSpectrum128_2.hpp"
 #import "Tape.hpp"
 #import "AudioQueue.hpp"
 
@@ -189,6 +190,10 @@ static const int cSCREEN_FILL = 1;
     else if (machineType == eZXSpectrum128)
     {
         machine = new ZXSpectrum128(tape);
+    }
+    else if (machineType == eZXSpectrum128_2)
+    {
+        machine = new ZXSpectrum128_2(tape);
     }
     else
     {
