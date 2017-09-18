@@ -88,14 +88,16 @@ public:
 public:
     virtual void            initialise(string romPath);
     virtual void            resetMachine(bool hard = true);
+    void                    pause();
+    void                    resume();
     virtual void            release();
 
     void                    generateFrame();
+    
     void                    keyboardKeyDown(unsigned short key);
     void                    keyboardKeyUp(unsigned short key);
     void                    keyboardFlagsChanged(unsigned long flags, unsigned short key);
-    void                    pause();
-    void                    resume();
+    
     
     bool                    snapshotZ80LoadWithPath(const char *path);
     bool                    snapshotSNALoadWithPath(const char *path);
@@ -151,15 +153,20 @@ public:
     virtual unsigned char   coreDebugRead(unsigned int address, void *data) = 0;
     virtual void            coreDebugWrite(unsigned int address, unsigned char byte, void *data) = 0;
 
+    // Machine hardware
     CZ80Core                z80Core;
+    
     vector<char>            memoryRom;
     vector<char>            memoryRam;
+    
     unsigned char           keyboardMap[8];
     static KEYBOARD_ENTRY   keyboardLookup[];
     int                     keyboardCapsLockFrames;
-    unsigned short                   *audioBuffer;
+    
+    unsigned short          *audioBuffer;
   
 public:
+    
     // Emulation
     MachineInfo             machineInfo;
     int                     emuCurrentDisplayTs;

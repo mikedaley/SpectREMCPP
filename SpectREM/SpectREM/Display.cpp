@@ -36,8 +36,8 @@ const unsigned int displayPalette[] =
 enum
 {
     eDisplayBorder = 1,
-    eDisplayPaper,
-    eDisplayRetrace
+    eDisplayPaper = 2,
+    eDisplayRetrace = 3
 };
 
 #pragma mark - Setup

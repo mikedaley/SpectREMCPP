@@ -143,6 +143,13 @@ static const int cSCREEN_FILL = 1;
     }
 }
 
+#pragma mark - Apply defaults
+
+- (void)applyDefaults
+{
+    machine->emuTapeInstantLoad = self.defaults.machineTapeInstantLoad;
+}
+
 #pragma mark - View/Controller Setup
 
 - (void)setupConfigView
@@ -159,11 +166,6 @@ static const int cSCREEN_FILL = 1;
     tapeBrowserWindowController = [storyBoard instantiateControllerWithIdentifier:@"TAPE_BROWSER_WINDOW"];
     tapeBrowserViewController = (TapeBrowserViewController *)tapeBrowserWindowController.contentViewController;
     tapeBrowserViewController.emulationViewController = self;
-}
-
-- (void)applyDefaultsToMachine
-{
-    machine->emuTapeInstantLoad = self.defaults.machineTapeInstantLoad;
 }
 
 #pragma mark - Init/Switch Machine
@@ -202,6 +204,8 @@ static const int cSCREEN_FILL = 1;
     }
     
     machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
+    
+    [self applyDefaults];
     
     [audioCore start];
     [self.scene setPaused:NO];
