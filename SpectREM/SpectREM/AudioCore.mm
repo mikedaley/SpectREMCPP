@@ -82,7 +82,7 @@ static OSStatus renderAudio(void *inRefCon,
     {
         _defaults = [Defaults defaults];
         
-        NSLog(@"Allocating AudioCore");
+        NSLog(@"Initialising AudioCore");
         samplesPerFrame = sampleRate / fps;
     
         CheckError(NewAUGraph(&_graph), "NewAUGraph");
@@ -166,10 +166,6 @@ static OSStatus renderAudio(void *inRefCon,
         AUGraphNodeInfo(_graph, _mixerNode, 0, &_mixerUnit);
         AUGraphNodeInfo(_graph, _lowPassNode, 0, &_lowPassFilterUnit);
         AUGraphNodeInfo(_graph, _highPassNode, 0, &_highPassFilterUnit);
-
-        AudioUnitSetParameter(_lowPassFilterUnit, 0, kAudioUnitScope_Global, 0, 5000, 0);
-        AudioUnitSetParameter(_highPassFilterUnit, 0, kAudioUnitScope_Global, 0, 0, 0);
-        AudioUnitSetParameter(_mixerUnit, kMultiChannelMixerParam_Volume, kAudioUnitScope_Output, 0, 1, 0);
         
         [self setupObservers];
     }
@@ -216,7 +212,6 @@ static OSStatus renderAudio(void *inRefCon,
     AudioUnitSetParameter(_mixerUnit, kMultiChannelMixerParam_Volume, kAudioUnitScope_Output, 0, self.defaults.audioMasterVolume, 0);
     AudioUnitSetParameter(_lowPassFilterUnit, 0, kAudioUnitScope_Global, 0, self.defaults.audioLowPassFilter, 0);
     AudioUnitSetParameter(_highPassFilterUnit, 0, kAudioUnitScope_Global, 0, self.defaults.audioHighPassFilter, 0);
-    
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
@@ -247,7 +242,7 @@ static OSStatus renderAudio(void *inRefCon, AudioUnitRenderActionFlags *ioAction
     unsigned short *buffer = (unsigned short *)ioData->mBuffers[0].mData;
     
     // Reset the buffer to prevent any odd noises being played when a machine starts up
-    memset(buffer, 0, inNumberFrames << 1);
+    memset(buffer, 0, inNumberFrames << 2);
     
     [callback audioCallback:inNumberFrames buffer:buffer];
     
