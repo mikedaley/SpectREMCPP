@@ -94,12 +94,9 @@ void ZXSpectrum::audioUpdateWithTs(int tStates)
         {
             audioAYUpdate(1);
             
-            beeperLevelLeft += audioAYChannelOutput[0];
-            beeperLevelLeft += audioAYChannelOutput[1];
-            beeperLevelLeft += audioAYChannelOutput[2];
-            beeperLevelRight += audioAYChannelOutput[0];
-            beeperLevelRight += audioAYChannelOutput[1];
-            beeperLevelRight += audioAYChannelOutput[2];
+            beeperLevelLeft  = beeperLevelRight += audioAYChannelOutput[0];
+            beeperLevelLeft  = beeperLevelRight += audioAYChannelOutput[1];
+            beeperLevelLeft  = beeperLevelRight += audioAYChannelOutput[2];
             
             audioAYChannelOutput[0] = 0;
             audioAYChannelOutput[1] = 0;

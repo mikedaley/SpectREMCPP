@@ -71,11 +71,11 @@ static const int cSCREEN_FILL = 1;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
+    
     mainBundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/Contents/Resources/"];
-
+    
     storyBoard = [NSStoryboard storyboardWithName:@"Main" bundle:nil];
-
+    
     _scene = (EmulationScene *)[SKScene nodeWithFileNamed:@"EmulationScene"];
     _scene.nextResponder = self;
     _scene.emulationViewController = self;
@@ -104,7 +104,7 @@ static const int cSCREEN_FILL = 1;
 - (void)audioCallback:(int)inNumberFrames buffer:(unsigned short *)buffer
 {
     if (machine)
-    {    
+    {
         // Update the queue with the reset buffer
         audioQueue->read(buffer, (inNumberFrames * 2));
         
@@ -271,7 +271,7 @@ static const int cSCREEN_FILL = 1;
         success = tape->loadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
         [[NSNotificationCenter defaultCenter] postNotificationName:@"TAPE_CHANGED_NOTIFICATION" object:NULL];
     }
-
+    
     if (addToRecent && success)
     {
         [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:url];
@@ -431,26 +431,26 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     savePanel.accessoryView = saveAccessoryController.view;
     
     [savePanel beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger result) {
-       if (result == NSModalResponseOK)
-       {
-           ZXSpectrum::Snap snapshot;
-           NSURL *url = savePanel.URL;
-           
-           if (saveAccessoryController.exportType == cZ80_SNAPSHOT_TYPE)
-           {
-               snapshot = machine->snapshotCreateZ80();
-               url = [[url URLByDeletingPathExtension] URLByAppendingPathExtension:cZ80_EXTENSION];
-               NSData *data = [NSData dataWithBytes:snapshot.data length:snapshot.length];
-               [data writeToURL:url atomically:YES];
-           }
-           else if (saveAccessoryController.exportType == cSNA_SNAPSHOT_TYPE)
-           {
-               snapshot = machine->snapshotCreateSNA();
-               url = [[url URLByDeletingPathExtension] URLByAppendingPathExtension:cSNA_EXTENSION];
-               NSData *data = [NSData dataWithBytes:snapshot.data length:snapshot.length];
-               [data writeToURL:url atomically:YES];
-           }
-       }
+        if (result == NSModalResponseOK)
+        {
+            ZXSpectrum::Snap snapshot;
+            NSURL *url = savePanel.URL;
+            
+            if (saveAccessoryController.exportType == cZ80_SNAPSHOT_TYPE)
+            {
+                snapshot = machine->snapshotCreateZ80();
+                url = [[url URLByDeletingPathExtension] URLByAppendingPathExtension:cZ80_EXTENSION];
+                NSData *data = [NSData dataWithBytes:snapshot.data length:snapshot.length];
+                [data writeToURL:url atomically:YES];
+            }
+            else if (saveAccessoryController.exportType == cSNA_SNAPSHOT_TYPE)
+            {
+                snapshot = machine->snapshotCreateSNA();
+                url = [[url URLByDeletingPathExtension] URLByAppendingPathExtension:cSNA_EXTENSION];
+                NSData *data = [NSData dataWithBytes:snapshot.data length:snapshot.length];
+                [data writeToURL:url atomically:YES];
+            }
+        }
     }];
 }
 
@@ -529,7 +529,7 @@ static void tapeStatusCallback(int blockIndex, int bytes)
         context.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
         [self.configEffectsView.animator setAlphaValue:(self.configEffectsView.alphaValue) ? 0 : 1];
         [self.configEffectsView.animator setFrame:configFrame];
-}  completionHandler:^{
+    }  completionHandler:^{
         
     }];
 }
