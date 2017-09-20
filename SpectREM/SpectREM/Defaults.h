@@ -18,6 +18,9 @@ extern NSString * const MachineSelectedModel;
 extern NSString * const MachineTapeInstantLoad;
 @property (nonatomic, assign) BOOL machineTapeInstantLoad;
 
+extern NSString * const MachineUseAYSound;
+@property(nonatomic, assign) BOOL machineUseAYSound;
+
 #pragma mark - Display
 
 extern NSString * const DisplayPixelFilterLevel;

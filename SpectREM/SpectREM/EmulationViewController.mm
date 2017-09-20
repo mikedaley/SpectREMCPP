@@ -129,6 +129,7 @@ static const int cSCREEN_FILL = 1;
 {
     [self.defaults addObserver:self forKeyPath:MachineSelectedModel options:NSKeyValueObservingOptionNew context:NULL];
     [self.defaults addObserver:self forKeyPath:MachineTapeInstantLoad options:NSKeyValueObservingOptionNew context:NULL];
+    [self.defaults addObserver:self forKeyPath:MachineUseAYSound options:NSKeyValueObservingOptionNew context:NULL];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
@@ -141,6 +142,10 @@ static const int cSCREEN_FILL = 1;
     {
         machine->emuTapeInstantLoad = [change[NSKeyValueChangeNewKey] boolValue];
     }
+    else if ([keyPath isEqualToString:MachineUseAYSound])
+    {
+        machine->emuUseAYSound = [change[NSKeyValueChangeNewKey] boolValue];
+    }
 }
 
 #pragma mark - Apply defaults
@@ -148,6 +153,7 @@ static const int cSCREEN_FILL = 1;
 - (void)applyDefaults
 {
     machine->emuTapeInstantLoad = self.defaults.machineTapeInstantLoad;
+    machine->emuUseAYSound = self.defaults.machineUseAYSound;
 }
 
 #pragma mark - View/Controller Setup
@@ -525,9 +531,10 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     }
     
     [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
-        context.duration = 0.3;
+        context.duration = 0.4;
         context.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-        [self.configEffectsView.animator setAlphaValue:(self.configEffectsView.alphaValue) ? 0 : 1];
+//        [self.configEffectsView.animator setAlphaValue:(self.configEffectsView.alphaValue) ? 0 : 1];
+        [self.configEffectsView.animator setAlphaValue:1];
         [self.configEffectsView.animator setFrame:configFrame];
     }  completionHandler:^{
         

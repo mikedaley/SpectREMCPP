@@ -144,7 +144,7 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
     }
 }
 
-#pragma mark - Reset Frame
+#pragma mark - Reset Display
 
 void ZXSpectrum::displayFrameReset()
 {
@@ -154,6 +154,16 @@ void ZXSpectrum::displayFrameReset()
     audioBufferIndex = 0;
     audioTsCounter = 0;
     audioTsStepCounter = 0;
+}
+
+void ZXSpectrum::displayClear()
+{
+    if (displayBuffer)
+    {
+        delete[] displayBuffer;
+        delete[] displayBufferCopy;
+        displaySetup();
+    }
 }
 
 #pragma mark - Build Display Tables

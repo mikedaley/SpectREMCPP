@@ -90,17 +90,18 @@ void ZXSpectrum::audioUpdateWithTs(int tStates)
     // Loop over each tState so that the necessary audio samples can be generated
     for(int i = 0; i < tStates; i++)
     {
-        if (audioAYTs++ >= audioAYTsStep)
+        if (audioAYTs++ >= audioAYTsStep && emuUseAYSound)
         {
-            audioAYUpdate(1);
+            audioAYUpdate();
             
-            beeperLevelLeft  = beeperLevelRight += audioAYChannelOutput[0];
-            beeperLevelLeft  = beeperLevelRight += audioAYChannelOutput[1];
-            beeperLevelLeft  = beeperLevelRight += audioAYChannelOutput[2];
+            beeperLevelLeft = beeperLevelRight += audioAYChannelOutput[0];
+            beeperLevelLeft = beeperLevelRight += audioAYChannelOutput[1];
+            beeperLevelLeft = beeperLevelRight += audioAYChannelOutput[2];
             
             audioAYChannelOutput[0] = 0;
             audioAYChannelOutput[1] = 0;
             audioAYChannelOutput[2] = 0;
+            
             audioAYTs -= audioAYTsStep;
         }
         
@@ -214,7 +215,7 @@ unsigned char ZXSpectrum::audioAYReadData()
     return audioAYRegisters[ audioAYCurrentRegister ];
 }
 
-void ZXSpectrum::audioAYUpdate(int audioSteps)
+void ZXSpectrum::audioAYUpdate()
 {
     if (!audioAYaudioAYaudioAYEnvelopeHolding)
     {
@@ -362,6 +363,9 @@ void ZXSpectrum::audioAYUpdate(int audioSteps)
         
         audioAYChannelOutput[2] += audioAYVolumes[vol];
     }
+    
+    // Decay the AY registers result returned for registers above 15
+    audioAYRegisters[ eAYREGISTER_FLOATING ] >>= 1;
 }
 
 

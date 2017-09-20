@@ -12,6 +12,7 @@
 
 NSString * const MachineSelectedModel = @"machineSelectedModel";
 NSString * const MachineTapeInstantLoad = @"machineTapeInstantLoad";
+NSString * const MachineUseAYSound = @"machineUseAYSound";
 
 #pragma mark - Display
 
@@ -33,6 +34,7 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
     NSDictionary *defaults = @{
                                MachineSelectedModel : @(0),
                                MachineTapeInstantLoad : @YES,
+                               MachineUseAYSound: @YES,
                                DisplayPixelFilterLevel : @(0.0),
                                DisplayBorderSize : @(32),
                                AudioMasterVolume : @(1.5),
@@ -62,6 +64,7 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
         
         _machineSelectedModel = [[userDefaults valueForKey:MachineSelectedModel] integerValue];
         _machineTapeInstantLoad = [[userDefaults valueForKey:MachineTapeInstantLoad] boolValue];
+        _machineUseAYSound = [[userDefaults valueForKey:MachineUseAYSound] boolValue];
         
         _displayPixelFilterLevel = [[userDefaults valueForKey:DisplayPixelFilterLevel] floatValue];
         _displayBorderSize = [[userDefaults valueForKey:DisplayBorderSize] integerValue];
@@ -83,6 +86,12 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
 {
     _machineTapeInstantLoad = machineTapeInstantLoad;
     [[NSUserDefaults standardUserDefaults] setBool:machineTapeInstantLoad forKey:MachineTapeInstantLoad];
+}
+
+- (void)setMachineUseAYSound:(BOOL)machineUseAYSound
+{
+    _machineUseAYSound = machineUseAYSound;
+    [[NSUserDefaults standardUserDefaults] setBool:machineUseAYSound forKey:MachineUseAYSound];
 }
 
 - (void)setDisplayPixelFilterLevel:(CGFloat)displayPixelFilterLevel

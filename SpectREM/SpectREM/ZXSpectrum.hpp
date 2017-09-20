@@ -118,7 +118,7 @@ protected:
     void                    audioAYSetRegister(unsigned char reg);
     void                    audioAYWriteData(unsigned char data);
     unsigned char           audioAYReadData();
-    void                    audioAYUpdate(int audioSteps);
+    void                    audioAYUpdate();
     void                    audioReset();
     void                    audioUpdateWithTs(int tStates);
     
@@ -132,6 +132,7 @@ private:
     string                  snapshotHardwareTypeForVersion(int version, int hardwareType);
     void                    snapshotExtractMemoryBlock(unsigned char *fileBytes, int memAddr, int fileOffset, bool isCompressed, int unpackedLength);
     void                    displaySetup();
+    void                    displayClear();
     void                    audioSetup(float sampleRate, float fps);
     
     // Core memory/IO functions
@@ -178,6 +179,7 @@ public:
     bool                    emuDisablePaging;
     string                  emuROMPath;
     bool                    emuTapeInstantLoad;
+    bool                    emuUseAYSound;
     bool                    emuLoadTrapTriggered;
     bool                    emuSaveTrapTriggered;
 

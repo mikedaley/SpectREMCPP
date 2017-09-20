@@ -11,10 +11,25 @@
 
 #pragma mark - Constants
 
-int const               cSNA_HEADER_SIZE = 27;
-unsigned short const    cZ80_V3_HEADER_SIZE = 86;
-unsigned short const    cZ80_V3_ADD_HEADER_SIZE = 54;
-unsigned char const     cZ80_V3_PAGE_HEADER_SIZE = 3;
+const int               cSNA_HEADER_SIZE = 27;
+const unsigned short    cZ80_V3_HEADER_SIZE = 86;
+const unsigned short    cZ80_V3_ADD_HEADER_SIZE = 54;
+const unsigned char     cZ80_V3_PAGE_HEADER_SIZE = 3;
+
+const int               cZ80_V2_MACHINE_TYPE_48 = 0;
+const int               cZ80_V3_MACHINE_TYPE_48 = 0;
+const int               cZ80_V2_MACHINE_TYPE_48_IF1 = 1;
+const int               cZ80_V3_MACHINE_TYPE_48_IF1 = 1;
+//const int               cZ80_V2_MACHINE_TYPE_SAMRAM = 2;
+//const int               cZ80_V3_MACHINE_TYPE_SAMRAM = 2;
+const int               cZ80_V2_MACHINE_TYPE_128 = 3;
+const int               cZ80_V3_MACHINE_TYPE_48_MGT = 3;
+const int               cZ80_V2_MACHINE_TYPE_128_IF1 = 4;
+const int               cZ80_V3_MACHINE_TYPE_128 = 4;
+const int               cZ80_V3_MACHINE_TYPE_128_IF1 = 5;
+const int               cz80_V3_MACHINE_TYPE_128_MGT = 6;
+const int               cZ80_V3_MACHINE_TYPE_128_2 = 12;
+
 
 #pragma mark - SNA
 
@@ -99,9 +114,11 @@ bool ZXSpectrum::snapshotSNALoadWithPath(const char *path)
         return false;
     }
     
-    pause();
+    cout << "Loading SNA snapshot: " << path << endl;
     
+    pause();
     displayFrameReset();
+    displayClear();
     audioReset();
     
     fseek(fileHandle, 0, SEEK_END);
@@ -171,7 +188,7 @@ ZXSpectrum::Snap ZXSpectrum::snapshotCreateZ80()
     {
         snapshotSize = (48 * 1024) + cZ80_V3_HEADER_SIZE + (cZ80_V3_PAGE_HEADER_SIZE * 3);
     }
-    else if (machineInfo.machineType == eZXSpectrum128)
+    else if (machineInfo.machineType == eZXSpectrum128 || machineInfo.machineType == eZXSpectrum128_2)
     {
         snapshotSize = (128 * 1024) + cZ80_V3_HEADER_SIZE + (cZ80_V3_PAGE_HEADER_SIZE * 8);
     }
@@ -231,14 +248,18 @@ ZXSpectrum::Snap ZXSpectrum::snapshotCreateZ80()
     
     if (machineInfo.machineType == eZXSpectrum48)
     {
-        snapData.data[34] = 0;
+        snapData.data[34] = cZ80_V2_MACHINE_TYPE_48;
     }
     else if (machineInfo.machineType == eZXSpectrum128)
     {
-        snapData.data[34] = 4;
+        snapData.data[34] = cZ80_V3_MACHINE_TYPE_128;
+    }
+    else if (machineInfo.machineType == eZXSpectrum128_2)
+    {
+        snapData.data[34] = cZ80_V3_MACHINE_TYPE_128_2;
     }
     
-    if (machineInfo.machineType == eZXSpectrum128)
+    if (machineInfo.machineType == eZXSpectrum128 || machineInfo.machineType == eZXSpectrum128_2)
     {
         snapData.data[35] = ULAPortFFFDValue; // last 128k 0x7ffd port value
     }
@@ -334,14 +355,14 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
     
     if (!fileHandle)
     {
-        cout << "ERROR LOADING SNAPSHOT: " << path << endl;
+        cout << "ERROR LOADING Z80 SNAPSHOT: " << path << endl;
         fclose(fileHandle);
         return false;
     }
     
     pause();
-    
     displayFrameReset();
+    displayClear();
     audioReset();
     
     fseek(fileHandle, 0, SEEK_END);
@@ -380,8 +401,7 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
         pc = ((unsigned short *)&fileBytes[32])[0];
     }
     
-    cout << "---------------------------" << endl;
-    cout << "Z80 Snapshot Version " << version << endl;
+    cout << "Loading Z80 snapshot v" << version << ": " << path << endl;
     
     z80Core.SetRegister(CZ80Core::eREG_A, (unsigned char)fileBytes[0]);
     z80Core.SetRegister(CZ80Core::eREG_F, (unsigned char)fileBytes[1]);
@@ -431,20 +451,19 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
     // Based on the version number of the snapshot, decode the memory contents
     switch (version) {
         case 1:
-            cout << "Hardware Type: 48k" << endl;
             snapshotExtractMemoryBlock(fileBytes, 0x4000, 30, compressed, 0xc000);
             break;
             
         case 2:
         case 3:
             hardwareType = ((unsigned char *)&fileBytes[34])[0];
-            cout << "Hardware Type: " << snapshotHardwareTypeForVersion(version, hardwareType) << endl;
-            
-            int16_t additionHeaderBlockLength = 0;
+            short additionHeaderBlockLength = 0;
             additionHeaderBlockLength = ((unsigned short *)&fileBytes[30])[0];
             int offset = 32 + additionHeaderBlockLength;
             
-            if ( (version == 2 && (hardwareType == 3 || hardwareType == 4)) || (version == 3 && (hardwareType == 4 || hardwareType == 5 || hardwareType == 6 || hardwareType == 9)) )
+            if ( (version == 2 && (hardwareType == cZ80_V2_MACHINE_TYPE_128 || hardwareType == cZ80_V2_MACHINE_TYPE_128_IF1)) ||
+                (version == 3 && (hardwareType == cZ80_V3_MACHINE_TYPE_128 || hardwareType == cZ80_V3_MACHINE_TYPE_128_IF1 || hardwareType == cz80_V3_MACHINE_TYPE_128_MGT ||
+                                  hardwareType == cZ80_V3_MACHINE_TYPE_128_2)) )
             {
                 // Decode byte 35 so that port 0x7ffd can be set on the 128k
                 unsigned char data = ((unsigned char *)&fileBytes[35])[0];
@@ -473,7 +492,9 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
                 
                 int pageId = fileBytes[offset + 2];
                 
-                if (version == 1 || ((version == 2 || version == 3) && (hardwareType == 0 || hardwareType == 1)))
+                if (version == 1 || ((version == 2 || version == 3) && (hardwareType == cZ80_V2_MACHINE_TYPE_48 || hardwareType == cZ80_V3_MACHINE_TYPE_48 ||
+                                                                        hardwareType == cZ80_V2_MACHINE_TYPE_48_IF1 || hardwareType == cZ80_V3_MACHINE_TYPE_48_IF1)
+                                     ))
                 {
                     // 48k
                     switch (pageId) {
@@ -550,23 +571,21 @@ string ZXSpectrum::snapshotHardwareTypeForVersion(int version, int hardwareType)
     if (version == 2)
     {
         switch (hardwareType) {
-            case 0:
+            case cZ80_V2_MACHINE_TYPE_48:
                 hardware = "48k";
                 break;
-            case 1:
+            case cZ80_V2_MACHINE_TYPE_48_IF1:
                 hardware = "48k + Interface 1";
                 break;
-            case 2:
-                hardware = "SamRam";
-                break;
-            case 3:
+            case cZ80_V2_MACHINE_TYPE_128:
                 hardware = "128k";
                 break;
-            case 4:
+            case cZ80_V2_MACHINE_TYPE_128_IF1:
                 hardware = "128k + Interface 1";
                 break;
             case 5:
             case 6:
+                hardware = "UNKNOWN";
                 break;
                 
             default:
@@ -576,29 +595,24 @@ string ZXSpectrum::snapshotHardwareTypeForVersion(int version, int hardwareType)
     else
     {
         switch (hardwareType) {
-            case 0:
+            case cZ80_V3_MACHINE_TYPE_48:
                 hardware = "48k";
                 break;
-            case 1:
+            case cZ80_V3_MACHINE_TYPE_48_IF1:
                 hardware = "48k + Interface 1";
                 break;
-            case 2:
-                hardware = "SamRam";
-                break;
-            case 3:
+            case cZ80_V3_MACHINE_TYPE_48_MGT:
                 hardware = "48k + M.G.T";
                 break;
-            case 4:
+            case cZ80_V3_MACHINE_TYPE_128:
                 hardware = "128k";
                 break;
-            case 5:
+            case cZ80_V3_MACHINE_TYPE_128_IF1:
                 hardware = "128k + Interface 1";
                 break;
-            case 6:
+            case cz80_V3_MACHINE_TYPE_128_MGT:
                 hardware = "128k + M.G.T";
                 break;
-            case 9:
-                hardware = "Next";
                 
             default:
                 break;
@@ -680,11 +694,11 @@ int ZXSpectrum::snapshotMachineInSnapshotWithPath(const char *path)
     if (version == 3)
     {
         hardwareType = ((unsigned char *)&fileBytes[34])[0];
-        if (hardwareType == 0 || hardwareType == 1 || hardwareType == 3)
+        if (hardwareType == cZ80_V3_MACHINE_TYPE_48 || hardwareType == cZ80_V3_MACHINE_TYPE_48_IF1 || hardwareType == cZ80_V3_MACHINE_TYPE_48_MGT)
         {
             return eZXSpectrum48;
         }
-        else if (hardwareType == 4 || hardwareType == 5 || hardwareType == 6)
+        else if (hardwareType == cZ80_V3_MACHINE_TYPE_128 || hardwareType == cZ80_V3_MACHINE_TYPE_128_IF1 || hardwareType == cz80_V3_MACHINE_TYPE_128_MGT)
         {
             return eZXSpectrum128;
         }

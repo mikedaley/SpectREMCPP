@@ -88,7 +88,7 @@ unsigned char ZXSpectrum48::coreIORead(unsigned short address)
         }
         
         // AY-3-8912 ports
-        else if ((address & 0xc002) == 0xc000 && machineInfo.hasAY)
+        else if ((address & 0xc002) == 0xc000 && (machineInfo.hasAY || emuUseAYSound) )
         {
             return audioAYReadData();
         }
@@ -141,13 +141,13 @@ void ZXSpectrum48::coreIOWrite(unsigned short address, unsigned char data)
     }
     
     // AY-3-8912 ports
-    if(address == 0xfffd && machineInfo.hasAY)
+    if(address == 0xfffd && (machineInfo.hasAY || emuUseAYSound))
     {
         ULAPortFFFDValue = data;
         audioAYSetRegister(data);
     }
     
-    if ((address & 0xc002) == 0x8000 && machineInfo.hasAY)
+    if ((address & 0xc002) == 0x8000 && (machineInfo.hasAY || emuUseAYSound))
     {
         audioAYWriteData(data);
     }
