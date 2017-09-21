@@ -89,7 +89,7 @@ void ZXSpectrum::keyboardKeyDown(unsigned short key)
             keyboardMap[0] &= ~0x01; // Shift
             keyboardMap[3] &= ~0x04; // 3
             break;
-            
+
         case 39: // "
             keyboardMap[7] &= ~0x02; // Sym
             keyboardMap[5] &= ~0x01; // P
