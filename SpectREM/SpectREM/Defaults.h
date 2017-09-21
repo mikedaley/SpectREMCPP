@@ -44,6 +44,9 @@ extern NSString * const DisplaySaturation;
 extern NSString * const DisplayScanLines;
 @property (nonatomic, assign) CGFloat displayScanLines;
 
+extern NSString * const DisplayScanLineSize;
+@property (nonatomic, assign) CGFloat displayScanLineSize;
+
 extern NSString * const DisplayRGBOffset;
 @property (nonatomic, assign) CGFloat displayRGBOffset;
 

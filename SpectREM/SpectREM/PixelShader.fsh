@@ -30,12 +30,7 @@ float snoise(vec2 v)
     
     // Other corners
     vec2 i1;
-    //i1.x = step( x0.y, x0.x ); // x0.x > x0.y ? 1.0 : 0.0
-    //i1.y = 1.0 - i1.x;
     i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
-    // x0 = x0 - 0.0 + 0.0 * C.xx ;
-    // x1 = x0 - i1 + 1.0 * C.xx ;
-    // x2 = x0 - 1.0 + 2.0 * C.xx ;
     vec4 x12 = x0.xyxy + C.xxzz;
     x12.xy -= i1;
     
@@ -148,7 +143,7 @@ void main()
         
         color = colorCorrection(color, u_displaySaturation, u_displayContrast, u_displayBrightness);
         
-        float scanline = sin(v_tex_coord.y * 880) * 0.04 * u_displayScanLines;
+        float scanline = sin(v_tex_coord.y * u_displayScanLineSize) * 0.09 * u_displayScanLines;
         color -= scanline;
         
         vec3 vignette = vegnetteColor(color, texCoord, u_displayVignetteX, u_displayVignetteY);
@@ -156,6 +151,12 @@ void main()
         if (u_displayShowVignette == 1.0)
         {
             color *= vignette;
+        }
+        
+        if (u_displayShowReflection == 1.0)
+        {
+            vec4 reflection_color = texture2D(u_displayReflection, texCoord);
+            color = mix(vec3(reflection_color) ,color , 0.75);
         }
     }
 

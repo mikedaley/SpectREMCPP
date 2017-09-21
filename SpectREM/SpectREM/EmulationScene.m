@@ -20,9 +20,11 @@ static NSString * const cU_DISPLAY_CONTRAST =       @"u_displayContrast";
 static NSString * const cU_DISPLAY_BRIGHTNESS =     @"u_displayBrightness";
 static NSString * const cU_DISPLAY_SATURATION =     @"u_displaySaturation";
 static NSString * const cU_DISPLAY_SCAN_LINES =     @"u_displayScanLines";
+static NSString * const cU_DISPLAY_SCAN_LINE_SIZE = @"u_displayScanLineSize";
 static NSString * const cU_DISPLAY_RGB_OFFSET =     @"u_displayRGBOffset";
 static NSString * const cU_DISPLAY_HORIZONTAL_SYNC =@"u_displayHorizontalSync";
 static NSString * const cU_DISPLAY_SHOW_REFLECTION =@"u_displayShowReflection";
+static NSString * const cU_DISPLAY_REFLECTION =     @"u_displayReflection";
 static NSString * const cU_DISPLAY_SHOW_VIGNETTE =  @"u_displayShowVignette";
 static NSString * const cU_DISPLAY_VIGNETTE_X =     @"u_displayVignetteX";
 static NSString * const cU_DISPLAY_VIGNETTE_Y =     @"u_displayVignetteY";
@@ -83,6 +85,7 @@ static NSString * const cU_DISPLAY_VIGNETTE_Y =     @"u_displayVignetteY";
     [self.defaults addObserver:self forKeyPath:DisplayBrightness options:NSKeyValueObservingOptionNew context:NULL];
     [self.defaults addObserver:self forKeyPath:DisplaySaturation options:NSKeyValueObservingOptionNew context:NULL];
     [self.defaults addObserver:self forKeyPath:DisplayScanLines options:NSKeyValueObservingOptionNew context:NULL];
+    [self.defaults addObserver:self forKeyPath:DisplayScanLineSize options:NSKeyValueObservingOptionNew context:NULL];
     [self.defaults addObserver:self forKeyPath:DisplayRGBOffset options:NSKeyValueObservingOptionNew context:NULL];
     [self.defaults addObserver:self forKeyPath:DisplayHorizontalSync options:NSKeyValueObservingOptionNew context:NULL];
     [self.defaults addObserver:self forKeyPath:DisplayShowReflection options:NSKeyValueObservingOptionNew context:NULL];
@@ -98,6 +101,7 @@ static NSString * const cU_DISPLAY_VIGNETTE_Y =     @"u_displayVignetteY";
     [_emulationScreen setValue:[SKAttributeValue valueWithFloat:self.defaults.displayBrightness] forAttributeNamed:cU_DISPLAY_BRIGHTNESS];
     [_emulationScreen setValue:[SKAttributeValue valueWithFloat:self.defaults.displaySaturation] forAttributeNamed:cU_DISPLAY_SATURATION];
     [_emulationScreen setValue:[SKAttributeValue valueWithFloat:self.defaults.displayScanLines] forAttributeNamed:cU_DISPLAY_SCAN_LINES];
+    [_emulationScreen setValue:[SKAttributeValue valueWithFloat:self.defaults.displayScanLineSize] forAttributeNamed:cU_DISPLAY_SCAN_LINE_SIZE];
     [_emulationScreen setValue:[SKAttributeValue valueWithFloat:self.defaults.displayRGBOffset] forAttributeNamed:cU_DISPLAY_RGB_OFFSET];
     [_emulationScreen setValue:[SKAttributeValue valueWithFloat:self.defaults.displayHorizontalSync] forAttributeNamed:cU_DISPLAY_HORIZONTAL_SYNC];
     [_emulationScreen setValue:[SKAttributeValue valueWithFloat:self.defaults.displayShowReflection] forAttributeNamed:cU_DISPLAY_SHOW_REFLECTION];
@@ -143,6 +147,11 @@ static NSString * const cU_DISPLAY_VIGNETTE_Y =     @"u_displayVignetteY";
         [_emulationScreen setValue:[SKAttributeValue valueWithFloat:[change[NSKeyValueChangeNewKey] floatValue]] forAttributeNamed:cU_DISPLAY_SCAN_LINES];
     }
 
+    else if ([keyPath isEqualToString:DisplayScanLineSize])
+    {
+        [_emulationScreen setValue:[SKAttributeValue valueWithFloat:[change[NSKeyValueChangeNewKey] floatValue]] forAttributeNamed:cU_DISPLAY_SCAN_LINE_SIZE];
+    }
+
     else if ([keyPath isEqualToString:DisplayRGBOffset])
     {
         [_emulationScreen setValue:[SKAttributeValue valueWithFloat:[change[NSKeyValueChangeNewKey] floatValue]] forAttributeNamed:cU_DISPLAY_RGB_OFFSET];
@@ -186,6 +195,7 @@ static NSString * const cU_DISPLAY_VIGNETTE_Y =     @"u_displayVignetteY";
                           [SKAttribute attributeWithName:cU_DISPLAY_BRIGHTNESS type:SKAttributeTypeFloat],
                           [SKAttribute attributeWithName:cU_DISPLAY_CONTRAST type:SKAttributeTypeFloat],
                           [SKAttribute attributeWithName:cU_DISPLAY_SCAN_LINES type:SKAttributeTypeFloat],
+                          [SKAttribute attributeWithName:cU_DISPLAY_SCAN_LINE_SIZE type:SKAttributeTypeFloat],
                           [SKAttribute attributeWithName:cU_DISPLAY_RGB_OFFSET type:SKAttributeTypeFloat],
                           [SKAttribute attributeWithName:cU_DISPLAY_HORIZONTAL_SYNC type:SKAttributeTypeFloat],
                           [SKAttribute attributeWithName:cU_DISPLAY_SHOW_REFLECTION type:SKAttributeTypeFloat],
@@ -193,6 +203,10 @@ static NSString * const cU_DISPLAY_VIGNETTE_Y =     @"u_displayVignetteY";
                           [SKAttribute attributeWithName:cU_DISPLAY_VIGNETTE_X type:SKAttributeTypeFloat],
                           [SKAttribute attributeWithName:cU_DISPLAY_VIGNETTE_Y type:SKAttributeTypeFloat]
                           ];
+    
+    shader.uniforms = @[
+                         [SKUniform uniformWithName:cU_DISPLAY_REFLECTION texture:[SKTexture textureWithImageNamed:@"reflection"]]
+                         ];
 }
 
 #pragma mark - Mouse Events

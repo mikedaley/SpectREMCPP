@@ -23,6 +23,7 @@ NSString * const DisplayContrast = @"displayContrast";
 NSString * const DisplayBrightness = @"displayBrightness";
 NSString * const DisplaySaturation = @"displaySaturation";
 NSString * const DisplayScanLines = @"displayScanLines";
+NSString * const DisplayScanLineSize = @"displayScanLineSize";
 NSString * const DisplayRGBOffset = @"displayRGBOffset";
 NSString * const DisplayHorizontalSync = @"displayHorizontalSync";
 NSString * const DisplayShowReflection = @"displayShowReflection";
@@ -54,6 +55,7 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
                                DisplayBrightness : @(1),
                                DisplaySaturation : @(1),
                                DisplayScanLines : @(0),
+                               DisplayScanLineSize : @(960),
                                DisplayRGBOffset : @(0),
                                DisplayHorizontalSync : @(0),
                                DisplayShowReflection : @NO,
@@ -98,6 +100,7 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
         _displaySaturation = [[userDefaults valueForKey:DisplaySaturation] floatValue];
         _displayRGBOffset = [[userDefaults valueForKey:DisplayRGBOffset] floatValue];
         _displayScanLines = [[userDefaults valueForKey:DisplayScanLines] floatValue];
+        _displayScanLineSize = [[userDefaults valueForKey:DisplayScanLineSize] floatValue];
         _displayHorizontalSync = [[userDefaults valueForKey:DisplayHorizontalSync] floatValue];
         _displayShowReflection = [[userDefaults valueForKey:DisplayShowReflection] boolValue];
         _displayShowVignette = [[userDefaults valueForKey:DisplayShowVignette] boolValue];
@@ -179,6 +182,12 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
 {
     _displayScanLines = displayScanLines;
     [[NSUserDefaults standardUserDefaults] setFloat:displayScanLines forKey:DisplayScanLines];
+}
+
+- (void)setDisplayScanLineSize:(CGFloat)displayScanLineSize
+{
+    _displayScanLineSize = displayScanLineSize;
+    [[NSUserDefaults standardUserDefaults] setFloat:displayScanLineSize forKey:DisplayScanLineSize];
 }
 
 - (void)setDisplayHorizontalSync:(CGFloat)displayHorizontalSync
