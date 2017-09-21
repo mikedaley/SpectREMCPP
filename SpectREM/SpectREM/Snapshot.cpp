@@ -439,14 +439,14 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
     z80Core.SetIMMode((unsigned char)fileBytes[29] & 3);
     
     // Load AY register values
-    int fileBytesIndex = 39;
-    for (int i = 0; i < 16; i++)
-    {
-        audioAYSetRegister(i);
-        audioAYWriteData(fileBytes[fileBytesIndex++]);
-    }
+//    int fileBytesIndex = 39;
+//    for (int i = 0; i < 16; i++)
+//    {
+//        audioAYSetRegister(i);
+//        audioAYWriteData(fileBytes[ fileBytesIndex++ ]);
+//    }
 
-    audioAYSetRegister((unsigned char)fileBytes[38]);
+//    audioAYSetRegister(fileBytes[38]);
 
     // Based on the version number of the snapshot, decode the memory contents
     switch (version) {
