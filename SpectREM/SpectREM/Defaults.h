@@ -23,11 +23,44 @@ extern NSString * const MachineUseAYSound;
 
 #pragma mark - Display
 
-extern NSString * const DisplayPixelFilterLevel;
-@property (nonatomic, assign) CGFloat displayPixelFilterLevel;
+extern NSString * const DisplayPixelFilterValue;
+@property (nonatomic, assign) CGFloat displayPixelFilterValue;
 
 extern NSString * const DisplayBorderSize;
 @property (nonatomic, assign) CGFloat displayBorderSize;
+
+extern NSString * const DisplayCurvature;
+@property (nonatomic, assign) CGFloat displayCurvature;
+
+extern NSString * const DisplayContrast;
+@property (nonatomic, assign) CGFloat displayContrast;
+
+extern NSString * const DisplayBrightness;
+@property (nonatomic, assign) CGFloat displayBrightness;
+
+extern NSString * const DisplaySaturation;
+@property (nonatomic, assign) CGFloat displaySaturation;
+
+extern NSString * const DisplayScanLines;
+@property (nonatomic, assign) CGFloat displayScanLines;
+
+extern NSString * const DisplayRGBOffset;
+@property (nonatomic, assign) CGFloat displayRGBOffset;
+
+extern NSString * const DisplayHorizontalSync;
+@property (nonatomic, assign) CGFloat displayHorizontalSync;
+
+extern NSString * const DisplayShowReflection;
+@property (nonatomic, assign) BOOL displayShowReflection;
+
+extern NSString * const DisplayShowVignette;
+@property (nonatomic, assign) BOOL displayShowVignette;
+
+extern NSString * const DisplayVignetteX;
+@property (nonatomic, assign) CGFloat displayVignetteX;
+
+extern NSString * const DisplayVignetteY;
+@property (nonatomic, assign) CGFloat displayVignetteY;
 
 #pragma mark - Audio
 

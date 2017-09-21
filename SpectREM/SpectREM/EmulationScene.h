@@ -20,7 +20,4 @@
 
 @property (strong, nonatomic) EmulationViewController *emulationViewController;
 
-@property (assign, nonatomic) CGFloat displayBorderSize;
-@property (assign, nonatomic) CGFloat displayFilterValue;
-
 @end

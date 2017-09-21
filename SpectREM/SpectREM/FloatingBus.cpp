@@ -13,7 +13,7 @@ const unsigned int ZXSpectrum::ULAFloatingBusValues[] = { 0, 0, 1, 2, 1, 2, 0, 0
 enum
 {
     eFloatBusTypeValuePixel = 1,
-    eFloatBusTypeValueAttribute
+    eFloatBusTypeValueAttribute = 2
 };
 
 /**
