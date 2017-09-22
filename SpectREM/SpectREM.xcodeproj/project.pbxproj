@@ -159,7 +159,6 @@
 				17B27F021F6877C800B811FC /* AudioQueue.cpp */,
 			);
 			name = "Audio Core";
-			path = ..;
 			sourceTree = "<group>";
 		};
 		17B5DB9B1F5B1CCE003E7EF3 /* Frameworks */ = {
@@ -262,7 +261,6 @@
 				ED913FAA1F30759300316E1A /* Main.storyboard */,
 			);
 			name = StoryBoard;
-			path = ..;
 			sourceTree = "<group>";
 		};
 		ED913FB41F30762600316E1A /* App Delegate */ = {
@@ -282,7 +280,6 @@
 				ED2A6D0D1F616C1A003CD6CE /* Export Accessory View Controller */,
 			);
 			name = "View Controllers";
-			path = ..;
 			sourceTree = "<group>";
 		};
 		ED913FB61F30764800316E1A /* Resources */ = {
@@ -305,7 +302,6 @@
 				174AAFBD1F58626E00B75535 /* Shader */,
 			);
 			name = "Emulation Scene";
-			path = ..;
 			sourceTree = "<group>";
 		};
 		ED913FB81F30767A00316E1A /* Emulation */ = {
@@ -326,7 +322,6 @@
 				17C33DF71F65788F00720A06 /* Tape Browser */,
 			);
 			name = "Window Controllers";
-			path = ..;
 			sourceTree = "<group>";
 		};
 		EDC56FD71F6C226E00162739 /* Defaults */ = {
@@ -336,7 +331,6 @@
 				EDC56FD91F6C228700162739 /* Defaults.m */,
 			);
 			name = Defaults;
-			path = ..;
 			sourceTree = "<group>";
 		};
 		EDEDE7151F75561100DAC9AE /* Emulator Core */ = {
@@ -449,8 +443,9 @@
 				EDB7F7F91F5ED3D7003053E3 /* Window Controllers */,
 				17B5DB921F5B146C003E7EF3 /* Audio Core */,
 			);
-			path = "User Interface";
-			sourceTree = "<group>";
+			name = "User Interface";
+			path = SpectREM;
+			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
