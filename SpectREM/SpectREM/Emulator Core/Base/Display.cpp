@@ -94,7 +94,7 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
                 const uint attributeAddress = cBITMAP_SIZE + ((y >> 3) << 5) + x;
                 
                 const unsigned char pixelByte = memoryRam[ memoryAddress + pixelAddress ];
-                const unsigned char attributeByte = memoryRam[ memoryAddress + attributeAddress ];
+                 unsigned char attributeByte = memoryRam[ memoryAddress + attributeAddress ];
                 
                 // Only draw the bitmap if the bitmap data has changed
                 if (displayBufferCopy[ emuCurrentDisplayTs ].pixels != pixelByte ||
@@ -103,6 +103,11 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
                 {
                     displayBufferCopy[ emuCurrentDisplayTs ].pixels = pixelByte;
                     displayBufferCopy[ emuCurrentDisplayTs ].attribute = attributeByte;
+
+                    if ((emuFrameCounter & 16) && (attributeByte & 0x80))
+                    {
+                        attributeByte = (attributeByte & 0xc0) | ((attributeByte >> 3) & 7) | ((attributeByte & 7) <<3);
+                    }
 
                     int index = ((attributeByte & 0x7f) * (256 * 8)) + (pixelByte * 8);
 
