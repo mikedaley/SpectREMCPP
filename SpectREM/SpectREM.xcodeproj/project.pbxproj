@@ -56,6 +56,7 @@
 /* Begin PBXFileReference section */
 		1745BB621F50876E003203FE /* Contention.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Contention.cpp; sourceTree = "<group>"; };
 		1745BB641F50AE1E003203FE /* FloatingBus.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FloatingBus.cpp; sourceTree = "<group>"; };
+		1746FBDC1F74599E00DE2E9C /* function_profiler.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = function_profiler.hpp; path = "../../../../Downloads/function_profiler-master/function_profiler.hpp"; sourceTree = "<group>"; };
 		174AAFBA1F585AF100B75535 /* PixelShader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = PixelShader.fsh; sourceTree = "<group>"; };
 		177E284B1F4DD7E90053756B /* ZXSpectrum48.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZXSpectrum48.cpp; sourceTree = "<group>"; };
 		177E284E1F4DDF550053756B /* ZXSpectrum48.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ZXSpectrum48.hpp; sourceTree = "<group>"; };
@@ -381,6 +382,7 @@
 		ED913FD01F30785100316E1A /* Machines */ = {
 			isa = PBXGroup;
 			children = (
+				1746FBDC1F74599E00DE2E9C /* function_profiler.hpp */,
 				ED2A6D111F669C27003CD6CE /* Tape */,
 				17A089541F4F691F00CAA178 /* Base */,
 				177E284F1F4DEC5B0053756B /* ZX Spectrum 48k */,

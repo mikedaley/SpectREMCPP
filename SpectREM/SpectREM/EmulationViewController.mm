@@ -94,7 +94,7 @@ static const int cSCREEN_FILL = 1;
     _defaults = [Defaults defaults];
     
     [self initMachineWithRomPath:mainBundlePath machineType:(int)_defaults.machineSelectedModel];
-    
+
     [self setupConfigView];
     [self setupControllers];
     [self setupObservers];
@@ -111,7 +111,6 @@ static const int cSCREEN_FILL = 1;
         // Check if we have used a frames worth of buffer storage and if so then its time to generate another frame.
         if (audioQueue->bufferUsed() < 7680)
         {
-            
             machine->generateFrame();
             audioQueue->write(machine->audioBuffer, 7680);
         }
@@ -532,7 +531,7 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     
     [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
         context.duration = 0.4;
-        context.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+        context.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
 //        [self.configEffectsView.animator setAlphaValue:(self.configEffectsView.alphaValue) ? 0 : 1];
         [self.configEffectsView.animator setAlphaValue:1];
         [self.configEffectsView.animator setFrame:configFrame];

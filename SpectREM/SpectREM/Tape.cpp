@@ -242,7 +242,6 @@ bool Tape::loadWithPath(const char *path)
     {
         cout << "ERROR LOADING TAPE: " << path << endl;
         loaded = false;
-        fclose(fileHandle);
         return false;
     }
     

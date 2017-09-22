@@ -7,6 +7,7 @@
 //
 
 #include "ZXSpectrum.hpp"
+#include "function_profiler.hpp"
 
 #pragma mark - Constructor/Deconstructor
 
@@ -60,6 +61,7 @@ void ZXSpectrum::initialise(string romPath)
 
 void ZXSpectrum::generateFrame()
 {
+    
     int currentFrameTstates = machineInfo.tsPerFrame;
     
     while (currentFrameTstates > 0 && !emuPaused)
