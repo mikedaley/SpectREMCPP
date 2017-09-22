@@ -125,6 +125,7 @@ protected:
 private:
     void                    displayBuildTsTable();
     void                    displayBuildLineAddressTable();
+    void                    displayBuildCLUT();
     void                    ULABuildContentionTable();
     void                    audioBuildAYVolumesTable();
     void                    keyboardCheckCapsLockStatus();
@@ -192,6 +193,7 @@ public:
     int                     screenBufferSize = 0;
     int                     displayTstateTable[312][228]{0};
     int                     displayLineAddrTable[192]{0};
+    unsigned int           displayCLUT[ 256 * 1024 ]{0};
     int                     displayBorderColor = 0;
 
     // Audio

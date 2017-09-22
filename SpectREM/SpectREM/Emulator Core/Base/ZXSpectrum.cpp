@@ -47,6 +47,7 @@ void ZXSpectrum::initialise(string romPath)
     displaySetup();
     displayBuildLineAddressTable();
     displayBuildTsTable();
+    displayBuildCLUT();
     
     ULABuildContentionTable();
 

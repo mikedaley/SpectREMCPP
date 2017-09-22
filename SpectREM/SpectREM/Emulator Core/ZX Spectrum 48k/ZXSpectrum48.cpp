@@ -233,33 +233,34 @@ bool ZXSpectrum48::opcodeCallback(unsigned char opcode, unsigned short address, 
 {
     ZXSpectrum48 *machine = static_cast<ZXSpectrum48*>(param);
     
+    if (machine->emuTapeInstantLoad)
+    {
+        // Trap ROM tap LOADING
+        if (address == 0x056b || address == 0x0111)
+        {
+            if (opcode == 0xc0)
+            {
+                machine->emuLoadTrapTriggered = true;
+                machine->tape->updateStatus();
+                return true;
+            }
+        }
+    }
+    
     // Trap ROM tape SAVING
-    if (opcode == 0x08 && address == 0x04d0)
+    else if (opcode == 0x08 && address == 0x04d0)
     {
-        machine->emuSaveTrapTriggered = true;
-        machine->tape->updateStatus();
-        return true;
+        if (opcode == 0x08)
+        {
+            machine->emuSaveTrapTriggered = true;
+            machine->tape->updateStatus();
+            return true;
+        }
     }
-    else if (machine->emuSaveTrapTriggered)
-    {
-        machine->emuSaveTrapTriggered = false;
-        machine->tape->updateStatus();
-        return false;
-    }
-    
-    // Trap ROM tap LOADING
-    if (opcode == 0xc0 && (address == 0x056b || address == 0x0111) && machine->emuTapeInstantLoad)
-    {
-        machine->emuLoadTrapTriggered = true;
-        machine->tape->updateStatus();
-        return true;
-    }
-    else if (machine->emuLoadTrapTriggered)
-    {
-        machine->emuLoadTrapTriggered = false;
-        machine->tape->updateStatus();
-    }
-    
+
+    machine->emuSaveTrapTriggered = false;
+    machine->emuLoadTrapTriggered = false;
+
     return false;
 }
 
