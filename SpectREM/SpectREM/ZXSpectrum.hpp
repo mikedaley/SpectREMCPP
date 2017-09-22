@@ -162,7 +162,7 @@ public:
     
     unsigned char           keyboardMap[8];
     static KEYBOARD_ENTRY   keyboardLookup[];
-    int                     keyboardCapsLockFrames = 0;
+    int                     keyboardCapsLockFrames;
     
     unsigned short          *audioBuffer;
   
@@ -170,67 +170,67 @@ public:
     
     // Emulation
     MachineInfo             machineInfo;
-    int                     emuCurrentDisplayTs = 0;
-    int                     emuFrameCounter = 0;
-    bool                    emuPaused = false;
-    int                     emuRAMPage = 0;
-    int                     emuROMPage = 0;
-    int                     emuDisplayPage = 0;
-    bool                    emuDisablePaging = false;
-    string                  emuROMPath = "";
-    bool                    emuTapeInstantLoad = false;
-    bool                    emuUseAYSound = false;
-    bool                    emuLoadTrapTriggered = false;
-    bool                    emuSaveTrapTriggered = false;
+    int                     emuCurrentDisplayTs;
+    int                     emuFrameCounter;
+    bool                    emuPaused;
+    int                     emuRAMPage;
+    int                     emuROMPage;
+    int                     emuDisplayPage;
+    bool                    emuDisablePaging;
+    string                  emuROMPath;
+    bool                    emuTapeInstantLoad;
+    bool                    emuUseAYSound;
+    bool                    emuLoadTrapTriggered;
+    bool                    emuSaveTrapTriggered;
 
     // Display
     unsigned int            *displayBuffer;
     ScreenBufferData        *displayBufferCopy;
     unsigned int            displayBufferIndex;
-    int                     screenWidth = 320;
-    int                     screenHeight = 256;
-    int                     screenBufferSize = 0;
+    int                     screenWidth;
+    int                     screenHeight;
+    int                     screenBufferSize;
     int                     displayTstateTable[312][228];
     int                     displayLineAddrTable[192];
-    int                     displayBorderColor = 0;
+    int                     displayBorderColor;
 
     // Audio
-    int                     audioEarBit = 0;
-    int                     audioMicBit = 0;
-    int                     audioBufferSize = 0;
-    int                     audioBufferIndex = 0;
-    int                     audioTsCounter = 0;
-    float                   audioTsStepCounter = 0;
+    int                     audioEarBit;
+    int                     audioMicBit;
+    int                     audioBufferSize;
+    int                     audioBufferIndex;
+    int                     audioTsCounter;
+    float                   audioTsStepCounter;
 
-    float                   audioBeeperTsStep = 0;
-    float                   audioBeeperLeft = 0;
-    float                   audioBeeperRight = 0;
+    float                   audioBeeperTsStep;
+    float                   audioBeeperLeft;
+    float                   audioBeeperRight;
 
     int                     audioAYChannelOutput[3];
     unsigned int            audioAYChannelCount[3];
     unsigned short          audioAYVolumes[16];
-    unsigned int            audioAYrandom = 0;
-    unsigned int            audioAYOutput = 0;
-    unsigned int            audioAYNoiseCount = 0;
-    unsigned int            audioATaudioAYEnvelopeCount = 0;
-    int                     audioAYaudioAYEnvelopeStep = 0;
-    unsigned char           audioAYRegisters[ eAY_MAX_REGISTERS ]{0};
-    unsigned char           audioAYCurrentRegister = 0;
-    unsigned char           audioAYFloatingRegister = 0;
-    bool                    audioAYaudioAYaudioAYEnvelopeHolding = 0;
-    bool                    audioAYaudioAYEnvelopeHold = 0;
-    bool                    audioAYaudioAYEnvelopeAlt = 0;
-    bool                    audioAYEnvelope = 0;
-    unsigned int            audioAYAttackEndVol = 0;
-    float                   audioAYTsStep = 0 ;
-    int                     audioAYTs = 0;
+    unsigned int            audioAYrandom;
+    unsigned int            audioAYOutput;
+    unsigned int            audioAYNoiseCount;
+    unsigned int            audioATaudioAYEnvelopeCount;
+    int                     audioAYaudioAYEnvelopeStep;
+    unsigned char           audioAYRegisters[ eAY_MAX_REGISTERS ];
+    unsigned char           audioAYCurrentRegister;
+    unsigned char           audioAYFloatingRegister;
+    bool                    audioAYaudioAYaudioAYEnvelopeHolding;
+    bool                    audioAYaudioAYEnvelopeHold;
+    bool                    audioAYaudioAYEnvelopeAlt;
+    bool                    audioAYEnvelope;
+    unsigned int            audioAYAttackEndVol;
+    float                   audioAYTsStep;
+    int                     audioAYTs;
         
     // Keyboard
     bool                    keyboardCapsLockPressed;
     
     // ULA
-    unsigned int            ULAMemoryContentionTable[80000]{0};
-    unsigned int            ULAIOContentionTable[80000]{0};
+    unsigned int            ULAMemoryContentionTable[80000];
+    unsigned int            ULAIOContentionTable[80000];
     const static unsigned int ULAConentionValues[];
     int                     ULAPortFFFDValue;
 

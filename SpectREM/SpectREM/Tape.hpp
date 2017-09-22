@@ -41,10 +41,10 @@ public:
     virtual string          getFilename();
     
 public:
-    unsigned short          blockLength = 0;
+    unsigned short          blockLength;
     unsigned char           *blockData;
-    int                     blockType = 0;
-    int                     currentByte = 0;
+    int                     blockType;
+    int                     currentByte;
 };
 
 
