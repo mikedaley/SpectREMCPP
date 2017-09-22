@@ -96,10 +96,13 @@ void ZXSpectrum::audioUpdateWithTs(int tStates)
         {
             audioAYUpdate();
             
-            ayOutputLeft = ayOutputRight += audioAYChannelOutput[0];
-            ayOutputLeft = ayOutputRight += audioAYChannelOutput[1];
-            ayOutputLeft = ayOutputRight += audioAYChannelOutput[2];
-            
+            ayOutputLeft +=audioAYChannelOutput[0];
+            ayOutputLeft +=audioAYChannelOutput[1];
+            ayOutputLeft +=audioAYChannelOutput[2];
+            ayOutputRight += audioAYChannelOutput[0];
+            ayOutputRight += audioAYChannelOutput[1];
+            ayOutputRight += audioAYChannelOutput[2];
+
             audioAYChannelOutput[0] = 0;
             audioAYChannelOutput[1] = 0;
             audioAYChannelOutput[2] = 0;

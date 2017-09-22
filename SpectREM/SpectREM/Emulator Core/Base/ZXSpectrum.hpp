@@ -160,85 +160,85 @@ public:
     vector<char>            memoryRom;
     vector<char>            memoryRam;
     
-    unsigned char           keyboardMap[8];
+    unsigned char           keyboardMap[8]{0};
     static KEYBOARD_ENTRY   keyboardLookup[];
-    int                     keyboardCapsLockFrames;
+    int                     keyboardCapsLockFrames = 0;
     
-    unsigned short          *audioBuffer;
+    unsigned short          *audioBuffer = nullptr;
   
 public:
     
     // Emulation
     MachineInfo             machineInfo;
-    int                     emuCurrentDisplayTs;
-    int                     emuFrameCounter;
-    bool                    emuPaused;
-    int                     emuRAMPage;
-    int                     emuROMPage;
-    int                     emuDisplayPage;
-    bool                    emuDisablePaging;
-    string                  emuROMPath;
-    bool                    emuTapeInstantLoad;
-    bool                    emuUseAYSound;
-    bool                    emuLoadTrapTriggered;
-    bool                    emuSaveTrapTriggered;
+    int                     emuCurrentDisplayTs = 0;
+    int                     emuFrameCounter = 0;
+    bool                    emuPaused = 0;
+    int                     emuRAMPage = 0;
+    int                     emuROMPage = 0;
+    int                     emuDisplayPage = 0;
+    bool                    emuDisablePaging = true;
+    string                  emuROMPath = "";
+    bool                    emuTapeInstantLoad = 0;
+    bool                    emuUseAYSound = 0;
+    bool                    emuLoadTrapTriggered = 0;
+    bool                    emuSaveTrapTriggered = 0;
 
     // Display
-    unsigned int            *displayBuffer;
-    ScreenBufferData        *displayBufferCopy;
-    unsigned int            displayBufferIndex;
-    int                     screenWidth;
-    int                     screenHeight;
-    int                     screenBufferSize;
-    int                     displayTstateTable[312][228];
-    int                     displayLineAddrTable[192];
-    int                     displayBorderColor;
+    unsigned int            *displayBuffer = nullptr;
+    ScreenBufferData        *displayBufferCopy = nullptr;
+    unsigned int            displayBufferIndex = 0;
+    int                     screenWidth = 320;
+    int                     screenHeight = 256;
+    int                     screenBufferSize = 0;
+    int                     displayTstateTable[312][228]{0};
+    int                     displayLineAddrTable[192]{0};
+    int                     displayBorderColor = 0;
 
     // Audio
-    int                     audioEarBit;
-    int                     audioMicBit;
-    int                     audioBufferSize;
-    int                     audioBufferIndex;
-    int                     audioTsCounter;
-    float                   audioTsStepCounter;
+    int                     audioEarBit = 0;
+    int                     audioMicBit = 0;
+    int                     audioBufferSize = 0;
+    int                     audioBufferIndex = 0;
+    int                     audioTsCounter = 0;
+    float                   audioTsStepCounter = 0;
 
-    float                   audioBeeperTsStep;
-    float                   audioBeeperLeft;
-    float                   audioBeeperRight;
+    float                   audioBeeperTsStep = 0;
+    float                   audioBeeperLeft = 0;
+    float                   audioBeeperRight = 0;
 
-    int                     audioAYChannelOutput[3];
-    unsigned int            audioAYChannelCount[3];
-    unsigned short          audioAYVolumes[16];
-    unsigned int            audioAYrandom;
-    unsigned int            audioAYOutput;
-    unsigned int            audioAYNoiseCount;
-    unsigned int            audioATaudioAYEnvelopeCount;
-    int                     audioAYaudioAYEnvelopeStep;
-    unsigned char           audioAYRegisters[ eAY_MAX_REGISTERS ];
-    unsigned char           audioAYCurrentRegister;
-    unsigned char           audioAYFloatingRegister;
-    bool                    audioAYaudioAYaudioAYEnvelopeHolding;
-    bool                    audioAYaudioAYEnvelopeHold;
-    bool                    audioAYaudioAYEnvelopeAlt;
-    bool                    audioAYEnvelope;
-    unsigned int            audioAYAttackEndVol;
-    float                   audioAYTsStep;
-    int                     audioAYTs;
+    int                     audioAYChannelOutput[3]{0};
+    unsigned int            audioAYChannelCount[3]{0};
+    unsigned short          audioAYVolumes[16]{0};
+    unsigned int            audioAYrandom = 0;
+    unsigned int            audioAYOutput = 0;
+    unsigned int            audioAYNoiseCount = 0;
+    unsigned int            audioATaudioAYEnvelopeCount = 0;
+    int                     audioAYaudioAYEnvelopeStep = 0;
+    unsigned char           audioAYRegisters[ eAY_MAX_REGISTERS ]{0};
+    unsigned char           audioAYCurrentRegister = 0;
+    unsigned char           audioAYFloatingRegister = 0;
+    bool                    audioAYaudioAYaudioAYEnvelopeHolding = 0;
+    bool                    audioAYaudioAYEnvelopeHold = 0;
+    bool                    audioAYaudioAYEnvelopeAlt = 0;
+    bool                    audioAYEnvelope = 0;
+    unsigned int            audioAYAttackEndVol = 0;
+    float                   audioAYTsStep = 0;
+    int                     audioAYTs = 0;
         
     // Keyboard
-    bool                    keyboardCapsLockPressed;
+    bool                    keyboardCapsLockPressed = false;
     
     // ULA
-    unsigned int            ULAMemoryContentionTable[80000];
-    unsigned int            ULAIOContentionTable[80000];
+    unsigned int            ULAMemoryContentionTable[80000]{0};
+    unsigned int            ULAIOContentionTable[80000]{0};
     const static unsigned int ULAConentionValues[];
-    int                     ULAPortFFFDValue;
+    int                     ULAPortFFFDValue = 0;
 
     // Floating bus
     const static unsigned int ULAFloatingBusValues[];
     
     // Tape object
-    Tape                    *tape;
+    Tape                    *tape = nullptr;
 
 };
 

@@ -337,9 +337,9 @@ void ZXSpectrum128::resetMachine(bool hard)
 
 #pragma mark - Opcode Callback Function
 
-bool ZXSpectrum48::opcodeCallback(unsigned char opcode, unsigned short address, void *param)
+bool ZXSpectrum128::opcodeCallback(unsigned char opcode, unsigned short address, void *param)
 {
-    ZXSpectrum48 *machine = static_cast<ZXSpectrum48*>(param);
+    ZXSpectrum128 *machine = static_cast<ZXSpectrum128*>(param);
     
     // Trap ROM tape SAVING
     if (opcode == 0x08 && address == 0x04d0)
