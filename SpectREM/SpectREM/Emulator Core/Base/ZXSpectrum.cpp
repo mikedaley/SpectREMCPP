@@ -7,7 +7,6 @@
 //
 
 #include "ZXSpectrum.hpp"
-#include "function_profiler.hpp"
 
 #pragma mark - Constructor/Deconstructor
 

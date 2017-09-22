@@ -7,7 +7,6 @@
 //
 
 #include "ZXSpectrum.hpp"
-#include "function_profiler.hpp"
 
 #pragma mark - Spectrum displayPalette
 
@@ -53,8 +52,6 @@ void ZXSpectrum::displaySetup()
 
 void ZXSpectrum::displayUpdateWithTs(int tStates)
 {
-    PROFILE_FUNCTION();
-    
     const int memoryAddress = emuDisplayPage * cBITMAP_ADDRESS;
     
     while (tStates > 0)

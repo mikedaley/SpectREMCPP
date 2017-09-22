@@ -56,7 +56,6 @@
 /* Begin PBXFileReference section */
 		1745BB621F50876E003203FE /* Contention.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Contention.cpp; sourceTree = "<group>"; };
 		1745BB641F50AE1E003203FE /* FloatingBus.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FloatingBus.cpp; sourceTree = "<group>"; };
-		1746FBDC1F74599E00DE2E9C /* function_profiler.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = function_profiler.hpp; path = "../../../../Downloads/function_profiler-master/function_profiler.hpp"; sourceTree = "<group>"; };
 		174AAFBA1F585AF100B75535 /* PixelShader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = PixelShader.fsh; sourceTree = "<group>"; };
 		177E284B1F4DD7E90053756B /* ZXSpectrum48.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZXSpectrum48.cpp; sourceTree = "<group>"; };
 		177E284E1F4DDF550053756B /* ZXSpectrum48.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ZXSpectrum48.hpp; sourceTree = "<group>"; };
@@ -151,31 +150,6 @@
 			name = Shader;
 			sourceTree = "<group>";
 		};
-		177E284F1F4DEC5B0053756B /* ZX Spectrum 48k */ = {
-			isa = PBXGroup;
-			children = (
-				177E284E1F4DDF550053756B /* ZXSpectrum48.hpp */,
-				177E284B1F4DD7E90053756B /* ZXSpectrum48.cpp */,
-			);
-			name = "ZX Spectrum 48k";
-			sourceTree = "<group>";
-		};
-		17A089541F4F691F00CAA178 /* Base */ = {
-			isa = PBXGroup;
-			children = (
-				17A0894F1F4F513300CAA178 /* MachineDetails.h */,
-				ED913FD31F30787000316E1A /* ZXSpectrum.hpp */,
-				ED913FD21F30787000316E1A /* ZXSpectrum.cpp */,
-				17A089501F4F5B2700CAA178 /* Keyboard.cpp */,
-				17A089521F4F677200CAA178 /* Display.cpp */,
-				1745BB621F50876E003203FE /* Contention.cpp */,
-				1745BB641F50AE1E003203FE /* FloatingBus.cpp */,
-				ED504A631F51BBFF00BD289E /* Snapshot.cpp */,
-				17B5DB991F5B14D3003E7EF3 /* Audio.cpp */,
-			);
-			name = Base;
-			sourceTree = "<group>";
-		};
 		17B5DB921F5B146C003E7EF3 /* Audio Core */ = {
 			isa = PBXGroup;
 			children = (
@@ -185,6 +159,7 @@
 				17B27F021F6877C800B811FC /* AudioQueue.cpp */,
 			);
 			name = "Audio Core";
+			path = ..;
 			sourceTree = "<group>";
 		};
 		17B5DB9B1F5B1CCE003E7EF3 /* Frameworks */ = {
@@ -243,15 +218,6 @@
 			name = "Export Accessory View Controller";
 			sourceTree = "<group>";
 		};
-		ED2A6D111F669C27003CD6CE /* Tape */ = {
-			isa = PBXGroup;
-			children = (
-				ED2A6D131F669CB7003CD6CE /* Tape.hpp */,
-				EDB7F7FD1F5EE2E4003053E3 /* Tape.cpp */,
-			);
-			name = Tape;
-			sourceTree = "<group>";
-		};
 		ED913F8C1F30759300316E1A = {
 			isa = PBXGroup;
 			children = (
@@ -272,17 +238,10 @@
 		ED913F971F30759300316E1A /* SpectREM */ = {
 			isa = PBXGroup;
 			children = (
-				EDC56FD71F6C226E00162739 /* Defaults */,
-				ED2A6D071F603D0F003CD6CE /* Class Extensions */,
 				ED913FB41F30762600316E1A /* App Delegate */,
-				ED913FB31F30761B00316E1A /* StoryBoard */,
-				ED913FB71F30765D00316E1A /* Emulation Scene */,
-				ED913FB51F30763500316E1A /* View Controllers */,
-				EDB7F7F91F5ED3D7003053E3 /* Window Controllers */,
-				ED913FD01F30785100316E1A /* Machines */,
-				17B5DB921F5B146C003E7EF3 /* Audio Core */,
-				ED913FB91F3077DE00316E1A /* Z80 Core */,
-				ED913FD51F30788400316E1A /* ROMs */,
+				EDEDE71D1F7556BD00DAC9AE /* User Interface */,
+				EDEDE7151F75561100DAC9AE /* Emulator Core */,
+				ED2A6D071F603D0F003CD6CE /* Class Extensions */,
 				ED913FB61F30764800316E1A /* Resources */,
 				ED913F9B1F30759300316E1A /* Supporting Files */,
 			);
@@ -303,6 +262,7 @@
 				ED913FAA1F30759300316E1A /* Main.storyboard */,
 			);
 			name = StoryBoard;
+			path = ..;
 			sourceTree = "<group>";
 		};
 		ED913FB41F30762600316E1A /* App Delegate */ = {
@@ -322,6 +282,7 @@
 				ED2A6D0D1F616C1A003CD6CE /* Export Accessory View Controller */,
 			);
 			name = "View Controllers";
+			path = ..;
 			sourceTree = "<group>";
 		};
 		ED913FB61F30764800316E1A /* Resources */ = {
@@ -344,6 +305,7 @@
 				174AAFBD1F58626E00B75535 /* Shader */,
 			);
 			name = "Emulation Scene";
+			path = ..;
 			sourceTree = "<group>";
 		};
 		ED913FB81F30767A00316E1A /* Emulation */ = {
@@ -357,7 +319,93 @@
 			name = Emulation;
 			sourceTree = "<group>";
 		};
-		ED913FB91F3077DE00316E1A /* Z80 Core */ = {
+		EDB7F7F91F5ED3D7003053E3 /* Window Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				17C33DFB1F657CDB00720A06 /* Main Window */,
+				17C33DF71F65788F00720A06 /* Tape Browser */,
+			);
+			name = "Window Controllers";
+			path = ..;
+			sourceTree = "<group>";
+		};
+		EDC56FD71F6C226E00162739 /* Defaults */ = {
+			isa = PBXGroup;
+			children = (
+				EDC56FD81F6C228700162739 /* Defaults.h */,
+				EDC56FD91F6C228700162739 /* Defaults.m */,
+			);
+			name = Defaults;
+			path = ..;
+			sourceTree = "<group>";
+		};
+		EDEDE7151F75561100DAC9AE /* Emulator Core */ = {
+			isa = PBXGroup;
+			children = (
+				EDEDE71A1F75564200DAC9AE /* Tape */,
+				EDEDE7191F75563E00DAC9AE /* Base */,
+				EDEDE7181F75563400DAC9AE /* ZX Spectrum 48k */,
+				EDEDE7171F75562C00DAC9AE /* ZX Spectrum 128k */,
+				EDEDE7161F75562000DAC9AE /* ZX Spectrum +2 */,
+				EDEDE71B1F75567100DAC9AE /* Z80 Core */,
+				EDEDE71C1F75569800DAC9AE /* ROMS */,
+			);
+			path = "Emulator Core";
+			sourceTree = "<group>";
+		};
+		EDEDE7161F75562000DAC9AE /* ZX Spectrum +2 */ = {
+			isa = PBXGroup;
+			children = (
+				EDC56FE11F6EE8ED00162739 /* ZXSpectrum128_2.hpp */,
+				EDC56FE01F6EE8ED00162739 /* ZXSpectrum128_2.cpp */,
+			);
+			path = "ZX Spectrum +2";
+			sourceTree = "<group>";
+		};
+		EDEDE7171F75562C00DAC9AE /* ZX Spectrum 128k */ = {
+			isa = PBXGroup;
+			children = (
+				EDD9ADF01F5D6F51004DD728 /* ZXSpectrum128.hpp */,
+				EDD9ADEF1F5D6F51004DD728 /* ZXSpectrum128.cpp */,
+			);
+			path = "ZX Spectrum 128k";
+			sourceTree = "<group>";
+		};
+		EDEDE7181F75563400DAC9AE /* ZX Spectrum 48k */ = {
+			isa = PBXGroup;
+			children = (
+				177E284E1F4DDF550053756B /* ZXSpectrum48.hpp */,
+				177E284B1F4DD7E90053756B /* ZXSpectrum48.cpp */,
+			);
+			path = "ZX Spectrum 48k";
+			sourceTree = "<group>";
+		};
+		EDEDE7191F75563E00DAC9AE /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				17A0894F1F4F513300CAA178 /* MachineDetails.h */,
+				ED913FD31F30787000316E1A /* ZXSpectrum.hpp */,
+				ED913FD21F30787000316E1A /* ZXSpectrum.cpp */,
+				17A089501F4F5B2700CAA178 /* Keyboard.cpp */,
+				17A089521F4F677200CAA178 /* Display.cpp */,
+				1745BB621F50876E003203FE /* Contention.cpp */,
+				1745BB641F50AE1E003203FE /* FloatingBus.cpp */,
+				ED504A631F51BBFF00BD289E /* Snapshot.cpp */,
+				17B5DB991F5B14D3003E7EF3 /* Audio.cpp */,
+			);
+			path = Base;
+			sourceTree = "<group>";
+		};
+		EDEDE71A1F75564200DAC9AE /* Tape */ = {
+			isa = PBXGroup;
+			children = (
+				ED2A6D131F669CB7003CD6CE /* Tape.hpp */,
+				EDB7F7FD1F5EE2E4003053E3 /* Tape.cpp */,
+			);
+			path = Tape;
+			sourceTree = "<group>";
+		};
+		EDEDE71B1F75567100DAC9AE /* Z80 Core */ = {
 			isa = PBXGroup;
 			children = (
 				ED913FC71F30781000316E1A /* Z80Core.h */,
@@ -376,23 +424,10 @@
 				ED913FC31F30781000316E1A /* Z80Core_FDOpcodes.h */,
 				ED913FC21F30781000316E1A /* Z80Core_FDOpcodes.cpp */,
 			);
-			name = "Z80 Core";
+			path = "Z80 Core";
 			sourceTree = "<group>";
 		};
-		ED913FD01F30785100316E1A /* Machines */ = {
-			isa = PBXGroup;
-			children = (
-				1746FBDC1F74599E00DE2E9C /* function_profiler.hpp */,
-				ED2A6D111F669C27003CD6CE /* Tape */,
-				17A089541F4F691F00CAA178 /* Base */,
-				177E284F1F4DEC5B0053756B /* ZX Spectrum 48k */,
-				EDD9ADEE1F5D6F2F004DD728 /* ZX Spectrum 128k */,
-				EDC56FDF1F6EE8AD00162739 /* ZX Spectrum +2 */,
-			);
-			name = Machines;
-			sourceTree = "<group>";
-		};
-		ED913FD51F30788400316E1A /* ROMs */ = {
+		EDEDE71C1F75569800DAC9AE /* ROMS */ = {
 			isa = PBXGroup;
 			children = (
 				EDC56FDB1F6EE89E00162739 /* plus2-1.ROM */,
@@ -401,43 +436,20 @@
 				EDD9ADF21F5D7E10004DD728 /* 128-0.ROM */,
 				EDD9ADF31F5D7E10004DD728 /* 128-1.ROM */,
 			);
-			name = ROMs;
+			path = ROMS;
 			sourceTree = "<group>";
 		};
-		EDB7F7F91F5ED3D7003053E3 /* Window Controllers */ = {
+		EDEDE71D1F7556BD00DAC9AE /* User Interface */ = {
 			isa = PBXGroup;
 			children = (
-				17C33DFB1F657CDB00720A06 /* Main Window */,
-				17C33DF71F65788F00720A06 /* Tape Browser */,
+				EDC56FD71F6C226E00162739 /* Defaults */,
+				ED913FB31F30761B00316E1A /* StoryBoard */,
+				ED913FB71F30765D00316E1A /* Emulation Scene */,
+				ED913FB51F30763500316E1A /* View Controllers */,
+				EDB7F7F91F5ED3D7003053E3 /* Window Controllers */,
+				17B5DB921F5B146C003E7EF3 /* Audio Core */,
 			);
-			name = "Window Controllers";
-			sourceTree = "<group>";
-		};
-		EDC56FD71F6C226E00162739 /* Defaults */ = {
-			isa = PBXGroup;
-			children = (
-				EDC56FD81F6C228700162739 /* Defaults.h */,
-				EDC56FD91F6C228700162739 /* Defaults.m */,
-			);
-			name = Defaults;
-			sourceTree = "<group>";
-		};
-		EDC56FDF1F6EE8AD00162739 /* ZX Spectrum +2 */ = {
-			isa = PBXGroup;
-			children = (
-				EDC56FE11F6EE8ED00162739 /* ZXSpectrum128_2.hpp */,
-				EDC56FE01F6EE8ED00162739 /* ZXSpectrum128_2.cpp */,
-			);
-			name = "ZX Spectrum +2";
-			sourceTree = "<group>";
-		};
-		EDD9ADEE1F5D6F2F004DD728 /* ZX Spectrum 128k */ = {
-			isa = PBXGroup;
-			children = (
-				EDD9ADF01F5D6F51004DD728 /* ZXSpectrum128.hpp */,
-				EDD9ADEF1F5D6F51004DD728 /* ZXSpectrum128.cpp */,
-			);
-			name = "ZX Spectrum 128k";
+			path = "User Interface";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
