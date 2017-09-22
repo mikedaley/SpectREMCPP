@@ -337,9 +337,9 @@ void ZXSpectrum128_2::resetMachine(bool hard)
 
 #pragma mark - Opcode Callback Function
 
-bool ZXSpectrum128_2::opcodeCallback(unsigned char opcode, unsigned short address, void *param)
+bool ZXSpectrum48::opcodeCallback(unsigned char opcode, unsigned short address, void *param)
 {
-    ZXSpectrum128_2 *machine = static_cast<ZXSpectrum128_2*>(param);
+    ZXSpectrum48 *machine = static_cast<ZXSpectrum48*>(param);
     
     // Trap ROM tape SAVING
     if (opcode == 0x08 && address == 0x04d0)
@@ -352,24 +352,22 @@ bool ZXSpectrum128_2::opcodeCallback(unsigned char opcode, unsigned short addres
     {
         machine->emuSaveTrapTriggered = false;
         machine->tape->updateStatus();
+        return false;
     }
     
     // Trap ROM tap LOADING
-    if (machine->emuTapeInstantLoad)
+    if (opcode == 0xc0 && (address == 0x056b || address == 0x0111) && machine->emuTapeInstantLoad)
     {
-        if (opcode == 0xc0 && (address == 0x056b || address == 0x0111))
-        {
-            machine->emuLoadTrapTriggered = true;
-            machine->tape->updateStatus();
-            return true;
-        }
-        else if (machine->emuLoadTrapTriggered)
-        {
-            machine->emuLoadTrapTriggered = false;
-            machine->tape->updateStatus();
-        }
+        machine->emuLoadTrapTriggered = true;
+        machine->tape->updateStatus();
+        return true;
     }
-
+    else if (machine->emuLoadTrapTriggered)
+    {
+        machine->emuLoadTrapTriggered = false;
+        machine->tape->updateStatus();
+    }
+    
     return false;
 }
 

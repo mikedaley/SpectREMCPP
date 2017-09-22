@@ -77,8 +77,8 @@ public:
     };
     
     struct ScreenBufferData {
-        unsigned char pixels;
-        unsigned char attribute;
+        unsigned int pixels;
+        unsigned int attribute;
     };
         
 public:
