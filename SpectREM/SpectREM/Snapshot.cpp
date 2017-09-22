@@ -110,7 +110,6 @@ bool ZXSpectrum::snapshotSNALoadWithPath(const char *path)
     if (!fileHandle)
     {
         cout << "ERROR LOADING SNAPSHOT: " << path << endl;
-        fclose(fileHandle);
         return false;
     }
     
@@ -701,6 +700,10 @@ int ZXSpectrum::snapshotMachineInSnapshotWithPath(const char *path)
         else if (hardwareType == cZ80_V3_MACHINE_TYPE_128 || hardwareType == cZ80_V3_MACHINE_TYPE_128_IF1 || hardwareType == cz80_V3_MACHINE_TYPE_128_MGT)
         {
             return eZXSpectrum128;
+        }
+        else if (hardwareType == cZ80_V3_MACHINE_TYPE_128_2)
+        {
+            return eZXSpectrum128_2;
         }
     }
     

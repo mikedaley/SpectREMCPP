@@ -170,7 +170,7 @@
                                                 <action selector="selectMachine:" target="Ady-hI-5gd" id="B7e-tP-UIm"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="ZX Spectrum 128k +2" tag="2" id="zjJ-qI-wr2" userLabel="ZX Spectrum 128k +2">
+                                        <menuItem title="ZX Spectrum 128k +2" tag="2" hidden="YES" id="zjJ-qI-wr2" userLabel="ZX Spectrum 128k +2">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="selectMachine:" target="Ady-hI-5gd" id="SZj-0g-Vcv"/>
@@ -349,7 +349,7 @@
                                                     <items>
                                                         <menuItem title="ZX Spectrum 48k" state="on" id="vpd-lf-n9b" userLabel="ZX Spectrum 48k"/>
                                                         <menuItem title="ZX Spectrum 128k" id="iHc-H4-nuD" userLabel="ZX Spectrum 128k"/>
-                                                        <menuItem title="ZX Spectrum 128k +2" id="YLw-dB-3zc" userLabel="ZX Spectrum 128k +2"/>
+                                                        <menuItem title="ZX Spectrum 128k +2" hidden="YES" enabled="NO" id="YLw-dB-3zc" userLabel="ZX Spectrum 128k +2"/>
                                                     </items>
                                                 </menu>
                                             </popUpButtonCell>
