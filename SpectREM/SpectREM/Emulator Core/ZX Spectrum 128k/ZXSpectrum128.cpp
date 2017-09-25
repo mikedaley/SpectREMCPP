@@ -1,12 +1,12 @@
 //
-//  ZXSpectrum128_2.cpp
+//  ZXSpectrum128.cpp
 //  SpectREM
 //
 //  Created by Mike Daley on 04/09/2017.
 //  Copyright © 2017 71Squared Ltd. All rights reserved.
 //
 
-#include "ZXSpectrum128_2.hpp"
+#include "ZXSpectrum128.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -14,14 +14,14 @@
 #pragma mark - Constants
 
 static const int cROM_SIZE = 16384;
-static const char *cROM0 = "plus2-0.ROM";
-static const char *cROM1 = "plus2-1.ROM";
+static const char *cROM0 = "128-0.ROM";
+static const char *cROM1 = "128-1.ROM";
 
 #pragma mark - Constructor/Destructor
 
-ZXSpectrum128_2::ZXSpectrum128_2(Tape *t) : ZXSpectrum()
+ZXSpectrum128::ZXSpectrum128(Tape *t) : ZXSpectrum()
 {
-    cout << "ZXSpectrum+2::Constructor" << endl;
+    cout << "ZXSpectrum128::Constructor" << endl;
     if (t)
     {
         tape = t;
@@ -32,19 +32,19 @@ ZXSpectrum128_2::ZXSpectrum128_2(Tape *t) : ZXSpectrum()
     }
 }
 
-ZXSpectrum128_2::~ZXSpectrum128_2()
+ZXSpectrum128::~ZXSpectrum128()
 {
-    cout << "ZXSpectrum128_2_2::Destructor" << endl;
+    cout << "ZXSpectrum128::Destructor" << endl;
     release();
 }
 
 #pragma mark - Initialise
 
-void ZXSpectrum128_2::initialise(string romPath)
+void ZXSpectrum128::initialise(string romPath)
 {
-    cout << "ZXSpectrum128_2::initialise(char *rom)" << endl;
+    cout << "ZXSpectrum128::initialise(char *rom)" << endl;
     
-    machineInfo = machines[ eZXSpectrum128_2 ];
+    machineInfo = machines[ eZXSpectrum128 ];
     
     ZXSpectrum::initialise(romPath);
     
@@ -60,7 +60,7 @@ void ZXSpectrum128_2::initialise(string romPath)
 
 }
 
-void ZXSpectrum128_2::loadDefaultROM()
+void ZXSpectrum128::loadDefaultROM()
 {
     string romPath = emuROMPath;
     romPath.append( cROM0 );
@@ -81,7 +81,7 @@ void ZXSpectrum128_2::loadDefaultROM()
 
 #pragma mark - ULA
 
-unsigned char ZXSpectrum128_2::coreIORead(unsigned short address)
+unsigned char ZXSpectrum128::coreIORead(unsigned short address)
 {
     bool contended = false;
     int memoryPage = address / cMEMORY_PAGE_SIZE;
@@ -139,7 +139,7 @@ unsigned char ZXSpectrum128_2::coreIORead(unsigned short address)
     return result;
 }
 
-void ZXSpectrum128_2::coreIOWrite(unsigned short address, unsigned char data)
+void ZXSpectrum128::coreIOWrite(unsigned short address, unsigned char data)
 {
     bool contended = false;
     int memoryPage = address / cMEMORY_PAGE_SIZE;
@@ -205,7 +205,7 @@ void ZXSpectrum128_2::coreIOWrite(unsigned short address, unsigned char data)
 
 #pragma mark - Memory Read/Write
 
-void ZXSpectrum128_2::coreMemoryWrite(unsigned short address, unsigned char data)
+void ZXSpectrum128::coreMemoryWrite(unsigned short address, unsigned char data)
 {
     int memoryPage = address / cMEMORY_PAGE_SIZE;
     address &= 16383;
@@ -229,7 +229,7 @@ void ZXSpectrum128_2::coreMemoryWrite(unsigned short address, unsigned char data
     }
 }
 
-unsigned char ZXSpectrum128_2::coreMemoryRead(unsigned short address)
+unsigned char ZXSpectrum128::coreMemoryRead(unsigned short address)
 {
     int page = address / cMEMORY_PAGE_SIZE;
     address &= 16383;
@@ -256,7 +256,7 @@ unsigned char ZXSpectrum128_2::coreMemoryRead(unsigned short address)
 
 #pragma mark - Debug Memory Read/Write
 
-void ZXSpectrum128_2::coreDebugWrite(unsigned int address, unsigned char byte, void *data)
+void ZXSpectrum128::coreDebugWrite(unsigned int address, unsigned char byte, void *data)
 {
     int memoryPage = address / cMEMORY_PAGE_SIZE;
     address &= 16383;
@@ -279,7 +279,7 @@ void ZXSpectrum128_2::coreDebugWrite(unsigned int address, unsigned char byte, v
     }
 }
 
-unsigned char ZXSpectrum128_2::coreDebugRead(unsigned int address, void *data)
+unsigned char ZXSpectrum128::coreDebugRead(unsigned int address, void *data)
 {
     int page = address / cMEMORY_PAGE_SIZE;
     address &= 16383;
@@ -306,7 +306,7 @@ unsigned char ZXSpectrum128_2::coreDebugRead(unsigned int address, void *data)
 
 #pragma mark - Memory Contention
 
-void ZXSpectrum128_2::coreMemoryContention(unsigned short address, unsigned int tStates)
+void ZXSpectrum128::coreMemoryContention(unsigned short address, unsigned int tStates)
 {
     int memoryPage = address / cMEMORY_PAGE_SIZE;
     
@@ -320,12 +320,12 @@ void ZXSpectrum128_2::coreMemoryContention(unsigned short address, unsigned int 
 
 #pragma mark - Release/Reset
 
-void ZXSpectrum128_2::release()
+void ZXSpectrum128::release()
 {
     ZXSpectrum::release();
 }
 
-void ZXSpectrum128_2::resetMachine(bool hard)
+void ZXSpectrum128::resetMachine(bool hard)
 {
     emuROMPage = 0;
     emuRAMPage = 0;
@@ -337,39 +337,38 @@ void ZXSpectrum128_2::resetMachine(bool hard)
 
 #pragma mark - Opcode Callback Function
 
-bool ZXSpectrum128_2::opcodeCallback(unsigned char opcode, unsigned short address, void *param)
+bool ZXSpectrum128::opcodeCallback(unsigned char opcode, unsigned short address, void *param)
 {
-    ZXSpectrum128_2 *machine = static_cast<ZXSpectrum128_2*>(param);
+    ZXSpectrum128 *machine = static_cast<ZXSpectrum128*>(param);
     
-    // Trap ROM tape SAVING
-    if (opcode == 0x08 && address == 0x04d0)
-    {
-        machine->emuSaveTrapTriggered = true;
-        machine->tape->updateStatus();
-        return true;
-    }
-    else if (machine->emuSaveTrapTriggered)
-    {
-        machine->emuSaveTrapTriggered = false;
-        machine->tape->updateStatus();
-    }
-    
-    // Trap ROM tap LOADING
     if (machine->emuTapeInstantLoad)
     {
-        if (opcode == 0xc0 && (address == 0x056b || address == 0x0111))
+        // Trap ROM tap LOADING
+        if (address == 0x056b || address == 0x0111)
         {
-            machine->emuLoadTrapTriggered = true;
+            if (opcode == 0xc0)
+            {
+                machine->emuLoadTrapTriggered = true;
+                machine->tape->updateStatus();
+                return true;
+            }
+        }
+    }
+    
+    // Trap ROM tape SAVING
+    else if (opcode == 0x08 && address == 0x04d0)
+    {
+        if (opcode == 0x08)
+        {
+            machine->emuSaveTrapTriggered = true;
             machine->tape->updateStatus();
             return true;
         }
-        else if (machine->emuLoadTrapTriggered)
-        {
-            machine->emuLoadTrapTriggered = false;
-            machine->tape->updateStatus();
-        }
     }
-
+    
+    machine->emuSaveTrapTriggered = false;
+    machine->emuLoadTrapTriggered = false;
+    
     return false;
 }
 

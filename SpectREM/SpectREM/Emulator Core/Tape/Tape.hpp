@@ -15,7 +15,6 @@
 
 using namespace std;
 
-
 #pragma mark - TypeDefs
 
 
@@ -41,10 +40,10 @@ public:
     virtual string          getFilename();
     
 public:
-    unsigned short          blockLength;
-    unsigned char           *blockData;
-    int                     blockType;
-    int                     currentByte;
+    unsigned short          blockLength = 0;
+    unsigned char           *blockData = nullptr;
+    int                     blockType = 0;
+    int                     currentByte = 0;
 };
 
 
@@ -90,7 +89,6 @@ class ByteHeader : public TapeBlock
 public:
     unsigned short          getStartAddress();
     virtual unsigned char   getChecksum();
-//    virtual unsigned short  getDataLength();
     virtual string          getBlockName();
 };
 
@@ -182,30 +180,30 @@ private:
     void                    tapeBlockPauseWithTs(int tStates);
     
 public:
-    bool                    loaded;
-    bool                    playing;
-    int                     currentBytePtr;
-    int                     currentBlockIndex;
-    int                     newBlock;
+    bool                    loaded = false;
+    bool                    playing = false;
+    int                     currentBytePtr = 0;
+    int                     currentBlockIndex = 0;
+    bool                    newBlock = false;
     vector<TapeBlock *>     blocks;
-    int                     inputBit;
+    int                     inputBit = 0;
     
 private:
-    int                     pilotPulseTStates;          // How many Ts have passed since the start of the pilot pulses
-    int                     pilotPulses;                // How many pilot pulses have been generated
-    int                     syncPulseTStates;           // Sync pulse tStates
-    int                     dataPulseTStates;           // How many Ts have passed since the start of the data pulse
-    bool                    flipTapeBit;                // Should the tape bit be flipped
-    int                     processingState;            // Current processing state e.g. generating pilot, streaming data
-    int                     nextProcessingState;        // Next processing state to be used
-    int                     currentDataBit;             // Which bit of the current byte in the data stream is being processed
-    int                     blockPauseTStates;          // How many tStates have passed since starting the pause between data blocks
-    int                     dataBitTStates;             // How many tStates to pause when processing data bit pulses
-    int                     dataPulseCount;             // How many pulses have been generated for the current data bit;
-    TapeBlock               *tapeCurrentBlock;          // Current tape block
+    int                     pilotPulseTStates = 0;          // How many Ts have passed since the start of the pilot pulses
+    int                     pilotPulses = 0;                // How many pilot pulses have been generated
+    int                     syncPulseTStates = 0;           // Sync pulse tStates
+    int                     dataPulseTStates = 0;           // How many Ts have passed since the start of the data pulse
+    bool                    flipTapeBit = 0;                // Should the tape bit be flipped
+    int                     processingState = 0;            // Current processing state e.g. generating pilot, streaming data
+    int                     nextProcessingState = 0;        // Next processing state to be used
+    int                     currentDataBit = 0;             // Which bit of the current byte in the data stream is being processed
+    int                     blockPauseTStates = 0;          // How many tStates have passed since starting the pause between data blocks
+    int                     dataBitTStates = 0;             // How many tStates to pause when processing data bit pulses
+    int                     dataPulseCount = 0;             // How many pulses have been generated for the current data bit;
+    TapeBlock               *tapeCurrentBlock = nullptr;    // Current tape block
     
     // Function called whenever the status of the tape changes e.g. new block, rewind, stop etc
-    TapeStatusCallback      updateStatusCallback;
+    TapeStatusCallback      updateStatusCallback = nullptr;
 };
 
 #endif /* Tape1_hpp */

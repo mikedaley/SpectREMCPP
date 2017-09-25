@@ -47,6 +47,7 @@ void ZXSpectrum::initialise(string romPath)
     displaySetup();
     displayBuildLineAddressTable();
     displayBuildTsTable();
+    displayBuildCLUT();
     
     ULABuildContentionTable();
 
@@ -60,6 +61,7 @@ void ZXSpectrum::initialise(string romPath)
 
 void ZXSpectrum::generateFrame()
 {
+    
     int currentFrameTstates = machineInfo.tsPerFrame;
     
     while (currentFrameTstates > 0 && !emuPaused)

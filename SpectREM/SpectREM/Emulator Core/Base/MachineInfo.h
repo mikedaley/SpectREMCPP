@@ -6,8 +6,8 @@
 //  Copyright © 2017 71Squared Ltd. All rights reserved.
 //
 
-#ifndef MachineDetails_h
-#define MachineDetails_h
+#ifndef MachineInfo_h
+#define MachineInfo_h
 
 enum
 {
@@ -61,4 +61,4 @@ static MachineInfo machines[] = {
     { 36, 70908, 14362, 228, 12768, 1596, 43776, 128, 4, 56, 7, 256, 192, 448, 311, 32, true,   true,  12, 16, 32768, 131072, "128k +2", eZXSpectrum128_2 }
 };
 
-#endif /* MachineDetails_h */
+#endif /* MachineInfo_h */

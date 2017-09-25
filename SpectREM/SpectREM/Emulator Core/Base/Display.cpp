@@ -10,7 +10,7 @@
 
 #pragma mark - Spectrum displayPalette
 
-const unsigned int displayPalette[] =
+static const unsigned int displayPalette[] =
 {
     // Normal Colours in AABBGGRR format
     0xff000000, // Black
@@ -93,8 +93,8 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
                 const uint pixelAddress = displayLineAddrTable[y] + x;
                 const uint attributeAddress = cBITMAP_SIZE + ((y >> 3) << 5) + x;
                 
-                const int pixelByte = memoryRam[ memoryAddress + pixelAddress ];
-                const int attributeByte = memoryRam[ memoryAddress + attributeAddress ];
+                const unsigned char pixelByte = memoryRam[ memoryAddress + pixelAddress ];
+                 unsigned char attributeByte = memoryRam[ memoryAddress + attributeAddress ];
                 
                 // Only draw the bitmap if the bitmap data has changed
                 if (displayBufferCopy[ emuCurrentDisplayTs ].pixels != pixelByte ||
@@ -103,30 +103,22 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
                 {
                     displayBufferCopy[ emuCurrentDisplayTs ].pixels = pixelByte;
                     displayBufferCopy[ emuCurrentDisplayTs ].attribute = attributeByte;
-                    
-                    // Extract the ink and paper colours from the attribute byte read in
-                    int ink = (attributeByte & 0x07) + ((attributeByte & 0x40) >> 3);
-                    int paper = ((attributeByte >> 3) & 0x07) + ((attributeByte & 0x40) >> 3);
-                    
-                    // Switch ink and paper if the flash phase has changed
+
                     if ((emuFrameCounter & 16) && (attributeByte & 0x80))
                     {
-                        const int tempPaper = paper;
-                        paper = ink;
-                        ink = tempPaper;
+                        attributeByte = (attributeByte & 0xc0) | ((attributeByte >> 3) & 7) | ((attributeByte & 7) <<3);
                     }
-                    
-                    for (int i = 0x80; i; i >>= 1)
-                    {
-                        if (pixelByte & i)
-                        {
-                            displayBuffer[ displayBufferIndex++ ] = displayPalette[ink];
-                        }
-                        else
-                        {
-                            displayBuffer[ displayBufferIndex++ ] = displayPalette[paper];
-                        }
-                    }
+
+                    int index = ((attributeByte & 0x7f) * (256 * 8)) + (pixelByte * 8);
+
+                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayCLUT[ index++ ] ];
+                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayCLUT[ index++ ] ];
+                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayCLUT[ index++ ] ];
+                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayCLUT[ index++ ] ];
+                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayCLUT[ index++ ] ];
+                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayCLUT[ index++ ] ];
+                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayCLUT[ index++ ] ];
+                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayCLUT[ index++ ] ];
                 }
                 else
                 {
@@ -245,6 +237,27 @@ void ZXSpectrum::displayBuildTsTable()
                 else
                 {
                     displayTstateTable[line][ts] = eDisplayBorder;
+                }
+            }
+        }
+    }
+}
+
+void ZXSpectrum::displayBuildCLUT()
+{
+    int tableIdx = 0;
+    for (int bright = 0; bright < 2; bright++)
+    {
+        for (int paper = 0; paper < 8; paper++)
+        {
+            for (int ink = 0; ink < 8; ink++)
+            {
+                for (int pixels = 0; pixels < 256; pixels++)
+                {
+                    for (char pixelbit = 7; pixelbit >= 0; pixelbit--)
+                    {
+                        displayCLUT[ tableIdx++ ] = (pixels & (1 << pixelbit) ? ink : paper) + (bright * 8);
+                    }
                 }
             }
         }

@@ -34,7 +34,7 @@ void ZXSpectrum::audioBuildAYVolumesTable()
 
 void ZXSpectrum::audioSetup(float sampleRate, float fps)
 {
-    audioBufferSize = (sampleRate / fps) * 5;
+    audioBufferSize = static_cast<int>((sampleRate / fps) * 5.0);
     audioBuffer = new unsigned short[ audioBufferSize ]();
     audioBeeperTsStep = machineInfo.tsPerFrame / (sampleRate / fps);
     audioAYTsStep = 32;
@@ -84,25 +84,33 @@ void ZXSpectrum::audioUpdateWithTs(int tStates)
     // Grab the current state of the audio ear output & the tapeLevel which is used to register input when loading tapes.
     // Only need to do this once per audio update
     int localBeeperLevel = (audioEarBit | tape->inputBit) * cBEEPER_VOLUME_MULTIPLIER;
-    int beeperLevelLeft = localBeeperLevel;
-    int beeperLevelRight = localBeeperLevel;
+    
+    // The AY output is mixed with the beeper 
+    int ayOutputLeft = localBeeperLevel;
+    int ayOutputRight = localBeeperLevel;
     
     // Loop over each tState so that the necessary audio samples can be generated
     for(int i = 0; i < tStates; i++)
     {
-        if (audioAYTs++ >= audioAYTsStep && emuUseAYSound)
+        if (emuUseAYSound)
         {
-            audioAYUpdate();
-            
-            beeperLevelLeft = beeperLevelRight += audioAYChannelOutput[0];
-            beeperLevelLeft = beeperLevelRight += audioAYChannelOutput[1];
-            beeperLevelLeft = beeperLevelRight += audioAYChannelOutput[2];
-            
-            audioAYChannelOutput[0] = 0;
-            audioAYChannelOutput[1] = 0;
-            audioAYChannelOutput[2] = 0;
-            
-            audioAYTs -= audioAYTsStep;
+            if (audioAYTs++ >= audioAYTsStep)
+            {
+                audioAYUpdate();
+                
+                ayOutputLeft +=audioAYChannelOutput[0];
+                ayOutputLeft +=audioAYChannelOutput[1];
+                ayOutputLeft +=audioAYChannelOutput[2];
+                ayOutputRight += audioAYChannelOutput[0];
+                ayOutputRight += audioAYChannelOutput[1];
+                ayOutputRight += audioAYChannelOutput[2];
+
+                audioAYChannelOutput[0] = 0;
+                audioAYChannelOutput[1] = 0;
+                audioAYChannelOutput[2] = 0;
+                
+                audioAYTs -= audioAYTsStep;
+            }
         }
         
         // If we have done more cycles now than the audio step counter, generate a new sample
@@ -114,27 +122,28 @@ void ZXSpectrum::audioUpdateWithTs(int tStates)
             double delta2 = (1 - delta1);
             
             // Quantize for the current sample
-            audioBeeperLeft += beeperLevelLeft * delta1;
-            audioBeeperRight += beeperLevelRight * delta1;
+            audioBeeperLeft += ayOutputLeft * delta1;
+            audioBeeperRight += ayOutputRight * delta1;
             
             // Load the buffer with the sample for both left and right channels
             audioBuffer[ audioBufferIndex++ ] = (short)audioBeeperLeft;
             audioBuffer[ audioBufferIndex++ ] = (short)audioBeeperRight;
             
             // Quantize for the next sample
-            audioBeeperLeft = beeperLevelLeft * delta2;
-            audioBeeperRight = beeperLevelRight * delta2;
+            audioBeeperLeft = ayOutputLeft * delta2;
+            audioBeeperRight = ayOutputRight * delta2;
             
             // Increment the step counter so that the next sample will be taken after another 18.2 T-States
             audioTsStepCounter += audioBeeperTsStep;
         }
         else
         {
-            audioBeeperLeft += beeperLevelLeft;
-            audioBeeperRight += beeperLevelRight;
+            audioBeeperLeft += ayOutputLeft;
+            audioBeeperRight += ayOutputRight;
         }
         
-        beeperLevelLeft = beeperLevelRight = localBeeperLevel;
+        // Add to the AY sample
+        ayOutputLeft = ayOutputRight = localBeeperLevel;
         
     }
 }
