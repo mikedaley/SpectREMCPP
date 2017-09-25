@@ -15,7 +15,7 @@
 #include <string>
 
 #include "Z80Core.h"
-#include "MachineDetails.h"
+#include "MachineInfo.h"
 #include "Tape.hpp"
 
 using namespace std;
@@ -193,7 +193,7 @@ public:
     int                     screenBufferSize = 0;
     int                     displayTstateTable[312][228]{0};
     int                     displayLineAddrTable[192]{0};
-    unsigned int           displayCLUT[ 256 * 1024 ]{0};
+    unsigned int            displayCLUT[ 256 * 1024 ]{0};
     int                     displayBorderColor = 0;
 
     // Audio
