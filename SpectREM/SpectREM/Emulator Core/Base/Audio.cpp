@@ -92,22 +92,25 @@ void ZXSpectrum::audioUpdateWithTs(int tStates)
     // Loop over each tState so that the necessary audio samples can be generated
     for(int i = 0; i < tStates; i++)
     {
-        if (audioAYTs++ >= audioAYTsStep && emuUseAYSound)
+        if (emuUseAYSound)
         {
-            audioAYUpdate();
-            
-            ayOutputLeft +=audioAYChannelOutput[0];
-            ayOutputLeft +=audioAYChannelOutput[1];
-            ayOutputLeft +=audioAYChannelOutput[2];
-            ayOutputRight += audioAYChannelOutput[0];
-            ayOutputRight += audioAYChannelOutput[1];
-            ayOutputRight += audioAYChannelOutput[2];
+            if (audioAYTs++ >= audioAYTsStep)
+            {
+                audioAYUpdate();
+                
+                ayOutputLeft +=audioAYChannelOutput[0];
+                ayOutputLeft +=audioAYChannelOutput[1];
+                ayOutputLeft +=audioAYChannelOutput[2];
+                ayOutputRight += audioAYChannelOutput[0];
+                ayOutputRight += audioAYChannelOutput[1];
+                ayOutputRight += audioAYChannelOutput[2];
 
-            audioAYChannelOutput[0] = 0;
-            audioAYChannelOutput[1] = 0;
-            audioAYChannelOutput[2] = 0;
-            
-            audioAYTs -= audioAYTsStep;
+                audioAYChannelOutput[0] = 0;
+                audioAYChannelOutput[1] = 0;
+                audioAYChannelOutput[2] = 0;
+                
+                audioAYTs -= audioAYTsStep;
+            }
         }
         
         // If we have done more cycles now than the audio step counter, generate a new sample
