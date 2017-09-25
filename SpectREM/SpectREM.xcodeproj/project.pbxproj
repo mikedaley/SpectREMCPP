@@ -59,7 +59,7 @@
 		174AAFBA1F585AF100B75535 /* PixelShader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = PixelShader.fsh; sourceTree = "<group>"; };
 		177E284B1F4DD7E90053756B /* ZXSpectrum48.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZXSpectrum48.cpp; sourceTree = "<group>"; };
 		177E284E1F4DDF550053756B /* ZXSpectrum48.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ZXSpectrum48.hpp; sourceTree = "<group>"; };
-		17A0894F1F4F513300CAA178 /* MachineDetails.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MachineDetails.h; sourceTree = "<group>"; };
+		17A0894F1F4F513300CAA178 /* MachineInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MachineInfo.h; sourceTree = "<group>"; };
 		17A089501F4F5B2700CAA178 /* Keyboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Keyboard.cpp; sourceTree = "<group>"; };
 		17A089521F4F677200CAA178 /* Display.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Display.cpp; sourceTree = "<group>"; };
 		17B27F021F6877C800B811FC /* AudioQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioQueue.cpp; sourceTree = "<group>"; };
@@ -377,7 +377,7 @@
 		EDEDE7191F75563E00DAC9AE /* Base */ = {
 			isa = PBXGroup;
 			children = (
-				17A0894F1F4F513300CAA178 /* MachineDetails.h */,
+				17A0894F1F4F513300CAA178 /* MachineInfo.h */,
 				ED913FD31F30787000316E1A /* ZXSpectrum.hpp */,
 				ED913FD21F30787000316E1A /* ZXSpectrum.cpp */,
 				17A089501F4F5B2700CAA178 /* Keyboard.cpp */,
