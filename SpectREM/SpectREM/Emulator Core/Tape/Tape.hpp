@@ -203,7 +203,7 @@ private:
     TapeBlock               *tapeCurrentBlock = nullptr;    // Current tape block
     
     // Function called whenever the status of the tape changes e.g. new block, rewind, stop etc
-    TapeStatusCallback      updateStatusCallback = NULL;
+    TapeStatusCallback      updateStatusCallback = nullptr;
 };
 
 #endif /* Tape1_hpp */

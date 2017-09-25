@@ -72,13 +72,13 @@ public:
     
     // Holds the data returned when creating a Snapshot or Z80 snapshot
     struct Snap {
-        int length;
-        unsigned char *data;
+        int length = 0;
+        unsigned char *data = nullptr;
     };
     
     struct ScreenBufferData {
-        unsigned int pixels;
-        unsigned int attribute;
+        unsigned int pixels = 0;
+        unsigned int attribute = 0;
     };
         
 public:
@@ -92,6 +92,8 @@ public:
     void                    resume();
     virtual void            release();
 
+    // Main function that when called, generates an entire frame, which includes processing interrupts, beeper sound and AY Sound
+    // On completion, the displayBuffer member variable will contain RGBA formatted image data that can then be used to build a display image
     void                    generateFrame();
     
     void                    keyboardKeyDown(unsigned short key);
@@ -178,7 +180,7 @@ public:
     int                     emuROMPage = 0;
     int                     emuDisplayPage = 0;
     bool                    emuDisablePaging = true;
-    string                  emuROMPath = "";
+    string                  emuROMPath;
     bool                    emuTapeInstantLoad = 0;
     bool                    emuUseAYSound = 0;
     bool                    emuLoadTrapTriggered = 0;

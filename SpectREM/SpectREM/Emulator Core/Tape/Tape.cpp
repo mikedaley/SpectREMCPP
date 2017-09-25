@@ -198,7 +198,7 @@ Tape::Tape(TapeStatusCallback callback)
     }
     else
     {
-        updateStatusCallback = NULL;
+        updateStatusCallback = nullptr;
     }
 }
 
