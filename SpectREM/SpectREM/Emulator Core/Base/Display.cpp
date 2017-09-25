@@ -10,7 +10,7 @@
 
 #pragma mark - Spectrum displayPalette
 
-const unsigned int displayPalette[] =
+static const unsigned int displayPalette[] =
 {
     // Normal Colours in AABBGGRR format
     0xff000000, // Black
