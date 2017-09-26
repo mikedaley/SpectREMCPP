@@ -187,7 +187,7 @@ public:
     bool                    emuSaveTrapTriggered = 0;
 
     // Display
-    unsigned int            *displayBuffer = nullptr;
+    uint8_t                 *displayBuffer = nullptr;
     ScreenBufferData        *displayBufferCopy = nullptr;
     unsigned int            displayBufferIndex = 0;
     int                     screenWidth = 320;
