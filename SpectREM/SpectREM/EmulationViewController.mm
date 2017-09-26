@@ -587,6 +587,15 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     return machine->displayBuffer;
 }
 
+- (void *)getRGBADisplayBuffer
+{
+    return machine->displayRGBABuffer;
+}
+
+- (BOOL)getDisplayReady
+{
+    return machine->displayReady;
+}
 @end
 
 

@@ -65,7 +65,6 @@ void ZXSpectrum::initialise(string romPath)
 
 void ZXSpectrum::generateFrame()
 {
-    
     int currentFrameTstates = machineInfo.tsPerFrame;
     
     while (currentFrameTstates > 0 && !emuPaused)
@@ -90,14 +89,22 @@ void ZXSpectrum::generateFrame()
             currentFrameTstates -= tStates;
             
             audioUpdateWithTs(tStates);
-            
+
             if (z80Core.GetTStates() >= machineInfo.tsPerFrame)
             {
                 z80Core.ResetTStates( machineInfo.tsPerFrame );
                 z80Core.SignalInterrupt();
                 
                 displayUpdateWithTs(machineInfo.tsPerFrame - emuCurrentDisplayTs);
-                
+
+                int index = 0;
+                for (int i = 0; i < 81920; i++)
+                {
+                    int colour = displayBuffer[ i ];
+                    
+                    displayRGBABuffer[ index++ ] = displayPalette[ colour ];
+                }
+
                 emuFrameCounter++;
                 
                 displayFrameReset();

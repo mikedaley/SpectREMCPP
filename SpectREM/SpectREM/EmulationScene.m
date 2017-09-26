@@ -41,6 +41,7 @@ static NSString * const cU_DISPLAY_VIGNETTE_Y =     @"u_displayVignetteY";
 @implementation EmulationScene
 {
     SKShader *shader;
+    uint32_t rgbaBuffer[ 320 * 256 ];
 }
 
 - (void)didMoveToView:(SKView *)view
@@ -70,7 +71,7 @@ static NSString * const cU_DISPLAY_VIGNETTE_Y =     @"u_displayVignetteY";
 -(void)update:(CFTimeInterval)currentTime
 {
     [_emulationScreenTexture modifyPixelDataWithBlock:^(void *pixelData, size_t lengthInBytes) {
-        memcpy(pixelData, [self.emulationViewController getDisplayBuffer], lengthInBytes);
+        memcpy(pixelData, [self.emulationViewController getRGBADisplayBuffer], lengthInBytes);
     }];
 }
 

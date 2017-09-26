@@ -22,6 +22,29 @@ using namespace std;
 
 #pragma mark - Base ZXSpectrum class
 
+static const unsigned int displayPalette[] =
+{
+    // Normal Colours in AABBGGRR format
+    0xff000000, // Black
+    0xffc80000, // Blue
+    0xff0000c8, // Red
+    0xffc800c8, // Green
+    0xff00c800, // Magenta
+    0xffc8c800, // Cyan
+    0xff00c8c8, // Yellow
+    0xffc8c8c8, // White
+    
+    // Bright Colours
+    0xff000000,
+    0xffff0000,
+    0xff0000ff,
+    0xffff00ff,
+    0xff00ff00,
+    0xffffff00,
+    0xff00ffff,
+    0xffffffff
+};
+
 class ZXSpectrum
 {
 
@@ -30,7 +53,7 @@ public:
     static const int    cBITMAP_SIZE = 6144;
     static const int    cATTR_SIZE = 768;
     static const int    cMEMORY_PAGE_SIZE = 16384;
-
+    
     enum
     {
         eAYREGISTER_A_FINE = 0,
@@ -188,6 +211,7 @@ public:
 
     // Display
     uint8_t                 *displayBuffer = nullptr;
+    uint32_t                *displayRGBABuffer = nullptr;
     ScreenBufferData        *displayBufferCopy = nullptr;
     unsigned int            displayBufferIndex = 0;
     int                     screenWidth = 320;
@@ -197,6 +221,7 @@ public:
     int                     displayLineAddrTable[192]{0};
     uint64_t                *displayCLUT = nullptr;
     int                     displayBorderColor = 0;
+    bool                    displayReady = false;
 
     // Audio
     int                     audioEarBit = 0;

@@ -10,28 +10,7 @@
 
 #pragma mark - Spectrum displayPalette
 
-static const unsigned int displayPalette[] =
-{
-    // Normal Colours in AABBGGRR format
-    0xff000000, // Black
-    0xffc80000, // Blue
-    0xff0000c8, // Red
-    0xffc800c8, // Green
-    0xff00c800, // Magenta
-    0xffc8c800, // Cyan
-    0xff00c8c8, // Yellow
-    0xffc8c8c8, // White
-    
-    // Bright Colours
-    0xff000000,
-    0xffff0000,
-    0xff0000ff,
-    0xffff00ff,
-    0xff00ff00,
-    0xffffff00,
-    0xff00ffff,
-    0xffffffff
-};
+
 
 enum
 {
@@ -45,6 +24,7 @@ enum
 void ZXSpectrum::displaySetup()
 {
     displayBuffer = new uint8_t[ screenBufferSize ]();
+    displayRGBABuffer = new uint32_t[ screenBufferSize ]();
     displayBufferCopy = new ScreenBufferData[ machineInfo.tsPerFrame ]();
 }
 
@@ -52,9 +32,9 @@ void ZXSpectrum::displaySetup()
 
 void ZXSpectrum::displayUpdateWithTs(int tStates)
 {
-//    const uint8_t *memoryAddress = reinterpret_cast<uint8_t *>(memoryRam.data() + emuDisplayPage * cBITMAP_SIZE);
+    const uint8_t *memoryAddress = reinterpret_cast<uint8_t *>(memoryRam.data() + emuDisplayPage * cBITMAP_ADDRESS);
     const int32_t yAdjust = (machineInfo.pxVerticalBlank + machineInfo.pxVertBorder);
-    uint64_t *displayBuffer8 = reinterpret_cast<uint64_t *>(displayBuffer);
+    uint64_t *displayBuffer8 = reinterpret_cast<uint64_t *>(displayBuffer + displayBufferIndex);
     
     while (tStates > 0)
     {
@@ -67,8 +47,8 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
                 
             case eDisplayBorder:
             {
-                uint64_t *colour8 = displayCLUT + (displayBorderColor * 256);
-                *displayBuffer++ = *colour8;
+                uint64_t *colour8 = displayCLUT + (displayBorderColor * (256 * 8));
+                *displayBuffer8++ = *colour8;
                 break;
             }
 
@@ -80,8 +60,8 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
                 const uint32_t pixelAddress = displayLineAddrTable[y] + x;
                 const uint32_t attributeAddress = cBITMAP_SIZE + ((y >> 3) << 5) + x;
                 
-                const unsigned char pixelByte = memoryRam[ pixelAddress ];
-                const unsigned char attributeByte = memoryRam[ attributeAddress ];
+                const unsigned char pixelByte = memoryAddress[ pixelAddress ];
+                const unsigned char attributeByte = memoryAddress[ attributeAddress ];
 
                 uint64_t *colour8 = displayCLUT + ((attributeByte & 0x7f) * 256) + pixelByte;
                 *displayBuffer8++ = *colour8;
