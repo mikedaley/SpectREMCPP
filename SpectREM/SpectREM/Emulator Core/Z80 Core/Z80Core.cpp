@@ -425,7 +425,7 @@ void CZ80Core::Reset(bool hardReset)
 
 unsigned char CZ80Core::GetRegister(eZ80BYTEREGISTERS reg) const
 {
-	unsigned char data;
+	unsigned char data = 0;
 
 	switch (reg)
 	{
@@ -456,7 +456,7 @@ unsigned char CZ80Core::GetRegister(eZ80BYTEREGISTERS reg) const
 
 unsigned short CZ80Core::GetRegister(eZ80WORDREGISTERS reg) const
 {
-	unsigned short data;
+	unsigned short data = 0;
 
 	switch (reg)
 	{

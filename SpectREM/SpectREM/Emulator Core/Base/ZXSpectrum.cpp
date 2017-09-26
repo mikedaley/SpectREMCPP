@@ -13,11 +13,15 @@
 ZXSpectrum::ZXSpectrum()
 {
     cout << "ZXSpectrum::Constructor" << endl;
+    
+    displayCLUT = new uint64_t [32 * 1024];
 }
 
 ZXSpectrum::~ZXSpectrum()
 {
     cout << "ZXSpectrum::Destructor" << endl;
+    
+    delete [] displayCLUT;
 }
 
 #pragma mark - Initialise
@@ -68,7 +72,7 @@ void ZXSpectrum::generateFrame()
     {
         int tStates = z80Core.Execute(1, machineInfo.intLength);
         
-        if (tape->playing)
+        if (tape && tape->playing)
         {
             tape->updateWithTs(tStates);
         }
@@ -77,7 +81,7 @@ void ZXSpectrum::generateFrame()
         {
             tape->saveBlock(this);
         }
-        else if (emuLoadTrapTriggered && tape->loaded)
+        else if (emuLoadTrapTriggered && tape && tape->loaded)
         {
             tape->loadBlock(this);
         }
@@ -167,7 +171,7 @@ void ZXSpectrum::resetMachine(bool hard)
     {
         for (int i = 0; i < machineInfo.ramSize; i++)
         {
-            memoryRam[i] = arc4random_uniform(255);
+            memoryRam[i] = rand() % 255;
         }
     }
     

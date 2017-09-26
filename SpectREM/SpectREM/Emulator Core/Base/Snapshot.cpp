@@ -124,7 +124,7 @@ bool ZXSpectrum::snapshotSNALoadWithPath(const char *path)
     long size = ftell(fileHandle);
     fseek(fileHandle, 0, SEEK_SET);
     
-    unsigned char fileBytes[size];
+    unsigned char *fileBytes = new unsigned char[ size ];
     
     fread(&fileBytes, 1, size, fileHandle);
     
@@ -170,6 +170,7 @@ bool ZXSpectrum::snapshotSNALoadWithPath(const char *path)
         z80Core.SetRegister(CZ80Core::eREG_SP, z80Core.GetRegister(CZ80Core::eREG_SP) + 2);
     }
     
+    delete[] fileBytes;
     resume();
     
     return true;
@@ -368,7 +369,7 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
     long size = ftell(fileHandle);
     fseek(fileHandle, 0, SEEK_SET);
 
-    unsigned char fileBytes[ size ];
+    unsigned char *fileBytes = new unsigned char[ size ];
     
     fread(&fileBytes, 1, size, fileHandle);
     
@@ -521,6 +522,7 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
             break;
     }
     
+    delete[] fileBytes;
     resume();
 
     return true;
@@ -637,7 +639,7 @@ int ZXSpectrum::snapshotMachineInSnapshotWithPath(const char *path)
     long size = ftell(fileHandle);
     fseek(fileHandle, 0, SEEK_SET);
     
-    unsigned char fileBytes[size];
+    unsigned char *fileBytes = new unsigned char[ size ];
     
     fread(&fileBytes, 1, size, fileHandle);
     
@@ -670,6 +672,7 @@ int ZXSpectrum::snapshotMachineInSnapshotWithPath(const char *path)
     
     if (version == 1)
     {
+        delete[] fileBytes;
         return eZXSpectrum48;
     }
     
@@ -678,14 +681,17 @@ int ZXSpectrum::snapshotMachineInSnapshotWithPath(const char *path)
         hardwareType = ((unsigned char *)&fileBytes[34])[0];
         if (hardwareType == 0 || hardwareType == 1)
         {
+            delete[] fileBytes;
             return eZXSpectrum48;
         }
         else if (hardwareType == 3 || hardwareType == 4)
         {
+            delete[] fileBytes;
             return eZXSpectrum128;
         }
         else
         {
+            delete[] fileBytes;
             return eZXSpectrum48;
         }
     }
@@ -695,18 +701,22 @@ int ZXSpectrum::snapshotMachineInSnapshotWithPath(const char *path)
         hardwareType = ((unsigned char *)&fileBytes[34])[0];
         if (hardwareType == cZ80_V3_MACHINE_TYPE_48 || hardwareType == cZ80_V3_MACHINE_TYPE_48_IF1 || hardwareType == cZ80_V3_MACHINE_TYPE_48_MGT)
         {
+            delete[] fileBytes;
             return eZXSpectrum48;
         }
         else if (hardwareType == cZ80_V3_MACHINE_TYPE_128 || hardwareType == cZ80_V3_MACHINE_TYPE_128_IF1 || hardwareType == cz80_V3_MACHINE_TYPE_128_MGT)
         {
+            delete[] fileBytes;
             return eZXSpectrum128;
         }
         else if (hardwareType == cZ80_V3_MACHINE_TYPE_128_2)
         {
+            delete[] fileBytes;
             return eZXSpectrum128_2;
         }
     }
     
+    delete[] fileBytes;
     return -1;
 }
 
