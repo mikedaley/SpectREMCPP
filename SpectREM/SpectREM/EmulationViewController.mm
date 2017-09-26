@@ -161,7 +161,6 @@ static const int cSCREEN_FILL = 1;
 {
     configViewController = [storyBoard instantiateControllerWithIdentifier:@"CONFIG_VIEW_CONTROLLER"];
     [self.configEffectsView setFrameOrigin:(CGPoint){-self.configEffectsView.frame.size.width, 0}];
-    self.configEffectsView.alphaValue = 0;
     self.configScrollView.documentView = configViewController.view;
 }
 
@@ -530,9 +529,8 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     }
     
     [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
-        context.duration = 0.4;
-        context.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
-//        [self.configEffectsView.animator setAlphaValue:(self.configEffectsView.alphaValue) ? 0 : 1];
+        context.duration = 0.5;
+        context.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
         [self.configEffectsView.animator setAlphaValue:1];
         [self.configEffectsView.animator setFrame:configFrame];
     }  completionHandler:^{
