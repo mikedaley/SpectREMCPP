@@ -47,7 +47,7 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
                 
             case eDisplayBorder:
             {
-                uint64_t *colour8 = displayCLUT + (displayBorderColor * (256 * 8));
+                uint64_t *colour8 = displayCLUT + (displayBorderColor * 2048);
                 *displayBuffer8++ = *colour8;
                 break;
             }
