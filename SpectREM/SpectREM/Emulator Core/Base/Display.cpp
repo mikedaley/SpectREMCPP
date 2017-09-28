@@ -36,8 +36,6 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
     const int32_t yAdjust = (machineInfo.pxVerticalBlank + machineInfo.pxVertBorder);
     uint64_t *displayBuffer8 = reinterpret_cast<uint64_t*>(displayBuffer) + displayBufferIndex;
     
-//    cout << displayBufferIndex << endl;
-    
     while (tStates > 0)
     {
         int line = emuCurrentDisplayTs / machineInfo.tsPerLine;
