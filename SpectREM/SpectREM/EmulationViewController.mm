@@ -78,11 +78,11 @@ static const int cSCREEN_FILL = 1;
     
     storyBoard = [NSStoryboard storyboardWithName:@"Main" bundle:nil];
     
-    _scene = (EmulationScene *)[SKScene nodeWithFileNamed:@"EmulationScene"];
-    _scene.nextResponder = self;
-    _scene.emulationViewController = self;
-    _scene.scaleMode = SKSceneScaleModeFill;
-    [self.skView presentScene:_scene];
+//    _scene = (EmulationScene *)[SKScene nodeWithFileNamed:@"EmulationScene"];
+//    _scene.nextResponder = self;
+//    _scene.emulationViewController = self;
+//    _scene.scaleMode = SKSceneScaleModeFill;
+//    [self.skView presentScene:_scene];
     
     // The AudioCore uses the sound buffer to identify when a new frame should be drawn for accurate timing. The AudioQueue
     // is used to help measure usage of the audio buffer
