@@ -34,7 +34,9 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
 {
     const uint8_t *memoryAddress = reinterpret_cast<uint8_t *>(memoryRam.data() + emuDisplayPage * cBITMAP_ADDRESS);
     const int32_t yAdjust = (machineInfo.pxVerticalBlank + machineInfo.pxVertBorder);
-    uint64_t *displayBuffer8 = reinterpret_cast<uint64_t *>(displayBuffer + displayBufferIndex);
+    uint64_t *displayBuffer8 = reinterpret_cast<uint64_t*>(displayBuffer) + displayBufferIndex;
+    
+//    cout << displayBufferIndex << endl;
     
     while (tStates > 0)
     {
@@ -78,7 +80,12 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
                 break;
         }
         
-        displayBufferIndex += static_cast<uint32_t>(displayBuffer8 - reinterpret_cast<uint64_t *>(displayBuffer + displayBufferIndex)) / sizeof(uint64_t);
+        if (displayBuffer8 + displayBufferIndex < displayBuffer8)
+        {
+            cout << displayBuffer8 << " : " << displayBuffer8 + displayBufferIndex << endl;
+        }
+        displayBufferIndex += static_cast<uint32_t>(displayBuffer8 - (reinterpret_cast<uint64_t*>(displayBuffer) + displayBufferIndex));
+        
         emuCurrentDisplayTs += machineInfo.tsPerChar;
         tStates -= machineInfo.tsPerChar;
     }

@@ -100,9 +100,7 @@ void ZXSpectrum::generateFrame()
                 int index = 0;
                 for (int i = 0; i < 81920; i++)
                 {
-                    int colour = displayBuffer[ i ];
-                    
-                    displayRGBABuffer[ index++ ] = displayPalette[ colour ];
+                    displayRGBABuffer[ index++ ] = displayPalette[ displayBuffer[ i ] ];
                 }
 
                 emuFrameCounter++;

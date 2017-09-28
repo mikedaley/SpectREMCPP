@@ -115,11 +115,7 @@ static const int cSCREEN_FILL = 1;
         // Check if we have used a frames worth of buffer storage and if so then its time to generate another frame.
         if (audioQueue->bufferUsed() < 7680)
         {
-            dispatch_sync(dispatch_get_main_queue(), ^{
-                [lock lock];
-                machine->generateFrame();
-                [lock unlock];
-            });
+            machine->generateFrame();
             audioQueue->write(machine->audioBuffer, 7680);
         }
     }
