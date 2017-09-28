@@ -54,14 +54,20 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
 
             case eDisplayPaper:
             {
-                const int y = line - yAdjust;
-                const int x = (ts >> 2) - 4;
+                const int32_t y = line - yAdjust;
+                const int32_t x = (ts >> 2) - 4;
                 
                 const uint32_t pixelAddress = displayLineAddrTable[y] + x;
                 const uint32_t attributeAddress = cBITMAP_SIZE + ((y >> 3) << 5) + x;
                 
                 const unsigned char pixelByte = memoryAddress[ pixelAddress ];
-                const unsigned char attributeByte = memoryAddress[ attributeAddress ];
+                unsigned char attributeByte = memoryAddress[ attributeAddress ];
+                
+                if (emuFrameCounter & 16 && attributeByte & 0x80)
+                {
+                    // Switch ink and paper for the flash
+                    attributeByte = (attributeByte * 0xc0) | ((attributeByte >> 3) & 7) | ((attributeByte & 7) << 3);
+                }
 
                 uint64_t *colour8 = displayCLUT + ((attributeByte & 0x7f) * 256) + pixelByte;
                 *displayBuffer8++ = *colour8;
@@ -72,7 +78,7 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
                 break;
         }
         
-        displayBufferIndex += static_cast<uint32_t>(displayBuffer8 - reinterpret_cast<uint64_t *>(displayBuffer + displayBufferIndex));
+        displayBufferIndex += static_cast<uint32_t>(displayBuffer8 - reinterpret_cast<uint64_t *>(displayBuffer + displayBufferIndex)) / sizeof(uint64_t);
         emuCurrentDisplayTs += machineInfo.tsPerChar;
         tStates -= machineInfo.tsPerChar;
     }
