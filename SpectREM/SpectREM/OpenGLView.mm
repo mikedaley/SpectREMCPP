@@ -13,7 +13,7 @@
 
 @interface OpenGLView ()
 {
-    OpenGLRenderer*     _renderer;
+
 }
 
 @end
@@ -29,9 +29,9 @@
     NSOpenGLPixelFormatAttribute attrs[] =
     {
         NSOpenGLPFADoubleBuffer,
-        NSOpenGLPFADepthSize, 24,
+        NSOpenGLPFADepthSize, 16,
         NSOpenGLPFAOpenGLProfile,
-        NSOpenGLProfileVersion3_2Core,
+        NSOpenGLProfileVersion4_1Core,
         0
     };
     
@@ -58,15 +58,13 @@
 
 - (void) drawRect: (NSRect) theRect
 {
-    // Called during resize operations
-    
+    [self drawView];
+}
+
+- (void)drawView
+{
     // Avoid flickering during resize by drawing
     [[self openGLContext] makeCurrentContext];
-    
-    // We draw on a secondary thread through the display link
-    // When resizing the view, -reshape is called automatically on the main
-    // thread. Add a mutex around to avoid the threads accessing the context
-    // simultaneously when resizing
     CGLLockContext([[self openGLContext] CGLContextObj]);
     
     [_renderer render];
@@ -127,4 +125,21 @@
     
     [super renewGState];
 }
+
+- (BOOL)acceptsFirstResponder
+{
+    return YES;
+}
+
+- (void)render
+{
+    [[self openGLContext] makeCurrentContext];
+    CGLLockContext([[self openGLContext] CGLContextObj]);
+    
+    [_renderer render];
+    
+    CGLFlushDrawable([[self openGLContext] CGLContextObj]);
+    CGLUnlockContext([[self openGLContext] CGLContextObj]);
+}
+
 @end

@@ -16,6 +16,10 @@
 #import "AudioQueue.hpp"
 
 #import "AudioCore.h"
+#import "OpenGLView.h"
+#import "OpenGLRenderer.h"
+
+
 #import "EmulationScene.h"
 
 #import "ConfigurationViewController.h"
@@ -75,14 +79,9 @@ static const int cSCREEN_FILL = 1;
     [super viewDidLoad];
     
     mainBundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/Contents/Resources/"];
-    
     storyBoard = [NSStoryboard storyboardWithName:@"Main" bundle:nil];
     
-//    _scene = (EmulationScene *)[SKScene nodeWithFileNamed:@"EmulationScene"];
-//    _scene.nextResponder = self;
-//    _scene.emulationViewController = self;
-//    _scene.scaleMode = SKSceneScaleModeFill;
-//    [self.skView presentScene:_scene];
+    self.view.nextResponder = self;
     
     // The AudioCore uses the sound buffer to identify when a new frame should be drawn for accurate timing. The AudioQueue
     // is used to help measure usage of the audio buffer
@@ -95,8 +94,6 @@ static const int cSCREEN_FILL = 1;
     [Defaults setupDefaults];
     _defaults = [Defaults defaults];
     
-    lock = [NSLock new];
-    
     [self initMachineWithRomPath:mainBundlePath machineType:(int)_defaults.machineSelectedModel];
 
     [self setupConfigView];
@@ -105,21 +102,30 @@ static const int cSCREEN_FILL = 1;
     [self restoreSession];
 }
 
+#pragma mark - Audio Callback
+
 - (void)audioCallback:(int)inNumberFrames buffer:(unsigned short *)buffer
 {
     if (machine)
     {
-        // Update the queue with the reset buffer
         audioQueue->read(buffer, (inNumberFrames * 2));
         
         // Check if we have used a frames worth of buffer storage and if so then its time to generate another frame.
         if (audioQueue->bufferUsed() < 7680)
         {
             machine->generateFrame();
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[(OpenGLView *)self.view renderer] updateTextureData:machine->displayRGBABuffer];
+                [(OpenGLView *)self.view render];
+            });
+            
             audioQueue->write(machine->audioBuffer, 7680);
         }
     }
 }
+
+#pragma mark - View Methods
 
 - (void)viewWillAppear
 {
@@ -180,8 +186,6 @@ static const int cSCREEN_FILL = 1;
 
 - (void)initMachineWithRomPath:(NSString *)romPath machineType:(int)machineType
 {
-    [self.scene setPaused:YES];
-    
     if (audioCore)
     {
         [audioCore stop];
@@ -216,7 +220,6 @@ static const int cSCREEN_FILL = 1;
     [self applyDefaults];
     
     [audioCore start];
-    [self.scene setPaused:NO];
     machine->resume();
     
     [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@",
@@ -485,11 +488,11 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     NSMenuItem *menuItem = (NSMenuItem *)sender;
     if (menuItem.tag == cSCREEN_4_3)
     {
-        self.scene.scaleMode = SKSceneScaleModeAspectFit;
+
     }
     else if (menuItem.tag == cSCREEN_FILL)
     {
-        self.scene.scaleMode = SKSceneScaleModeFill;
+
     }
 }
 

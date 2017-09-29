@@ -320,46 +320,6 @@
             </objects>
             <point key="canvasLocation" x="75" y="231"/>
         </scene>
-        <!--Window Controller-->
-        <scene sceneID="1HG-EJ-AvG">
-            <objects>
-                <windowController id="Oso-Ph-pLP" sceneMemberID="viewController">
-                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="Tfn-ZT-7e3">
-                        <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
-                        <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-                        <rect key="contentRect" x="425" y="461" width="480" height="270"/>
-                        <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1418"/>
-                        <connections>
-                            <outlet property="delegate" destination="Oso-Ph-pLP" id="tzC-JM-BqG"/>
-                        </connections>
-                    </window>
-                    <connections>
-                        <segue destination="VFG-rR-yMN" kind="relationship" relationship="window.shadowedContentViewController" id="Rxt-nt-wcX"/>
-                    </connections>
-                </windowController>
-                <customObject id="Sl2-hY-G1m" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="816" y="144"/>
-        </scene>
-        <!--View Controller-->
-        <scene sceneID="ndE-zH-Une">
-            <objects>
-                <viewController id="VFG-rR-yMN" sceneMemberID="viewController">
-                    <view key="view" wantsLayer="YES" id="fWb-Zz-s3L">
-                        <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <subviews>
-                            <openGLView fixedFrame="YES" useAuxiliaryDepthBufferStencil="NO" allowOffline="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6ud-Tk-DvQ" customClass="OpenGLView">
-                                <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                            </openGLView>
-                        </subviews>
-                    </view>
-                </viewController>
-                <customObject id="bxO-mB-uvq" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="816" y="658"/>
-        </scene>
         <!--Configuration View Controller-->
         <scene sceneID="Stz-zF-gCw">
             <objects>
@@ -1102,7 +1062,7 @@
                                     </subviews>
                                 </clipView>
                                 <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="8GV-Oy-RWg">
-                                    <rect key="frame" x="0.0" y="-16" width="0.0" height="16"/>
+                                    <rect key="frame" x="0.0" y="7" width="0.0" height="16"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="Rq0-ZT-KCP">

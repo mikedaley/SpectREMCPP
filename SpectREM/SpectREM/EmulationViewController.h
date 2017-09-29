@@ -22,8 +22,6 @@ enum
 
 #pragma mark - Properties
 
-@property (assign)  IBOutlet    SKView              *skView;
-@property (strong)              EmulationScene      *scene;
 @property (weak)    IBOutlet    NSVisualEffectView  *configEffectsView;
 @property (weak)    IBOutlet    NSScrollView        *configScrollView;
 @property (strong)              Defaults            *defaults;

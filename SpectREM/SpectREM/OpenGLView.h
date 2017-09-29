@@ -9,6 +9,12 @@
 #import <Cocoa/Cocoa.h>
 #import <GLKit/GLKit.h>
 
+@class OpenGLRenderer;
+
 @interface OpenGLView : NSOpenGLView
+
+@property (strong, nonatomic) OpenGLRenderer *renderer;
+
+- (void)render;
 
 @end
