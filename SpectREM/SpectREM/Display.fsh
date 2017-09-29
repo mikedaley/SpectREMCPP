@@ -2,7 +2,6 @@
 in vec2 UV;
 out vec3 color;
 uniform sampler2D mySampler;
-uniform sampler2D samp;
 
 void main()
 {

@@ -10,8 +10,6 @@
 
 #pragma mark - Spectrum displayPalette
 
-
-
 enum
 {
     eDisplayBorder = 1,
@@ -35,6 +33,7 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
     const uint8_t *memoryAddress = reinterpret_cast<uint8_t *>(memoryRam.data() + emuDisplayPage * cBITMAP_ADDRESS);
     const int32_t yAdjust = (machineInfo.pxVerticalBlank + machineInfo.pxVertBorder);
     uint64_t *displayBuffer8 = reinterpret_cast<uint64_t*>(displayBuffer) + displayBufferIndex;
+    const uint8_t flashMask = (emuFrameCounter & 16) ? 0xff : 0x7f;
     
     while (tStates > 0)
     {
@@ -61,14 +60,8 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
                 const uint32_t attributeAddress = cBITMAP_SIZE + ((y >> 3) << 5) + x;
                 
                 const unsigned char pixelByte = memoryAddress[ pixelAddress ];
-                unsigned char attributeByte = memoryAddress[ attributeAddress ];
+                unsigned char attributeByte = displayALUT[ memoryAddress[ attributeAddress ] & flashMask];
                 
-                if (emuFrameCounter & 16 && attributeByte & 0x80)
-                {
-                    // Switch ink and paper for the flash
-                    attributeByte = (attributeByte * 0xc0) | ((attributeByte >> 3) & 7) | ((attributeByte & 7) << 3);
-                }
-
                 uint64_t *colour8 = displayCLUT + ((attributeByte & 0x7f) * 256) + pixelByte;
                 *displayBuffer8++ = *colour8;
                 break;
@@ -216,6 +209,12 @@ void ZXSpectrum::displayBuildCLUT()
                 }
             }
         }
+    }
+    
+    // Attribute LUT
+    for (int alutidx = 0; alutidx < 256; ++alutidx)
+    {
+        displayALUT[alutidx] = alutidx & 0x80 ? ((alutidx & 0xc0) | ((alutidx & 0x07) << 3) | ((alutidx & 0x38) >> 3)) : alutidx;
     }
 }
 

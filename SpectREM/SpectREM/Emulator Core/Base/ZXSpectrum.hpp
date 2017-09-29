@@ -220,6 +220,7 @@ public:
     int                     displayTstateTable[312][228]{0};
     int                     displayLineAddrTable[192]{0};
     uint64_t                *displayCLUT = nullptr;
+    uint8_t                 *displayALUT = nullptr;
     int                     displayBorderColor = 0;
     bool                    displayReady = false;
 

@@ -14,7 +14,8 @@ ZXSpectrum::ZXSpectrum()
 {
     cout << "ZXSpectrum::Constructor" << endl;
     
-    displayCLUT = new uint64_t [32 * 1024];
+    displayCLUT = new uint64_t[32 * 1024];
+    displayALUT = new uint8_t[256];
 }
 
 ZXSpectrum::~ZXSpectrum()
@@ -22,6 +23,7 @@ ZXSpectrum::~ZXSpectrum()
     cout << "ZXSpectrum::Destructor" << endl;
     
     delete [] displayCLUT;
+    delete [] displayALUT; 
 }
 
 #pragma mark - Initialise
