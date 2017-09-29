@@ -47,11 +47,11 @@ static const int cSCREEN_FILL = 1;
 @public
     ZXSpectrum                      *machine;
     Tape                            *tape;
-    AudioCore                       *audioCore;
     dispatch_source_t               displayTimer;
     NSString                        *mainBundlePath;
     bool                            configViewVisible;
     
+    AudioCore                       *audioCore;
     AudioQueue                      *audioQueue;
     short                           audioBuffer;
     
@@ -60,8 +60,6 @@ static const int cSCREEN_FILL = 1;
     ExportAccessoryViewController   *saveAccessoryController;
     NSWindowController              *tapeBrowserWindowController;
     TapeBrowserViewController       *tapeBrowserViewController;
-    NSLock *lock;
-
 }
 @end
 
@@ -116,7 +114,7 @@ static const int cSCREEN_FILL = 1;
             machine->generateFrame();
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                [[(OpenGLView *)self.view renderer] updateTextureData:machine->displayRGBABuffer];
+                [(OpenGLView *)self.view  updateTextureData:machine->displayRGBABuffer];
                 [(OpenGLView *)self.view render];
             });
             

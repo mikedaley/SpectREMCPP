@@ -809,7 +809,6 @@
                     <connections>
                         <outlet property="configEffectsView" destination="6nS-g3-5ZX" id="NRZ-hV-brx"/>
                         <outlet property="configScrollView" destination="NPe-GC-fVm" id="M6C-op-pSi"/>
-                        <outlet property="skView" destination="m2S-Jp-Qdl" id="qux-te-cT3"/>
                     </connections>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>

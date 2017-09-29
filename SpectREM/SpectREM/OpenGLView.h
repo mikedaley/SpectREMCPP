@@ -7,14 +7,14 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import <GLKit/GLKit.h>
+#import "OpenGLRenderer.h"
+#import "OpenGLView.h"
 
-@class OpenGLRenderer;
-
-@interface OpenGLView : NSOpenGLView
+@interface OpenGLView : NSOpenGLView <NSDraggingDestination>
 
 @property (strong, nonatomic) OpenGLRenderer *renderer;
 
 - (void)render;
+- (void)updateTextureData:(void *)displayBuffer;
 
 @end

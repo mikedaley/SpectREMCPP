@@ -76,7 +76,7 @@ void ZXSpectrum::generateFrame()
             tape->updateWithTs(tStates);
         }
         
-        if (emuSaveTrapTriggered)
+        if (tape && emuSaveTrapTriggered)
         {
             tape->saveBlock(this);
         }
