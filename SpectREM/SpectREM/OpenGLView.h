@@ -14,7 +14,6 @@
 
 @property (strong, nonatomic) OpenGLRenderer *renderer;
 
-- (void)render;
 - (void)updateTextureData:(void *)displayBuffer;
 
 @end

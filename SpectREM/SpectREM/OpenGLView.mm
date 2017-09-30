@@ -91,9 +91,6 @@ const GLfloat quad[] = {
     // set the clear color
     glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
     
-    glGenVertexArrays(1, &_vertexArray);
-    glBindVertexArray(_vertexArray);
-    
     [self loadShaders];
     [self setupTexture];
     [self setupQuad];
@@ -102,7 +99,14 @@ const GLfloat quad[] = {
 - (void) drawRect: (NSRect) theRect
 {
     // Avoid flickering during resize by drawing
-    [self render];
+    [[self openGLContext] makeCurrentContext];
+    CGLContextObj ctxObj = [[self openGLContext] CGLContextObj];
+    CGLLockContext(ctxObj);
+    
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    
+    CGLFlushDrawable(ctxObj);
+    CGLUnlockContext(ctxObj);
 }
 
 - (void) prepareOpenGL
@@ -122,9 +126,24 @@ const GLfloat quad[] = {
 
 - (void)setupQuad
 {
+    glGenVertexArrays(1, &_vertexArray);
+    glBindVertexArray(_vertexArray);
+
     glGenBuffers(1, &_vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(quad), quad, GL_STATIC_DRAW);
+
+    glUseProgram(_shaderProgName);
+    
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, _textureName);
+    glUniform1i(_textureID, 0);
+    
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void *)0);
+
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void *)12);
 }
 
 - (void)loadShaders
@@ -141,7 +160,7 @@ const GLfloat quad[] = {
     glBindTexture(GL_TEXTURE_2D, _textureName);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 320, 256, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 }
 
@@ -149,6 +168,18 @@ const GLfloat quad[] = {
 {
     glBindTexture(GL_TEXTURE_2D, _textureName);
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 320, 256, GL_RED, GL_UNSIGNED_BYTE, displayBuffer);
+
+    [[self openGLContext] makeCurrentContext];
+    CGLContextObj ctxObj = [[self openGLContext] CGLContextObj];
+    CGLLockContext(ctxObj);
+    
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    CGLFlushDrawable(ctxObj);
+    CGLUnlockContext(ctxObj);
 }
 
 - (void) resizeWithWidth:(GLuint)width AndHeight:(GLuint)height
@@ -156,38 +187,6 @@ const GLfloat quad[] = {
     glViewport(0, 0, width, height);
     _viewWidth = width;
     _viewHeight = height;
-}
-
-- (void) render
-{
-    [[self openGLContext] makeCurrentContext];
-    CGLContextObj ctxObj = [[self openGLContext] CGLContextObj];
-    CGLLockContext(ctxObj);
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
-    glUseProgram(_shaderProgName);
-    
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, _textureName);
-    glUniform1i(_textureID, 0);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-    
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void *)0);
-    
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void *)12);
-    
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    
-    glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
-    
-    CGLFlushDrawable(ctxObj);
-    CGLUnlockContext(ctxObj);
-
 }
 
 - (void) reshape

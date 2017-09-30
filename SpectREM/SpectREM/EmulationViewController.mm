@@ -17,10 +17,6 @@
 
 #import "AudioCore.h"
 #import "OpenGLView.h"
-#import "OpenGLRenderer.h"
-
-
-#import "EmulationScene.h"
 
 #import "ConfigurationViewController.h"
 #import "ExportAccessoryViewController.h"
@@ -115,7 +111,6 @@ static const int cSCREEN_FILL = 1;
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 [(OpenGLView *)self.view updateTextureData:machine->displayBuffer];
-                [(OpenGLView *)self.view render];
             });
             
             audioQueue->write(machine->audioBuffer, 7680);
