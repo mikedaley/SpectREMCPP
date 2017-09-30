@@ -114,7 +114,7 @@ static const int cSCREEN_FILL = 1;
             machine->generateFrame();
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                [(OpenGLView *)self.view  updateTextureData:machine->displayRGBABuffer];
+                [(OpenGLView *)self.view updateTextureData:machine->displayBuffer];
                 [(OpenGLView *)self.view render];
             });
             
@@ -534,7 +534,7 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     }
     
     [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
-        context.duration = 0.5;
+        context.duration = 0.3;
         context.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
         [self.configEffectsView.animator setAlphaValue:1];
         [self.configEffectsView.animator setFrame:configFrame];
@@ -590,11 +590,6 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 - (void *)getDisplayBuffer
 {
     return machine->displayBuffer;
-}
-
-- (void *)getRGBADisplayBuffer
-{
-    return machine->displayRGBABuffer;
 }
 
 - (BOOL)getDisplayReady

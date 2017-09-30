@@ -29,7 +29,6 @@ enum
 #pragma mark - Methods
 
 - (void *)getDisplayBuffer;
-- (void *)getRGBADisplayBuffer;
 - (BOOL)getDisplayReady;
 
 - (void)loadFileWithURL:(NSURL *)url addToRecent:(BOOL)addToRecent;

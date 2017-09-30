@@ -33,13 +33,12 @@ const GLfloat quad[] = {
 {
     NSTrackingArea *_trackingArea;
     NSWindowController *_windowController;
-
-    GLuint          _vertexBuffer;
-    GLuint          _vertexArray;
     
     GLuint          _viewWidth;
     GLuint          _viewHeight;
     
+    GLuint          _vertexBuffer;
+    GLuint          _vertexArray;
     GLuint          _shaderProgName;
     GLuint          _textureName;
     GLuint          _textureID;
@@ -50,8 +49,6 @@ const GLfloat quad[] = {
 #pragma mark -
 
 @implementation OpenGLView
-
-#pragma mark - Overridden Methods
 
 - (void) awakeFromNib
 {
@@ -98,8 +95,8 @@ const GLfloat quad[] = {
     glBindVertexArray(_vertexArray);
     
     [self loadShaders];
-    [self loadTexture];
-    [self loadQuad];
+    [self setupTexture];
+    [self setupQuad];
 }
 
 - (void) drawRect: (NSRect) theRect
@@ -121,51 +118,9 @@ const GLfloat quad[] = {
     [[self openGLContext] setValues:&swapInt forParameter:NSOpenGLCPSwapInterval];
 }
 
-- (void) reshape
-{
-    [super reshape];
-    
-    // We draw on a secondary thread through the display link. However, when
-    // resizing the view, -drawRect is called on the main thread.
-    // Add a mutex around to avoid the threads accessing the context
-    // simultaneously when resizing.
-    CGLLockContext([[self openGLContext] CGLContextObj]);
-    
-    // Get the view size in Points
-    NSRect viewRectPoints = [self bounds];
-    
-    // Points:Pixels is always 1:1 when not supporting retina resolutions
-    NSRect viewRectPixels = viewRectPoints;
-    
-    // Set the new dimensions in our renderer
-    [self resizeWithWidth:viewRectPixels.size.width
-                     AndHeight:viewRectPixels.size.height];
-    
-    CGLUnlockContext([[self openGLContext] CGLContextObj]);
-}
-
-- (void)renewGState
-{
-    // Called whenever graphics state updated (such as window resize)
-    
-    // OpenGL rendering is not synchronous with other rendering on the OSX.
-    // Therefore, call disableScreenUpdatesUntilFlush so the window server
-    // doesn't render non-OpenGL content in the window asynchronously from
-    // OpenGL content, which could cause flickering.  (non-OpenGL content
-    // includes the title bar and drawing done by the app with other APIs)
-    [[self window] disableScreenUpdatesUntilFlush];
-    
-    [super renewGState];
-}
-
-- (BOOL)acceptsFirstResponder
-{
-    return YES;
-}
-
 #pragma mark - Renderer
 
-- (void)loadQuad
+- (void)setupQuad
 {
     glGenBuffers(1, &_vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
@@ -180,19 +135,20 @@ const GLfloat quad[] = {
     _textureID = glGetUniformLocation(_shaderProgName, "mySampler");
 }
 
-- (void)loadTexture
+- (void)setupTexture
 {
     glGenTextures(1, &_textureName);
     glBindTexture(GL_TEXTURE_2D, _textureName);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 320, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 320, 256, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 }
 
 - (void)updateTextureData:(void *)displayBuffer
 {
     glBindTexture(GL_TEXTURE_2D, _textureName);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 320, 256, GL_RGBA, GL_UNSIGNED_BYTE, displayBuffer);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 320, 256, GL_RED, GL_UNSIGNED_BYTE, displayBuffer);
 }
 
 - (void) resizeWithWidth:(GLuint)width AndHeight:(GLuint)height
@@ -232,6 +188,48 @@ const GLfloat quad[] = {
     CGLFlushDrawable(ctxObj);
     CGLUnlockContext(ctxObj);
 
+}
+
+- (void) reshape
+{
+    [super reshape];
+    
+    // We draw on a secondary thread through the display link. However, when
+    // resizing the view, -drawRect is called on the main thread.
+    // Add a mutex around to avoid the threads accessing the context
+    // simultaneously when resizing.
+    CGLLockContext([[self openGLContext] CGLContextObj]);
+    
+    // Get the view size in Points
+    NSRect viewRectPoints = [self bounds];
+    
+    // Points:Pixels is always 1:1 when not supporting retina resolutions
+    NSRect viewRectPixels = viewRectPoints;
+    
+    // Set the new dimensions in our renderer
+    [self resizeWithWidth:viewRectPixels.size.width
+                AndHeight:viewRectPixels.size.height];
+    
+    CGLUnlockContext([[self openGLContext] CGLContextObj]);
+}
+
+- (void)renewGState
+{
+    // Called whenever graphics state updated (such as window resize)
+    
+    // OpenGL rendering is not synchronous with other rendering on the OSX.
+    // Therefore, call disableScreenUpdatesUntilFlush so the window server
+    // doesn't render non-OpenGL content in the window asynchronously from
+    // OpenGL content, which could cause flickering.  (non-OpenGL content
+    // includes the title bar and drawing done by the app with other APIs)
+    [[self window] disableScreenUpdatesUntilFlush];
+    
+    [super renewGState];
+}
+
+- (BOOL)acceptsFirstResponder
+{
+    return YES;
 }
 
 // Load shaders provided
@@ -283,8 +281,6 @@ GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path
         printf("%s\n", &VertexShaderErrorMessage[0]);
     }
     
-    
-    
     // Compile Fragment Shader
     printf("Compiling shader : %s\n", fragment_file_path);
     char const * FragmentSourcePointer = FragmentShaderCode.c_str();
@@ -299,8 +295,6 @@ GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path
         glGetShaderInfoLog(FragmentShaderID, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
         printf("%s\n", &FragmentShaderErrorMessage[0]);
     }
-    
-    
     
     // Link the program
     printf("Linking program\n");
@@ -317,7 +311,6 @@ GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path
         glGetProgramInfoLog(ProgramID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
         printf("%s\n", &ProgramErrorMessage[0]);
     }
-    
     
     glDetachShader(ProgramID, VertexShaderID);
     glDetachShader(ProgramID, FragmentShaderID);
@@ -373,6 +366,11 @@ GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path
         }
     }
     return NO;
+}
+
+- (void)mouseDown:(NSEvent *)event
+{
+    [self.window performWindowDragWithEvent:event];
 }
 
 @end

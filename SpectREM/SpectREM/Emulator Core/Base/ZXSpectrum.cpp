@@ -99,12 +99,6 @@ void ZXSpectrum::generateFrame()
                 
                 displayUpdateWithTs(machineInfo.tsPerFrame - emuCurrentDisplayTs);
 
-                int index = 0;
-                for (int i = 0; i < 81920; i++)
-                {
-                    displayRGBABuffer[ index++ ] = displayPalette[ displayBuffer[ i ] ];
-                }
-
                 emuFrameCounter++;
                 
                 displayFrameReset();
@@ -183,7 +177,6 @@ void ZXSpectrum::resetMachine(bool hard)
     }
     
     delete [] displayBuffer;
-    delete [] displayBufferCopy;
     
     displaySetup();
     
@@ -206,7 +199,6 @@ void ZXSpectrum::emuReset()
 void ZXSpectrum::release()
 {
     delete[] displayBuffer;
-    delete[] displayBufferCopy;
     delete[] audioBuffer;
 }
 

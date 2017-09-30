@@ -13,21 +13,21 @@
 
 #pragma mark - Constants
 
-static NSString * const cU_DISPLAY_FILTER_VALUE  =  @"u_displayFilterValue";
-static NSString * const cU_DISPLAY_BORDER_SIZE =    @"u_displayBorderSize";
-static NSString * const cU_DISPLAY_CURVATURE =      @"u_displayCurvature";
-static NSString * const cU_DISPLAY_CONTRAST =       @"u_displayContrast";
-static NSString * const cU_DISPLAY_BRIGHTNESS =     @"u_displayBrightness";
-static NSString * const cU_DISPLAY_SATURATION =     @"u_displaySaturation";
-static NSString * const cU_DISPLAY_SCAN_LINES =     @"u_displayScanLines";
-static NSString * const cU_DISPLAY_SCAN_LINE_SIZE = @"u_displayScanLineSize";
-static NSString * const cU_DISPLAY_RGB_OFFSET =     @"u_displayRGBOffset";
-static NSString * const cU_DISPLAY_HORIZONTAL_SYNC =@"u_displayHorizontalSync";
-static NSString * const cU_DISPLAY_SHOW_REFLECTION =@"u_displayShowReflection";
-static NSString * const cU_DISPLAY_REFLECTION =     @"u_displayReflection";
-static NSString * const cU_DISPLAY_SHOW_VIGNETTE =  @"u_displayShowVignette";
-static NSString * const cU_DISPLAY_VIGNETTE_X =     @"u_displayVignetteX";
-static NSString * const cU_DISPLAY_VIGNETTE_Y =     @"u_displayVignetteY";
+static NSString * const cU_DISPLAY_FILTER_VALUE  =      @"u_displayFilterValue";
+static NSString * const cU_DISPLAY_BORDER_SIZE =        @"u_displayBorderSize";
+static NSString * const cU_DISPLAY_CURVATURE =          @"u_displayCurvature";
+static NSString * const cU_DISPLAY_CONTRAST =           @"u_displayContrast";
+static NSString * const cU_DISPLAY_BRIGHTNESS =         @"u_displayBrightness";
+static NSString * const cU_DISPLAY_SATURATION =         @"u_displaySaturation";
+static NSString * const cU_DISPLAY_SCAN_LINES =         @"u_displayScanLines";
+static NSString * const cU_DISPLAY_SCAN_LINE_SIZE =     @"u_displayScanLineSize";
+static NSString * const cU_DISPLAY_RGB_OFFSET =         @"u_displayRGBOffset";
+static NSString * const cU_DISPLAY_HORIZONTAL_SYNC =    @"u_displayHorizontalSync";
+static NSString * const cU_DISPLAY_SHOW_REFLECTION =    @"u_displayShowReflection";
+static NSString * const cU_DISPLAY_REFLECTION =         @"u_displayReflection";
+static NSString * const cU_DISPLAY_SHOW_VIGNETTE =      @"u_displayShowVignette";
+static NSString * const cU_DISPLAY_VIGNETTE_X =         @"u_displayVignetteX";
+static NSString * const cU_DISPLAY_VIGNETTE_Y =         @"u_displayVignetteY";
 
 #pragma mark - Implementation 
 
@@ -70,9 +70,7 @@ static NSString * const cU_DISPLAY_VIGNETTE_Y =     @"u_displayVignetteY";
 
 -(void)update:(CFTimeInterval)currentTime
 {
-    [_emulationScreenTexture modifyPixelDataWithBlock:^(void *pixelData, size_t lengthInBytes) {
-        memcpy(pixelData, [self.emulationViewController getRGBADisplayBuffer], lengthInBytes);
-    }];
+
 }
 
 #pragma marl - Observers

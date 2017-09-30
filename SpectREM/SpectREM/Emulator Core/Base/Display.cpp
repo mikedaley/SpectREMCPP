@@ -22,8 +22,6 @@ enum
 void ZXSpectrum::displaySetup()
 {
     displayBuffer = new uint8_t[ screenBufferSize ]();
-    displayRGBABuffer = new uint32_t[ screenBufferSize ]();
-    displayBufferCopy = new ScreenBufferData[ machineInfo.tsPerFrame ]();
 }
 
 #pragma mark - Generate Screen
@@ -71,12 +69,7 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
                 break;
         }
         
-        if (displayBuffer8 + displayBufferIndex < displayBuffer8)
-        {
-            cout << displayBuffer8 << " : " << displayBuffer8 + displayBufferIndex << endl;
-        }
-        displayBufferIndex += static_cast<uint32_t>(displayBuffer8 - (reinterpret_cast<uint64_t*>(displayBuffer) + displayBufferIndex));
-        
+        displayBufferIndex += static_cast<uint32_t>(displayBuffer8 - (reinterpret_cast<uint64_t*>(displayBuffer) + displayBufferIndex));        
         emuCurrentDisplayTs += machineInfo.tsPerChar;
         tStates -= machineInfo.tsPerChar;
     }
