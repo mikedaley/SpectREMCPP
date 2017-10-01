@@ -188,7 +188,7 @@ const GLfloat quad[] = {
     NSString *vertexShaderPath = [[NSBundle mainBundle] pathForResource:@"Display" ofType:@"vsh"];
     NSString *fragmentShaderPath = [[NSBundle mainBundle] pathForResource:@"Display" ofType:@"fsh"];
     shaderProgName = LoadShaders([vertexShaderPath UTF8String], [fragmentShaderPath UTF8String]);
-    textureID = glGetUniformLocation(shaderProgName, "mySampler");
+    textureID = glGetUniformLocation(shaderProgName, "displayTexture");
     u_borderSize = glGetUniformLocation(shaderProgName, "borderSize");
 }
 
