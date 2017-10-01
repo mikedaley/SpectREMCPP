@@ -28,7 +28,7 @@ void main()
 //    vec2 x = fract(vUv);
 //    vec2 x_ = clamp(0.5 / alpha * x, 0.0, 0.5) + clamp(0.5 / alpha * (x - 1.0) + 0.5, 0.0, 0.5);
 
-    texCoord = (floor(vUv) / vec2(w, h));
+    texCoord = (vUv / vec2(w, h));
 
     float c = texture( mySampler, texCoord).r * 255;
     
