@@ -176,10 +176,6 @@ void ZXSpectrum::resetMachine(bool hard)
         }
     }
     
-    delete [] displayBuffer;
-    
-    displaySetup();
-    
     z80Core.Reset(hard);
     emuReset();
     keyboardMapReset();
