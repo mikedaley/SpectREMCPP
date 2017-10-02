@@ -30,7 +30,7 @@ public:
     static const int    cBITMAP_SIZE = 6144;
     static const int    cATTR_SIZE = 768;
     static const int    cMEMORY_PAGE_SIZE = 16384;
-
+    
     enum
     {
         eAYREGISTER_A_FINE = 0,
@@ -76,11 +76,6 @@ public:
         unsigned char *data = nullptr;
     };
     
-    struct ScreenBufferData {
-        unsigned int pixels = 0;
-        unsigned int attribute = 0;
-    };
-        
 public:
     ZXSpectrum();
     virtual ~ZXSpectrum();
@@ -187,16 +182,17 @@ public:
     bool                    emuSaveTrapTriggered = 0;
 
     // Display
-    unsigned int            *displayBuffer = nullptr;
-    ScreenBufferData        *displayBufferCopy = nullptr;
+    uint8_t                 *displayBuffer = nullptr;
     unsigned int            displayBufferIndex = 0;
     int                     screenWidth = 320;
     int                     screenHeight = 256;
     int                     screenBufferSize = 0;
     int                     displayTstateTable[312][228]{0};
     int                     displayLineAddrTable[192]{0};
-    unsigned int            displayCLUT[ 256 * 1024 ]{0};
+    uint64_t                *displayCLUT = nullptr;
+    uint8_t                 *displayALUT = nullptr;
     int                     displayBorderColor = 0;
+    bool                    displayReady = false;
 
     // Audio
     int                     audioEarBit = 0;

@@ -16,7 +16,7 @@
 #import "AudioQueue.hpp"
 
 #import "AudioCore.h"
-#import "EmulationScene.h"
+#import "OpenGLView.h"
 
 #import "ConfigurationViewController.h"
 #import "ExportAccessoryViewController.h"
@@ -43,11 +43,11 @@ static const int cSCREEN_FILL = 1;
 @public
     ZXSpectrum                      *machine;
     Tape                            *tape;
-    AudioCore                       *audioCore;
     dispatch_source_t               displayTimer;
     NSString                        *mainBundlePath;
     bool                            configViewVisible;
     
+    AudioCore                       *audioCore;
     AudioQueue                      *audioQueue;
     short                           audioBuffer;
     
@@ -73,14 +73,9 @@ static const int cSCREEN_FILL = 1;
     [super viewDidLoad];
     
     mainBundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/Contents/Resources/"];
-    
     storyBoard = [NSStoryboard storyboardWithName:@"Main" bundle:nil];
     
-    _scene = (EmulationScene *)[SKScene nodeWithFileNamed:@"EmulationScene"];
-    _scene.nextResponder = self;
-    _scene.emulationViewController = self;
-    _scene.scaleMode = SKSceneScaleModeFill;
-    [self.skView presentScene:_scene];
+    self.view.nextResponder = self;
     
     // The AudioCore uses the sound buffer to identify when a new frame should be drawn for accurate timing. The AudioQueue
     // is used to help measure usage of the audio buffer
@@ -101,21 +96,29 @@ static const int cSCREEN_FILL = 1;
     [self restoreSession];
 }
 
+#pragma mark - Audio Callback
+
 - (void)audioCallback:(int)inNumberFrames buffer:(unsigned short *)buffer
 {
     if (machine)
     {
-        // Update the queue with the reset buffer
         audioQueue->read(buffer, (inNumberFrames * 2));
         
         // Check if we have used a frames worth of buffer storage and if so then its time to generate another frame.
         if (audioQueue->bufferUsed() < 7680)
         {
             machine->generateFrame();
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [(OpenGLView *)self.view updateTextureData:machine->displayBuffer];
+            });
+            
             audioQueue->write(machine->audioBuffer, 7680);
         }
     }
 }
+
+#pragma mark - View Methods
 
 - (void)viewWillAppear
 {
@@ -161,7 +164,6 @@ static const int cSCREEN_FILL = 1;
 {
     configViewController = [storyBoard instantiateControllerWithIdentifier:@"CONFIG_VIEW_CONTROLLER"];
     [self.configEffectsView setFrameOrigin:(CGPoint){-self.configEffectsView.frame.size.width, 0}];
-    self.configEffectsView.alphaValue = 0;
     self.configScrollView.documentView = configViewController.view;
 }
 
@@ -177,48 +179,48 @@ static const int cSCREEN_FILL = 1;
 
 - (void)initMachineWithRomPath:(NSString *)romPath machineType:(int)machineType
 {
-    [self.scene setPaused:YES];
-    
-    if (audioCore)
-    {
-        [audioCore stop];
-        while (audioCore.isRunning) { };
+    @synchronized(self)
+        {
+        if (audioCore)
+        {
+            [audioCore stop];
+            while (audioCore.isRunning) { };
+        }
+        
+        if (machine) {
+            machine->pause();
+            delete machine;
+        }
+        
+        if (machineType == eZXSpectrum48)
+        {
+            machine = new ZXSpectrum48(tape);
+        }
+        else if (machineType == eZXSpectrum128)
+        {
+            machine = new ZXSpectrum128(tape);
+        }
+        else if (machineType == eZXSpectrum128_2)
+        {
+            machine = new ZXSpectrum128_2(tape);
+        }
+        else
+        {
+            NSLog(@"Unknown machine type!");
+            return;
+        }
+        
+        machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
+        
+        [self applyDefaults];
+        
+        [audioCore start];
+        machine->resume();
+        
+        [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@",
+                                    [NSString stringWithCString:machine->machineInfo.machineName
+                                                       encoding:NSUTF8StringEncoding]]];
     }
-    
-    if (machine) {
-        machine->pause();
-        delete machine;
-    }
-    
-    if (machineType == eZXSpectrum48)
-    {
-        machine = new ZXSpectrum48(tape);
-    }
-    else if (machineType == eZXSpectrum128)
-    {
-        machine = new ZXSpectrum128(tape);
-    }
-    else if (machineType == eZXSpectrum128_2)
-    {
-        machine = new ZXSpectrum128_2(tape);
-    }
-    else
-    {
-        NSLog(@"Unknown machine type!");
-        return;
-    }
-    
-    machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
-    
-    [self applyDefaults];
-    
-    [audioCore start];
-    [self.scene setPaused:NO];
-    machine->resume();
-    
-    [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@",
-                                [NSString stringWithCString:machine->machineInfo.machineName
-                                                   encoding:NSUTF8StringEncoding]]];
 }
 
 #pragma mark - Keyboard
@@ -482,11 +484,11 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     NSMenuItem *menuItem = (NSMenuItem *)sender;
     if (menuItem.tag == cSCREEN_4_3)
     {
-        self.scene.scaleMode = SKSceneScaleModeAspectFit;
+
     }
     else if (menuItem.tag == cSCREEN_FILL)
     {
-        self.scene.scaleMode = SKSceneScaleModeFill;
+
     }
 }
 
@@ -530,9 +532,8 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     }
     
     [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
-        context.duration = 0.4;
-        context.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
-//        [self.configEffectsView.animator setAlphaValue:(self.configEffectsView.alphaValue) ? 0 : 1];
+        context.duration = 0.3;
+        context.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
         [self.configEffectsView.animator setAlphaValue:1];
         [self.configEffectsView.animator setFrame:configFrame];
     }  completionHandler:^{
@@ -589,6 +590,10 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     return machine->displayBuffer;
 }
 
+- (BOOL)getDisplayReady
+{
+    return machine->displayReady;
+}
 @end
 
 

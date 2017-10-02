@@ -19,11 +19,13 @@
 		17C33DFA1F6578E600720A06 /* TapeBrowserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 17C33DF91F6578E600720A06 /* TapeBrowserViewController.m */; };
 		17C33DFE1F6583A400720A06 /* TapeCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 17C33DFD1F6583A400720A06 /* TapeCellView.m */; };
 		17EC89101F5B1FC500B6EFAF /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17EC890F1F5B1FC500B6EFAF /* AudioToolbox.framework */; };
+		ED22E0E21F7E4804004807A9 /* Display.fsh in Resources */ = {isa = PBXBuildFile; fileRef = ED22E0E01F7E45F4004807A9 /* Display.fsh */; };
+		ED22E0E31F7E4804004807A9 /* Display.vsh in Resources */ = {isa = PBXBuildFile; fileRef = ED22E0E11F7E45F4004807A9 /* Display.vsh */; };
 		ED2A6D051F6036D3003CD6CE /* ConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D041F6036D3003CD6CE /* ConfigurationViewController.m */; };
 		ED2A6D0A1F603D18003CD6CE /* NSClipView+Flipped.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D091F603D18003CD6CE /* NSClipView+Flipped.m */; };
 		ED2A6D0C1F604CD0003CD6CE /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = ED2A6D0B1F604CD0003CD6CE /* Defaults.plist */; };
 		ED2A6D101F616C43003CD6CE /* ExportAccessoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D0F1F616C43003CD6CE /* ExportAccessoryViewController.m */; };
-		ED504A621F4EE9D500BD289E /* EmulationScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = ED504A611F4EE9D500BD289E /* EmulationScene.sks */; };
+		ED4137471F7D24DE008ACB30 /* OpenGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = ED4137461F7D24DE008ACB30 /* OpenGLView.mm */; };
 		ED504A641F51BBFF00BD289E /* Snapshot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED504A631F51BBFF00BD289E /* Snapshot.cpp */; };
 		ED913F9A1F30759300316E1A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = ED913F991F30759300316E1A /* AppDelegate.m */; };
 		ED913F9D1F30759300316E1A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = ED913F9C1F30759300316E1A /* main.m */; };
@@ -46,7 +48,6 @@
 		EDC56FDC1F6EE89E00162739 /* plus2-1.ROM in Resources */ = {isa = PBXBuildFile; fileRef = EDC56FDB1F6EE89E00162739 /* plus2-1.ROM */; };
 		EDC56FDE1F6EE8A800162739 /* plus2-0.ROM in Resources */ = {isa = PBXBuildFile; fileRef = EDC56FDD1F6EE8A800162739 /* plus2-0.ROM */; };
 		EDC56FE21F6EE8ED00162739 /* ZXSpectrum128_2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDC56FE01F6EE8ED00162739 /* ZXSpectrum128_2.cpp */; };
-		EDD9ADEB1F54032C004DD728 /* EmulationView.m in Sources */ = {isa = PBXBuildFile; fileRef = EDD9ADEA1F54032C004DD728 /* EmulationView.m */; };
 		EDD9ADED1F59C111004DD728 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = EDD9ADEC1F59C111004DD728 /* Credits.rtf */; };
 		EDD9ADF11F5D6F51004DD728 /* ZXSpectrum128.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDD9ADEF1F5D6F51004DD728 /* ZXSpectrum128.cpp */; };
 		EDD9ADF41F5D89AE004DD728 /* 128-0.ROM in Resources */ = {isa = PBXBuildFile; fileRef = EDD9ADF21F5D7E10004DD728 /* 128-0.ROM */; };
@@ -73,6 +74,8 @@
 		17C33DFC1F6583A400720A06 /* TapeCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TapeCellView.h; sourceTree = "<group>"; };
 		17C33DFD1F6583A400720A06 /* TapeCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TapeCellView.m; sourceTree = "<group>"; };
 		17EC890F1F5B1FC500B6EFAF /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		ED22E0E01F7E45F4004807A9 /* Display.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = Display.fsh; sourceTree = "<group>"; };
+		ED22E0E11F7E45F4004807A9 /* Display.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = Display.vsh; sourceTree = "<group>"; };
 		ED2A6D031F6036D3003CD6CE /* ConfigurationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigurationViewController.h; sourceTree = "<group>"; };
 		ED2A6D041F6036D3003CD6CE /* ConfigurationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigurationViewController.m; sourceTree = "<group>"; };
 		ED2A6D081F603D18003CD6CE /* NSClipView+Flipped.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSClipView+Flipped.h"; sourceTree = "<group>"; };
@@ -81,7 +84,8 @@
 		ED2A6D0E1F616C43003CD6CE /* ExportAccessoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExportAccessoryViewController.h; sourceTree = "<group>"; };
 		ED2A6D0F1F616C43003CD6CE /* ExportAccessoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExportAccessoryViewController.m; sourceTree = "<group>"; };
 		ED2A6D131F669CB7003CD6CE /* Tape.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Tape.hpp; sourceTree = "<group>"; };
-		ED504A611F4EE9D500BD289E /* EmulationScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = EmulationScene.sks; sourceTree = "<group>"; };
+		ED4137451F7D24DE008ACB30 /* OpenGLView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenGLView.h; sourceTree = "<group>"; };
+		ED4137461F7D24DE008ACB30 /* OpenGLView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenGLView.mm; sourceTree = "<group>"; };
 		ED504A631F51BBFF00BD289E /* Snapshot.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Snapshot.cpp; sourceTree = "<group>"; };
 		ED913F951F30759300316E1A /* SpectREM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpectREM.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED913F981F30759300316E1A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -121,8 +125,6 @@
 		EDC56FDD1F6EE8A800162739 /* plus2-0.ROM */ = {isa = PBXFileReference; lastKnownFileType = file; path = "plus2-0.ROM"; sourceTree = "<group>"; };
 		EDC56FE01F6EE8ED00162739 /* ZXSpectrum128_2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZXSpectrum128_2.cpp; sourceTree = "<group>"; };
 		EDC56FE11F6EE8ED00162739 /* ZXSpectrum128_2.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ZXSpectrum128_2.hpp; sourceTree = "<group>"; };
-		EDD9ADE91F54032C004DD728 /* EmulationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmulationView.h; sourceTree = "<group>"; };
-		EDD9ADEA1F54032C004DD728 /* EmulationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmulationView.m; sourceTree = "<group>"; };
 		EDD9ADEC1F59C111004DD728 /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		EDD9ADEF1F5D6F51004DD728 /* ZXSpectrum128.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZXSpectrum128.cpp; sourceTree = "<group>"; };
 		EDD9ADF01F5D6F51004DD728 /* ZXSpectrum128.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ZXSpectrum128.hpp; sourceTree = "<group>"; };
@@ -146,6 +148,8 @@
 			isa = PBXGroup;
 			children = (
 				174AAFBA1F585AF100B75535 /* PixelShader.fsh */,
+				ED22E0E11F7E45F4004807A9 /* Display.vsh */,
+				ED22E0E01F7E45F4004807A9 /* Display.fsh */,
 			);
 			name = Shader;
 			sourceTree = "<group>";
@@ -298,8 +302,6 @@
 			children = (
 				ED913FA21F30759300316E1A /* EmulationScene.h */,
 				ED913FA31F30759300316E1A /* EmulationScene.m */,
-				ED504A611F4EE9D500BD289E /* EmulationScene.sks */,
-				174AAFBD1F58626E00B75535 /* Shader */,
 			);
 			name = "Emulation Scene";
 			sourceTree = "<group>";
@@ -309,8 +311,9 @@
 			children = (
 				ED913FA51F30759300316E1A /* EmulationViewController.h */,
 				ED913FA61F30759300316E1A /* EmulationViewController.mm */,
-				EDD9ADE91F54032C004DD728 /* EmulationView.h */,
-				EDD9ADEA1F54032C004DD728 /* EmulationView.m */,
+				ED4137451F7D24DE008ACB30 /* OpenGLView.h */,
+				ED4137461F7D24DE008ACB30 /* OpenGLView.mm */,
+				174AAFBD1F58626E00B75535 /* Shader */,
 			);
 			name = Emulation;
 			sourceTree = "<group>";
@@ -506,6 +509,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ED22E0E21F7E4804004807A9 /* Display.fsh in Resources */,
+				ED22E0E31F7E4804004807A9 /* Display.vsh in Resources */,
 				ED2A6D0C1F604CD0003CD6CE /* Defaults.plist in Resources */,
 				EDD9ADF41F5D89AE004DD728 /* 128-0.ROM in Resources */,
 				EDC56FDE1F6EE8A800162739 /* plus2-0.ROM in Resources */,
@@ -516,7 +521,6 @@
 				ED913FD71F30789300316E1A /* 48.ROM in Resources */,
 				ED913FA91F30759300316E1A /* Assets.xcassets in Resources */,
 				ED913FAC1F30759300316E1A /* Main.storyboard in Resources */,
-				ED504A621F4EE9D500BD289E /* EmulationScene.sks in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -534,10 +538,10 @@
 				17B5DB971F5B14A7003E7EF3 /* AudioCore.mm in Sources */,
 				EDB7F7FE1F5EE2E4003053E3 /* Tape.cpp in Sources */,
 				ED2A6D101F616C43003CD6CE /* ExportAccessoryViewController.m in Sources */,
+				ED4137471F7D24DE008ACB30 /* OpenGLView.mm in Sources */,
 				17B5DB9A1F5B14D3003E7EF3 /* Audio.cpp in Sources */,
 				1745BB631F50876E003203FE /* Contention.cpp in Sources */,
 				ED913FCB1F30781000316E1A /* Z80Core_DDOpcodes.cpp in Sources */,
-				EDD9ADEB1F54032C004DD728 /* EmulationView.m in Sources */,
 				ED913F9D1F30759300316E1A /* main.m in Sources */,
 				ED913FCA1F30781000316E1A /* Z80Core_DDCB_FDCBOpcodes.cpp in Sources */,
 				ED913FCD1F30781000316E1A /* Z80Core_FDOpcodes.cpp in Sources */,
@@ -683,13 +687,17 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_WARN_CXX0X_EXTENSIONS = YES;
 				CLANG_WARN__EXIT_TIME_DESTRUCTORS = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 3535P3U7VR;
 				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
 				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
 				INFOPLIST_FILE = SpectREM/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.71squared.SpectREM;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Debug;
 		};
@@ -699,13 +707,17 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_WARN_CXX0X_EXTENSIONS = YES;
 				CLANG_WARN__EXIT_TIME_DESTRUCTORS = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 3535P3U7VR;
 				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
 				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
 				INFOPLIST_FILE = SpectREM/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.71squared.SpectREM;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Release;
 		};

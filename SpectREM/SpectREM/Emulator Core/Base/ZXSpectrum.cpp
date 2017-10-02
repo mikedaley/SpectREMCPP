@@ -13,11 +13,17 @@
 ZXSpectrum::ZXSpectrum()
 {
     cout << "ZXSpectrum::Constructor" << endl;
+    
+    displayCLUT = new uint64_t[32 * 1024];
+    displayALUT = new uint8_t[256];
 }
 
 ZXSpectrum::~ZXSpectrum()
 {
     cout << "ZXSpectrum::Destructor" << endl;
+    
+    delete [] displayCLUT;
+    delete [] displayALUT; 
 }
 
 #pragma mark - Initialise
@@ -61,23 +67,22 @@ void ZXSpectrum::initialise(string romPath)
 
 void ZXSpectrum::generateFrame()
 {
-    
     int currentFrameTstates = machineInfo.tsPerFrame;
     
     while (currentFrameTstates > 0 && !emuPaused)
     {
         int tStates = z80Core.Execute(1, machineInfo.intLength);
         
-        if (tape->playing)
+        if (tape && tape->playing)
         {
             tape->updateWithTs(tStates);
         }
         
-        if (emuSaveTrapTriggered)
+        if (tape && emuSaveTrapTriggered)
         {
             tape->saveBlock(this);
         }
-        else if (emuLoadTrapTriggered && tape->loaded)
+        else if (emuLoadTrapTriggered && tape && tape->loaded)
         {
             tape->loadBlock(this);
         }
@@ -86,14 +91,14 @@ void ZXSpectrum::generateFrame()
             currentFrameTstates -= tStates;
             
             audioUpdateWithTs(tStates);
-            
+
             if (z80Core.GetTStates() >= machineInfo.tsPerFrame)
             {
                 z80Core.ResetTStates( machineInfo.tsPerFrame );
                 z80Core.SignalInterrupt();
                 
                 displayUpdateWithTs(machineInfo.tsPerFrame - emuCurrentDisplayTs);
-                
+
                 emuFrameCounter++;
                 
                 displayFrameReset();
@@ -167,14 +172,9 @@ void ZXSpectrum::resetMachine(bool hard)
     {
         for (int i = 0; i < machineInfo.ramSize; i++)
         {
-            memoryRam[i] = arc4random_uniform(255);
+            memoryRam[i] = rand() % 255;
         }
     }
-    
-    delete [] displayBuffer;
-    delete [] displayBufferCopy;
-    
-    displaySetup();
     
     z80Core.Reset(hard);
     emuReset();
@@ -195,7 +195,6 @@ void ZXSpectrum::emuReset()
 void ZXSpectrum::release()
 {
     delete[] displayBuffer;
-    delete[] displayBufferCopy;
     delete[] audioBuffer;
 }
 

@@ -158,10 +158,10 @@ private:
 		unsigned char	IFF2;
 		unsigned char	IM;
 
-		bool			Halted;
-		bool			EIHandled;
-		bool			IntReq;
-        bool            NMIReq;
+		bool			Halted = false;
+		bool			EIHandled = false;
+		bool			IntReq = false;
+        bool            NMIReq = false;
         
         bool            DDFDmultiByte;
         

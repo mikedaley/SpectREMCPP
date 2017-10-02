@@ -770,15 +770,15 @@
         <scene sceneID="hIz-AP-VOD">
             <objects>
                 <viewController identifier="EmulationView" id="XfG-lQ-9wD" customClass="EmulationViewController" sceneMemberID="viewController">
-                    <view key="view" wantsLayer="YES" id="m2S-Jp-Qdl" customClass="EmulationView">
+                    <view key="view" wantsLayer="YES" id="m2S-Jp-Qdl" customClass="OpenGLView">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="256"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <visualEffectView wantsLayer="YES" appearanceType="vibrantDark" fixedFrame="YES" blendingMode="withinWindow" material="dark" state="active" translatesAutoresizingMaskIntoConstraints="NO" id="6nS-g3-5ZX">
+                            <visualEffectView appearanceType="vibrantDark" fixedFrame="YES" blendingMode="withinWindow" material="dark" state="active" translatesAutoresizingMaskIntoConstraints="NO" id="6nS-g3-5ZX">
                                 <rect key="frame" x="0.0" y="0.0" width="261" height="256"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" heightSizable="YES"/>
                                 <subviews>
-                                    <scrollView wantsLayer="YES" fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" scrollerKnobStyle="light" translatesAutoresizingMaskIntoConstraints="NO" id="NPe-GC-fVm">
+                                    <scrollView fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" scrollerKnobStyle="light" translatesAutoresizingMaskIntoConstraints="NO" id="NPe-GC-fVm">
                                         <rect key="frame" x="0.0" y="0.0" width="261" height="256"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" heightSizable="YES"/>
                                         <clipView key="contentView" ambiguous="YES" drawsBackground="NO" copiesOnScroll="NO" id="GhS-6C-wUI">
@@ -809,7 +809,6 @@
                     <connections>
                         <outlet property="configEffectsView" destination="6nS-g3-5ZX" id="NRZ-hV-brx"/>
                         <outlet property="configScrollView" destination="NPe-GC-fVm" id="M6C-op-pSi"/>
-                        <outlet property="skView" destination="m2S-Jp-Qdl" id="qux-te-cT3"/>
                     </connections>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>

@@ -10,29 +10,6 @@
 
 #pragma mark - Spectrum displayPalette
 
-static const unsigned int displayPalette[] =
-{
-    // Normal Colours in AABBGGRR format
-    0xff000000, // Black
-    0xffc80000, // Blue
-    0xff0000c8, // Red
-    0xffc800c8, // Green
-    0xff00c800, // Magenta
-    0xffc8c800, // Cyan
-    0xff00c8c8, // Yellow
-    0xffc8c8c8, // White
-    
-    // Bright Colours
-    0xff000000,
-    0xffff0000,
-    0xff0000ff,
-    0xffff00ff,
-    0xff00ff00,
-    0xffffff00,
-    0xff00ffff,
-    0xffffffff
-};
-
 enum
 {
     eDisplayBorder = 1,
@@ -44,15 +21,17 @@ enum
 
 void ZXSpectrum::displaySetup()
 {
-    displayBuffer = new unsigned int[ screenBufferSize ]();
-    displayBufferCopy = new ScreenBufferData[ machineInfo.tsPerFrame ]();
+    displayBuffer = new uint8_t[ screenBufferSize ]();
 }
 
 #pragma mark - Generate Screen
 
 void ZXSpectrum::displayUpdateWithTs(int tStates)
 {
-    const int memoryAddress = emuDisplayPage * cBITMAP_ADDRESS;
+    const uint8_t *memoryAddress = reinterpret_cast<uint8_t *>(memoryRam.data() + emuDisplayPage * cBITMAP_ADDRESS);
+    const int32_t yAdjust = (machineInfo.pxVerticalBlank + machineInfo.pxVertBorder);
+    uint64_t *displayBuffer8 = reinterpret_cast<uint64_t*>(displayBuffer) + displayBufferIndex;
+    const uint8_t flashMask = (emuFrameCounter & 16) ? 0xff : 0x7f;
     
     while (tStates > 0)
     {
@@ -65,65 +44,24 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
                 
             case eDisplayBorder:
             {
-                if (displayBufferCopy[ emuCurrentDisplayTs ].attribute != displayBorderColor)
-                {
-                    displayBufferCopy[ emuCurrentDisplayTs ].attribute = displayBorderColor;
-                    
-                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayBorderColor ];
-                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayBorderColor ];
-                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayBorderColor ];
-                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayBorderColor ];
-                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayBorderColor ];
-                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayBorderColor ];
-                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayBorderColor ];
-                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayBorderColor ];
-                }
-                else
-                {
-                    displayBufferIndex += 8;
-                }
+                uint64_t *colour8 = displayCLUT + (displayBorderColor * 2048);
+                *displayBuffer8++ = *colour8;
                 break;
             }
-                
+
             case eDisplayPaper:
             {
-                const int y = line - (machineInfo.pxVerticalBlank + machineInfo.pxVertBorder);
-                const int x = (ts >> 2) - 4;
+                const int32_t y = line - yAdjust;
+                const int32_t x = (ts >> 2) - 4;
                 
-                const uint pixelAddress = displayLineAddrTable[y] + x;
-                const uint attributeAddress = cBITMAP_SIZE + ((y >> 3) << 5) + x;
+                const uint32_t pixelAddress = displayLineAddrTable[y] + x;
+                const uint32_t attributeAddress = cBITMAP_SIZE + ((y >> 3) << 5) + x;
                 
-                const unsigned char pixelByte = memoryRam[ memoryAddress + pixelAddress ];
-                 unsigned char attributeByte = memoryRam[ memoryAddress + attributeAddress ];
+                const unsigned char pixelByte = memoryAddress[ pixelAddress ];
+                unsigned char attributeByte = displayALUT[ memoryAddress[ attributeAddress ] & flashMask];
                 
-                // Only draw the bitmap if the bitmap data has changed
-                if (displayBufferCopy[ emuCurrentDisplayTs ].pixels != pixelByte ||
-                    displayBufferCopy[ emuCurrentDisplayTs ].attribute != attributeByte ||
-                    (attributeByte & 0x80))
-                {
-                    displayBufferCopy[ emuCurrentDisplayTs ].pixels = pixelByte;
-                    displayBufferCopy[ emuCurrentDisplayTs ].attribute = attributeByte;
-
-                    if ((emuFrameCounter & 16) && (attributeByte & 0x80))
-                    {
-                        attributeByte = (attributeByte & 0xc0) | ((attributeByte >> 3) & 7) | ((attributeByte & 7) <<3);
-                    }
-
-                    int index = ((attributeByte & 0x7f) * (256 * 8)) + (pixelByte * 8);
-
-                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayCLUT[ index++ ] ];
-                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayCLUT[ index++ ] ];
-                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayCLUT[ index++ ] ];
-                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayCLUT[ index++ ] ];
-                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayCLUT[ index++ ] ];
-                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayCLUT[ index++ ] ];
-                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayCLUT[ index++ ] ];
-                    displayBuffer[ displayBufferIndex++ ] = displayPalette[ displayCLUT[ index++ ] ];
-                }
-                else
-                {
-                    displayBufferIndex += 8;
-                }
+                uint64_t *colour8 = displayCLUT + ((attributeByte & 0x7f) * 256) + pixelByte;
+                *displayBuffer8++ = *colour8;
                 break;
             }
                 
@@ -131,6 +69,7 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
                 break;
         }
         
+        displayBufferIndex += static_cast<uint32_t>(displayBuffer8 - (reinterpret_cast<uint64_t*>(displayBuffer) + displayBufferIndex));        
         emuCurrentDisplayTs += machineInfo.tsPerChar;
         tStates -= machineInfo.tsPerChar;
     }
@@ -152,8 +91,8 @@ void ZXSpectrum::displayClear()
 {
     if (displayBuffer)
     {
-        delete[] displayBuffer;
-        delete[] displayBufferCopy;
+//        delete[] displayBuffer;
+//        delete[] displayBufferCopy;
         displaySetup();
     }
 }
@@ -246,6 +185,8 @@ void ZXSpectrum::displayBuildTsTable()
 void ZXSpectrum::displayBuildCLUT()
 {
     int tableIdx = 0;
+    uint8_t *displayCLUT8 = reinterpret_cast<uint8_t *>(displayCLUT);
+    
     for (int bright = 0; bright < 2; bright++)
     {
         for (int paper = 0; paper < 8; paper++)
@@ -256,11 +197,17 @@ void ZXSpectrum::displayBuildCLUT()
                 {
                     for (char pixelbit = 7; pixelbit >= 0; pixelbit--)
                     {
-                        displayCLUT[ tableIdx++ ] = (pixels & (1 << pixelbit) ? ink : paper) + (bright * 8);
+                        displayCLUT8[ tableIdx++ ] = (pixels & (1 << pixelbit) ? ink : paper) + (bright * 8);
                     }
                 }
             }
         }
+    }
+    
+    // Attribute LUT
+    for (int alutidx = 0; alutidx < 256; ++alutidx)
+    {
+        displayALUT[alutidx] = alutidx & 0x80 ? ((alutidx & 0xc0) | ((alutidx & 0x07) << 3) | ((alutidx & 0x38) >> 3)) : alutidx;
     }
 }
 

@@ -96,17 +96,17 @@ void main()
     const float border = 32 - u_displayBorderSize;
     const float new_w = w - (border * 2);
     const float new_h = h - (border * 2);
-    
+
     vec3 color;
     float yOffset = 0;
     float xOffset = 0;
     float fuzzOffset = 0;
     float largeFuzzOffset = 0;
     float staticVal = 0;
-    
+
     // Apply screen curve
     v_tex_coord = radialDistortion(v_tex_coord, u_displayCurvature);
-    
+
     // Anything outside of the screens texture coordinates just draw a fixed colour
     if (v_tex_coord.x < 0 || v_tex_coord.y < 0 || v_tex_coord.x > 1 || v_tex_coord.y > 1)
     {
@@ -117,42 +117,42 @@ void main()
         // Get the u coordinate based on the size of the new texture - this is in pixels
         float u = ((v_tex_coord.x * new_w) + border);
         float v = ((v_tex_coord.y * new_h) + border);
-        
+
         // Apply parametric nearest filtering
         vec2 vUv = vec2(u, v);
         vec2 alpha = vec2(u_displayFilterValue); // 0.5 = Linear, 0.0 = Nearest
         vec2 x = fract(vUv);
         vec2 x_ = clamp(0.5 / alpha * x, 0.0, 0.5) + clamp(0.5 / alpha * (x - 1.0) + 0.5, 0.0, 0.5);
-        
+
         vec2 texCoord = (floor(vUv) + x_) / vec2(w, h);
-        
+
         if (u_displayHorizontalSync > 0.0)
         {
             fuzzOffset = snoise(vec2(u_time * 15.0, texCoord.y * 80.0)) * 0.003;
             largeFuzzOffset = snoise(vec2(u_time * 1.0, texCoord.y * 25.0)) * 0.004;
         }
-        
+
         float y = mod(texCoord.y + yOffset, 1.0);
         xOffset = (fuzzOffset + largeFuzzOffset) * u_displayHorizontalSync;
 
         float red   =   texture2D( u_texture, vec2( texCoord.x + xOffset - 0.01 * u_displayRGBOffset, y ) ).r + staticVal;
         float green =   texture2D( u_texture, vec2( texCoord.x + xOffset, y)).g + staticVal;
         float blue  =   texture2D( u_texture, vec2( texCoord.x + xOffset + 0.01 * u_displayRGBOffset, y ) ).b + staticVal;
-        
+
         color = vec3(red,green,blue);
-        
+
         color = colorCorrection(color, u_displaySaturation, u_displayContrast, u_displayBrightness);
-        
+
         float scanline = sin(v_tex_coord.y * u_displayScanLineSize) * 0.09 * u_displayScanLines;
         color -= scanline;
-        
+
         vec3 vignette = vegnetteColor(color, texCoord, u_displayVignetteX, u_displayVignetteY);
-        
+
         if (u_displayShowVignette == 1.0)
         {
             color *= vignette;
         }
-        
+
         if (u_displayShowReflection == 1.0)
         {
             vec4 reflection_color = texture2D(u_displayReflection, texCoord);

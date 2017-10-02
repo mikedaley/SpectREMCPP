@@ -10,8 +10,6 @@
 #import <SpriteKit/SpriteKit.h>
 #import "Defaults.h"
 
-@class EmulationScene;
-
 enum
 {
     cZ80_SNAPSHOT_TYPE = 0,
@@ -22,8 +20,6 @@ enum
 
 #pragma mark - Properties
 
-@property (assign)  IBOutlet    SKView              *skView;
-@property (strong)              EmulationScene      *scene;
 @property (weak)    IBOutlet    NSVisualEffectView  *configEffectsView;
 @property (weak)    IBOutlet    NSScrollView        *configScrollView;
 @property (strong)              Defaults            *defaults;
@@ -31,6 +27,8 @@ enum
 #pragma mark - Methods
 
 - (void *)getDisplayBuffer;
+- (BOOL)getDisplayReady;
+
 - (void)loadFileWithURL:(NSURL *)url addToRecent:(BOOL)addToRecent;
 - (void)audioCallback:(int)inNumberFrames buffer:(unsigned short *)buffer;
 
