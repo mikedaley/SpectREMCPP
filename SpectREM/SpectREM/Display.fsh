@@ -12,37 +12,36 @@ uniform sampler2D displayTexture;
 // Uniforms linked to different screen settings
 uniform float borderSize;
 
+// Values to be used for the Spectrum normal and bright colours
+const float normalColor = 208.0 / 255.0;
+const float brightColor = 1.0;
+const vec3 CLUT[16] = vec3[](
+                       // Non-bright colours
+                       vec3( 0.0, 0.0, 0.0 ),
+                       vec3( 0.0, 0.0, normalColor ),
+                       vec3( normalColor, 0.0, 0.0 ),
+                       vec3( normalColor, 0.0, normalColor),
+                       vec3( 0.0, normalColor, 0.0),
+                       vec3( 0.0, normalColor, normalColor ),
+                       vec3( normalColor, normalColor, 0.0 ),
+                       vec3( normalColor, normalColor, normalColor ),
+                       
+                       // Bright colours
+                       vec3( 0.0, 0.0, 0.0 ),
+                       vec3( 0.0, 0.0, brightColor ),
+                       vec3( brightColor, 0.0, 0.0 ),
+                       vec3( brightColor, 0.0, brightColor ),
+                       vec3( 0.0, brightColor, 0.0 ),
+                       vec3( 0.0, brightColor, brightColor ),
+                       vec3( brightColor, brightColor, 0.0 ),
+                       vec3( brightColor, brightColor, brightColor )
+                       );
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Main
 ///////////////////////////////////////////////////////////////////////////////////////
 void main()
 {
-    // Calculate the non-bright colour to be used
-    float normalColor = 208.0 / 255.0;
-
-    vec3 CLUT[16] = vec3[](
-                           // Non-bright colours
-                           vec3( 0.0, 0.0, 0.0 ),
-                           vec3( 0.0, 0.0, normalColor ),
-                           vec3( normalColor, 0.0, 0.0 ),
-                           vec3( normalColor, 0.0, normalColor),
-                           vec3( 0.0, normalColor, 0.0),
-                           vec3( 0.0, normalColor, normalColor ),
-                           vec3( normalColor, normalColor, 0.0 ),
-                           vec3( normalColor, normalColor, normalColor ),
-                           
-                           // Bright colours
-                           vec3( 0.0, 0.0, 0.0 ),
-                           vec3( 0.5, 0.0, 1.0 ),
-                           vec3( 1.0, 0.0, 0.0 ),
-                           vec3( 1.0, 0.0, 1.0),
-                           vec3( 0.0, 1.0, 0.0),
-                           vec3( 0.0, 1.0, 1.0 ),
-                           vec3( 1.0, 1.0, 0.0 ),
-                           vec3( 1.0, 1.0, 1.0 )
-                           );
-    
     // Variables to be used for calculating the size of the border to be drawn
     const float w = 320;
     const float h = 256;

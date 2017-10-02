@@ -179,45 +179,48 @@ static const int cSCREEN_FILL = 1;
 
 - (void)initMachineWithRomPath:(NSString *)romPath machineType:(int)machineType
 {
-    if (audioCore)
-    {
-        [audioCore stop];
-        while (audioCore.isRunning) { };
+    @synchronized(self)
+        {
+        if (audioCore)
+        {
+            [audioCore stop];
+            while (audioCore.isRunning) { };
+        }
+        
+        if (machine) {
+            machine->pause();
+            delete machine;
+        }
+        
+        if (machineType == eZXSpectrum48)
+        {
+            machine = new ZXSpectrum48(tape);
+        }
+        else if (machineType == eZXSpectrum128)
+        {
+            machine = new ZXSpectrum128(tape);
+        }
+        else if (machineType == eZXSpectrum128_2)
+        {
+            machine = new ZXSpectrum128_2(tape);
+        }
+        else
+        {
+            NSLog(@"Unknown machine type!");
+            return;
+        }
+        
+        machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
+        
+        [self applyDefaults];
+        
+        [audioCore start];
+        machine->resume();
+        
+        [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@",
+                                    [NSString stringWithCString:machine->machineInfo.machineName
+                                                       encoding:NSUTF8StringEncoding]]];
     }
-    
-    if (machine) {
-        machine->pause();
-        delete machine;
-    }
-    
-    if (machineType == eZXSpectrum48)
-    {
-        machine = new ZXSpectrum48(tape);
-    }
-    else if (machineType == eZXSpectrum128)
-    {
-        machine = new ZXSpectrum128(tape);
-    }
-    else if (machineType == eZXSpectrum128_2)
-    {
-        machine = new ZXSpectrum128_2(tape);
-    }
-    else
-    {
-        NSLog(@"Unknown machine type!");
-        return;
-    }
-    
-    machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
-    
-    [self applyDefaults];
-    
-    [audioCore start];
-    machine->resume();
-    
-    [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@",
-                                [NSString stringWithCString:machine->machineInfo.machineName
-                                                   encoding:NSUTF8StringEncoding]]];
 }
 
 #pragma mark - Keyboard

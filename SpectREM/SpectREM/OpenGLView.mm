@@ -93,7 +93,7 @@ const GLfloat quad[] = {
     viewWidth = 320;
     viewHeight = 256;
     
-    glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 //    glEnable(GL_BLEND);
 //    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
@@ -105,15 +105,12 @@ const GLfloat quad[] = {
 - (void) drawRect: (NSRect) theRect
 {
     [[self openGLContext] makeCurrentContext];
-    CGLContextObj ctxObj = [[self openGLContext] CGLContextObj];
-    CGLLockContext(ctxObj);
+    CGLLockContext([[self openGLContext] CGLContextObj]);
     
-    glClear(GL_COLOR_BUFFER_BIT);
-
     glDrawArrays(GL_TRIANGLES, 0, 6);
     
-    CGLFlushDrawable(ctxObj);
-    CGLUnlockContext(ctxObj);
+    CGLFlushDrawable([[self openGLContext] CGLContextObj]);
+    CGLUnlockContext([[self openGLContext] CGLContextObj]);
 }
 
 - (void) prepareOpenGL
@@ -204,18 +201,14 @@ const GLfloat quad[] = {
 
 - (void)updateTextureData:(void *)displayBuffer
 {
-    glClear(GL_COLOR_BUFFER_BIT);
-    
-    glBindTexture(GL_TEXTURE_2D, textureName);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 320, 256, GL_RED, GL_UNSIGNED_BYTE, displayBuffer);
-
     [[self openGLContext] makeCurrentContext];
     CGLLockContext([[self openGLContext] CGLContextObj]);
-    
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
+
+    glBindTexture(GL_TEXTURE_2D, textureName);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 320, 256, GL_RED, GL_UNSIGNED_BYTE, displayBuffer);
     
     glProgramUniform1f(shaderProgName, u_borderSize, defaults.displayBorderSize);
+    
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
     CGLFlushDrawable([[self openGLContext] CGLContextObj]);

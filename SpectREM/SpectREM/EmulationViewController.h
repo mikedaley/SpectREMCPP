@@ -10,8 +10,6 @@
 #import <SpriteKit/SpriteKit.h>
 #import "Defaults.h"
 
-@class EmulationScene;
-
 enum
 {
     cZ80_SNAPSHOT_TYPE = 0,
