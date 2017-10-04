@@ -1,102 +1,67 @@
 #version 330
-in vec2 UV;
-out vec4 fragColor;
 
-uniform sampler2D mySampler;
+// Texture coordinates passed in from the vertex shader
+in vec2 v_texCoord;
+
+// Fragment colour final output
+out vec4 out_fragColor;
+
+// Texture to be processed
+uniform sampler2D displayTexture;
+
+// Uniforms linked to different screen settings
 uniform float borderSize;
 
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Main
+///////////////////////////////////////////////////////////////////////////////////////
 void main()
 {
+    // Calculate the non-bright colour to be used
+    float normalColor = 208.0 / 255.0;
+    
+    vec3 CLUT[16] = vec3[](
+                           // Non-bright colours
+                           vec3( 0.0, 0.0, 0.0 ),
+                           vec3( 0.0, 0.0, normalColor ),
+                           vec3( normalColor, 0.0, 0.0 ),
+                           vec3( normalColor, 0.0, normalColor),
+                           vec3( 0.0, normalColor, 0.0),
+                           vec3( 0.0, normalColor, normalColor ),
+                           vec3( normalColor, normalColor, 0.0 ),
+                           vec3( normalColor, normalColor, normalColor ),
+                           
+                           // Bright colours
+                           vec3( 0.0, 0.0, 0.0 ),
+                           vec3( 0.5, 0.0, 1.0 ),
+                           vec3( 1.0, 0.0, 0.0 ),
+                           vec3( 1.0, 0.0, 1.0),
+                           vec3( 0.0, 1.0, 0.0),
+                           vec3( 0.0, 1.0, 1.0 ),
+                           vec3( 1.0, 1.0, 0.0 ),
+                           vec3( 1.0, 1.0, 1.0 )
+                           );
+    
+    // Variables to be used for calculating the size of the border to be drawn
     const float w = 320;
     const float h = 256;
     float border = 32 - borderSize;
-    vec3 color;
-    
     float new_w = w - (border * 2);
     float new_h = h - (border * 2);
     
-    float normalColor = 0.8153;
-    
-    vec2 texCoord = UV * vec2(1.0, -1.0);
+    // Flip the Y coord otherwise the image renders upside down
+    vec2 texCoord = v_texCoord * vec2(1.0, -1.0);
     
     float u = ((texCoord.x * new_w) + border);
     float v = ((texCoord.y * new_h) - border);
-
     vec2 vUv = vec2(u, v);
-//
-//    vec2 alpha = vec2(0.5); // 0.5 = Linear, 0.0 = Nearest
-//    vec2 x = fract(vUv);
-//    vec2 x_ = clamp(0.5 / alpha * x, 0.0, 0.5) + clamp(0.5 / alpha * (x - 1.0) + 0.5, 0.0, 0.5);
-
-    texCoord = (floor(vUv) / vec2(w, h));
-
-    float c = texture( mySampler, texCoord).r * 255;
+    texCoord = (vUv / vec2(w, h));
     
-    if (c == 0)
-    {
-        color = vec3(0, 0, 0);
-    }
-    else if (c == 1)
-    {
-        color = vec3(0, 0, normalColor);
-    }
-    else if (c == 2)
-    {
-        color = vec3(normalColor, 0, 0);
-    }
-    else if (c == 3)
-    {
-        color = vec3(normalColor, 0, normalColor);
-    }
-    else if (c == 4)
-    {
-        color = vec3(0, normalColor, 0);
-    }
-    else if (c == 5)
-    {
-        color = vec3(0, normalColor, normalColor);
-    }
-    else if (c == 6)
-    {
-        color = vec3(normalColor, normalColor, 0);
-    }
-    else if (c == 7)
-    {
-        color = vec3(normalColor, normalColor, normalColor);
-    }
-
-    if (c == 8)
-    {
-        color = vec3(0, 0, 0);
-    }
-    else if (c == 9)
-    {
-        color = vec3(0, 0, 1);
-    }
-    else if (c == 10)
-    {
-        color = vec3(1, 0, 0);
-    }
-    else if (c == 11)
-    {
-        color = vec3(1, 0, 1);
-    }
-    else if (c == 12)
-    {
-        color = vec3(0, 1, 0);
-    }
-    else if (c == 13)
-    {
-        color = vec3(0, 1, 1);
-    }
-    else if (c == 14)
-    {
-        color = vec3(1, 1, 0);
-    }
-    else if (c == 15)
-    {
-        color = vec3(1, 1, 1);
-    }
+    // Get the colour to be used from the texture passed in
+    float c = texture( displayTexture, texCoord).r * 255;
     
-    fragColor = vec4(color, 1);
+    // Grab the actual colour from the lookup table
+    out_fragColor = vec4(CLUT[ int(c) ], 1.0);
 }
+
