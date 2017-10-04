@@ -49,6 +49,7 @@ const GLfloat quad[] = {
     GLuint          u_brightness;
     GLuint          u_scanlineSize;
     GLuint          u_scanlines;
+    GLuint          u_screenCurve;
     
     Defaults        *defaults;
 }
@@ -199,6 +200,7 @@ const GLfloat quad[] = {
     u_brightness = glGetUniformLocation(shaderProgName, "u_brightness");
     u_scanlineSize = glGetUniformLocation(shaderProgName, "u_scanlineSize");
     u_scanlines = glGetUniformLocation(shaderProgName, "u_scanlines");
+    u_screenCurve = glGetUniformLocation(shaderProgName, "u_screenCurve");
 }
 
 - (void)setupTexture
@@ -225,6 +227,7 @@ const GLfloat quad[] = {
     glProgramUniform1f(shaderProgName, u_brightness, defaults.displayBrightness);
     glProgramUniform1f(shaderProgName, u_scanlineSize, defaults.displayScanLineSize);
     glProgramUniform1f(shaderProgName, u_scanlines, defaults.displayScanLines);
+    glProgramUniform1f(shaderProgName, u_screenCurve, defaults.displayCurvature);
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
 

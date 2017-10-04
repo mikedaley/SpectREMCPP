@@ -16,6 +16,7 @@ uniform float u_saturation;
 uniform float u_brightness;
 uniform float u_scanlineSize;
 uniform float u_scanlines;
+uniform float u_screenCurve;
 
 // Constants for the colour lookup table
 const float normalColor = 208.0 / 255.0;
@@ -59,6 +60,16 @@ vec3 colorCorrection(vec3 color, float saturation, float contrast, float brightn
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
+// Distortion used to give the screen a curved effect
+///////////////////////////////////////////////////////////////////////////////////////
+vec2 radialDistortion(vec2 pos, float distortion)
+{
+    vec2 cc = pos - vec2(0.5, 0.5);
+    float dist = dot(cc, cc) * distortion;
+    return (pos + cc * (0.5 + dist) * dist);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
 // Main
 ///////////////////////////////////////////////////////////////////////////////////////
 void main()
@@ -70,8 +81,11 @@ void main()
     float new_w = w - (border * 2);
     float new_h = h - (border * 2);
     
+    // Apply screen curve
+    vec2 texCoord = radialDistortion(v_texCoord, u_screenCurve);
+    
     // Flip the Y coord otherwise the image renders upside down
-    vec2 texCoord = v_texCoord * vec2(1.0, -1.0);
+    texCoord = texCoord * vec2(1.0, -1.0);
     
     // Update the UV coordinates based on the size of the border
     float u = ((texCoord.x * new_w) + border);
