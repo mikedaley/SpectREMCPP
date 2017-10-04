@@ -14,6 +14,33 @@ uniform float u_borderSize;
 uniform float u_contrast;
 uniform float u_saturation;
 uniform float u_brightness;
+uniform float u_scanlineSize;
+uniform float u_scanlines;
+
+// Constants for the colour lookup table
+const float normalColor = 208.0 / 255.0;
+const float brightColor = 1.0;
+const vec3 CLUT[16] = vec3[](
+                             // Non-bright colours
+                             vec3( 0.0, 0.0, 0.0 ),
+                             vec3( 0.0, 0.0, normalColor ),
+                             vec3( normalColor, 0.0, 0.0 ),
+                             vec3( normalColor, 0.0, normalColor),
+                             vec3( 0.0, normalColor, 0.0),
+                             vec3( 0.0, normalColor, normalColor ),
+                             vec3( normalColor, normalColor, 0.0 ),
+                             vec3( normalColor, normalColor, normalColor ),
+                             
+                             // Bright colours
+                             vec3( 0.0, 0.0, 0.0 ),
+                             vec3( 0.0, 0.0, brightColor ),
+                             vec3( brightColor, 0.0, 0.0 ),
+                             vec3( brightColor, 0.0, brightColor),
+                             vec3( 0.0, brightColor, 0.0),
+                             vec3( 0.0, brightColor, brightColor ),
+                             vec3( brightColor, brightColor, 0.0 ),
+                             vec3( brightColor, brightColor, brightColor )
+                             );
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // colorCorrection used to adjust the saturation, constrast and brightness of the image
@@ -36,32 +63,6 @@ vec3 colorCorrection(vec3 color, float saturation, float contrast, float brightn
 ///////////////////////////////////////////////////////////////////////////////////////
 void main()
 {
-    // Calculate the non-bright colour to be used
-    const float normalColor = 208.0 / 255.0;
-    const float brightColor = 1.0;
-    
-    vec3 CLUT[16] = vec3[](
-                           // Non-bright colours
-                           vec3( 0.0, 0.0, 0.0 ),
-                           vec3( 0.0, 0.0, normalColor ),
-                           vec3( normalColor, 0.0, 0.0 ),
-                           vec3( normalColor, 0.0, normalColor),
-                           vec3( 0.0, normalColor, 0.0),
-                           vec3( 0.0, normalColor, normalColor ),
-                           vec3( normalColor, normalColor, 0.0 ),
-                           vec3( normalColor, normalColor, normalColor ),
-                           
-                           // Bright colours
-                           vec3( 0.0, 0.0, 0.0 ),
-                           vec3( 0.0, 0.0, brightColor ),
-                           vec3( brightColor, 0.0, 0.0 ),
-                           vec3( brightColor, 0.0, brightColor),
-                           vec3( 0.0, brightColor, 0.0),
-                           vec3( 0.0, brightColor, brightColor ),
-                           vec3( brightColor, brightColor, 0.0 ),
-                           vec3( brightColor, brightColor, brightColor )
-                           );
-    
     // Variables to be used for calculating the size of the border to be drawn
     const float w = 320;
     const float h = 256;
@@ -87,6 +88,11 @@ void main()
     // Adjust colour based on contrast, saturation and brightness
     color = colorCorrection(color, u_saturation, u_contrast, u_brightness);
     
+    // Add scanlines
+    float scanline = sin(texCoord.y * u_scanlineSize) * 0.09 * u_scanlines;
+    color -= scanline;
+    
+    // Output the final colour
     out_fragColor = vec4(color, 1.0);
 }
 
