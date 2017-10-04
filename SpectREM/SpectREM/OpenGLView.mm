@@ -44,6 +44,7 @@ const GLfloat quad[] = {
     
     GLuint          textureID;
     GLuint          u_borderSize;
+    GLuint          u_time;
     
     Defaults        *defaults;
 }
@@ -190,6 +191,7 @@ const GLfloat quad[] = {
     shaderProgName = LoadShaders([vertexShaderPath UTF8String], [fragmentShaderPath UTF8String]);
     textureID = glGetUniformLocation(shaderProgName, "mySampler");
     u_borderSize = glGetUniformLocation(shaderProgName, "borderSize");
+    u_time = glGetUniformLocation(shaderProgName, "time");
 }
 
 - (void)setupTexture
@@ -216,6 +218,7 @@ const GLfloat quad[] = {
     glEnableVertexAttribArray(1);
     
     glProgramUniform1f(shaderProgName, u_borderSize, defaults.displayBorderSize);
+    glProgramUniform1f(shaderProgName, u_time, CACurrentMediaTime());
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
     CGLFlushDrawable([[self openGLContext] CGLContextObj]);

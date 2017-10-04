@@ -93,7 +93,7 @@ void ZXSpectrum::displayClear()
     {
 //        delete[] displayBuffer;
 //        delete[] displayBufferCopy;
-        displaySetup();
+//        displaySetup();
     }
 }
 
