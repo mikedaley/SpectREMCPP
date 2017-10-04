@@ -44,6 +44,9 @@ const GLfloat quad[] = {
     
     GLuint          textureID;
     GLuint          u_borderSize;
+    GLuint          u_contrast;
+    GLuint          u_saturation;
+    GLuint          u_brightness;
     
     Defaults        *defaults;
 }
@@ -95,7 +98,7 @@ const GLfloat quad[] = {
     
     glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
     [self loadShaders];
     [self setupTexture];
@@ -108,8 +111,6 @@ const GLfloat quad[] = {
     CGLContextObj ctxObj = [[self openGLContext] CGLContextObj];
     CGLLockContext(ctxObj);
     
-    glClear(GL_COLOR_BUFFER_BIT);
-
     glDrawArrays(GL_TRIANGLES, 0, 6);
     
     CGLFlushDrawable(ctxObj);
@@ -188,8 +189,12 @@ const GLfloat quad[] = {
     NSString *vertexShaderPath = [[NSBundle mainBundle] pathForResource:@"Display" ofType:@"vsh"];
     NSString *fragmentShaderPath = [[NSBundle mainBundle] pathForResource:@"Display" ofType:@"fsh"];
     shaderProgName = LoadShaders([vertexShaderPath UTF8String], [fragmentShaderPath UTF8String]);
+    
     textureID = glGetUniformLocation(shaderProgName, "mySampler");
-    u_borderSize = glGetUniformLocation(shaderProgName, "borderSize");
+    u_borderSize = glGetUniformLocation(shaderProgName, "u_borderSize");
+    u_contrast = glGetUniformLocation(shaderProgName, "u_contrast");
+    u_saturation = glGetUniformLocation(shaderProgName, "u_saturation");
+    u_brightness = glGetUniformLocation(shaderProgName, "u_brightness");
 }
 
 - (void)setupTexture
@@ -204,18 +209,17 @@ const GLfloat quad[] = {
 
 - (void)updateTextureData:(void *)displayBuffer
 {
-    glClear(GL_COLOR_BUFFER_BIT);
-    
     glBindTexture(GL_TEXTURE_2D, textureName);
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 320, 256, GL_RED, GL_UNSIGNED_BYTE, displayBuffer);
 
     [[self openGLContext] makeCurrentContext];
     CGLLockContext([[self openGLContext] CGLContextObj]);
     
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    
     glProgramUniform1f(shaderProgName, u_borderSize, defaults.displayBorderSize);
+    glProgramUniform1f(shaderProgName, u_contrast, defaults.displayContrast);
+    glProgramUniform1f(shaderProgName, u_saturation, defaults.displaySaturation);
+    glProgramUniform1f(shaderProgName, u_brightness, defaults.displayBrightness);
+
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
     CGLFlushDrawable([[self openGLContext] CGLContextObj]);
