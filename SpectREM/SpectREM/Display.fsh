@@ -8,6 +8,7 @@ out vec4 out_fragColor;
 
 // Texture to be processed
 uniform sampler2D displayTexture;
+uniform sampler1D clutTexture;
 
 // Uniforms linked to different screen settings
 uniform float u_borderSize;
@@ -17,31 +18,6 @@ uniform float u_brightness;
 uniform float u_scanlineSize;
 uniform float u_scanlines;
 uniform float u_screenCurve;
-
-// Constants for the colour lookup table
-const float normalColor = 208.0 / 255.0;
-const float brightColor = 1.0;
-const vec3 CLUT[16] = vec3[](
-                             // Non-bright colours
-                             vec3( 0.0, 0.0, 0.0 ),
-                             vec3( 0.0, 0.0, normalColor ),
-                             vec3( normalColor, 0.0, 0.0 ),
-                             vec3( normalColor, 0.0, normalColor),
-                             vec3( 0.0, normalColor, 0.0),
-                             vec3( 0.0, normalColor, normalColor ),
-                             vec3( normalColor, normalColor, 0.0 ),
-                             vec3( normalColor, normalColor, normalColor ),
-                             
-                             // Bright colours
-                             vec3( 0.0, 0.0, 0.0 ),
-                             vec3( 0.0, 0.0, brightColor ),
-                             vec3( brightColor, 0.0, 0.0 ),
-                             vec3( brightColor, 0.0, brightColor),
-                             vec3( 0.0, brightColor, 0.0),
-                             vec3( 0.0, brightColor, brightColor ),
-                             vec3( brightColor, brightColor, 0.0 ),
-                             vec3( brightColor, brightColor, brightColor )
-                             );
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // colorCorrection used to adjust the saturation, constrast and brightness of the image
@@ -97,16 +73,16 @@ void main()
     float c = texture( displayTexture, texCoord).r * 255;
     
     // Grab the actual colour from the lookup table
-    vec3 color = CLUT[ int(c) ];
+    vec4 color = texture( clutTexture, c * 0.0625 );
     
     // Adjust colour based on contrast, saturation and brightness
-    color = colorCorrection(color, u_saturation, u_contrast, u_brightness);
+    color = vec4(colorCorrection(color.rgb, u_saturation, u_contrast, u_brightness), color.a);
     
     // Add scanlines
     float scanline = sin(texCoord.y * u_scanlineSize) * 0.09 * u_scanlines;
     color -= scanline;
     
     // Output the final colour
-    out_fragColor = vec4(color, 1.0);
+    out_fragColor = color;
 }
 

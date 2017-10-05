@@ -27,6 +27,39 @@ const GLfloat quad[] = {
      1.0f,   1.0f,  0.0f,    1.0f,  1.0f
 };
 
+typedef struct
+{
+    float r;
+    float g;
+    float b;
+    float a;
+} Color;
+
+// Constants for the colour lookup table
+const float normalColor = 208.0 / 255.0;
+const float brightColor = 1.0;
+const Color CLUT[] = {
+    // Non-bright colours
+    { 0.0, 0.0, 0.0, 1.0 },
+    { 0.0, 0.0, normalColor, 1.0 },
+    { normalColor, 0.0, 0.0, 1.0 },
+    { normalColor, 0.0, normalColor, 1.0 },
+    { 0.0, normalColor, 0.0, 1.0 },
+    { 0.0, normalColor, normalColor, 1.0 },
+    { normalColor, normalColor, 0.0, 1.0 },
+    { normalColor, normalColor, normalColor, 1.0 },
+    
+    // Bright colours
+    { 0.0, 0.0, 0.0, 1.0 },
+    { 0.0, 0.0, brightColor, 1.0 },
+    { brightColor, 0.0, 0.0, 1.0 },
+    { brightColor, 0.0, brightColor, 1.0 },
+    { 0.0, brightColor, 0.0, 1.0 },
+    { 0.0, brightColor, brightColor, 1.0 },
+    { brightColor, brightColor, 0.0, 1.0 },
+    { brightColor, brightColor, brightColor, 1.0 }
+};
+
 #pragma mark - Private Ivars
 
 @interface OpenGLView ()
@@ -41,8 +74,10 @@ const GLfloat quad[] = {
     GLuint          vertexArray;
     GLuint          shaderProgName;
     GLuint          textureName;
+    GLuint          clutTextureName;
     
     GLuint          textureID;
+    GLuint          s_clutTexture;
     GLuint          u_borderSize;
     GLuint          u_contrast;
     GLuint          u_saturation;
@@ -179,7 +214,11 @@ const GLfloat quad[] = {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureName);
     glUniform1i(textureID, 0);
-    
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_1D, clutTextureName);
+    glUniform1i(s_clutTexture, 1);
+
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void *)0);
 
@@ -194,6 +233,7 @@ const GLfloat quad[] = {
     shaderProgName = LoadShaders([vertexShaderPath UTF8String], [fragmentShaderPath UTF8String]);
     
     textureID = glGetUniformLocation(shaderProgName, "mySampler");
+    s_clutTexture = glGetUniformLocation(shaderProgName, "clutTexture");
     u_borderSize = glGetUniformLocation(shaderProgName, "u_borderSize");
     u_contrast = glGetUniformLocation(shaderProgName, "u_contrast");
     u_saturation = glGetUniformLocation(shaderProgName, "u_saturation");
@@ -211,6 +251,13 @@ const GLfloat quad[] = {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    glGenTextures(1, &clutTextureName);
+    glBindTexture(GL_TEXTURE_2D, clutTextureName);
+    glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, 16, 0, GL_RGBA, GL_FLOAT, CLUT);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
 }
 
 - (void)updateTextureData:(void *)displayBuffer
