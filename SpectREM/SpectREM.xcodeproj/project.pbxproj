@@ -25,6 +25,7 @@
 		ED2A6D0A1F603D18003CD6CE /* NSClipView+Flipped.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D091F603D18003CD6CE /* NSClipView+Flipped.m */; };
 		ED2A6D0C1F604CD0003CD6CE /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = ED2A6D0B1F604CD0003CD6CE /* Defaults.plist */; };
 		ED2A6D101F616C43003CD6CE /* ExportAccessoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D0F1F616C43003CD6CE /* ExportAccessoryViewController.m */; };
+		ED3C39371F86904700FA445E /* Texture.fsh in Resources */ = {isa = PBXBuildFile; fileRef = ED3C39361F86904700FA445E /* Texture.fsh */; };
 		ED4137471F7D24DE008ACB30 /* OpenGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = ED4137461F7D24DE008ACB30 /* OpenGLView.mm */; };
 		ED504A621F4EE9D500BD289E /* EmulationScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = ED504A611F4EE9D500BD289E /* EmulationScene.sks */; };
 		ED504A641F51BBFF00BD289E /* Snapshot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED504A631F51BBFF00BD289E /* Snapshot.cpp */; };
@@ -85,6 +86,7 @@
 		ED2A6D0E1F616C43003CD6CE /* ExportAccessoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExportAccessoryViewController.h; sourceTree = "<group>"; };
 		ED2A6D0F1F616C43003CD6CE /* ExportAccessoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExportAccessoryViewController.m; sourceTree = "<group>"; };
 		ED2A6D131F669CB7003CD6CE /* Tape.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Tape.hpp; sourceTree = "<group>"; };
+		ED3C39361F86904700FA445E /* Texture.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = Texture.fsh; sourceTree = "<group>"; };
 		ED4137451F7D24DE008ACB30 /* OpenGLView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenGLView.h; sourceTree = "<group>"; };
 		ED4137461F7D24DE008ACB30 /* OpenGLView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenGLView.mm; sourceTree = "<group>"; };
 		ED504A611F4EE9D500BD289E /* EmulationScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = EmulationScene.sks; sourceTree = "<group>"; };
@@ -151,6 +153,7 @@
 			children = (
 				174AAFBA1F585AF100B75535 /* PixelShader.fsh */,
 				ED22E0E11F7E45F4004807A9 /* Display.vsh */,
+				ED3C39361F86904700FA445E /* Texture.fsh */,
 				ED22E0E01F7E45F4004807A9 /* Display.fsh */,
 			);
 			name = Shader;
@@ -517,6 +520,7 @@
 				ED2A6D0C1F604CD0003CD6CE /* Defaults.plist in Resources */,
 				EDD9ADF41F5D89AE004DD728 /* 128-0.ROM in Resources */,
 				EDC56FDE1F6EE8A800162739 /* plus2-0.ROM in Resources */,
+				ED3C39371F86904700FA445E /* Texture.fsh in Resources */,
 				EDD9ADF51F5D89AE004DD728 /* 128-1.ROM in Resources */,
 				EDC56FDC1F6EE89E00162739 /* plus2-1.ROM in Resources */,
 				174AAFBC1F585DCC00B75535 /* PixelShader.fsh in Resources */,

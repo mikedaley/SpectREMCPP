@@ -8,7 +8,6 @@ out vec4 out_fragColor;
 
 // Texture to be processed
 uniform sampler2D displayTexture;
-uniform sampler1D clutTexture;
 
 // Uniforms linked to different screen settings
 uniform float u_borderSize;
@@ -18,6 +17,7 @@ uniform float u_brightness;
 uniform float u_scanlineSize;
 uniform float u_scanlines;
 uniform float u_screenCurve;
+uniform float u_pixelFilterValue;
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // colorCorrection used to adjust the saturation, constrast and brightness of the image
@@ -56,33 +56,44 @@ void main()
     float border = 32 - u_borderSize;
     float new_w = w - (border * 2);
     float new_h = h - (border * 2);
+    vec4 color;
     
     // Apply screen curve
     vec2 texCoord = radialDistortion(v_texCoord, u_screenCurve);
+    vec2 scanTexCoord = texCoord;
     
-    // Flip the Y coord otherwise the image renders upside down
-    texCoord = texCoord * vec2(1.0, -1.0);
-    
-    // Update the UV coordinates based on the size of the border
-    float u = ((texCoord.x * new_w) + border);
-    float v = ((texCoord.y * new_h) - border);
-    vec2 vUv = vec2(u, v);
-    texCoord = (vUv / vec2(w, h));
-    
-    // Get the colour to be used from the texture passed in
-    float c = texture( displayTexture, texCoord).r * 255;
-    
-    // Grab the actual colour from the lookup table
-    vec4 color = texture( clutTexture, c * 0.0625 );
-    
-    // Adjust colour based on contrast, saturation and brightness
-    color = vec4(colorCorrection(color.rgb, u_saturation, u_contrast, u_brightness), color.a);
-    
-    // Add scanlines
-    float scanline = sin(texCoord.y * u_scanlineSize) * 0.09 * u_scanlines;
-    color -= scanline;
+    if (texCoord.x < 0 || texCoord.y < 0 || texCoord.x > 1 || texCoord.y > 1)
+    {
+        color = vec4(0.1, 0.1, 0.1, 1.0);
+    }
+    else
+    {
+        // Flip the Y coord otherwise the image renders upside down
+        texCoord = texCoord * vec2(1.0, -1.0);
+        
+        // Update the UV coordinates based on the size of the border
+        float u = ((texCoord.x * new_w) + border);
+        float v = ((texCoord.y * new_h) - border);
+        
+        // Apply pixel filtering
+        vec2 vUv = vec2(u, v);
+        vec2 alpha = vec2(u_pixelFilterValue); // 0.5 = Linear, 0.0 = Nearest
+        vec2 x = fract(vUv);
+        vec2 x_ = clamp(0.5 / alpha * x, 0.0, 0.5) + clamp(0.5 / alpha * (x - 1.0) + 0.5, 0.0, 0.5);
+        texCoord = (floor(vUv) + x_) / vec2(w, h);
+
+        // Grab the color from the texture
+        color = texture( displayTexture, texCoord );
+        
+        // Adjust colour based on contrast, saturation and brightness
+        color = vec4(colorCorrection(color.rgb, u_saturation, u_contrast, u_brightness), color.a);
+        
+        // Add scanlines
+        float scanline = sin(scanTexCoord.y * u_scanlineSize) * 0.09 * u_scanlines;
+        color -= scanline;
+    }
     
     // Output the final colour
-    out_fragColor = color;
+    out_fragColor = vec4(color.rgb, 1.0);
 }
 

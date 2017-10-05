@@ -64,7 +64,7 @@ void ZXSpectrum48::loadDefaultROM()
 
 #pragma mark - ULA
 
-unsigned char ZXSpectrum48::coreIORead(unsigned short address)
+inline unsigned char ZXSpectrum48::coreIORead(unsigned short address)
 {
     bool contended = false;
     int memoryPage = address / cMEMORY_PAGE_SIZE;
@@ -116,7 +116,7 @@ unsigned char ZXSpectrum48::coreIORead(unsigned short address)
     return result;
 }
 
-void ZXSpectrum48::coreIOWrite(unsigned short address, unsigned char data)
+inline void ZXSpectrum48::coreIOWrite(unsigned short address, unsigned char data)
 {
     bool contended = false;
     int memoryPage = address / cMEMORY_PAGE_SIZE;
@@ -156,7 +156,7 @@ void ZXSpectrum48::coreIOWrite(unsigned short address, unsigned char data)
 
 #pragma mark - Memory Read/Write
 
-void ZXSpectrum48::coreMemoryWrite(unsigned short address, unsigned char data)
+inline void ZXSpectrum48::coreMemoryWrite(unsigned short address, unsigned char data)
 {
     if (address < cROM_SIZE)
     {
@@ -170,7 +170,7 @@ void ZXSpectrum48::coreMemoryWrite(unsigned short address, unsigned char data)
     memoryRam[address] = data;
 }
 
-unsigned char ZXSpectrum48::coreMemoryRead(unsigned short address)
+inline unsigned char ZXSpectrum48::coreMemoryRead(unsigned short address)
 {
     if (address < cROM_SIZE)
     {
@@ -182,7 +182,7 @@ unsigned char ZXSpectrum48::coreMemoryRead(unsigned short address)
 
 #pragma mark - Debug Memory Read/Write
 
-unsigned char ZXSpectrum48::coreDebugRead(unsigned int address, void *data)
+inline unsigned char ZXSpectrum48::coreDebugRead(unsigned int address, void *data)
 {
     if (address < cROM_SIZE)
     {
@@ -192,7 +192,7 @@ unsigned char ZXSpectrum48::coreDebugRead(unsigned int address, void *data)
     return memoryRam[address];
 }
 
-void ZXSpectrum48::coreDebugWrite(unsigned int address, unsigned char byte, void *data)
+inline void ZXSpectrum48::coreDebugWrite(unsigned int address, unsigned char byte, void *data)
 {
     if (address < cROM_SIZE)
     {

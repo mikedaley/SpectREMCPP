@@ -60,6 +60,10 @@ const Color CLUT[] = {
     { brightColor, brightColor, brightColor, 1.0 }
 };
 
+const GLuint textureUnit0 = 0;
+const GLuint textureUnit1 = 1;
+const GLuint textureUnit2 = 2;
+
 #pragma mark - Private Ivars
 
 @interface OpenGLView ()
@@ -72,11 +76,13 @@ const Color CLUT[] = {
     
     GLuint          vertexBuffer;
     GLuint          vertexArray;
-    GLuint          shaderProgName;
+    GLuint          shaderSecondPass;
+    GLuint          shaderFirstPass;
     GLuint          textureName;
     GLuint          clutTextureName;
     
-    GLuint          textureID;
+    GLuint          s_displayTexture;
+    GLuint          s_texture;
     GLuint          s_clutTexture;
     GLuint          u_borderSize;
     GLuint          u_contrast;
@@ -85,6 +91,10 @@ const Color CLUT[] = {
     GLuint          u_scanlineSize;
     GLuint          u_scanlines;
     GLuint          u_screenCurve;
+    GLuint          u_pixelFilterValue;
+    
+    GLuint          frameBufferName;
+    GLuint          renderedTexture;
     
     Defaults        *defaults;
 }
@@ -136,7 +146,7 @@ const Color CLUT[] = {
     
     glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
     glEnable(GL_BLEND);
-//    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
     [self loadShaders];
     [self setupTexture];
@@ -203,25 +213,33 @@ const Color CLUT[] = {
 
 - (void)setupQuad
 {
+    // Generate the Vertex array and bind the vertex buffer to it.
     glGenVertexArrays(1, &vertexArray);
     glBindVertexArray(vertexArray);
     glGenBuffers(1, &vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(quad), quad, GL_STATIC_DRAW);
 
-    glUseProgram(shaderProgName);
+    // Make sure we are using the shader program we have compiled
+    glUseProgram(shaderSecondPass);
     
+    // Bind texture 0 to the sampler2D in the fragment shader. This is the texture output by the emulator
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureName);
-    glUniform1i(textureID, 0);
+    glUniform1i(s_displayTexture, textureUnit0);
 
+    // Bind texture unit 1 to the sampler1D in the fragment shader. This is the CLUT texture
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_1D, clutTextureName);
-    glUniform1i(s_clutTexture, 1);
+    glUniform1i(s_clutTexture, textureUnit1);
 
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, renderedTexture);
+    glUniform1i(s_texture, textureUnit2);
+
+    // Enable and configure the vertex and texture pointers
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void *)0);
-
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void *)12);
 }
@@ -229,22 +247,31 @@ const Color CLUT[] = {
 - (void)loadShaders
 {
     NSString *vertexShaderPath = [[NSBundle mainBundle] pathForResource:@"Display" ofType:@"vsh"];
-    NSString *fragmentShaderPath = [[NSBundle mainBundle] pathForResource:@"Display" ofType:@"fsh"];
-    shaderProgName = LoadShaders([vertexShaderPath UTF8String], [fragmentShaderPath UTF8String]);
+    NSString *fragmentShaderPath = [[NSBundle mainBundle] pathForResource:@"Texture" ofType:@"fsh"];
+    shaderFirstPass = LoadShaders([vertexShaderPath UTF8String], [fragmentShaderPath UTF8String]);
+
+    s_displayTexture = glGetUniformLocation(shaderFirstPass, "displayTexture");
+    s_clutTexture = glGetUniformLocation(shaderFirstPass, "clutTexture");
+
+    vertexShaderPath = [[NSBundle mainBundle] pathForResource:@"Display" ofType:@"vsh"];
+    fragmentShaderPath = [[NSBundle mainBundle] pathForResource:@"Display" ofType:@"fsh"];
+    shaderSecondPass = LoadShaders([vertexShaderPath UTF8String], [fragmentShaderPath UTF8String]);
     
-    textureID = glGetUniformLocation(shaderProgName, "mySampler");
-    s_clutTexture = glGetUniformLocation(shaderProgName, "clutTexture");
-    u_borderSize = glGetUniformLocation(shaderProgName, "u_borderSize");
-    u_contrast = glGetUniformLocation(shaderProgName, "u_contrast");
-    u_saturation = glGetUniformLocation(shaderProgName, "u_saturation");
-    u_brightness = glGetUniformLocation(shaderProgName, "u_brightness");
-    u_scanlineSize = glGetUniformLocation(shaderProgName, "u_scanlineSize");
-    u_scanlines = glGetUniformLocation(shaderProgName, "u_scanlines");
-    u_screenCurve = glGetUniformLocation(shaderProgName, "u_screenCurve");
+    // Grab the location of the uniforms and samplers in the compiled program
+    s_texture = glGetUniformLocation(shaderSecondPass, "displayTexture");
+    u_borderSize = glGetUniformLocation(shaderSecondPass, "u_borderSize");
+    u_contrast = glGetUniformLocation(shaderSecondPass, "u_contrast");
+    u_saturation = glGetUniformLocation(shaderSecondPass, "u_saturation");
+    u_brightness = glGetUniformLocation(shaderSecondPass, "u_brightness");
+    u_scanlineSize = glGetUniformLocation(shaderSecondPass, "u_scanlineSize");
+    u_scanlines = glGetUniformLocation(shaderSecondPass, "u_scanlines");
+    u_screenCurve = glGetUniformLocation(shaderSecondPass, "u_screenCurve");
+    u_pixelFilterValue = glGetUniformLocation(shaderSecondPass, "u_pixelFilterValue");
 }
 
 - (void)setupTexture
 {
+    // Setup the OpenGL texture data storage for the emulator output data. This is stored as a 1 byte per pixel array
     glGenTextures(1, &textureName);
     glBindTexture(GL_TEXTURE_2D, textureName);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 320, 256, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
@@ -252,29 +279,66 @@ const Color CLUT[] = {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
+    // Setup the OpenGL texture data storage for the CLUT data. This provides the colour to be used based on the value stored
+    // in the emulator image output data and is used within the fragment shader to pick the right colour to display
     glGenTextures(1, &clutTextureName);
     glBindTexture(GL_TEXTURE_2D, clutTextureName);
     glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, 16, 0, GL_RGBA, GL_FLOAT, CLUT);
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
+    
+    // Setup frame buffer to render into
+    glGenFramebuffers(1, &frameBufferName);
+    glBindFramebuffer(GL_FRAMEBUFFER, frameBufferName);
+    glGenTextures(1, &renderedTexture);
+    glBindTexture(GL_TEXTURE_2D, renderedTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 320, 256, 0, GL_RGBA, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderedTexture, 0);
+    GLenum drawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
+    glDrawBuffers(1, drawBuffers);
+    
+    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    {
+        NSLog(@"NO FRAME BUFFER");
+    }
 }
 
 - (void)updateTextureData:(void *)displayBuffer
 {
-    glBindTexture(GL_TEXTURE_2D, textureName);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 320, 256, GL_RED, GL_UNSIGNED_BYTE, displayBuffer);
-
     [[self openGLContext] makeCurrentContext];
     CGLLockContext([[self openGLContext] CGLContextObj]);
+ 
+    glBindFramebuffer(GL_FRAMEBUFFER, frameBufferName);
+    glViewport(0, 0, 320, 256);
+    glUseProgram(shaderFirstPass);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textureName);
+    glUniform1i(s_displayTexture, 0);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 320, 256, GL_RED, GL_UNSIGNED_BYTE, displayBuffer);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, clutTextureName);
+    glUniform1i(s_clutTexture, 1);
     
-    glProgramUniform1f(shaderProgName, u_borderSize, defaults.displayBorderSize);
-    glProgramUniform1f(shaderProgName, u_contrast, defaults.displayContrast);
-    glProgramUniform1f(shaderProgName, u_saturation, defaults.displaySaturation);
-    glProgramUniform1f(shaderProgName, u_brightness, defaults.displayBrightness);
-    glProgramUniform1f(shaderProgName, u_scanlineSize, defaults.displayScanLineSize);
-    glProgramUniform1f(shaderProgName, u_scanlines, defaults.displayScanLines);
-    glProgramUniform1f(shaderProgName, u_screenCurve, defaults.displayCurvature);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, viewWidth, viewHeight);
+    glUseProgram(shaderSecondPass);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, renderedTexture);
+    glUniform1i(s_texture, 0);
+
+    glProgramUniform1f(shaderSecondPass, u_borderSize, defaults.displayBorderSize);
+    glProgramUniform1f(shaderSecondPass, u_contrast, defaults.displayContrast);
+    glProgramUniform1f(shaderSecondPass, u_saturation, defaults.displaySaturation);
+    glProgramUniform1f(shaderSecondPass, u_brightness, defaults.displayBrightness);
+    glProgramUniform1f(shaderSecondPass, u_scanlineSize, defaults.displayScanLineSize);
+    glProgramUniform1f(shaderSecondPass, u_scanlines, defaults.displayScanLines);
+    glProgramUniform1f(shaderSecondPass, u_screenCurve, defaults.displayCurvature);
+    glProgramUniform1f(shaderSecondPass, u_pixelFilterValue, defaults.displayPixelFilterValue);
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
