@@ -239,7 +239,7 @@ static OSStatus renderAudio(void *inRefCon, AudioUnitRenderActionFlags *ioAction
     EmulationViewController *callback = (__bridge EmulationViewController *)inRefCon;
     
     // Grab the buffer that core audio has passed in.
-    unsigned short *buffer = (unsigned short *)ioData->mBuffers[0].mData;
+    uint16_t *buffer = (uint16_t *)ioData->mBuffers[0].mData;
     
     // Reset the buffer to prevent any odd noises being played when a machine starts up
     memset(buffer, 0, inNumberFrames << 2);
