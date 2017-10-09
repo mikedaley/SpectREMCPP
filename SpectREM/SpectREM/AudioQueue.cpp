@@ -27,14 +27,14 @@ AudioQueue::~AudioQueue()
 }
 
 // Write the supplied number of bytes into the queues buffer from the supplied buffer pointer
-uint32_t AudioQueue::write(unsigned short *buffer, int count)
+uint32_t AudioQueue::write(uint16_t *buffer, uint32_t count)
 {
     if (!count) {
         return 0;
     }
     
-    int t;
-    int i;
+    uint32_t t;
+    uint32_t i;
     
     t = kSpace;
     
@@ -63,10 +63,10 @@ uint32_t AudioQueue::write(unsigned short *buffer, int count)
 }
 
 // Read the supplied number of bytes from the queues buffer into the supplied buffer pointer
-uint32_t AudioQueue::read(unsigned short *buffer, int count)
+uint32_t AudioQueue::read(uint16_t *buffer, uint32_t count)
 {
-    int t;
-    int i;
+    uint32_t t;
+    uint32_t i;
     
     t = kUsed;
     
