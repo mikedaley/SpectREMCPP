@@ -183,7 +183,7 @@ public:
 
     // Display
     uint8_t                 *displayBuffer = nullptr;
-    unsigned int            displayBufferIndex = 0;
+    uint32_t                displayBufferIndex = 0;
     int                     screenWidth = 320;
     int                     screenHeight = 256;
     int                     screenBufferSize = 0;

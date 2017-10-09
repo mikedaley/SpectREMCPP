@@ -28,8 +28,9 @@ NSString *const cSNA_EXTENSION = @"SNA";
 NSString *const cZ80_EXTENSION = @"Z80";
 NSString *const cTAP_EXTENSION = @"TAP";
 
-int const cAUDIO_SAMPLE_RATE = 192000;
-float const cFRAMES_PER_SECOND = 50;
+uint32_t const cAUDIO_SAMPLE_RATE = 192000;
+uint32_t const cFRAMES_PER_SECOND = 50;
+uint32_t const cAUDIO_BUFFER_CAPACITY = (cAUDIO_SAMPLE_RATE / cFRAMES_PER_SECOND) * 2;
 
 static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
@@ -105,7 +106,7 @@ static const int cSCREEN_FILL = 1;
         audioQueue->read(buffer, (inNumberFrames * 2));
         
         // Check if we have used a frames worth of buffer storage and if so then its time to generate another frame.
-        if (audioQueue->bufferUsed() < 7680)
+        if (audioQueue->bufferUsed() < cAUDIO_BUFFER_CAPACITY)
         {
             machine->generateFrame();
             
@@ -113,7 +114,7 @@ static const int cSCREEN_FILL = 1;
                 [(OpenGLView *)self.view updateTextureData:machine->displayBuffer];
             });
             
-            audioQueue->write(machine->audioBuffer, 7680);
+            audioQueue->write(machine->audioBuffer, cAUDIO_BUFFER_CAPACITY);
         }
     }
 }
