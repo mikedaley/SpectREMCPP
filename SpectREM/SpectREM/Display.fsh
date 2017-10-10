@@ -18,6 +18,7 @@ uniform float u_scanlineSize;
 uniform float u_scanlines;
 uniform float u_screenCurve;
 uniform float u_pixelFilterValue;
+uniform float u_rgbOffset;
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // colorCorrection used to adjust the saturation, constrast and brightness of the image
@@ -84,6 +85,13 @@ void main()
 
         // Grab the color from the texture
         color = texture( displayTexture, texCoord );
+        
+        // Apply RGB shift
+        float xOffset = 0;
+        float red   =   texture( displayTexture, vec2( texCoord.x + xOffset - 0.01 * u_rgbOffset, texCoord.y ) ).r;
+        float green =   texture( displayTexture, vec2( texCoord.x + xOffset, texCoord.y)).g;
+        float blue  =   texture( displayTexture, vec2( texCoord.x + xOffset + 0.01 * u_rgbOffset, texCoord.y ) ).b;
+        color = vec4(red, green, blue, 1.0);
         
         // Adjust colour based on contrast, saturation and brightness
         color = vec4(colorCorrection(color.rgb, u_saturation, u_contrast, u_brightness), color.a);

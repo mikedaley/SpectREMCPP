@@ -92,6 +92,7 @@ const GLuint textureUnit2 = 2;
     GLuint          u_scanlines;
     GLuint          u_screenCurve;
     GLuint          u_pixelFilterValue;
+    GLuint          u_rgbOffset;
     
     GLuint          frameBufferName;
     GLuint          renderedTexture;
@@ -266,6 +267,7 @@ const GLuint textureUnit2 = 2;
     u_scanlines = glGetUniformLocation(shaderSecondPass, "u_scanlines");
     u_screenCurve = glGetUniformLocation(shaderSecondPass, "u_screenCurve");
     u_pixelFilterValue = glGetUniformLocation(shaderSecondPass, "u_pixelFilterValue");
+    u_rgbOffset = glGetUniformLocation(shaderSecondPass, "u_rgbOffset");
 }
 
 - (void)setupTexture
@@ -342,6 +344,7 @@ const GLuint textureUnit2 = 2;
     glProgramUniform1f(shaderSecondPass, u_scanlines, defaults.displayScanLines);
     glProgramUniform1f(shaderSecondPass, u_screenCurve, defaults.displayCurvature);
     glProgramUniform1f(shaderSecondPass, u_pixelFilterValue, defaults.displayPixelFilterValue);
+    glProgramUniform1f(shaderSecondPass, u_rgbOffset, defaults.displayRGBOffset);
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
