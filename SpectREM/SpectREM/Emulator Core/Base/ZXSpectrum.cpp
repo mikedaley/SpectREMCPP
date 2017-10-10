@@ -67,7 +67,7 @@ void ZXSpectrum::initialise(string romPath)
 
 void ZXSpectrum::generateFrame()
 {
-    int currentFrameTstates = machineInfo.tsPerFrame;
+    uint32_t currentFrameTstates = machineInfo.tsPerFrame;
     
     while (currentFrameTstates > 0 && !emuPaused)
     {

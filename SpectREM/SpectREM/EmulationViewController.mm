@@ -109,7 +109,6 @@ static const int cSCREEN_FILL = 1;
         if (audioQueue->bufferUsed() < cAUDIO_BUFFER_CAPACITY)
         {
             machine->generateFrame();
-            
             dispatch_async(dispatch_get_main_queue(), ^{
                 [(OpenGLView *)self.view updateTextureData:machine->displayBuffer];
             });

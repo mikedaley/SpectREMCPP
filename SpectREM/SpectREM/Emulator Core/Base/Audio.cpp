@@ -65,7 +65,7 @@ void ZXSpectrum::audioReset()
     audioAYaudioAYEnvelopeStep = 15;
     audioAYaudioAYaudioAYEnvelopeHolding = false;
     
-    for (int i = 0; i < eAY_MAX_REGISTERS; i++)
+    for (int32_t i = 0; i < eAY_MAX_REGISTERS; i++)
     {
         audioAYSetRegister(i);
         audioAYWriteData(0);
@@ -74,7 +74,7 @@ void ZXSpectrum::audioReset()
 
 #pragma mark - Audio Update
 
-void ZXSpectrum::audioUpdateWithTs(int tStates)
+void ZXSpectrum::audioUpdateWithTs(int32_t tStates)
 {
     if (emuPaused)
     {
@@ -83,14 +83,14 @@ void ZXSpectrum::audioUpdateWithTs(int tStates)
 
     // Grab the current state of the audio ear output & the tapeLevel which is used to register input when loading tapes.
     // Only need to do this once per audio update
-    int localBeeperLevel = (audioEarBit | (tape ? tape->inputBit : 0)) * cBEEPER_VOLUME_MULTIPLIER;
+    int32_t localBeeperLevel = (audioEarBit | (tape ? tape->inputBit : 0)) * cBEEPER_VOLUME_MULTIPLIER;
     
     // The AY output is mixed with the beeper 
-    int ayOutputLeft = localBeeperLevel;
-    int ayOutputRight = localBeeperLevel;
+    int32_t ayOutputLeft = localBeeperLevel;
+    int32_t ayOutputRight = localBeeperLevel;
     
     // Loop over each tState so that the necessary audio samples can be generated
-    for(int i = 0; i < tStates; i++)
+    for(int32_t i = 0; i < tStates; i++)
     {
         if (emuUseAYSound)
         {
@@ -150,7 +150,7 @@ void ZXSpectrum::audioUpdateWithTs(int tStates)
 
 #pragma mark - AY Chip
 
-void ZXSpectrum::audioAYSetRegister(unsigned char reg)
+void ZXSpectrum::audioAYSetRegister(uint8_t reg)
 {
     if (reg < eAY_MAX_REGISTERS)
     {
@@ -164,7 +164,7 @@ void ZXSpectrum::audioAYSetRegister(unsigned char reg)
     }
 }
 
-void ZXSpectrum::audioAYWriteData(unsigned char data)
+void ZXSpectrum::audioAYWriteData(uint8_t data)
 {
     switch (audioAYCurrentRegister) {
         case eAYREGISTER_A_FINE:
@@ -219,7 +219,7 @@ void ZXSpectrum::audioAYWriteData(unsigned char data)
     audioAYRegisters[ audioAYCurrentRegister ] = data;
 }
 
-unsigned char ZXSpectrum::audioAYReadData()
+uint8_t ZXSpectrum::audioAYReadData()
 {
     return audioAYRegisters[ audioAYCurrentRegister ];
 }

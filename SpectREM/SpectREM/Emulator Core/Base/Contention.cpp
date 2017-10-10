@@ -8,7 +8,7 @@
 
 #include "ZXSpectrum.hpp"
 
-const unsigned int ZXSpectrum::ULAConentionValues[] = { 6, 5, 4, 3, 2, 1, 0, 0 };
+const uint32_t ZXSpectrum::ULAConentionValues[] = { 6, 5, 4, 3, 2, 1, 0, 0 };
 
 #pragma mark - IO Contention
 
@@ -65,15 +65,15 @@ void ZXSpectrum::ULAApplyIOContention(unsigned short address, bool contended)
 
 void ZXSpectrum::ULABuildContentionTable()
 {
-    for (int i = 0; i < machineInfo.tsPerFrame; i++)
+    for (uint32_t i = 0; i < machineInfo.tsPerFrame; i++)
     {
         ULAMemoryContentionTable[i] = 0;
         ULAIOContentionTable[i] = 0;
         
         if (i >= machineInfo.tsToOrigin)
         {
-            int line = (i - machineInfo.tsToOrigin) / machineInfo.tsPerLine;
-            int ts = (i - machineInfo.tsToOrigin) % machineInfo.tsPerLine;
+            uint32_t line = (i - machineInfo.tsToOrigin) / machineInfo.tsPerLine;
+            uint32_t ts = (i - machineInfo.tsToOrigin) % machineInfo.tsPerLine;
             
             if (line < machineInfo.pxVerticalDisplay && ts < 128)
             {

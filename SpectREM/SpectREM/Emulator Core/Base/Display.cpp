@@ -26,7 +26,7 @@ void ZXSpectrum::displaySetup()
 
 #pragma mark - Generate Screen
 
-void ZXSpectrum::displayUpdateWithTs(int tStates)
+void ZXSpectrum::displayUpdateWithTs(int32_t tStates)
 {
     const uint8_t *memoryAddress = reinterpret_cast<uint8_t *>(memoryRam.data() + emuDisplayPage * cBITMAP_ADDRESS);
     const int32_t yAdjust = (machineInfo.pxVerticalBlank + machineInfo.pxVertBorder);
@@ -39,10 +39,10 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
     
     while (tStates > 0)
     {
-        int line = emuCurrentDisplayTs / machineInfo.tsPerLine;
-        int ts = emuCurrentDisplayTs % machineInfo.tsPerLine;
+        int32_t line = emuCurrentDisplayTs / machineInfo.tsPerLine;
+        int32_t ts = emuCurrentDisplayTs % machineInfo.tsPerLine;
 
-        int action = displayTstateTable[ line ][ ts ];
+        int32_t action = displayTstateTable[ line ][ ts ];
 
         switch (action) {
                 
@@ -103,11 +103,11 @@ void ZXSpectrum::displayClear()
 
 void ZXSpectrum::displayBuildLineAddressTable()
 {
-    for(int i = 0; i < 3; i++)
+    for(uint32_t i = 0; i < 3; i++)
     {
-        for(int j = 0; j < 8; j++)
+        for(uint32_t j = 0; j < 8; j++)
         {
-            for(int k = 0; k < 8; k++)
+            for(uint32_t k = 0; k < 8; k++)
             {
                 displayLineAddrTable[(i << 6) + (j << 3) + k] = (i << 11) + (j << 5) + (k << 8);
             }
@@ -117,23 +117,23 @@ void ZXSpectrum::displayBuildLineAddressTable()
 
 void ZXSpectrum::displayBuildTsTable()
 {
-    int tsRightBorderStart = (machineInfo.pxEmuBorder / 2) + machineInfo.tsHorizontalDisplay;
-    int tsRightBorderEnd = (machineInfo.pxEmuBorder / 2) + machineInfo.tsHorizontalDisplay + (machineInfo.pxEmuBorder / 2);
-    int tsLeftBorderStart = 0;
-    int tsLeftBorderEnd = machineInfo.pxEmuBorder / 2;
+    uint32_t tsRightBorderStart = (machineInfo.pxEmuBorder / 2) + machineInfo.tsHorizontalDisplay;
+    uint32_t tsRightBorderEnd = (machineInfo.pxEmuBorder / 2) + machineInfo.tsHorizontalDisplay + (machineInfo.pxEmuBorder / 2);
+    uint32_t tsLeftBorderStart = 0;
+    uint32_t tsLeftBorderEnd = machineInfo.pxEmuBorder / 2;
     
-    int pxLineTopBorderStart = machineInfo.pxVerticalBlank;
-    int pxLineTopBorderEnd = machineInfo.pxVerticalBlank + machineInfo.pxVertBorder;
-    int pxLinePaperStart = machineInfo.pxVerticalBlank + machineInfo.pxVertBorder;
-    int pxLinePaperEnd = machineInfo.pxVerticalBlank + machineInfo.pxVertBorder + machineInfo.pxVerticalDisplay;
-    int pxLineBottomBorderEnd = machineInfo.pxVerticalTotal - (machineInfo.pxVertBorder - machineInfo.pxEmuBorder);
+    uint32_t pxLineTopBorderStart = machineInfo.pxVerticalBlank;
+    uint32_t pxLineTopBorderEnd = machineInfo.pxVerticalBlank + machineInfo.pxVertBorder;
+    uint32_t pxLinePaperStart = machineInfo.pxVerticalBlank + machineInfo.pxVertBorder;
+    uint32_t pxLinePaperEnd = machineInfo.pxVerticalBlank + machineInfo.pxVertBorder + machineInfo.pxVerticalDisplay;
+    uint32_t pxLineBottomBorderEnd = machineInfo.pxVerticalTotal - (machineInfo.pxVertBorder - machineInfo.pxEmuBorder);
     
-    for (int line = 0; line < machineInfo.pxVerticalTotal; line++)
+    for (uint32_t line = 0; line < machineInfo.pxVerticalTotal; line++)
     {
-        for (int ts = 0 ; ts < machineInfo.tsPerLine; ts++)
+        for (uint32_t ts = 0 ; ts < machineInfo.tsPerLine; ts++)
         {
             // Screen Retrace
-            if (line >= 0  && line < machineInfo.pxVerticalBlank)
+            if (line < machineInfo.pxVerticalBlank)
             {
                 displayTstateTable[line][ts] = eDisplayRetrace;
             }
@@ -192,16 +192,16 @@ void ZXSpectrum::displayBuildTsTable()
  **/
 void ZXSpectrum::displayBuildCLUT()
 {
-    int tableIdx = 0;
+    int32_t tableIdx = 0;
     uint8_t *displayCLUT8 = reinterpret_cast<uint8_t *>(displayCLUT);
     
-    for (int bright = 0; bright < 2; bright++)
+    for (int32_t bright = 0; bright < 2; bright++)
     {
-        for (int paper = 0; paper < 8; paper++)
+        for (uint32_t paper = 0; paper < 8; paper++)
         {
-            for (int ink = 0; ink < 8; ink++)
+            for (uint32_t ink = 0; ink < 8; ink++)
             {
-                for (int pixels = 0; pixels < 256; pixels++)
+                for (uint32_t pixels = 0; pixels < 256; pixels++)
                 {
                     for (char pixelbit = 7; pixelbit >= 0; pixelbit--)
                     {
@@ -213,7 +213,7 @@ void ZXSpectrum::displayBuildCLUT()
     }
     
     // Attribute LUT
-    for (int alutidx = 0; alutidx < 256; ++alutidx)
+    for (uint32_t alutidx = 0; alutidx < 256; ++alutidx)
     {
         displayALUT[alutidx] = alutidx & 0x80 ? ((alutidx & 0xc0) | ((alutidx & 0x07) << 3) | ((alutidx & 0x38) >> 3)) : alutidx;
     }

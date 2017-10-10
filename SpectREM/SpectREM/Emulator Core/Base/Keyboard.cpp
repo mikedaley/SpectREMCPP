@@ -76,7 +76,7 @@ ZXSpectrum::KEYBOARD_ENTRY ZXSpectrum::keyboardLookup[] =
     { 11, 7, 4 }    // B
 };
 
-void ZXSpectrum::keyboardKeyDown(unsigned short key)
+void ZXSpectrum::keyboardKeyDown(uint16_t key)
 {
     switch (key)
     {
@@ -174,7 +174,7 @@ void ZXSpectrum::keyboardKeyDown(unsigned short key)
     
 }
 
-void ZXSpectrum::keyboardKeyUp(unsigned short key)
+void ZXSpectrum::keyboardKeyUp(uint16_t key)
 {
     switch (key)
     {
@@ -271,7 +271,7 @@ void ZXSpectrum::keyboardKeyUp(unsigned short key)
     }
 }
 
-void ZXSpectrum::keyboardFlagsChanged(unsigned long flags, unsigned short key)
+void ZXSpectrum::keyboardFlagsChanged(uint64_t flags, uint16_t key)
 {
     switch (key)
     {
