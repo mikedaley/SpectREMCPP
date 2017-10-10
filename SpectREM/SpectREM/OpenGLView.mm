@@ -29,15 +29,15 @@ const GLfloat quad[] = {
 
 typedef struct
 {
-    float r;
-    float g;
-    float b;
-    float a;
+    GLfloat r;
+    GLfloat g;
+    GLfloat b;
+    GLfloat a;
 } Color;
 
 // Constants for the colour lookup table
-const float normalColor = 208.0 / 255.0;
-const float brightColor = 1.0;
+const GLfloat normalColor = 208.0 / 255.0;
+const GLfloat brightColor = 1.0;
 const Color CLUT[] = {
     // Non-bright colours
     { 0.0, 0.0, 0.0, 1.0 },
@@ -257,7 +257,6 @@ const GLuint textureUnit2 = 2;
     fragmentShaderPath = [[NSBundle mainBundle] pathForResource:@"Display" ofType:@"fsh"];
     shaderSecondPass = LoadShaders([vertexShaderPath UTF8String], [fragmentShaderPath UTF8String]);
     
-    // Grab the location of the uniforms and samplers in the compiled program
     s_texture = glGetUniformLocation(shaderSecondPass, "displayTexture");
     u_borderSize = glGetUniformLocation(shaderSecondPass, "u_borderSize");
     u_contrast = glGetUniformLocation(shaderSecondPass, "u_contrast");
@@ -287,7 +286,8 @@ const GLuint textureUnit2 = 2;
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     
-    // Setup frame buffer to render into
+    // Setup frame buffer to render into. The texture will be rendered into the frame buffer using NEAREST filtering and then this
+    // texture will be rendered to the screen using custom filtering inside the fragment shader
     glGenFramebuffers(1, &frameBufferName);
     glBindFramebuffer(GL_FRAMEBUFFER, frameBufferName);
     glGenTextures(1, &renderedTexture);
@@ -310,6 +310,7 @@ const GLuint textureUnit2 = 2;
     [[self openGLContext] makeCurrentContext];
     CGLLockContext([[self openGLContext] CGLContextObj]);
  
+    // Render the output to a texture which has the default dimentions of the output image
     glBindFramebuffer(GL_FRAMEBUFFER, frameBufferName);
     glViewport(0, 0, 320, 256);
     glUseProgram(shaderFirstPass);
@@ -324,6 +325,7 @@ const GLuint textureUnit2 = 2;
     
     glDrawArrays(GL_TRIANGLES, 0, 6);
     
+    // Render the texture to the actual screen, this time using the size of the screen as the viewport
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, viewWidth, viewHeight);
     glUseProgram(shaderSecondPass);
@@ -331,6 +333,7 @@ const GLuint textureUnit2 = 2;
     glBindTexture(GL_TEXTURE_2D, renderedTexture);
     glUniform1i(s_texture, 0);
 
+    // Apply uniforms to the shader
     glProgramUniform1f(shaderSecondPass, u_borderSize, defaults.displayBorderSize);
     glProgramUniform1f(shaderSecondPass, u_contrast, defaults.displayContrast);
     glProgramUniform1f(shaderSecondPass, u_saturation, defaults.displaySaturation);

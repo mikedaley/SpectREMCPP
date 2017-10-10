@@ -50,7 +50,7 @@ static const int cSCREEN_FILL = 1;
     
     AudioCore                       *audioCore;
     AudioQueue                      *audioQueue;
-    short                           audioBuffer;
+    uint16_t                        audioBuffer;
     
     NSStoryboard                    *storyBoard;
     ConfigurationViewController     *configViewController;

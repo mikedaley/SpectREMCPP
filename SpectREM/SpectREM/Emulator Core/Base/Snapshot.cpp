@@ -240,8 +240,9 @@ ZXSpectrum::Snap ZXSpectrum::snapshotCreateZ80()
     snapData.data[29] = z80Core.GetIMMode() & 0x03;                       // IM Mode
     
     // Version 3 Additional Header
-    snapData.data[30] = (cZ80_V3_ADD_HEADER_SIZE) & 0xff;               // Addition Header Length
+    snapData.data[30] = (cZ80_V3_ADD_HEADER_SIZE) & 0xff;                 // Additional Header Length
     snapData.data[31] = (cZ80_V3_ADD_HEADER_SIZE) >> 8;
+    
     snapData.data[32] = z80Core.GetRegister(CZ80Core::eREG_PC) & 0xff;    // PC
     snapData.data[33] = z80Core.GetRegister(CZ80Core::eREG_PC) >> 8;
     

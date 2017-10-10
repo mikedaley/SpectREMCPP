@@ -30,7 +30,11 @@ void ZXSpectrum::displayUpdateWithTs(int tStates)
 {
     const uint8_t *memoryAddress = reinterpret_cast<uint8_t *>(memoryRam.data() + emuDisplayPage * cBITMAP_ADDRESS);
     const int32_t yAdjust = (machineInfo.pxVerticalBlank + machineInfo.pxVertBorder);
+    
+    // By creating a new buffer which is interpreting the display buffer as 64bits rather than 8, on 64 bit machines an
+    // entire display character is copied in a single assignment
     uint64_t *displayBuffer8 = reinterpret_cast<uint64_t*>(displayBuffer) + displayBufferIndex;
+    
     const uint8_t flashMask = (emuFrameCounter & 16) ? 0xff : 0x7f;
     
     while (tStates > 0)
@@ -91,8 +95,6 @@ void ZXSpectrum::displayClear()
 {
     if (displayBuffer)
     {
-//        delete[] displayBuffer;
-//        delete[] displayBufferCopy;
         displaySetup();
     }
 }
@@ -182,6 +184,12 @@ void ZXSpectrum::displayBuildTsTable()
     }
 }
 
+/**
+ Build a table that contains a colour lookup value for every combination of Bright, Paper, Ink and Pixel. This table is then
+ used to populate an 8bit display buffer with the colour to be used for each pixel rather than the colour data itself. The actual
+ colour to be used is worked out in the Fragment Shader. The current colour palette is send to the shader as a 1D teture with the
+ colours in the same order as the indexes held in the CLUT table.
+ **/
 void ZXSpectrum::displayBuildCLUT()
 {
     int tableIdx = 0;
