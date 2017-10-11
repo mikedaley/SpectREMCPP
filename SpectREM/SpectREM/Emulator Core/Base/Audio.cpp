@@ -83,11 +83,11 @@ void ZXSpectrum::audioUpdateWithTs(int32_t tStates)
 
     // Grab the current state of the audio ear output & the tapeLevel which is used to register input when loading tapes.
     // Only need to do this once per audio update
-    int32_t localBeeperLevel = (audioEarBit | (tape ? tape->inputBit : 0)) * cBEEPER_VOLUME_MULTIPLIER;
+    float localBeeperLevel = (audioEarBit | (tape ? tape->inputBit : 0)) * cBEEPER_VOLUME_MULTIPLIER;
     
     // The AY output is mixed with the beeper 
-    int32_t ayOutputLeft = localBeeperLevel;
-    int32_t ayOutputRight = localBeeperLevel;
+    float ayOutputLeft = localBeeperLevel;
+    float ayOutputRight = localBeeperLevel;
     
     // Loop over each tState so that the necessary audio samples can be generated
     for(int32_t i = 0; i < tStates; i++)
@@ -126,8 +126,8 @@ void ZXSpectrum::audioUpdateWithTs(int32_t tStates)
             audioBeeperRight += ayOutputRight * delta1;
             
             // Load the buffer with the sample for both left and right channels
-            audioBuffer[ audioBufferIndex++ ] = (short)audioBeeperLeft;
-            audioBuffer[ audioBufferIndex++ ] = (short)audioBeeperRight;
+            audioBuffer[ audioBufferIndex++ ] = static_cast< int16_t >( audioBeeperLeft );
+            audioBuffer[ audioBufferIndex++ ] = static_cast< int16_t >( audioBeeperRight );
             
             // Quantize for the next sample
             audioBeeperLeft = ayOutputLeft * delta2;

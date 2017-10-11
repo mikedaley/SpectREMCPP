@@ -195,11 +195,11 @@ public:
     bool                    displayReady = false;
 
     // Audio
-    uint32_t                audioEarBit = 0;
-    uint32_t                audioMicBit = 0;
+    int32_t                audioEarBit = 0;
+    int32_t                audioMicBit = 0;
     uint32_t                audioBufferSize = 0;
     uint32_t                audioBufferIndex = 0;
-    uint32_t                audioTsCounter = 0;
+    float                   audioTsCounter = 0;
     float                   audioTsStepCounter = 0;
 
     float                   audioBeeperTsStep = 0;
@@ -223,7 +223,7 @@ public:
     bool                    audioAYEnvelope = 0;
     uint32_t                audioAYAttackEndVol = 0;
     float                   audioAYTsStep = 0;
-    int32_t                 audioAYTs = 0;
+    float                   audioAYTs = 0;
         
     // Keyboard
     bool                    keyboardCapsLockPressed = false;
