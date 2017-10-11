@@ -14,6 +14,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <mach/mach_time.h>
 
 #pragma mark - Constants
 
@@ -93,6 +94,8 @@ const GLuint textureUnit2 = 2;
     GLuint          u_screenCurve;
     GLuint          u_pixelFilterValue;
     GLuint          u_rgbOffset;
+    
+    GLuint          u_time;
     
     GLuint          frameBufferName;
     GLuint          renderedTexture;
@@ -268,6 +271,7 @@ const GLuint textureUnit2 = 2;
     u_screenCurve = glGetUniformLocation(shaderSecondPass, "u_screenCurve");
     u_pixelFilterValue = glGetUniformLocation(shaderSecondPass, "u_pixelFilterValue");
     u_rgbOffset = glGetUniformLocation(shaderSecondPass, "u_rgbOffset");
+    u_time = glGetUniformLocation(shaderSecondPass, "u_time");
 }
 
 - (void)setupTexture
@@ -345,6 +349,8 @@ const GLuint textureUnit2 = 2;
     glProgramUniform1f(shaderSecondPass, u_screenCurve, defaults.displayCurvature);
     glProgramUniform1f(shaderSecondPass, u_pixelFilterValue, defaults.displayPixelFilterValue);
     glProgramUniform1f(shaderSecondPass, u_rgbOffset, defaults.displayRGBOffset);
+    glProgramUniform1f(shaderSecondPass, u_time, CACurrentMediaTime());
+
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
 

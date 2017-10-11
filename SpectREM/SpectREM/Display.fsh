@@ -20,6 +20,8 @@ uniform float u_screenCurve;
 uniform float u_pixelFilterValue;
 uniform float u_rgbOffset;
 
+uniform float u_time;
+
 ///////////////////////////////////////////////////////////////////////////////////////
 // colorCorrection used to adjust the saturation, constrast and brightness of the image
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -45,6 +47,19 @@ vec2 radialDistortion(vec2 pos, float distortion)
     float dist = dot(cc, cc) * distortion;
     return (pos + cc * (0.5 + dist) * dist);
 }
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Split the red, green and blue channels of the texture passed in
+///////////////////////////////////////////////////////////////////////////////////////
+vec3 channelSplit(sampler2D tex, vec2 coord, float spread){
+    vec3 frag;
+    frag.r = texture(tex, vec2(coord.x - spread, coord.y)).r;
+    frag.g = texture(tex, vec2(coord.x,          coord.y)).g;
+    frag.b = texture(tex, vec2(coord.x + spread, coord.y)).b;
+    return frag;
+}
+
+
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Main
@@ -82,26 +97,52 @@ void main()
         vec2 x = fract(vUv);
         vec2 x_ = clamp(0.5 / alpha * x, 0.0, 0.5) + clamp(0.5 / alpha * (x - 1.0) + 0.5, 0.0, 0.5);
         texCoord = (floor(vUv) + x_) / vec2(w, h);
-
-        // Grab the color from the texture
-        color = texture( displayTexture, texCoord );
         
-        // Apply RGB shift
-        float xOffset = 0;
-        float red   =   texture( displayTexture, vec2( texCoord.x + xOffset - 0.01 * u_rgbOffset, texCoord.y ) ).r;
-        float green =   texture( displayTexture, vec2( texCoord.x + xOffset, texCoord.y)).g;
-        float blue  =   texture( displayTexture, vec2( texCoord.x + xOffset + 0.01 * u_rgbOffset, texCoord.y ) ).b;
-        color = vec4(red, green, blue, 1.0);
+        // Apply RGB shift if necessary, otherwise just take the colour from the texture as is
+        if (u_rgbOffset > 0)
+        {
+            color.rgb = channelSplit( displayTexture, texCoord, u_rgbOffset);
+        }
+        else
+        {
+            // Grab the color from the texture
+            color = texture( displayTexture, texCoord );
+        }
         
         // Adjust colour based on contrast, saturation and brightness
-        color = vec4(colorCorrection(color.rgb, u_saturation, u_contrast, u_brightness), color.a);
+        color.rgb = colorCorrection(color.rgb, u_saturation, u_contrast, u_brightness);
         
         // Add scanlines
         float scanline = sin(scanTexCoord.y * u_scanlineSize) * 0.09 * u_scanlines;
-        color -= scanline;
+        color.rgb -= scanline;
     }
     
     // Output the final colour
     out_fragColor = vec4(color.rgb, 1.0);
 }
+
+
+//const float e = 2.7182818284590452353602874713527;
+//
+//vec4 noise(vec2 texCoord)
+//{
+//    float G = e + (iTime * 0.1);
+//    vec2 r = (G * sin(G * texCoord.xy));
+//    return vec4(fract(r.x * r.y * (1.0 + texCoord.x)));
+//}
+//
+//
+//void mainImage(out vec4 o, vec2 texCoord)
+//{
+//    o = noise(texCoord + 1000.);
+//}
+
+//vec3 scanline(vec2 coord, vec3 screen){
+//    const float scale = .66;
+//    const float amt = 0.02;// intensity of effect
+//    const float spd = 0.5;//speed of scrolling rows transposed per second
+//
+//    screen.rgb += sin((coord.y / scale - (u_time * spd * 6.28))) * amt;
+//    return screen;
+//}
 

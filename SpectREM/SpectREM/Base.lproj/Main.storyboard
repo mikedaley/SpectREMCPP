@@ -541,7 +541,7 @@
                                         <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="z3L-wa-2Hr">
                                             <rect key="frame" x="111" y="143" width="92" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" maxValue="1" tickMarkPosition="above" numberOfTickMarks="2" sliderType="linear" id="Zg4-MK-3eT"/>
+                                            <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" maxValue="0.0089999999999999993" tickMarkPosition="above" numberOfTickMarks="2" sliderType="linear" id="Zg4-MK-3eT"/>
                                             <connections>
                                                 <binding destination="AHt-Sz-7wU" name="value" keyPath="defaults.displayRGBOffset" id="o8Q-kL-ITs"/>
                                             </connections>
