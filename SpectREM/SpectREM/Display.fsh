@@ -54,12 +54,10 @@ vec2 radialDistortion(vec2 pos, float distortion)
 vec3 channelSplit(sampler2D tex, vec2 coord, float spread){
     vec3 frag;
     frag.r = texture(tex, vec2(coord.x - spread, coord.y)).r;
-    frag.g = texture(tex, vec2(coord.x,          coord.y)).g;
+    frag.g = texture(tex, vec2(coord.x, coord.y)).g;
     frag.b = texture(tex, vec2(coord.x + spread, coord.y)).b;
     return frag;
 }
-
-
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Main

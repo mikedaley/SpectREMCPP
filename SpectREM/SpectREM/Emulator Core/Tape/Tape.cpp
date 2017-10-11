@@ -344,7 +344,7 @@ void Tape::updateWithTs(int tStates)
     
 }
 
-void Tape::generateHeaderPilotWithTs(int tStates)
+void Tape::generateHeaderPilotWithTs(uint32_t tStates)
 {
     if (pilotPulses < cPILOT_HEADER_PULSES)
     {
@@ -371,7 +371,7 @@ void Tape::generateHeaderPilotWithTs(int tStates)
 }
 
 
-void Tape::generateDataPilotWithTs(int tStates)
+void Tape::generateDataPilotWithTs(uint32_t tStates)
 {
     if (pilotPulses < cPILOT_DATA_PULSES)
     {
@@ -397,7 +397,7 @@ void Tape::generateDataPilotWithTs(int tStates)
     pilotPulseTStates += tStates;
 }
 
-void Tape::generateSync1WithTs(int tStates)
+void Tape::generateSync1WithTs(uint32_t tStates)
 {
     if (flipTapeBit)
     {
@@ -417,7 +417,7 @@ void Tape::generateSync1WithTs(int tStates)
     }
 }
 
-void Tape::generateSync2WithTs(int tStates)
+void Tape::generateSync2WithTs(uint32_t tStates)
 {
     if (flipTapeBit)
     {
@@ -438,7 +438,7 @@ void Tape::generateSync2WithTs(int tStates)
     }
 }
 
-void Tape::tapeGenerateDataStreamWithTs(int tStates)
+void Tape::tapeGenerateDataStreamWithTs(uint32_t tStates)
 {
     int currentBlockLength = blocks[ currentBlockIndex ]->getDataLength();
     unsigned char byte = blocks[ currentBlockIndex ]->blockData[ currentBytePtr ];
@@ -471,7 +471,7 @@ void Tape::tapeGenerateDataStreamWithTs(int tStates)
     processingState = eDATA_BIT;
 }
 
-void Tape::generateHeaderDataStreamWithTs(int tStates)
+void Tape::generateHeaderDataStreamWithTs(uint32_t tStates)
 {
     int currentBlockLength = cHEADER_BLOCK_LENGTH;
     unsigned char byte = blocks[ currentBlockIndex ]->blockData[ currentBytePtr ];
@@ -505,7 +505,7 @@ void Tape::generateHeaderDataStreamWithTs(int tStates)
     processingState = eDATA_BIT;
 }
 
-void Tape::generateDataBitWithTs(int tStates)
+void Tape::generateDataBitWithTs(uint32_t tStates)
 {
     if (flipTapeBit)
     {
@@ -532,7 +532,7 @@ void Tape::generateDataBitWithTs(int tStates)
     }
 }
 
-void Tape::tapeBlockPauseWithTs(int tStates)
+void Tape::tapeBlockPauseWithTs(uint32_t tStates)
 {
     blockPauseTStates += tStates;
     if (blockPauseTStates > 3500000 * 3)
@@ -621,15 +621,15 @@ void Tape::loadBlock(void *m)
 {
     ZXSpectrum *machine = static_cast<ZXSpectrum *>(m);
     
-    int expectedBlockType = machine->z80Core.GetRegister(CZ80Core::eREG_ALT_A);
-    int startAddress = machine->z80Core.GetRegister(CZ80Core::eREG_IX);
+    uint32_t expectedBlockType = machine->z80Core.GetRegister(CZ80Core::eREG_ALT_A);
+    uint32_t startAddress = machine->z80Core.GetRegister(CZ80Core::eREG_IX);
     
     // Some TAP files have blocks which are shorter that what is expected in DE (Chuckie Egg 2)
     // so just take the smallest value
-    int blockLength = machine->z80Core.GetRegister(CZ80Core::eREG_DE);
-    int tapBlockLength = blocks[ currentBlockIndex ]->getDataLength();
+    uint32_t blockLength = machine->z80Core.GetRegister(CZ80Core::eREG_DE);
+    uint32_t tapBlockLength = blocks[ currentBlockIndex ]->getDataLength();
     blockLength = (blockLength < tapBlockLength) ? blockLength : tapBlockLength;
-    int success = 1;
+    uint32_t success = 1;
     
     if (blocks[ currentBlockIndex ]->getFlag() == expectedBlockType)
     {
@@ -640,7 +640,7 @@ void Tape::loadBlock(void *m)
             
             for (int i = 0; i < blockLength; i++)
             {
-                unsigned char tapByte = blocks[ currentBlockIndex ]->blockData[ currentBytePtr ];
+                uint8_t tapByte = blocks[ currentBlockIndex ]->blockData[ currentBytePtr ];
                 machine->z80Core.Z80CoreDebugMemWrite(startAddress + i, tapByte, NULL);
                 checksum ^= tapByte;
                 currentBytePtr++;
