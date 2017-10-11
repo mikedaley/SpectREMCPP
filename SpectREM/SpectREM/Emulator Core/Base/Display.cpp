@@ -55,8 +55,8 @@ void ZXSpectrum::displayUpdateWithTs(int32_t tStates)
 
             case eDisplayPaper:
             {
-                const int32_t y = line - yAdjust;
-                const int32_t x = (ts >> 2) - 4;
+                const uint32_t y = line - yAdjust;
+                const uint32_t x = (ts >> 2) - 4;
                 
                 const uint32_t pixelAddress = displayLineAddrTable[y] + x;
                 const uint32_t attributeAddress = cBITMAP_SIZE + ((y >> 3) << 5) + x;
@@ -186,9 +186,8 @@ void ZXSpectrum::displayBuildTsTable()
 
 /**
  Build a table that contains a colour lookup value for every combination of Bright, Paper, Ink and Pixel. This table is then
- used to populate an 8bit display buffer with the colour to be used for each pixel rather than the colour data itself. The actual
- colour to be used is worked out in the Fragment Shader. The current colour palette is send to the shader as a 1D teture with the
- colours in the same order as the indexes held in the CLUT table.
+ used to populate an 8bit display buffer with an index to the colour to be used for each pixel rather than the colour data itself. The actual
+ colour to be used is worked out in the Fragment Shader using a 1D lookup texture that contains the actual colour information.
  **/
 void ZXSpectrum::displayBuildCLUT()
 {

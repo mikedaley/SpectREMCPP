@@ -206,7 +206,7 @@ public:
     float                   audioBeeperLeft = 0;
     float                   audioBeeperRight = 0;
 
-    uint32_t                audioAYChannelOutput[3]{0};
+    float                   audioAYChannelOutput[3]{0};
     uint32_t                audioAYChannelCount[3]{0};
     uint16_t                audioAYVolumes[16]{0};
     uint32_t                audioAYrandom = 0;

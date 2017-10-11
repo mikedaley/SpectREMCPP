@@ -8,7 +8,7 @@
 
 #include "ZXSpectrum.hpp"
 
-const int cBEEPER_VOLUME_MULTIPLIER = 150;
+const int cBEEPER_VOLUME_MULTIPLIER = 35;
 
 // AY chip envelope flag type
 enum
@@ -118,8 +118,8 @@ void ZXSpectrum::audioUpdateWithTs(int32_t tStates)
         {
             // Quantize the value loaded into the audio buffer e.g. if cycles = 19 and step size is 18.2
             // 0.2 of the beeper value goes into this sample and 0.8 goes into the next sample
-            double delta1 = audioTsStepCounter - (audioTsCounter - 1);
-            double delta2 = (1 - delta1);
+            double delta1 = audioTsStepCounter - (audioTsCounter - 1.0);
+            double delta2 = (1.0 - delta1);
             
             // Quantize for the current sample
             audioBeeperLeft += ayOutputLeft * delta1;
