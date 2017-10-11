@@ -162,7 +162,7 @@ public:
     static KEYBOARD_ENTRY   keyboardLookup[];
     uint32_t                keyboardCapsLockFrames = 0;
     
-    uint16_t                *audioBuffer = nullptr;
+    int16_t                 *audioBuffer = nullptr;
   
 public:
     

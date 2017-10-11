@@ -8,7 +8,7 @@
 
 #include "ZXSpectrum.hpp"
 
-const int cBEEPER_VOLUME_MULTIPLIER = 200;
+const int cBEEPER_VOLUME_MULTIPLIER = 150;
 
 // AY chip envelope flag type
 enum
@@ -28,14 +28,14 @@ void ZXSpectrum::audioBuildAYVolumesTable()
 {
     for (int i = 0; i < 16; i++)
     {
-        audioAYVolumes[ i ] = (unsigned short)(fAYVolBase[ i ] * 5120);
+        audioAYVolumes[ i ] = (uint16_t)(fAYVolBase[ i ] * 1024);
     }
 }
 
 void ZXSpectrum::audioSetup(float sampleRate, float fps)
 {
-    audioBufferSize = static_cast<int>((sampleRate / fps) * 5.0);
-    audioBuffer = new unsigned short[ audioBufferSize ]();
+    audioBufferSize = static_cast<uint32_t>((sampleRate / fps) * 5.0);
+    audioBuffer = new int16_t[ audioBufferSize ]();
     audioBeeperTsStep = machineInfo.tsPerFrame / (sampleRate / fps);
     audioAYTsStep = 32;
 }
@@ -47,7 +47,7 @@ void ZXSpectrum::audioReset()
         delete audioBuffer;
     }
     
-    audioBuffer = new unsigned short[ audioBufferSize ]();
+    audioBuffer = new int16_t[ audioBufferSize ]();
     audioBufferIndex = 0;
     audioTsCounter = 0;
     audioTsStepCounter = 0;

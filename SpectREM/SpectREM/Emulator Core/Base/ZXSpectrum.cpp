@@ -57,7 +57,7 @@ void ZXSpectrum::initialise(string romPath)
     
     ULABuildContentionTable();
 
-    audioSetup(192000, 50);
+    audioSetup(44100, 50);
     audioBuildAYVolumesTable();
     
     resetMachine(true);

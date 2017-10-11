@@ -28,7 +28,7 @@ NSString *const cSNA_EXTENSION = @"SNA";
 NSString *const cZ80_EXTENSION = @"Z80";
 NSString *const cTAP_EXTENSION = @"TAP";
 
-uint32_t const cAUDIO_SAMPLE_RATE = 192000;
+uint32_t const cAUDIO_SAMPLE_RATE = 44100;
 uint32_t const cFRAMES_PER_SECOND = 50;
 uint32_t const cAUDIO_BUFFER_CAPACITY = (cAUDIO_SAMPLE_RATE / cFRAMES_PER_SECOND) * 2;
 
@@ -99,7 +99,7 @@ static const int cSCREEN_FILL = 1;
 
 #pragma mark - Audio Callback
 
-- (void)audioCallback:(int)inNumberFrames buffer:(unsigned short *)buffer
+- (void)audioCallback:(int)inNumberFrames buffer:(int16_t *)buffer
 {
     if (machine)
     {
