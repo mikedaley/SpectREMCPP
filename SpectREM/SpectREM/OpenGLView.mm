@@ -14,7 +14,6 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <mach/mach_time.h>
 
 #pragma mark - Constants
 
@@ -40,6 +39,7 @@ typedef struct
 const GLfloat normalColor = 208.0 / 255.0;
 const GLfloat brightColor = 1.0;
 const Color CLUT[] = {
+    
     // Non-bright colours
     { 0.0, 0.0, 0.0, 1.0 },
     { 0.0, 0.0, normalColor, 1.0 },
@@ -65,6 +65,9 @@ const GLuint textureUnit0 = 0;
 const GLuint textureUnit1 = 1;
 const GLuint textureUnit2 = 2;
 
+const GLuint screenWidth = 320;
+const GLuint screenHeight = 256;
+
 #pragma mark - Private Ivars
 
 @interface OpenGLView ()
@@ -77,8 +80,8 @@ const GLuint textureUnit2 = 2;
     
     GLuint          vertexBuffer;
     GLuint          vertexArray;
-    GLuint          shaderSecondPass;
-    GLuint          shaderFirstPass;
+    GLuint          displayShader;
+    GLuint          clutShader;
     GLuint          textureName;
     GLuint          clutTextureName;
     
@@ -145,8 +148,8 @@ const GLuint textureUnit2 = 2;
     
     NSLog(@"%s %s", glGetString(GL_RENDERER), glGetString(GL_VERSION));
     
-    viewWidth = 320;
-    viewHeight = 256;
+    viewWidth = screenWidth;
+    viewHeight = screenHeight;
     
     glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
     glEnable(GL_BLEND);
@@ -225,7 +228,7 @@ const GLuint textureUnit2 = 2;
     glBufferData(GL_ARRAY_BUFFER, sizeof(quad), quad, GL_STATIC_DRAW);
 
     // Make sure we are using the shader program we have compiled
-    glUseProgram(shaderSecondPass);
+    glUseProgram(displayShader);
     
     // Bind texture 0 to the sampler2D in the fragment shader. This is the texture output by the emulator
     glActiveTexture(GL_TEXTURE0);
@@ -237,6 +240,7 @@ const GLuint textureUnit2 = 2;
     glBindTexture(GL_TEXTURE_1D, clutTextureName);
     glUniform1i(s_clutTexture, textureUnit1);
 
+    // Bind texture unit 2 to the texture rendered by the CLUT fragment shader
     glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, renderedTexture);
     glUniform1i(s_texture, textureUnit2);
@@ -251,27 +255,27 @@ const GLuint textureUnit2 = 2;
 - (void)loadShaders
 {
     NSString *vertexShaderPath = [[NSBundle mainBundle] pathForResource:@"Display" ofType:@"vsh"];
-    NSString *fragmentShaderPath = [[NSBundle mainBundle] pathForResource:@"Texture" ofType:@"fsh"];
-    shaderFirstPass = LoadShaders([vertexShaderPath UTF8String], [fragmentShaderPath UTF8String]);
+    NSString *fragmentShaderPath = [[NSBundle mainBundle] pathForResource:@"CLUT" ofType:@"fsh"];
+    clutShader = LoadShaders([vertexShaderPath UTF8String], [fragmentShaderPath UTF8String]);
 
-    s_displayTexture = glGetUniformLocation(shaderFirstPass, "displayTexture");
-    s_clutTexture = glGetUniformLocation(shaderFirstPass, "clutTexture");
+    s_displayTexture = glGetUniformLocation(clutShader, "displayTexture");
+    s_clutTexture = glGetUniformLocation(clutShader, "clutTexture");
 
     vertexShaderPath = [[NSBundle mainBundle] pathForResource:@"Display" ofType:@"vsh"];
     fragmentShaderPath = [[NSBundle mainBundle] pathForResource:@"Display" ofType:@"fsh"];
-    shaderSecondPass = LoadShaders([vertexShaderPath UTF8String], [fragmentShaderPath UTF8String]);
+    displayShader = LoadShaders([vertexShaderPath UTF8String], [fragmentShaderPath UTF8String]);
     
-    s_texture = glGetUniformLocation(shaderSecondPass, "displayTexture");
-    u_borderSize = glGetUniformLocation(shaderSecondPass, "u_borderSize");
-    u_contrast = glGetUniformLocation(shaderSecondPass, "u_contrast");
-    u_saturation = glGetUniformLocation(shaderSecondPass, "u_saturation");
-    u_brightness = glGetUniformLocation(shaderSecondPass, "u_brightness");
-    u_scanlineSize = glGetUniformLocation(shaderSecondPass, "u_scanlineSize");
-    u_scanlines = glGetUniformLocation(shaderSecondPass, "u_scanlines");
-    u_screenCurve = glGetUniformLocation(shaderSecondPass, "u_screenCurve");
-    u_pixelFilterValue = glGetUniformLocation(shaderSecondPass, "u_pixelFilterValue");
-    u_rgbOffset = glGetUniformLocation(shaderSecondPass, "u_rgbOffset");
-    u_time = glGetUniformLocation(shaderSecondPass, "u_time");
+    s_texture = glGetUniformLocation(displayShader, "displayTexture");
+    u_borderSize = glGetUniformLocation(displayShader, "u_borderSize");
+    u_contrast = glGetUniformLocation(displayShader, "u_contrast");
+    u_saturation = glGetUniformLocation(displayShader, "u_saturation");
+    u_brightness = glGetUniformLocation(displayShader, "u_brightness");
+    u_scanlineSize = glGetUniformLocation(displayShader, "u_scanlineSize");
+    u_scanlines = glGetUniformLocation(displayShader, "u_scanlines");
+    u_screenCurve = glGetUniformLocation(displayShader, "u_screenCurve");
+    u_pixelFilterValue = glGetUniformLocation(displayShader, "u_pixelFilterValue");
+    u_rgbOffset = glGetUniformLocation(displayShader, "u_rgbOffset");
+    u_time = glGetUniformLocation(displayShader, "u_time");
 }
 
 - (void)setupTexture
@@ -279,7 +283,7 @@ const GLuint textureUnit2 = 2;
     // Setup the OpenGL texture data storage for the emulator output data. This is stored as a 1 byte per pixel array
     glGenTextures(1, &textureName);
     glBindTexture(GL_TEXTURE_2D, textureName);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 320, 256, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, screenWidth, screenHeight, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -298,7 +302,7 @@ const GLuint textureUnit2 = 2;
     glBindFramebuffer(GL_FRAMEBUFFER, frameBufferName);
     glGenTextures(1, &renderedTexture);
     glBindTexture(GL_TEXTURE_2D, renderedTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 320, 256, 0, GL_RGBA, GL_FLOAT, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, screenWidth, screenHeight, 0, GL_RGBA, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderedTexture, 0);
@@ -318,12 +322,12 @@ const GLuint textureUnit2 = 2;
  
     // Render the output to a texture which has the default dimentions of the output image
     glBindFramebuffer(GL_FRAMEBUFFER, frameBufferName);
-    glViewport(0, 0, 320, 256);
-    glUseProgram(shaderFirstPass);
+    glViewport(0, 0, screenWidth, screenHeight);
+    glUseProgram(clutShader);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureName);
     glUniform1i(s_displayTexture, 0);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 320, 256, GL_RED, GL_UNSIGNED_BYTE, displayBuffer);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, screenWidth, screenHeight, GL_RED, GL_UNSIGNED_BYTE, displayBuffer);
 
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, clutTextureName);
@@ -334,23 +338,22 @@ const GLuint textureUnit2 = 2;
     // Render the texture to the actual screen, this time using the size of the screen as the viewport
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, viewWidth, viewHeight);
-    glUseProgram(shaderSecondPass);
+    glUseProgram(displayShader);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, renderedTexture);
     glUniform1i(s_texture, 0);
 
     // Apply uniforms to the shader
-    glProgramUniform1f(shaderSecondPass, u_borderSize, defaults.displayBorderSize);
-    glProgramUniform1f(shaderSecondPass, u_contrast, defaults.displayContrast);
-    glProgramUniform1f(shaderSecondPass, u_saturation, defaults.displaySaturation);
-    glProgramUniform1f(shaderSecondPass, u_brightness, defaults.displayBrightness);
-    glProgramUniform1f(shaderSecondPass, u_scanlineSize, defaults.displayScanLineSize);
-    glProgramUniform1f(shaderSecondPass, u_scanlines, defaults.displayScanLines);
-    glProgramUniform1f(shaderSecondPass, u_screenCurve, defaults.displayCurvature);
-    glProgramUniform1f(shaderSecondPass, u_pixelFilterValue, defaults.displayPixelFilterValue);
-    glProgramUniform1f(shaderSecondPass, u_rgbOffset, defaults.displayRGBOffset);
-    glProgramUniform1f(shaderSecondPass, u_time, CACurrentMediaTime());
-
+    glProgramUniform1f(displayShader, u_borderSize, defaults.displayBorderSize);
+    glProgramUniform1f(displayShader, u_contrast, defaults.displayContrast);
+    glProgramUniform1f(displayShader, u_saturation, defaults.displaySaturation);
+    glProgramUniform1f(displayShader, u_brightness, defaults.displayBrightness);
+    glProgramUniform1f(displayShader, u_scanlineSize, defaults.displayScanLineSize);
+    glProgramUniform1f(displayShader, u_scanlines, defaults.displayScanLines);
+    glProgramUniform1f(displayShader, u_screenCurve, defaults.displayCurvature);
+    glProgramUniform1f(displayShader, u_pixelFilterValue, defaults.displayPixelFilterValue);
+    glProgramUniform1f(displayShader, u_rgbOffset, defaults.displayRGBOffset);
+    glProgramUniform1f(displayShader, u_time, CACurrentMediaTime());
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
 

@@ -26,4 +26,3 @@ void main()
     // Output the final colour
     out_fragColor = color;
 }
-
