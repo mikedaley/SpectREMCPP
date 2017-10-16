@@ -7,8 +7,8 @@ in vec2 v_texCoord;
 layout(location = 0) out vec4 out_fragColor;
 
 // Texture to be processed
-uniform sampler2D displayTexture;
-uniform sampler1D clutTexture;
+uniform sampler2D s_displayTexture;
+uniform sampler1D s_clutTexture;
 
 const float clutUVAdjust = 1.0 / 16.0;
 
@@ -18,10 +18,10 @@ const float clutUVAdjust = 1.0 / 16.0;
 void main()
 {
     // Get the colour to be used from the texture passed in
-    float c = texture( displayTexture, v_texCoord ).r * 255;
+    float c = texture( s_displayTexture, v_texCoord ).r * 255;
     
     // Grab the actual colour from the lookup table
-    vec4 color = texture( clutTexture, c * clutUVAdjust );
+    vec4 color = texture( s_clutTexture, c * clutUVAdjust );
     
     // Output the final colour
     out_fragColor = color;

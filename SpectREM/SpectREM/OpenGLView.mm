@@ -22,8 +22,6 @@ const GLfloat quad[] = {
     -1.0f,   1.0f,  0.0f,    0.0f,  1.0f,
     -1.0f,  -1.0f,  0.0f,    0.0f,  0.0f,
      1.0f,  -1.0f,  0.0f,    1.0f,  0.0f,
-     1.0f,  -1.0f,  0.0f,    1.0f,  0.0f,
-    -1.0f,   1.0f,  0.0f,    0.0f,  1.0f,
      1.0f,   1.0f,  0.0f,    1.0f,  1.0f
 };
 
@@ -80,11 +78,18 @@ const GLuint screenHeight = 256;
     
     GLuint          vertexBuffer;
     GLuint          vertexArray;
-    GLuint          displayShader;
+
+    // Shader names
     GLuint          clutShader;
-    GLuint          textureName;
-    GLuint          clutTextureName;
+    GLuint          displayShader;
     
+    // CLUT shader uniforms/samplers
+    GLuint          clutFrameBuffer;
+    GLuint          clutInputTexture;
+    GLuint          clutTexture;
+    GLuint          clutOutputTexture;
+    
+    // Display shader uniforms/samplers
     GLuint          s_displayTexture;
     GLuint          s_texture;
     GLuint          s_clutTexture;
@@ -97,11 +102,8 @@ const GLuint screenHeight = 256;
     GLuint          u_screenCurve;
     GLuint          u_pixelFilterValue;
     GLuint          u_rgbOffset;
-    
     GLuint          u_time;
     
-    GLuint          frameBufferName;
-    GLuint          renderedTexture;
     
     Defaults        *defaults;
 }
@@ -155,6 +157,7 @@ const GLuint screenHeight = 256;
     
     glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
     glEnable(GL_BLEND);
+    glEnable(GL_CULL_FACE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
     [self loadShaders];
@@ -168,7 +171,7 @@ const GLuint screenHeight = 256;
     CGLContextObj ctxObj = [[self openGLContext] CGLContextObj];
     CGLLockContext(ctxObj);
     
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     
     CGLFlushDrawable(ctxObj);
     CGLUnlockContext(ctxObj);
@@ -234,17 +237,17 @@ const GLuint screenHeight = 256;
     
     // Bind texture 0 to the sampler2D in the fragment shader. This is the texture output by the emulator
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, textureName);
+    glBindTexture(GL_TEXTURE_2D, clutInputTexture);
     glUniform1i(s_displayTexture, textureUnit0);
 
     // Bind texture unit 1 to the sampler1D in the fragment shader. This is the CLUT texture
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_1D, clutTextureName);
+    glBindTexture(GL_TEXTURE_1D, clutTexture);
     glUniform1i(s_clutTexture, textureUnit1);
 
-    // Bind texture unit 2 to the texture rendered by the CLUT fragment shader
+    // Bind texture unit 2 to the texture rendered by the CLUT fragment shader, to be used when rendering output to the screen
     glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, renderedTexture);
+    glBindTexture(GL_TEXTURE_2D, clutOutputTexture);
     glUniform1i(s_texture, textureUnit2);
 
     // Enable and configure the vertex and texture pointers
@@ -260,14 +263,14 @@ const GLuint screenHeight = 256;
     NSString *fragmentShaderPath = [[NSBundle mainBundle] pathForResource:@"CLUTFrag" ofType:@"fsh"];
     clutShader = LoadShaders([vertexShaderPath UTF8String], [fragmentShaderPath UTF8String]);
 
-    s_displayTexture = glGetUniformLocation(clutShader, "displayTexture");
-    s_clutTexture = glGetUniformLocation(clutShader, "clutTexture");
+    s_displayTexture = glGetUniformLocation(clutShader, "s_displayTexture");
+    s_clutTexture = glGetUniformLocation(clutShader, "s_clutTexture");
 
     vertexShaderPath = [[NSBundle mainBundle] pathForResource:@"DisplayVert" ofType:@"vsh"];
     fragmentShaderPath = [[NSBundle mainBundle] pathForResource:@"DisplayFrag" ofType:@"fsh"];
     displayShader = LoadShaders([vertexShaderPath UTF8String], [fragmentShaderPath UTF8String]);
     
-    s_texture = glGetUniformLocation(displayShader, "displayTexture");
+    s_texture = glGetUniformLocation(displayShader, "s_displayTexture");
     u_borderSize = glGetUniformLocation(displayShader, "u_borderSize");
     u_contrast = glGetUniformLocation(displayShader, "u_contrast");
     u_saturation = glGetUniformLocation(displayShader, "u_saturation");
@@ -283,8 +286,8 @@ const GLuint screenHeight = 256;
 - (void)setupTexture
 {
     // Setup the OpenGL texture data storage for the emulator output data. This is stored as a 1 byte per pixel array
-    glGenTextures(1, &textureName);
-    glBindTexture(GL_TEXTURE_2D, textureName);
+    glGenTextures(1, &clutInputTexture);
+    glBindTexture(GL_TEXTURE_2D, clutInputTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, screenWidth, screenHeight, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -292,22 +295,22 @@ const GLuint screenHeight = 256;
 
     // Setup the OpenGL texture data storage for the CLUT data. This provides the colour to be used based on the value stored
     // in the emulator image output data and is used within the fragment shader to pick the right colour to display
-    glGenTextures(1, &clutTextureName);
-    glBindTexture(GL_TEXTURE_2D, clutTextureName);
+    glGenTextures(1, &clutTexture);
+    glBindTexture(GL_TEXTURE_2D, clutTexture);
     glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, 16, 0, GL_RGBA, GL_FLOAT, CLUT);
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     
     // Setup frame buffer to render into. The texture will be rendered into the frame buffer using NEAREST filtering and then this
     // texture will be rendered to the screen using custom filtering inside the fragment shader
-    glGenFramebuffers(1, &frameBufferName);
-    glBindFramebuffer(GL_FRAMEBUFFER, frameBufferName);
-    glGenTextures(1, &renderedTexture);
-    glBindTexture(GL_TEXTURE_2D, renderedTexture);
+    glGenFramebuffers(1, &clutFrameBuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, clutFrameBuffer);
+    glGenTextures(1, &clutOutputTexture);
+    glBindTexture(GL_TEXTURE_2D, clutOutputTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, screenWidth, screenHeight, 0, GL_RGBA, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderedTexture, 0);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, clutOutputTexture, 0);
     GLenum drawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
     glDrawBuffers(1, drawBuffers);
     
@@ -323,26 +326,26 @@ const GLuint screenHeight = 256;
     CGLLockContext([[self openGLContext] CGLContextObj]);
  
     // Render the output to a texture which has the default dimentions of the output image
-    glBindFramebuffer(GL_FRAMEBUFFER, frameBufferName);
+    glBindFramebuffer(GL_FRAMEBUFFER, clutFrameBuffer);
     glViewport(0, 0, screenWidth, screenHeight);
     glUseProgram(clutShader);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, textureName);
+    glBindTexture(GL_TEXTURE_2D, clutInputTexture);
     glUniform1i(s_displayTexture, 0);
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, screenWidth, screenHeight, GL_RED, GL_UNSIGNED_BYTE, displayBuffer);
 
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, clutTextureName);
+    glBindTexture(GL_TEXTURE_2D, clutTexture);
     glUniform1i(s_clutTexture, 1);
     
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
     // Render the texture to the actual screen, this time using the size of the screen as the viewport
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, viewWidth, viewHeight);
     glUseProgram(displayShader);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, renderedTexture);
+    glBindTexture(GL_TEXTURE_2D, clutOutputTexture);
     glUniform1i(s_texture, 0);
 
     // Apply uniforms to the shader
@@ -357,7 +360,7 @@ const GLuint screenHeight = 256;
     glProgramUniform1f(displayShader, u_rgbOffset, defaults.displayRGBOffset);
     glProgramUniform1f(displayShader, u_time, CACurrentMediaTime());
 
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
     CGLFlushDrawable([[self openGLContext] CGLContextObj]);
     CGLUnlockContext([[self openGLContext] CGLContextObj]);

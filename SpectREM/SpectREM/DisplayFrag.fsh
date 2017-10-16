@@ -7,7 +7,7 @@ in vec2 v_texCoord;
 out vec4 out_fragColor;
 
 // Texture to be processed
-uniform sampler2D displayTexture;
+uniform sampler2D s_displayTexture;
 
 // Uniforms linked to different screen settings
 uniform float u_borderSize;
@@ -82,7 +82,7 @@ void main()
     }
     else
     {
-        // Flip the Y coord otherwise the image renders upside down
+//        // Flip the Y coord otherwise the image renders upside down
         texCoord = texCoord * vec2(1.0, -1.0);
         
         // Update the UV coordinates based on the size of the border
@@ -99,12 +99,12 @@ void main()
         // Apply RGB shift if necessary, otherwise just take the colour from the texture as is
         if (u_rgbOffset > 0)
         {
-            color.rgb = channelSplit( displayTexture, texCoord, u_rgbOffset);
+            color.rgb = channelSplit( s_displayTexture, texCoord, u_rgbOffset);
         }
         else
         {
             // Grab the color from the texture
-            color = texture( displayTexture, texCoord );
+            color = texture( s_displayTexture, texCoord );
         }
         
         // Adjust colour based on contrast, saturation and brightness
