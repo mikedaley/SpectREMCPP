@@ -17,12 +17,18 @@
 
 #pragma mark - Constants
 
+/**
+     0--3
+     |\ |
+     | \|
+     1--2
+ **/
 const GLfloat quad[] = {
     //X      Y      Z        U      V
-    -1.0f,   1.0f,  0.0f,    0.0f,  1.0f,
     -1.0f,  -1.0f,  0.0f,    0.0f,  0.0f,
      1.0f,  -1.0f,  0.0f,    1.0f,  0.0f,
-     1.0f,   1.0f,  0.0f,    1.0f,  1.0f
+     1.0f,   1.0f,  0.0f,    1.0f,  1.0f,
+    -1.0f,   1.0f,  0.0f,    0.0f,  1.0f
 };
 
 typedef struct
@@ -103,7 +109,6 @@ const GLuint screenHeight = 256;
     GLuint          u_pixelFilterValue;
     GLuint          u_rgbOffset;
     GLuint          u_time;
-    
     
     Defaults        *defaults;
 }
