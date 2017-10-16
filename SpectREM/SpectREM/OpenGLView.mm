@@ -114,6 +114,8 @@ const GLuint screenHeight = 256;
 
 - (void) awakeFromNib
 {
+    self.wantsLayer = YES;
+    
     [self registerForDraggedTypes:@[NSURLPboardType]];
     
     defaults = [Defaults defaults];
@@ -121,7 +123,7 @@ const GLuint screenHeight = 256;
     NSOpenGLPixelFormatAttribute attrs[] =
     {
         NSOpenGLPFADoubleBuffer,
-        NSOpenGLPFADepthSize, 24,
+        NSOpenGLPFADepthSize, 16,
         NSOpenGLPFAOpenGLProfile,
         NSOpenGLProfileVersion4_1Core,
         0
@@ -180,7 +182,7 @@ const GLuint screenHeight = 256;
     
     // Synchronize buffer swaps with vertical refresh rate
     GLint swapInt = 1;
-    [[self openGLContext] setValues:&swapInt forParameter:NSOpenGLCPSwapInterval];
+    [[self openGLContext] setValues:&swapInt forParameter:NSOpenGLContextParameterSwapInterval];
 }
 
 - (void) resizeWithWidth:(GLuint)width AndHeight:(GLuint)height
@@ -246,10 +248,10 @@ const GLuint screenHeight = 256;
     glUniform1i(s_texture, textureUnit2);
 
     // Enable and configure the vertex and texture pointers
-    glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void *)0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void *)12);
+    glEnableVertexAttribArray(0);
 }
 
 - (void)loadShaders
