@@ -18,10 +18,15 @@
 #pragma mark - Constants
 
 /**
-     0--3
-     |\ |
-     | \|
-     1--2
+    -1  0  1
+     |  |  |
+     |  |  |
+     v  v  v
+     3-----2 <-----  1
+     |\    |
+     |  \  | <-----  0
+     |    \|
+     0-----1 <----- -1
  **/
 const GLfloat quad[] = {
     //X      Y      Z        U      V
@@ -160,9 +165,10 @@ const GLuint screenHeight = 256;
     viewWidth = screenWidth;
     viewHeight = screenHeight;
     
-    glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glEnable(GL_BLEND);
     glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
     [self loadShaders];
@@ -264,6 +270,7 @@ const GLuint screenHeight = 256;
 
 - (void)loadShaders
 {
+    // CLUT Shader
     NSString *vertexShaderPath = [[NSBundle mainBundle] pathForResource:@"CLUTVert" ofType:@"vsh"];
     NSString *fragmentShaderPath = [[NSBundle mainBundle] pathForResource:@"CLUTFrag" ofType:@"fsh"];
     clutShader = LoadShaders([vertexShaderPath UTF8String], [fragmentShaderPath UTF8String]);
@@ -271,6 +278,7 @@ const GLuint screenHeight = 256;
     s_displayTexture = glGetUniformLocation(clutShader, "s_displayTexture");
     s_clutTexture = glGetUniformLocation(clutShader, "s_clutTexture");
 
+    // Display Shader
     vertexShaderPath = [[NSBundle mainBundle] pathForResource:@"DisplayVert" ofType:@"vsh"];
     fragmentShaderPath = [[NSBundle mainBundle] pathForResource:@"DisplayFrag" ofType:@"fsh"];
     displayShader = LoadShaders([vertexShaderPath UTF8String], [fragmentShaderPath UTF8String]);
@@ -336,12 +344,12 @@ const GLuint screenHeight = 256;
     glUseProgram(clutShader);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, clutInputTexture);
-    glUniform1i(s_displayTexture, 0);
+    glUniform1i(s_displayTexture, textureUnit0);
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, screenWidth, screenHeight, GL_RED, GL_UNSIGNED_BYTE, displayBuffer);
 
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, clutTexture);
-    glUniform1i(s_clutTexture, 1);
+    glUniform1i(s_clutTexture, textureUnit1);
     
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
@@ -351,7 +359,7 @@ const GLuint screenHeight = 256;
     glUseProgram(displayShader);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, clutOutputTexture);
-    glUniform1i(s_texture, 0);
+    glUniform1i(s_texture, textureUnit0);
 
     // Apply uniforms to the shader
     glProgramUniform1f(displayShader, u_borderSize, defaults.displayBorderSize);
@@ -388,7 +396,7 @@ GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path
             VertexShaderCode += "\n" + Line;
         VertexShaderStream.close();
     }else{
-        printf("Impossible to open %s. Are you in the right directory ? Don't forget to read the FAQ !\n", vertex_file_path);
+        printf("Cannot open %s.\n", vertex_file_path);
         getchar();
         return 0;
     }

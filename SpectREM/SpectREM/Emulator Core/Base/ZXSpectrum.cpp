@@ -106,10 +106,7 @@ void ZXSpectrum::generateFrame()
                 
                 currentFrameTstates = 0;
             }
-        }
-        
-        // Decay the floating AY value provided when AY registers > 15 are read
-        audioAYRegisters[ eAYREGISTER_FLOATING ] >>= 1;
+        }        
     }
 }
 
