@@ -8,6 +8,9 @@
 
 #include "ZXSpectrum.hpp"
 
+const float cSAMPLE_RATE = 44100;
+const float cFPS = 50;
+
 #pragma mark - Constructor/Deconstructor
 
 ZXSpectrum::ZXSpectrum()
@@ -57,7 +60,7 @@ void ZXSpectrum::initialise(string romPath)
     
     ULABuildContentionTable();
 
-    audioSetup(44100, 50);
+    audioSetup(cSAMPLE_RATE, cFPS);
     audioBuildAYVolumesTable();
     
     resetMachine(true);
