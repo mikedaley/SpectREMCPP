@@ -20,6 +20,7 @@ uniform float u_screenCurve;
 uniform float u_pixelFilterValue;
 uniform float u_rgbOffset;
 
+// Provides elapsed time that can be used for time based effects
 uniform float u_time;
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -82,7 +83,7 @@ void main()
     }
     else
     {
-//        // Flip the Y coord otherwise the image renders upside down
+        // Flip the Y coord otherwise the image renders upside down
         texCoord = texCoord * vec2(1.0, -1.0);
         
         // Update the UV coordinates based on the size of the border
@@ -118,6 +119,14 @@ void main()
     // Output the final colour
     out_fragColor = vec4(color.rgb, 1.0);
 }
+
+
+
+
+
+
+
+
 
 
 

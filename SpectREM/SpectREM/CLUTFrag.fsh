@@ -4,12 +4,13 @@
 in vec2 v_texCoord;
 
 // Fragment colour final output
-layout(location = 0) out vec4 out_fragColor;
+out vec4 out_fragColor;
 
 // Texture to be processed
 uniform sampler2D s_displayTexture;
 uniform sampler1D s_clutTexture;
 
+// CLUT is 16 pixels wide, so work out the UV step per colour
 const float clutUVAdjust = 1.0 / 16.0;
 
 ///////////////////////////////////////////////////////////////////////////////////////
