@@ -256,15 +256,15 @@ const GLuint screenHeight = 256;
 
 - (void)loadShaders
 {
-    NSString *vertexShaderPath = [[NSBundle mainBundle] pathForResource:@"Display" ofType:@"vsh"];
-    NSString *fragmentShaderPath = [[NSBundle mainBundle] pathForResource:@"CLUT" ofType:@"fsh"];
+    NSString *vertexShaderPath = [[NSBundle mainBundle] pathForResource:@"CLUTVert" ofType:@"vsh"];
+    NSString *fragmentShaderPath = [[NSBundle mainBundle] pathForResource:@"CLUTFrag" ofType:@"fsh"];
     clutShader = LoadShaders([vertexShaderPath UTF8String], [fragmentShaderPath UTF8String]);
 
     s_displayTexture = glGetUniformLocation(clutShader, "displayTexture");
     s_clutTexture = glGetUniformLocation(clutShader, "clutTexture");
 
-    vertexShaderPath = [[NSBundle mainBundle] pathForResource:@"Display" ofType:@"vsh"];
-    fragmentShaderPath = [[NSBundle mainBundle] pathForResource:@"Display" ofType:@"fsh"];
+    vertexShaderPath = [[NSBundle mainBundle] pathForResource:@"DisplayVert" ofType:@"vsh"];
+    fragmentShaderPath = [[NSBundle mainBundle] pathForResource:@"DisplayFrag" ofType:@"fsh"];
     displayShader = LoadShaders([vertexShaderPath UTF8String], [fragmentShaderPath UTF8String]);
     
     s_texture = glGetUniformLocation(displayShader, "displayTexture");

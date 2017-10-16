@@ -19,13 +19,14 @@
 		17C33DFA1F6578E600720A06 /* TapeBrowserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 17C33DF91F6578E600720A06 /* TapeBrowserViewController.m */; };
 		17C33DFE1F6583A400720A06 /* TapeCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 17C33DFD1F6583A400720A06 /* TapeCellView.m */; };
 		17EC89101F5B1FC500B6EFAF /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17EC890F1F5B1FC500B6EFAF /* AudioToolbox.framework */; };
-		ED22E0E21F7E4804004807A9 /* Display.fsh in Resources */ = {isa = PBXBuildFile; fileRef = ED22E0E01F7E45F4004807A9 /* Display.fsh */; };
-		ED22E0E31F7E4804004807A9 /* Display.vsh in Resources */ = {isa = PBXBuildFile; fileRef = ED22E0E11F7E45F4004807A9 /* Display.vsh */; };
+		2778A11C1F94E5DA00385137 /* CLUTVert.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 2778A1191F94E5D900385137 /* CLUTVert.vsh */; };
+		2778A11D1F94E5DA00385137 /* DisplayFrag.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 2778A11A1F94E5DA00385137 /* DisplayFrag.fsh */; };
+		2778A11E1F94E5DA00385137 /* DisplayVert.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 2778A11B1F94E5DA00385137 /* DisplayVert.vsh */; };
+		2778A1201F94E60600385137 /* CLUTFrag.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 2778A11F1F94E60600385137 /* CLUTFrag.fsh */; };
 		ED2A6D051F6036D3003CD6CE /* ConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D041F6036D3003CD6CE /* ConfigurationViewController.m */; };
 		ED2A6D0A1F603D18003CD6CE /* NSClipView+Flipped.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D091F603D18003CD6CE /* NSClipView+Flipped.m */; };
 		ED2A6D0C1F604CD0003CD6CE /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = ED2A6D0B1F604CD0003CD6CE /* Defaults.plist */; };
 		ED2A6D101F616C43003CD6CE /* ExportAccessoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D0F1F616C43003CD6CE /* ExportAccessoryViewController.m */; };
-		ED3C39371F86904700FA445E /* CLUT.fsh in Resources */ = {isa = PBXBuildFile; fileRef = ED3C39361F86904700FA445E /* CLUT.fsh */; };
 		ED4137471F7D24DE008ACB30 /* OpenGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = ED4137461F7D24DE008ACB30 /* OpenGLView.mm */; };
 		ED504A641F51BBFF00BD289E /* Snapshot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED504A631F51BBFF00BD289E /* Snapshot.cpp */; };
 		ED913F9A1F30759300316E1A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = ED913F991F30759300316E1A /* AppDelegate.m */; };
@@ -74,8 +75,10 @@
 		17C33DFC1F6583A400720A06 /* TapeCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TapeCellView.h; sourceTree = "<group>"; };
 		17C33DFD1F6583A400720A06 /* TapeCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TapeCellView.m; sourceTree = "<group>"; };
 		17EC890F1F5B1FC500B6EFAF /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
-		ED22E0E01F7E45F4004807A9 /* Display.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = Display.fsh; sourceTree = "<group>"; };
-		ED22E0E11F7E45F4004807A9 /* Display.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = Display.vsh; sourceTree = "<group>"; };
+		2778A1191F94E5D900385137 /* CLUTVert.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = CLUTVert.vsh; sourceTree = "<group>"; };
+		2778A11A1F94E5DA00385137 /* DisplayFrag.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = DisplayFrag.fsh; sourceTree = "<group>"; };
+		2778A11B1F94E5DA00385137 /* DisplayVert.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = DisplayVert.vsh; sourceTree = "<group>"; };
+		2778A11F1F94E60600385137 /* CLUTFrag.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = CLUTFrag.fsh; sourceTree = "<group>"; };
 		ED2A6D031F6036D3003CD6CE /* ConfigurationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigurationViewController.h; sourceTree = "<group>"; };
 		ED2A6D041F6036D3003CD6CE /* ConfigurationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigurationViewController.m; sourceTree = "<group>"; };
 		ED2A6D081F603D18003CD6CE /* NSClipView+Flipped.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSClipView+Flipped.h"; sourceTree = "<group>"; };
@@ -84,7 +87,6 @@
 		ED2A6D0E1F616C43003CD6CE /* ExportAccessoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExportAccessoryViewController.h; sourceTree = "<group>"; };
 		ED2A6D0F1F616C43003CD6CE /* ExportAccessoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExportAccessoryViewController.m; sourceTree = "<group>"; };
 		ED2A6D131F669CB7003CD6CE /* Tape.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Tape.hpp; sourceTree = "<group>"; };
-		ED3C39361F86904700FA445E /* CLUT.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = CLUT.fsh; sourceTree = "<group>"; };
 		ED4137451F7D24DE008ACB30 /* OpenGLView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenGLView.h; sourceTree = "<group>"; };
 		ED4137461F7D24DE008ACB30 /* OpenGLView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenGLView.mm; sourceTree = "<group>"; };
 		ED504A631F51BBFF00BD289E /* Snapshot.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Snapshot.cpp; sourceTree = "<group>"; };
@@ -143,15 +145,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		174AAFBD1F58626E00B75535 /* Shader */ = {
+		174AAFBD1F58626E00B75535 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
+				2778A1191F94E5D900385137 /* CLUTVert.vsh */,
+				2778A11F1F94E60600385137 /* CLUTFrag.fsh */,
+				2778A11B1F94E5DA00385137 /* DisplayVert.vsh */,
+				2778A11A1F94E5DA00385137 /* DisplayFrag.fsh */,
 				174AAFBA1F585AF100B75535 /* PixelShader.fsh */,
-				ED22E0E11F7E45F4004807A9 /* Display.vsh */,
-				ED3C39361F86904700FA445E /* CLUT.fsh */,
-				ED22E0E01F7E45F4004807A9 /* Display.fsh */,
 			);
-			name = Shader;
+			name = Shaders;
 			sourceTree = "<group>";
 		};
 		17B5DB921F5B146C003E7EF3 /* Audio Core */ = {
@@ -305,7 +308,7 @@
 				ED913FA61F30759300316E1A /* EmulationViewController.mm */,
 				ED4137451F7D24DE008ACB30 /* OpenGLView.h */,
 				ED4137461F7D24DE008ACB30 /* OpenGLView.mm */,
-				174AAFBD1F58626E00B75535 /* Shader */,
+				174AAFBD1F58626E00B75535 /* Shaders */,
 			);
 			name = Emulation;
 			sourceTree = "<group>";
@@ -499,19 +502,20 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ED22E0E21F7E4804004807A9 /* Display.fsh in Resources */,
-				ED22E0E31F7E4804004807A9 /* Display.vsh in Resources */,
 				ED2A6D0C1F604CD0003CD6CE /* Defaults.plist in Resources */,
 				EDD9ADF41F5D89AE004DD728 /* 128-0.ROM in Resources */,
 				EDC56FDE1F6EE8A800162739 /* plus2-0.ROM in Resources */,
-				ED3C39371F86904700FA445E /* CLUT.fsh in Resources */,
+				2778A1201F94E60600385137 /* CLUTFrag.fsh in Resources */,
 				EDD9ADF51F5D89AE004DD728 /* 128-1.ROM in Resources */,
 				EDC56FDC1F6EE89E00162739 /* plus2-1.ROM in Resources */,
 				174AAFBC1F585DCC00B75535 /* PixelShader.fsh in Resources */,
 				EDD9ADED1F59C111004DD728 /* Credits.rtf in Resources */,
 				ED913FD71F30789300316E1A /* 48.ROM in Resources */,
+				2778A11D1F94E5DA00385137 /* DisplayFrag.fsh in Resources */,
 				ED913FA91F30759300316E1A /* Assets.xcassets in Resources */,
 				ED913FAC1F30759300316E1A /* Main.storyboard in Resources */,
+				2778A11C1F94E5DA00385137 /* CLUTVert.vsh in Resources */,
+				2778A11E1F94E5DA00385137 /* DisplayVert.vsh in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
