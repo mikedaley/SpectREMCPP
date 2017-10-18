@@ -6,6 +6,7 @@
 //  Copyright © 2017 71Squared Ltd. All rights reserved.
 //
 
+#import <CoreMedia/CoreMedia.h>
 #import "OpenGLView.h"
 #import "EmulationViewController.h"
 #import "Defaults.h"
@@ -18,22 +19,23 @@
 #pragma mark - Constants
 
 /**
-    -1  0  1
-     |  |  |
-     |  |  |
-     v  v  v
      3-----2 <-----  1
      |\    |
      |  \  | <-----  0
      |    \|
      0-----1 <----- -1
+
+     ^  ^  ^
+     |  |  |
+     |  |  |
+    -1  0  1
  **/
 const GLfloat quad[] = {
     //X      Y      Z        U      V
-    -1.0f,  -1.0f,  0.0f,    0.0f,  0.0f,
-     1.0f,  -1.0f,  0.0f,    1.0f,  0.0f,
-     1.0f,   1.0f,  0.0f,    1.0f,  1.0f,
-    -1.0f,   1.0f,  0.0f,    0.0f,  1.0f
+    -1.0f,  -1.0f,  0.0f,    0.0f,  0.0f, // 0
+     1.0f,  -1.0f,  0.0f,    1.0f,  0.0f, // 1
+     1.0f,   1.0f,  0.0f,    1.0f,  1.0f, // 2
+    -1.0f,   1.0f,  0.0f,    0.0f,  1.0f  // 3
 };
 
 typedef struct
@@ -50,24 +52,24 @@ const GLfloat brightColor = 1.0;
 const Color CLUT[] = {
     
     // Non-bright colours
-    { 0.0, 0.0, 0.0, 1.0 },
-    { 0.0, 0.0, normalColor, 1.0 },
-    { normalColor, 0.0, 0.0, 1.0 },
-    { normalColor, 0.0, normalColor, 1.0 },
-    { 0.0, normalColor, 0.0, 1.0 },
-    { 0.0, normalColor, normalColor, 1.0 },
-    { normalColor, normalColor, 0.0, 1.0 },
-    { normalColor, normalColor, normalColor, 1.0 },
+    { 0.0,          0.0,            0.0,            1.0 },
+    { 0.0,          0.0,            normalColor,    1.0 },
+    { normalColor,  0.0,            0.0,            1.0 },
+    { normalColor,  0.0,            normalColor,    1.0 },
+    { 0.0,          normalColor,    0.0,            1.0 },
+    { 0.0,          normalColor,    normalColor,    1.0 },
+    { normalColor,  normalColor,    0.0,            1.0 },
+    { normalColor,  normalColor,    normalColor,    1.0 },
     
     // Bright colours
-    { 0.0, 0.0, 0.0, 1.0 },
-    { 0.0, 0.0, brightColor, 1.0 },
-    { brightColor, 0.0, 0.0, 1.0 },
-    { brightColor, 0.0, brightColor, 1.0 },
-    { 0.0, brightColor, 0.0, 1.0 },
-    { 0.0, brightColor, brightColor, 1.0 },
-    { brightColor, brightColor, 0.0, 1.0 },
-    { brightColor, brightColor, brightColor, 1.0 }
+    { 0.0,          0.0,            0.0,            1.0 },
+    { 0.0,          0.0,            brightColor,    1.0 },
+    { brightColor,  0.0,            0.0,            1.0 },
+    { brightColor,  0.0,            brightColor,    1.0 },
+    { 0.0,          brightColor,    0.0,            1.0 },
+    { 0.0,          brightColor,    brightColor,    1.0 },
+    { brightColor,  brightColor,    0.0,            1.0 },
+    { brightColor,  brightColor,    brightColor,    1.0 }
 };
 
 const GLuint textureUnit0 = 0;
@@ -84,15 +86,15 @@ const GLuint screenHeight = 256;
     NSTrackingArea *trackingArea;
     NSWindowController *windowController;
     
-    GLuint          viewWidth;
-    GLuint          viewHeight;
+    float          viewWidth;
+    float          viewHeight;
     
     GLuint          vertexBuffer;
     GLuint          vertexArray;
 
     // Shader names
-    GLuint          clutShader;
-    GLuint          displayShader;
+    GLint           clutShader;
+    GLint           displayShader;
     
     // CLUT shader uniforms/samplers
     GLuint          clutFrameBuffer;
@@ -101,21 +103,31 @@ const GLuint screenHeight = 256;
     GLuint          clutOutputTexture;
     
     // Display shader uniforms/samplers
-    GLuint          s_displayTexture;
-    GLuint          s_texture;
-    GLuint          s_clutTexture;
-    GLuint          u_borderSize;
-    GLuint          u_contrast;
-    GLuint          u_saturation;
-    GLuint          u_brightness;
-    GLuint          u_scanlineSize;
-    GLuint          u_scanlines;
-    GLuint          u_screenCurve;
-    GLuint          u_pixelFilterValue;
-    GLuint          u_rgbOffset;
-    GLuint          u_time;
+    GLuint          displayDepthBuffer;
+    GLuint          reflectionTexture;
+    GLint           s_displayTexture;
+    GLint           s_texture;
+    GLint           s_reflectionTexture;
+    GLint           s_clutTexture;
+    GLint           u_borderSize;
+    GLint           u_contrast;
+    GLint           u_saturation;
+    GLint           u_brightness;
+    GLint           u_scanlineSize;
+    GLint           u_scanlines;
+    GLint           u_screenCurve;
+    GLint           u_pixelFilterValue;
+    GLint           u_rgbOffset;
+    GLint           u_time;
     
     Defaults        *defaults;
+    
+    AVCaptureSession                *captureSession;
+    AVCaptureDevice                 *videoCaptureDevice;
+    AVCaptureDeviceInput            *captureDeviceInput;
+    AVCaptureVideoDataOutput        *captureDeviceOutput;
+    dispatch_queue_t                captureQueue;
+
 }
 
 @end
@@ -126,8 +138,6 @@ const GLuint screenHeight = 256;
 
 - (void) awakeFromNib
 {
-    self.wantsLayer = YES;
-    
     [self registerForDraggedTypes:@[NSURLPboardType]];
     
     defaults = [Defaults defaults];
@@ -135,7 +145,10 @@ const GLuint screenHeight = 256;
     NSOpenGLPixelFormatAttribute attrs[] =
     {
         NSOpenGLPFADoubleBuffer,
-        NSOpenGLPFADepthSize, 16,
+        NSOpenGLPFANoRecovery,
+        NSOpenGLPFAAccelerated,
+        NSOpenGLPFAColorSize, 16,
+        NSOpenGLPFADepthSize, 24,
         NSOpenGLPFAOpenGLProfile,
         NSOpenGLProfileVersion4_1Core,
         0
@@ -149,31 +162,55 @@ const GLuint screenHeight = 256;
     }
     
     NSOpenGLContext* context = [[NSOpenGLContext alloc] initWithFormat:pf shareContext:nil];
-    
-    // When we're using a CoreProfile context, crash if we call a legacy OpenGL function
-    // This will make it much more obvious where and when such a function call is made so
-    // that we can remove such calls.
-    // Without this we'd simply get GL_INVALID_OPERATION error for calling legacy functions
-    // but it would be more difficult to see where that function was called.
     CGLEnable([context CGLContextObj], kCGLCECrashOnRemovedFunctions);
     
     [self setPixelFormat:pf];
     [self setOpenGLContext:context];
     
-    NSLog(@"%s %s", glGetString(GL_RENDERER), glGetString(GL_VERSION));
-    
     viewWidth = screenWidth;
     viewHeight = screenHeight;
     
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-    glEnable(GL_BLEND);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
     [self loadShaders];
-    [self setupTexture];
+    [self setupTextures];
     [self setupQuad];
+    
+    captureSession = [AVCaptureSession new];
+    captureSession.sessionPreset = AVCaptureSessionPresetLow;
+    videoCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    captureDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:videoCaptureDevice error:nil];
+    [captureSession addInput:captureDeviceInput];
+    
+    captureDeviceOutput = [AVCaptureVideoDataOutput new];
+    [captureSession addOutput:captureDeviceOutput];
+    captureDeviceOutput.videoSettings = @{ (NSString *)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA) };
+    captureQueue = dispatch_queue_create("CaptureQueue", NULL);
+    [captureDeviceOutput setSampleBufferDelegate:self queue:captureQueue];
+    [captureSession startRunning];
+}
+
+#pragma mark - Video Capture Callback
+
+- (void)captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
+{
+    CVImageBufferRef cameraFrame = CMSampleBufferGetImageBuffer(sampleBuffer);
+    CVPixelBufferLockBaseAddress(cameraFrame, 0);
+    int bufferHeight = CVPixelBufferGetHeight(cameraFrame);
+    int bufferWidth = CVPixelBufferGetWidth(cameraFrame);
+    
+    [[self openGLContext] makeCurrentContext];
+    CGLLockContext([[self openGLContext] CGLContextObj]);
+
+    glBindTexture(GL_TEXTURE_2D, reflectionTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1280, 720, 0, GL_BGRA, GL_UNSIGNED_BYTE, CVPixelBufferGetBaseAddress(cameraFrame));
+    glUniform1i(s_reflectionTexture, 3);
+
+    CVPixelBufferUnlockBaseAddress(cameraFrame,0);
+
+    CGLFlushDrawable([[self openGLContext] CGLContextObj]);
+    CGLUnlockContext([[self openGLContext] CGLContextObj]);
+
+    //set the image for the currently bound texture
+//    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bufferWidth, bufferHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, CVPixelBufferGetBaseAddress(cameraFrame));
 }
 
 - (void) drawRect: (NSRect) theRect
@@ -182,6 +219,7 @@ const GLuint screenHeight = 256;
     CGLContextObj ctxObj = [[self openGLContext] CGLContextObj];
     CGLLockContext(ctxObj);
     
+    glClear(GL_COLOR_BUFFER_BIT);
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     
     CGLFlushDrawable(ctxObj);
@@ -192,7 +230,12 @@ const GLuint screenHeight = 256;
 {
     [self setWantsBestResolutionOpenGLSurface:YES];
     [super prepareOpenGL];
+
     [[self openGLContext] makeCurrentContext];
+    
+    NSLog(@"%s %s", glGetString(GL_RENDERER), glGetString(GL_VERSION));
+
+    glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
     
     // Synchronize buffer swaps with vertical refresh rate
     GLint swapInt = 1;
@@ -234,56 +277,23 @@ const GLuint screenHeight = 256;
 
 #pragma mark - Renderer
 
-- (void)setupQuad
-{
-    // Generate the Vertex array and bind the vertex buffer to it.
-    glGenVertexArrays(1, &vertexArray);
-    glBindVertexArray(vertexArray);
-    glGenBuffers(1, &vertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(quad), quad, GL_STATIC_DRAW);
-
-    // Make sure we are using the shader program we have compiled
-    glUseProgram(displayShader);
-    
-    // Bind texture 0 to the sampler2D in the fragment shader. This is the texture output by the emulator
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, clutInputTexture);
-    glUniform1i(s_displayTexture, textureUnit0);
-
-    // Bind texture unit 1 to the sampler1D in the fragment shader. This is the CLUT texture
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_1D, clutTexture);
-    glUniform1i(s_clutTexture, textureUnit1);
-
-    // Bind texture unit 2 to the texture rendered by the CLUT fragment shader, to be used when rendering output to the screen
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, clutOutputTexture);
-    glUniform1i(s_texture, textureUnit2);
-
-    // Enable and configure the vertex and texture pointers
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void *)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void *)12);
-    glEnableVertexAttribArray(0);
-}
-
 - (void)loadShaders
 {
     // CLUT Shader
     NSString *vertexShaderPath = [[NSBundle mainBundle] pathForResource:@"CLUTVert" ofType:@"vsh"];
     NSString *fragmentShaderPath = [[NSBundle mainBundle] pathForResource:@"CLUTFrag" ofType:@"fsh"];
     clutShader = LoadShaders([vertexShaderPath UTF8String], [fragmentShaderPath UTF8String]);
-
+    
     s_displayTexture = glGetUniformLocation(clutShader, "s_displayTexture");
     s_clutTexture = glGetUniformLocation(clutShader, "s_clutTexture");
-
+    
     // Display Shader
     vertexShaderPath = [[NSBundle mainBundle] pathForResource:@"DisplayVert" ofType:@"vsh"];
     fragmentShaderPath = [[NSBundle mainBundle] pathForResource:@"DisplayFrag" ofType:@"fsh"];
     displayShader = LoadShaders([vertexShaderPath UTF8String], [fragmentShaderPath UTF8String]);
     
     s_texture = glGetUniformLocation(displayShader, "s_displayTexture");
+    s_reflectionTexture = glGetUniformLocation(displayShader, "s_reflectionTexture");
     u_borderSize = glGetUniformLocation(displayShader, "u_borderSize");
     u_contrast = glGetUniformLocation(displayShader, "u_contrast");
     u_saturation = glGetUniformLocation(displayShader, "u_saturation");
@@ -296,7 +306,7 @@ const GLuint screenHeight = 256;
     u_time = glGetUniformLocation(displayShader, "u_time");
 }
 
-- (void)setupTexture
+- (void)setupTextures
 {
     // Setup the OpenGL texture data storage for the emulator output data. This is stored as a 1 byte per pixel array
     glGenTextures(1, &clutInputTexture);
@@ -314,23 +324,69 @@ const GLuint screenHeight = 256;
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     
-    // Setup frame buffer to render into. The texture will be rendered into the frame buffer using NEAREST filtering and then this
+    // Setup frame buffer to render into. The texture will be rendered into the frame buffer using NEAREST filtering and this
     // texture will be rendered to the screen using custom filtering inside the fragment shader
     glGenFramebuffers(1, &clutFrameBuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, clutFrameBuffer);
     glGenTextures(1, &clutOutputTexture);
     glBindTexture(GL_TEXTURE_2D, clutOutputTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, screenWidth, screenHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, screenWidth, screenHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, clutOutputTexture, 0);
     GLenum drawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
     glDrawBuffers(1, drawBuffers);
     
+    // Bind texture 0 to the sampler in the fragment shader. This is the texture output by the emulator
+    glUseProgram(displayShader);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, clutInputTexture);
+    glUniform1i(s_displayTexture, textureUnit0);
+    
+    // Bind texture unit 1 to the sampler1D in the fragment shader. This is the CLUT texture
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_1D, clutTexture);
+    glUniform1i(s_clutTexture, textureUnit1);
+    
+    // Bind texture unit 2 to the texture rendered by the CLUT fragment shader, to be used when rendering output to the screen
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, clutOutputTexture);
+    glUniform1i(s_texture, textureUnit2);
+
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     {
-        NSLog(@"NO FRAME BUFFER");
+        NSAlert *alert = [NSAlert new];
+        alert.messageText = @"Oh bother!";
+        alert.informativeText = @"It was not possible to create an OpenGL off-screen frame buffer.";
+        [alert addButtonWithTitle:@"OK"];
+        [alert runModal];
+        exit(1);
     }
+    
+    glGenTextures(1, &reflectionTexture);
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, reflectionTexture);
+    glUniform1i(s_reflectionTexture, 3);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1280, 720, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+}
+
+- (void)setupQuad
+{
+    // Generate the Vertex array and bind the vertex buffer to it.
+    glGenVertexArrays(1, &vertexArray);
+    glBindVertexArray(vertexArray);
+    glGenBuffers(1, &vertexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quad), quad, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void *)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void *)12);
+    glEnableVertexAttribArray(0);
 }
 
 - (void)updateTextureData:(void *)displayBuffer
@@ -338,14 +394,16 @@ const GLuint screenHeight = 256;
     [[self openGLContext] makeCurrentContext];
     CGLLockContext([[self openGLContext] CGLContextObj]);
  
+    glClear(GL_COLOR_BUFFER_BIT);
+    
     // Render the output to a texture which has the default dimentions of the output image
     glBindFramebuffer(GL_FRAMEBUFFER, clutFrameBuffer);
     glViewport(0, 0, screenWidth, screenHeight);
     glUseProgram(clutShader);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, clutInputTexture);
-    glUniform1i(s_displayTexture, textureUnit0);
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, screenWidth, screenHeight, GL_RED, GL_UNSIGNED_BYTE, displayBuffer);
+    glUniform1i(s_displayTexture, textureUnit0);
 
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, clutTexture);
@@ -360,9 +418,13 @@ const GLuint screenHeight = 256;
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, clutOutputTexture);
     glUniform1i(s_texture, textureUnit0);
+    
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, reflectionTexture);
+    glUniform1i(s_reflectionTexture, 3);
 
-    // Apply uniforms to the shader
-    glProgramUniform1f(displayShader, u_borderSize, defaults.displayBorderSize);
+    // Update uniforms in the shader
+    glProgramUniform1i(displayShader, u_borderSize, defaults.displayBorderSize);
     glProgramUniform1f(displayShader, u_contrast, defaults.displayContrast);
     glProgramUniform1f(displayShader, u_saturation, defaults.displaySaturation);
     glProgramUniform1f(displayShader, u_brightness, defaults.displayBrightness);
@@ -372,7 +434,7 @@ const GLuint screenHeight = 256;
     glProgramUniform1f(displayShader, u_pixelFilterValue, defaults.displayPixelFilterValue);
     glProgramUniform1f(displayShader, u_rgbOffset, defaults.displayRGBOffset);
     glProgramUniform1f(displayShader, u_time, CACurrentMediaTime());
-
+    
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
     CGLFlushDrawable([[self openGLContext] CGLContextObj]);

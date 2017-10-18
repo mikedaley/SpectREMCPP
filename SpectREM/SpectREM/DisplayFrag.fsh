@@ -8,9 +8,10 @@ out vec4 out_fragColor;
 
 // Texture to be processed
 uniform sampler2D s_displayTexture;
+uniform sampler2D s_reflectionTexture;
 
 // Uniforms linked to different screen settings
-uniform float u_borderSize;
+uniform int u_borderSize;
 uniform float u_contrast;
 uniform float u_saturation;
 uniform float u_brightness;
@@ -114,6 +115,8 @@ void main()
         // Add scanlines
         float scanline = sin(scanTexCoord.y * u_scanlineSize) * 0.09 * u_scanlines;
         color.rgb -= scanline;
+        
+        color = mix(color, vec4(colorCorrection(vec3(texture( s_reflectionTexture, texCoord)), 0.2, 0.5, 0.8), 1.0), 0.15);
     }
     
     // Output the final colour

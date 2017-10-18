@@ -7,6 +7,7 @@
 //
 
 #import <QuartzCore/QuartzCore.h>
+#import <AVFoundation/AVFoundation.h>
 #import "EmulationViewController.h"
 #import "ZXSpectrum.hpp"
 #import "ZXSpectrum48.hpp"
@@ -50,13 +51,14 @@ static const int cSCREEN_FILL = 1;
     
     AudioCore                       *audioCore;
     AudioQueue                      *audioQueue;
-    uint16_t                        audioBuffer;
+    int16_t                         audioBuffer;
     
     NSStoryboard                    *storyBoard;
     ConfigurationViewController     *configViewController;
     ExportAccessoryViewController   *saveAccessoryController;
     NSWindowController              *tapeBrowserWindowController;
     TapeBrowserViewController       *tapeBrowserViewController;
+    
 }
 @end
 
@@ -73,6 +75,9 @@ static const int cSCREEN_FILL = 1;
 {
     [super viewDidLoad];
     
+    [Defaults setupDefaults];
+    _defaults = [Defaults defaults];
+    
     mainBundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/Contents/Resources/"];
     storyBoard = [NSStoryboard storyboardWithName:@"Main" bundle:nil];
     
@@ -86,15 +91,15 @@ static const int cSCREEN_FILL = 1;
     //Create a tape instance
     tape = new Tape(tapeStatusCallback);
     
-    [Defaults setupDefaults];
-    _defaults = [Defaults defaults];
-    
     [self initMachineWithRomPath:mainBundlePath machineType:(int)_defaults.machineSelectedModel];
 
     [self setupConfigView];
     [self setupControllers];
     [self setupObservers];
     [self restoreSession];
+    
+
+
 }
 
 #pragma mark - Audio Callback
@@ -110,7 +115,7 @@ static const int cSCREEN_FILL = 1;
         {
             machine->generateFrame();
             dispatch_async(dispatch_get_main_queue(), ^{
-                [(OpenGLView *)self.view updateTextureData:machine->displayBuffer];
+                [(OpenGLView *)self.glView updateTextureData:machine->displayBuffer];
             });
             
             audioQueue->write(machine->audioBuffer, cAUDIO_BUFFER_CAPACITY);
@@ -521,6 +526,14 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     {
         configFrame.origin.x = 0;
         configFrame.origin.y = 0;
+
+//        CASpringAnimation *spring = [CASpringAnimation animation];
+//        spring.fromValue = [NSValue valueWithRect:self.configEffectsView.layer.presentationLayer.frame];
+//        spring.toValue = [NSValue valueWithRect:configFrame];
+//        spring.duration = 1;
+//        spring.damping = 10;
+//        [self.configEffectsView.layer addAnimation:spring forKey:@"position.x"];
+//        self.configEffectsView.frame = configFrame;
     }
     else
     {
@@ -536,6 +549,7 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     }  completionHandler:^{
         
     }];
+
 }
 
 #pragma mark - Tape Menu Items
