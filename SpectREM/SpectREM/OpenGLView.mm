@@ -85,6 +85,7 @@ const GLuint screenHeight = 256;
 {
     NSTrackingArea *trackingArea;
     NSWindowController *windowController;
+    CGLContextObj contextObj;
     
     float          viewWidth;
     float          viewHeight;
@@ -118,6 +119,10 @@ const GLuint screenHeight = 256;
     GLint           u_screenCurve;
     GLint           u_pixelFilterValue;
     GLint           u_rgbOffset;
+    GLint           u_showVignette;
+    GLint           u_vignetteX;
+    GLint           u_vignetteY;
+    GLint           u_showReflection;
     GLint           u_time;
     
     Defaults        *defaults;
@@ -170,12 +175,14 @@ const GLuint screenHeight = 256;
     viewWidth = screenWidth;
     viewHeight = screenHeight;
     
+    contextObj = [[self openGLContext] CGLContextObj];
+    
     [self loadShaders];
     [self setupTextures];
     [self setupQuad];
     
     captureSession = [AVCaptureSession new];
-    captureSession.sessionPreset = AVCaptureSessionPresetLow;
+    captureSession.sessionPreset = AVCaptureSessionPreset640x480;
     videoCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
     captureDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:videoCaptureDevice error:nil];
     [captureSession addInput:captureDeviceInput];
@@ -192,38 +199,32 @@ const GLuint screenHeight = 256;
 
 - (void)captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
 {
+    [[self openGLContext] makeCurrentContext];
+    CGLLockContext(contextObj);
+
     CVImageBufferRef cameraFrame = CMSampleBufferGetImageBuffer(sampleBuffer);
     CVPixelBufferLockBaseAddress(cameraFrame, 0);
-    int bufferHeight = CVPixelBufferGetHeight(cameraFrame);
-    int bufferWidth = CVPixelBufferGetWidth(cameraFrame);
-    
-    [[self openGLContext] makeCurrentContext];
-    CGLLockContext([[self openGLContext] CGLContextObj]);
+
+    int64_t bufferHeight = CVPixelBufferGetHeight(cameraFrame);
+    int64_t bufferWidth = CVPixelBufferGetWidth(cameraFrame);
 
     glBindTexture(GL_TEXTURE_2D, reflectionTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1280, 720, 0, GL_BGRA, GL_UNSIGNED_BYTE, CVPixelBufferGetBaseAddress(cameraFrame));
-    glUniform1i(s_reflectionTexture, 3);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, static_cast<int>(bufferWidth), static_cast<int>(bufferHeight), GL_BGRA, GL_UNSIGNED_BYTE, CVPixelBufferGetBaseAddress(cameraFrame));
 
     CVPixelBufferUnlockBaseAddress(cameraFrame,0);
 
-    CGLFlushDrawable([[self openGLContext] CGLContextObj]);
-    CGLUnlockContext([[self openGLContext] CGLContextObj]);
-
-    //set the image for the currently bound texture
-//    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bufferWidth, bufferHeight, 0, GL_BGRA, GL_UNSIGNED_BYTE, CVPixelBufferGetBaseAddress(cameraFrame));
+    CGLUnlockContext(contextObj);
 }
 
 - (void) drawRect: (NSRect) theRect
 {
     [[self openGLContext] makeCurrentContext];
-    CGLContextObj ctxObj = [[self openGLContext] CGLContextObj];
-    CGLLockContext(ctxObj);
+    CGLLockContext(contextObj);
     
     glClear(GL_COLOR_BUFFER_BIT);
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     
-    CGLFlushDrawable(ctxObj);
-    CGLUnlockContext(ctxObj);
+    CGLUnlockContext(contextObj);
 }
 
 - (void) prepareOpenGL
@@ -303,6 +304,10 @@ const GLuint screenHeight = 256;
     u_screenCurve = glGetUniformLocation(displayShader, "u_screenCurve");
     u_pixelFilterValue = glGetUniformLocation(displayShader, "u_pixelFilterValue");
     u_rgbOffset = glGetUniformLocation(displayShader, "u_rgbOffset");
+    u_showVignette = glGetUniformLocation(displayShader, "u_showVignette");
+    u_vignetteX = glGetUniformLocation(displayShader, "u_vignetteX");
+    u_vignetteY = glGetUniformLocation(displayShader, "u_vignetteY");
+    u_showReflection = glGetUniformLocation(displayShader, "u_showReflection");
     u_time = glGetUniformLocation(displayShader, "u_time");
 }
 
@@ -370,9 +375,6 @@ const GLuint screenHeight = 256;
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1280, 720, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
 }
 
 - (void)setupQuad
@@ -392,7 +394,7 @@ const GLuint screenHeight = 256;
 - (void)updateTextureData:(void *)displayBuffer
 {
     [[self openGLContext] makeCurrentContext];
-    CGLLockContext([[self openGLContext] CGLContextObj]);
+    CGLLockContext(contextObj);
  
     glClear(GL_COLOR_BUFFER_BIT);
     
@@ -433,12 +435,16 @@ const GLuint screenHeight = 256;
     glProgramUniform1f(displayShader, u_screenCurve, defaults.displayCurvature);
     glProgramUniform1f(displayShader, u_pixelFilterValue, defaults.displayPixelFilterValue);
     glProgramUniform1f(displayShader, u_rgbOffset, defaults.displayRGBOffset);
+    glProgramUniform1i(displayShader, u_showVignette, defaults.displayShowVignette);
+    glProgramUniform1f(displayShader, u_vignetteX, defaults.displayVignetteX);
+    glProgramUniform1f(displayShader, u_vignetteY, defaults.displayVignetteY);
+    glProgramUniform1i(displayShader, u_showReflection, defaults.displayShowReflection);
     glProgramUniform1f(displayShader, u_time, CACurrentMediaTime());
     
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
-    CGLFlushDrawable([[self openGLContext] CGLContextObj]);
-    CGLUnlockContext([[self openGLContext] CGLContextObj]);
+    CGLFlushDrawable(contextObj);
+    CGLUnlockContext(contextObj);
 }
 
 #pragma mark - Load Shaders

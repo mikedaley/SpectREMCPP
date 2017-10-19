@@ -20,6 +20,10 @@ uniform float u_scanlines;
 uniform float u_screenCurve;
 uniform float u_pixelFilterValue;
 uniform float u_rgbOffset;
+uniform int   u_showVignette;
+uniform float u_vignetteX;
+uniform float u_vignetteY;
+uniform int   u_showReflection;
 
 // Provides elapsed time that can be used for time based effects
 uniform float u_time;
@@ -59,6 +63,15 @@ vec3 channelSplit(sampler2D tex, vec2 coord, float spread){
     frag.g = texture(tex, vec2(coord.x, coord.y)).g;
     frag.b = texture(tex, vec2(coord.x + spread, coord.y)).b;
     return frag;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Calculate colour including vignette effort for texCoord
+///////////////////////////////////////////////////////////////////////////////////////
+vec3 vignetteColor(vec2 coord, float vig_x, float vig_y)
+{
+    float dist = distance(coord, vec2(0.5, 0.5));
+    return vec3(smoothstep(vig_x, vig_y, dist));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -112,11 +125,19 @@ void main()
         // Adjust colour based on contrast, saturation and brightness
         color.rgb = colorCorrection(color.rgb, u_saturation, u_contrast, u_brightness);
         
+        if (u_showVignette == 1)
+        {
+            color *= vec4(vignetteColor(v_texCoord, u_vignetteX, u_vignetteY), 1.0);
+        }
+        
+        if (u_showReflection == 1)
+        {
+            color = mix(color, vec4(colorCorrection(vec3(texture( s_reflectionTexture, texCoord * vec2(-1.0, 1.0))), 0.2, 0.5, 0.8), 1.0), 0.18);
+        }
+
         // Add scanlines
         float scanline = sin(scanTexCoord.y * u_scanlineSize) * 0.09 * u_scanlines;
         color.rgb -= scanline;
-        
-        color = mix(color, vec4(colorCorrection(vec3(texture( s_reflectionTexture, texCoord)), 0.2, 0.5, 0.8), 1.0), 0.15);
     }
     
     // Output the final colour
