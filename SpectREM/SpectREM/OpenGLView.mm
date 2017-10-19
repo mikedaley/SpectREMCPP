@@ -196,6 +196,11 @@ const GLuint screenHeight = 256;
     [defaults addObserver:self forKeyPath:@"displayShowReflection" options:NSKeyValueObservingOptionNew context:NULL];
 }
 
+- (void)reloadDefaults
+{
+    defaults = [Defaults defaults];
+}
+
 #pragma mark - Observers
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context

@@ -79,6 +79,7 @@ extern NSString * const AudioLowPassFilter;
 #pragma mark - Init
 
 + (instancetype)defaults;
-+ (void)setupDefaults;
++ (instancetype)reload;
++ (void)setupDefaultsWithReset:(BOOL)reset;
 
 @end

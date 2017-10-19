@@ -18,4 +18,6 @@
 // Called once per emulation frame to update the texture with the emulators screen data
 - (void)updateTextureData:(void *)displayBuffer;
 
+- (void)reloadDefaults;
+
 @end

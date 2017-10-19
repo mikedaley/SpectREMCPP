@@ -75,7 +75,7 @@ static const int cSCREEN_FILL = 1;
 {
     [super viewDidLoad];
     
-    [Defaults setupDefaults];
+    [Defaults setupDefaultsWithReset:NO];
     _defaults = [Defaults defaults];
     
     mainBundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/Contents/Resources/"];
@@ -97,9 +97,6 @@ static const int cSCREEN_FILL = 1;
     [self setupControllers];
     [self setupObservers];
     [self restoreSession];
-    
-
-
 }
 
 #pragma mark - Audio Callback
@@ -465,7 +462,7 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 
 - (IBAction)resetPreferences:(id)sender
 {
-    [[NSUserDefaultsController sharedUserDefaultsController] revertToInitialValues:NULL];
+
 }
 
 #pragma mark - View Menu Items

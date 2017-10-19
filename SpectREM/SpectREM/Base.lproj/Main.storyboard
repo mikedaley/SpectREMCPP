@@ -772,25 +772,25 @@
                 <viewController identifier="EmulationView" id="XfG-lQ-9wD" customClass="EmulationViewController" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="m2S-Jp-Qdl">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="256"/>
-                        <autoresizingMask key="autoresizingMask"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <customView wantsLayer="YES" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fWM-CK-Tsl" userLabel="GL View" customClass="OpenGLView">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="256"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <visualEffectView wantsLayer="YES" appearanceType="vibrantDark" fixedFrame="YES" blendingMode="withinWindow" material="dark" state="active" translatesAutoresizingMaskIntoConstraints="NO" id="6nS-g3-5ZX">
-                                        <rect key="frame" x="-49" y="-80" width="261" height="416"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="261" height="256"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" heightSizable="YES"/>
                                         <subviews>
-                                            <scrollView fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" scrollerKnobStyle="light" translatesAutoresizingMaskIntoConstraints="NO" id="NPe-GC-fVm">
-                                                <rect key="frame" x="0.0" y="0.0" width="261" height="416"/>
+                                            <scrollView wantsLayer="YES" fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" scrollerKnobStyle="light" translatesAutoresizingMaskIntoConstraints="NO" id="NPe-GC-fVm">
+                                                <rect key="frame" x="0.0" y="0.0" width="261" height="256"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" heightSizable="YES"/>
-                                                <clipView key="contentView" ambiguous="YES" drawsBackground="NO" copiesOnScroll="NO" id="GhS-6C-wUI">
-                                                    <rect key="frame" x="0.0" y="0.0" width="261" height="416"/>
+                                                <clipView key="contentView" wantsLayer="YES" ambiguous="YES" drawsBackground="NO" copiesOnScroll="NO" id="GhS-6C-wUI">
+                                                    <rect key="frame" x="0.0" y="0.0" width="261" height="256"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
-                                                        <view fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="w4u-T8-CDA">
-                                                            <rect key="frame" x="0.0" y="0.0" width="246" height="337"/>
+                                                        <view wantsLayer="YES" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="w4u-T8-CDA">
+                                                            <rect key="frame" x="0.0" y="0.0" width="246" height="243"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         </view>
                                                     </subviews>

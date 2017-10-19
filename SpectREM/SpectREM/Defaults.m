@@ -39,16 +39,16 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
 
 @implementation Defaults
 
-+ (void)setupDefaults
++ (void)setupDefaultsWithReset:(BOOL)reset
 {
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-    
+
     NSDictionary *defaults = @{
                                MachineSelectedModel : @(0),
                                MachineTapeInstantLoad : @YES,
                                MachineUseAYSound: @YES,
                                
-                               DisplayPixelFilterValue : @(0.2),
+                               DisplayPixelFilterValue : @(0.15),
                                DisplayBorderSize : @(32),
                                DisplayCurvature : @(0.0),
                                DisplayContrast : @(0.75),
@@ -70,7 +70,7 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
     
     for (NSString *key in defaults)
     {
-        if (![userDefaults objectForKey:key])
+        if (![userDefaults objectForKey:key] || reset)
         {
             [userDefaults setValue:defaults[key] forKey:key];
         }
@@ -84,6 +84,13 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
     dispatch_once(&onceToken, ^{
         defaults = [Defaults new];
     });
+    return defaults;
+}
+
++ (instancetype)reload
+{
+    static Defaults *defaults = nil;
+    defaults = [Defaults new];
     return defaults;
 }
 
