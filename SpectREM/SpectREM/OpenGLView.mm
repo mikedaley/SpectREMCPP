@@ -182,7 +182,7 @@ const GLuint screenHeight = 256;
     [self setupQuad];
     
     captureSession = [AVCaptureSession new];
-    captureSession.sessionPreset = AVCaptureSessionPreset640x480;
+    captureSession.sessionPreset = AVCaptureSessionPresetLow;
     videoCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
     captureDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:videoCaptureDevice error:nil];
     [captureSession addInput:captureDeviceInput];
@@ -192,7 +192,25 @@ const GLuint screenHeight = 256;
     captureDeviceOutput.videoSettings = @{ (NSString *)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA) };
     captureQueue = dispatch_queue_create("CaptureQueue", NULL);
     [captureDeviceOutput setSampleBufferDelegate:self queue:captureQueue];
-    [captureSession startRunning];
+
+    [defaults addObserver:self forKeyPath:@"displayShowReflection" options:NSKeyValueObservingOptionNew context:NULL];
+}
+
+#pragma mark - Observers
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"displayShowReflection"])
+    {
+        if ([change[NSKeyValueChangeNewKey] boolValue])
+        {
+            [captureSession startRunning];
+        }
+        else
+        {
+            [captureSession stopRunning];
+        }
+    }
 }
 
 #pragma mark - Video Capture Callback
