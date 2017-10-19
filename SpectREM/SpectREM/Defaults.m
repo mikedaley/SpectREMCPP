@@ -68,7 +68,13 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
                                AudioLowPassFilter : @(5000)
                                };
     
-    [userDefaults registerDefaults:defaults];
+    for (NSString *key in defaults)
+    {
+        if (![userDefaults objectForKey:key])
+        {
+            [userDefaults setValue:defaults[key] forKey:key];
+        }
+    }
 }
 
 + (instancetype)defaults
