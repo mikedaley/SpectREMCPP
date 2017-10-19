@@ -93,7 +93,16 @@ void main()
     
     if (texCoord.x < 0 || texCoord.y < 0 || texCoord.x > 1 || texCoord.y > 1)
     {
-        color = vec4(0.1, 0.1, 0.1, 1.0);
+        if (texCoord.x > -0.004 && texCoord.y > -0.004 && texCoord.x < 1.004 && texCoord.y < 1.004)
+        {
+            color = vec4(0.2, 0.2, 0.2, 1);
+        }
+        else
+        {
+            vec2 u_c = vec2(0.5,0.5);
+            float distanceFromLight = length(v_texCoord - u_c);
+            color = mix(vec4(1.0, 1.0, 1.0, 1.0), vec4(0.3, 0.3, 0.3, 1.0), distanceFromLight * 1.7);
+        }
     }
     else
     {
