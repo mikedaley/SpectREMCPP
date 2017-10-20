@@ -152,10 +152,8 @@ const GLuint screenHeight = 256;
         NSOpenGLPFADoubleBuffer,
         NSOpenGLPFANoRecovery,
         NSOpenGLPFAAccelerated,
-        NSOpenGLPFAColorSize, 16,
-        NSOpenGLPFADepthSize, 24,
         NSOpenGLPFAOpenGLProfile,
-        NSOpenGLProfileVersion4_1Core,
+        NSOpenGLProfileVersion3_2Core,
         0
     };
     
@@ -194,6 +192,11 @@ const GLuint screenHeight = 256;
     [captureDeviceOutput setSampleBufferDelegate:self queue:captureQueue];
 
     [defaults addObserver:self forKeyPath:@"displayShowReflection" options:NSKeyValueObservingOptionNew context:NULL];
+    
+    if ([[defaults valueForKey:@"displayShowReflection"] boolValue])
+    {
+        [captureSession startRunning];
+    }
 }
 
 - (void)reloadDefaults
