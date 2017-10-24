@@ -150,8 +150,7 @@ const GLuint screenHeight = 256;
     NSOpenGLPixelFormatAttribute attrs[] =
     {
         NSOpenGLPFADoubleBuffer,
-        NSOpenGLPFAOpenGLProfile,
-        NSOpenGLProfileVersion3_2Core,
+        NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core,
         0
     };
     
@@ -205,16 +204,30 @@ const GLuint screenHeight = 256;
         else
         {
             NSLog(@"Error getting capture device: %@", error.localizedDescription);
+            [self setupDefaultReflectionTexture];
         }
     }
+    else
     {
         NSLog(@"No camera device found!");
+        [self setupDefaultReflectionTexture];
     }
 }
 
 - (void)reloadDefaults
 {
     defaults = [Defaults defaults];
+}
+
+#pragma mark - Default Reflection
+
+- (void)setupDefaultReflectionTexture
+{
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"reflection" ofType:@"png"];
+    NSData *data = [NSData dataWithContentsOfFile:path];
+    NSBitmapImageRep *rep = [NSBitmapImageRep imageRepWithData:data];
+    glBindTexture(GL_TEXTURE_2D, reflectionTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, rep.size.width, rep.size.height, 0, GL_BGRA, GL_UNSIGNED_BYTE, rep.bitmapData);
 }
 
 #pragma mark - Observers
