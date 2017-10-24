@@ -261,7 +261,8 @@ const GLuint screenHeight = 256;
     int64_t bufferWidth = CVPixelBufferGetWidth(cameraFrame);
 
     glBindTexture(GL_TEXTURE_2D, reflectionTexture);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, static_cast<int>(bufferWidth), static_cast<int>(bufferHeight), GL_BGRA, GL_UNSIGNED_BYTE, CVPixelBufferGetBaseAddress(cameraFrame));
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, static_cast<int>(bufferWidth), static_cast<int>(bufferHeight), 0, GL_BGRA, GL_UNSIGNED_BYTE, CVPixelBufferGetBaseAddress(cameraFrame));
+//    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, static_cast<int>(bufferWidth), static_cast<int>(bufferHeight), GL_BGRA, GL_UNSIGNED_BYTE, CVPixelBufferGetBaseAddress(cameraFrame));
 
     CVPixelBufferUnlockBaseAddress(cameraFrame,0);
 
@@ -424,7 +425,7 @@ const GLuint screenHeight = 256;
     glActiveTexture(GL_TEXTURE3);
     glBindTexture(GL_TEXTURE_2D, reflectionTexture);
     glUniform1i(s_reflectionTexture, 3);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1280, 720, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
+//    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1280, 720, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
