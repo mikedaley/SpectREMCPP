@@ -150,8 +150,6 @@ const GLuint screenHeight = 256;
     NSOpenGLPixelFormatAttribute attrs[] =
     {
         NSOpenGLPFADoubleBuffer,
-        NSOpenGLPFANoRecovery,
-        NSOpenGLPFAAccelerated,
         NSOpenGLPFAOpenGLProfile,
         NSOpenGLProfileVersion3_2Core,
         0
@@ -182,20 +180,35 @@ const GLuint screenHeight = 256;
     captureSession = [AVCaptureSession new];
     captureSession.sessionPreset = AVCaptureSessionPresetLow;
     videoCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
-    captureDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:videoCaptureDevice error:nil];
-    [captureSession addInput:captureDeviceInput];
-    
-    captureDeviceOutput = [AVCaptureVideoDataOutput new];
-    [captureSession addOutput:captureDeviceOutput];
-    captureDeviceOutput.videoSettings = @{ (NSString *)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA) };
-    captureQueue = dispatch_queue_create("CaptureQueue", NULL);
-    [captureDeviceOutput setSampleBufferDelegate:self queue:captureQueue];
-
-    [defaults addObserver:self forKeyPath:@"displayShowReflection" options:NSKeyValueObservingOptionNew context:NULL];
-    
-    if ([[defaults valueForKey:@"displayShowReflection"] boolValue])
+    if (videoCaptureDevice)
     {
-        [captureSession startRunning];
+        NSError *error;
+        captureDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:videoCaptureDevice error:&error];
+        
+        if (!error)
+        {
+            [captureSession addInput:captureDeviceInput];
+            
+            captureDeviceOutput = [AVCaptureVideoDataOutput new];
+            [captureSession addOutput:captureDeviceOutput];
+            captureDeviceOutput.videoSettings = @{ (NSString *)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA) };
+            captureQueue = dispatch_queue_create("CaptureQueue", NULL);
+            [captureDeviceOutput setSampleBufferDelegate:self queue:captureQueue];
+            
+            [defaults addObserver:self forKeyPath:@"displayShowReflection" options:NSKeyValueObservingOptionNew context:NULL];
+            
+            if ([[defaults valueForKey:@"displayShowReflection"] boolValue])
+            {
+                [captureSession startRunning];
+            }
+        }
+        else
+        {
+            NSLog(@"Error getting capture device: %@", error.localizedDescription);
+        }
+    }
+    {
+        NSLog(@"No camera device found!");
     }
 }
 
