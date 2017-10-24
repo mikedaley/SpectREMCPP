@@ -83,6 +83,7 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         defaults = [Defaults new];
+        [Defaults setupDefaultsWithReset:NO];
     });
     return defaults;
 }

@@ -75,7 +75,6 @@ static const int cSCREEN_FILL = 1;
 {
     [super viewDidLoad];
     
-    [Defaults setupDefaultsWithReset:NO];
     _defaults = [Defaults defaults];
     
     mainBundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/Contents/Resources/"];
