@@ -19,7 +19,7 @@ const float clutUVAdjust = 1.0 / 16.0;
 void main()
 {
     // Get the colour to be used from the texture passed in
-    float c = texture( s_displayTexture, v_texCoord ).r * 255;
+    float c = texture( s_displayTexture, v_texCoord ).r * 256;
     
     // Grab the actual colour from the lookup table
     vec4 color = texture( s_clutTexture, c * clutUVAdjust );
