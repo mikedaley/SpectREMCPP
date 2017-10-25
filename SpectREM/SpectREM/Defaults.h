@@ -13,7 +13,7 @@
 #pragma mark - Machine
 
 extern NSString * const MachineAcceleration;
-@property (nonatomic, assign) NSInteger machineAcceleration;
+@property (nonatomic, assign) CGFloat machineAcceleration;
 
 extern NSString * const MachineSelectedModel;
 @property (nonatomic, assign) NSInteger machineSelectedModel;

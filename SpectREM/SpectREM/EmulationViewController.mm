@@ -98,6 +98,11 @@ static const int cSCREEN_FILL = 1;
     [self setupControllers];
     [self setupObservers];
     [self restoreSession];
+    
+    if (_defaults.machineAcceleration > 1)
+    {
+        [self setupAccelerationTimer];
+    }
 }
 
 #pragma mark - Audio Callback
@@ -125,6 +130,32 @@ static const int cSCREEN_FILL = 1;
     }
 }
 
+- (void)setupAccelerationTimer
+{
+    if (_defaults.machineAcceleration > 1)
+    {
+        [accelerationTimer invalidate];
+        accelerationTimer = [NSTimer timerWithTimeInterval:1.0 / (50.0 * _defaults.machineAcceleration) repeats:YES block:^(NSTimer * _Nonnull timer) {
+            
+            machine->generateFrame();
+            
+            if (!(machine->emuFrameCounter % static_cast<uint32_t>(_defaults.machineAcceleration)))
+            {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [(OpenGLView *)self.glView updateTextureData:machine->displayBuffer];
+                });
+            }
+            
+        }];
+        
+        [[NSRunLoop mainRunLoop] addTimer:accelerationTimer forMode:NSRunLoopCommonModes];
+    }
+    else
+    {
+        [accelerationTimer invalidate];
+    }
+}
+
 #pragma mark - View Methods
 
 - (void)viewWillAppear
@@ -146,28 +177,7 @@ static const int cSCREEN_FILL = 1;
 {
     if ([keyPath isEqualToString:MachineAcceleration])
     {
-        if (_defaults.machineAcceleration > 1)
-        {
-            [accelerationTimer invalidate];
-            accelerationTimer = [NSTimer timerWithTimeInterval:1.0 / (50.0 * _defaults.machineAcceleration) repeats:YES block:^(NSTimer * _Nonnull timer) {
-                
-                machine->generateFrame();
-                
-                if (!(machine->emuFrameCounter % _defaults.machineAcceleration))
-                {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [(OpenGLView *)self.glView updateTextureData:machine->displayBuffer];
-                    });
-                }
-                
-            }];
-        
-            [[NSRunLoop mainRunLoop] addTimer:accelerationTimer forMode:NSRunLoopCommonModes];
-        }
-        else
-        {
-            [accelerationTimer invalidate];
-        }
+        [self setupAccelerationTimer];
     }
     else if ([keyPath isEqualToString:MachineSelectedModel])
     {

@@ -104,7 +104,7 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
     {
         NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
         
-        _machineAcceleration = [[userDefaults valueForKey:MachineAcceleration] integerValue];
+        _machineAcceleration = [[userDefaults valueForKey:MachineAcceleration] floatValue];
         _machineSelectedModel = [[userDefaults valueForKey:MachineSelectedModel] integerValue];
         _machineTapeInstantLoad = [[userDefaults valueForKey:MachineTapeInstantLoad] boolValue];
         _machineUseAYSound = [[userDefaults valueForKey:MachineUseAYSound] boolValue];
@@ -133,7 +133,7 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
 
 #pragma mark - Machine
 
-- (void)setMachineAcceleration:(NSInteger)machineAcceleration
+- (void)setMachineAcceleration:(CGFloat)machineAcceleration
 {
     _machineAcceleration = machineAcceleration;
     [[NSUserDefaults standardUserDefaults] setInteger:machineAcceleration forKey:MachineAcceleration];
