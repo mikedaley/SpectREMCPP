@@ -10,6 +10,7 @@
 
 #pragma mark - Machine
 
+NSString * const MachineAcceleration = @"machineAcceleration";
 NSString * const MachineSelectedModel = @"machineSelectedModel";
 NSString * const MachineTapeInstantLoad = @"machineTapeInstantLoad";
 NSString * const MachineUseAYSound = @"machineUseAYSound";
@@ -44,6 +45,7 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
 
     NSDictionary *defaults = @{
+                               MachineAcceleration : @(1),
                                MachineSelectedModel : @(0),
                                MachineTapeInstantLoad : @YES,
                                MachineUseAYSound: @YES,
@@ -102,6 +104,7 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
     {
         NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
         
+        _machineAcceleration = [[userDefaults valueForKey:MachineAcceleration] integerValue];
         _machineSelectedModel = [[userDefaults valueForKey:MachineSelectedModel] integerValue];
         _machineTapeInstantLoad = [[userDefaults valueForKey:MachineTapeInstantLoad] boolValue];
         _machineUseAYSound = [[userDefaults valueForKey:MachineUseAYSound] boolValue];
@@ -129,6 +132,12 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
 }
 
 #pragma mark - Machine
+
+- (void)setMachineAcceleration:(NSInteger)machineAcceleration
+{
+    _machineAcceleration = machineAcceleration;
+    [[NSUserDefaults standardUserDefaults] setInteger:machineAcceleration forKey:MachineAcceleration];
+}
 
 - (void)setMachineSelectedModel:(NSInteger)machineSelectedModel
 {

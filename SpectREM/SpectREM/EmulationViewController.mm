@@ -59,6 +59,8 @@ static const int cSCREEN_FILL = 1;
     NSWindowController              *tapeBrowserWindowController;
     TapeBrowserViewController       *tapeBrowserViewController;
     
+    NSTimer                         *accelerationTimer;
+    
 }
 @end
 
@@ -104,17 +106,21 @@ static const int cSCREEN_FILL = 1;
 {
     if (machine)
     {
+        const uint32_t b = (cAUDIO_SAMPLE_RATE / (cFRAMES_PER_SECOND * _defaults.machineAcceleration)) * 2;
+        
         audioQueue->read(buffer, (inNumberFrames * 2));
         
         // Check if we have used a frames worth of buffer storage and if so then its time to generate another frame.
-        if (audioQueue->bufferUsed() < cAUDIO_BUFFER_CAPACITY)
+        if (audioQueue->bufferUsed() < b)
         {
-            machine->generateFrame();
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [(OpenGLView *)self.glView updateTextureData:machine->displayBuffer];
-            });
-            
-            audioQueue->write(machine->audioBuffer, cAUDIO_BUFFER_CAPACITY);
+            if (_defaults.machineAcceleration == 1)
+            {
+                machine->generateFrame();
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [(OpenGLView *)self.glView updateTextureData:machine->displayBuffer];
+                });
+            }
+            audioQueue->write(machine->audioBuffer, b);
         }
     }
 }
@@ -130,6 +136,7 @@ static const int cSCREEN_FILL = 1;
 
 - (void)setupObservers
 {
+    [self.defaults addObserver:self forKeyPath:MachineAcceleration options:NSKeyValueObservingOptionNew context:NULL];
     [self.defaults addObserver:self forKeyPath:MachineSelectedModel options:NSKeyValueObservingOptionNew context:NULL];
     [self.defaults addObserver:self forKeyPath:MachineTapeInstantLoad options:NSKeyValueObservingOptionNew context:NULL];
     [self.defaults addObserver:self forKeyPath:MachineUseAYSound options:NSKeyValueObservingOptionNew context:NULL];
@@ -137,7 +144,32 @@ static const int cSCREEN_FILL = 1;
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
 {
-    if ([keyPath isEqualToString:MachineSelectedModel])
+    if ([keyPath isEqualToString:MachineAcceleration])
+    {
+        if (_defaults.machineAcceleration > 1)
+        {
+            [accelerationTimer invalidate];
+            accelerationTimer = [NSTimer timerWithTimeInterval:1.0 / (50.0 * _defaults.machineAcceleration) repeats:YES block:^(NSTimer * _Nonnull timer) {
+                
+                machine->generateFrame();
+                
+                if (!(machine->emuFrameCounter % _defaults.machineAcceleration))
+                {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [(OpenGLView *)self.glView updateTextureData:machine->displayBuffer];
+                    });
+                }
+                
+            }];
+        
+            [[NSRunLoop mainRunLoop] addTimer:accelerationTimer forMode:NSRunLoopCommonModes];
+        }
+        else
+        {
+            [accelerationTimer invalidate];
+        }
+    }
+    else if ([keyPath isEqualToString:MachineSelectedModel])
     {
         [self initMachineWithRomPath:mainBundlePath machineType:(int)self.defaults.machineSelectedModel];
     }
