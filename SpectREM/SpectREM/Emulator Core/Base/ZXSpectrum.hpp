@@ -26,11 +26,11 @@ class ZXSpectrum
 {
 
 public:
-    static const int    cBITMAP_ADDRESS = 16384;
-    static const int    cBITMAP_SIZE = 6144;
-    static const int    cATTR_SIZE = 768;
-    static const int    cMEMORY_PAGE_SIZE = 16384;
-    
+    static const int32_t    cBITMAP_ADDRESS = 16384;
+    static const int32_t    cBITMAP_SIZE = 6144;
+    static const int32_t    cATTR_SIZE = 768;
+    static const int32_t    cMEMORY_PAGE_SIZE = 16384;
+
     enum
     {
         eAYREGISTER_A_FINE = 0,
@@ -63,17 +63,17 @@ private:
     // Holds details of the host platforms key codes and how they map to the spectrum keyboard matrix
     typedef struct
     {
-        int                 key;
-        int                 mapEntry;
-        int                 mapBit;
+        int32_t     key;
+        int32_t     mapEntry;
+        int32_t     mapBit;
     } KEYBOARD_ENTRY;
     
 public:
     
     // Holds the data returned when creating a Snapshot or Z80 snapshot
     struct Snap {
-        int length = 0;
-        unsigned char *data = nullptr;
+        int32_t     length = 0;
+        uint8_t     *data = nullptr;
     };
     
 public:
@@ -91,9 +91,9 @@ public:
     // On completion, the displayBuffer member variable will contain RGBA formatted image data that can then be used to build a display image
     void                    generateFrame();
     
-    void                    keyboardKeyDown(unsigned short key);
-    void                    keyboardKeyUp(unsigned short key);
-    void                    keyboardFlagsChanged(unsigned long flags, unsigned short key);
+    void                    keyboardKeyDown(uint16_t key);
+    void                    keyboardKeyUp(uint16_t key);
+    void                    keyboardFlagsChanged(uint64_t flags, uint16_t key);
     
     
     bool                    snapshotZ80LoadWithPath(const char *path);
@@ -107,17 +107,17 @@ protected:
     virtual void            loadDefaultROM() = 0;
     
     void                    displayFrameReset();
-    void                    displayUpdateWithTs(int tStates);
+    void                    displayUpdateWithTs(int32_t tStates);
 
-    void                    ULAApplyIOContention(unsigned short address, bool contended);
-    unsigned char           ULAFloatingBus();
+    void                    ULAApplyIOContention(uint16_t address, bool contended);
+    uint8_t                 ULAFloatingBus();
 
-    void                    audioAYSetRegister(unsigned char reg);
-    void                    audioAYWriteData(unsigned char data);
-    unsigned char           audioAYReadData();
+    void                    audioAYSetRegister(uint8_t reg);
+    void                    audioAYWriteData(uint8_t data);
+    uint8_t                 audioAYReadData();
     void                    audioAYUpdate();
     void                    audioReset();
-    void                    audioUpdateWithTs(int tStates);
+    void                    audioUpdateWithTs(int32_t tStates);
     
 private:
     void                    displayBuildTsTable();
@@ -127,8 +127,8 @@ private:
     void                    audioBuildAYVolumesTable();
     void                    keyboardCheckCapsLockStatus();
     void                    keyboardMapReset();
-    string                  snapshotHardwareTypeForVersion(int version, int hardwareType);
-    void                    snapshotExtractMemoryBlock(unsigned char *fileBytes, int memAddr, int fileOffset, bool isCompressed, int unpackedLength);
+    string                  snapshotHardwareTypeForVersion(uint32_t version, uint32_t hardwareType);
+    void                    snapshotExtractMemoryBlock(uint8_t *fileBytes, uint32_t memAddr, uint32_t fileOffset, bool isCompressed, uint32_t unpackedLength);
     void                    displaySetup();
     void                    displayClear();
     void                    audioSetup(float sampleRate, float fps);
@@ -158,22 +158,22 @@ public:
     vector<char>            memoryRom;
     vector<char>            memoryRam;
     
-    unsigned char           keyboardMap[8]{0};
+    uint8_t                 keyboardMap[8]{0};
     static KEYBOARD_ENTRY   keyboardLookup[];
-    int                     keyboardCapsLockFrames = 0;
+    uint32_t                keyboardCapsLockFrames = 0;
     
-    unsigned short          *audioBuffer = nullptr;
+    int16_t                 *audioBuffer = nullptr;
   
 public:
     
     // Emulation
     MachineInfo             machineInfo;
-    int                     emuCurrentDisplayTs = 0;
-    int                     emuFrameCounter = 0;
+    uint32_t                emuCurrentDisplayTs = 0;
+    uint32_t                emuFrameCounter = 0;
     bool                    emuPaused = 0;
-    int                     emuRAMPage = 0;
-    int                     emuROMPage = 0;
-    int                     emuDisplayPage = 0;
+    uint32_t                emuRAMPage = 0;
+    uint32_t                emuROMPage = 0;
+    uint32_t                emuDisplayPage = 0;
     bool                    emuDisablePaging = true;
     string                  emuROMPath;
     bool                    emuTapeInstantLoad = 0;
@@ -183,65 +183,64 @@ public:
 
     // Display
     uint8_t                 *displayBuffer = nullptr;
-    unsigned int            displayBufferIndex = 0;
-    int                     screenWidth = 320;
-    int                     screenHeight = 256;
-    int                     screenBufferSize = 0;
-    int                     displayTstateTable[312][228]{0};
-    int                     displayLineAddrTable[192]{0};
+    uint32_t                displayBufferIndex = 0;
+    uint32_t                screenWidth = 320;
+    uint32_t                screenHeight = 256;
+    uint32_t                screenBufferSize = 0;
+    uint32_t                displayTstateTable[312][228]{0};
+    uint32_t                displayLineAddrTable[192]{0};
     uint64_t                *displayCLUT = nullptr;
     uint8_t                 *displayALUT = nullptr;
-    int                     displayBorderColor = 0;
+    uint32_t                displayBorderColor = 0;
     bool                    displayReady = false;
 
     // Audio
-    int                     audioEarBit = 0;
-    int                     audioMicBit = 0;
-    int                     audioBufferSize = 0;
-    int                     audioBufferIndex = 0;
-    int                     audioTsCounter = 0;
+    int32_t                audioEarBit = 0;
+    int32_t                audioMicBit = 0;
+    uint32_t                audioBufferSize = 0;
+    uint32_t                audioBufferIndex = 0;
+    float                   audioTsCounter = 0;
     float                   audioTsStepCounter = 0;
 
     float                   audioBeeperTsStep = 0;
     float                   audioBeeperLeft = 0;
     float                   audioBeeperRight = 0;
 
-    int                     audioAYChannelOutput[3]{0};
-    unsigned int            audioAYChannelCount[3]{0};
-    unsigned short          audioAYVolumes[16]{0};
-    unsigned int            audioAYrandom = 0;
-    unsigned int            audioAYOutput = 0;
-    unsigned int            audioAYNoiseCount = 0;
-    unsigned int            audioATaudioAYEnvelopeCount = 0;
-    int                     audioAYaudioAYEnvelopeStep = 0;
-    unsigned char           audioAYRegisters[ eAY_MAX_REGISTERS ]{0};
-    unsigned char           audioAYCurrentRegister = 0;
-    unsigned char           audioAYFloatingRegister = 0;
+    float                   audioAYChannelOutput[3]{0};
+    uint32_t                audioAYChannelCount[3]{0};
+    uint16_t                audioAYVolumes[16]{0};
+    uint32_t                audioAYrandom = 0;
+    uint32_t                audioAYOutput = 0;
+    uint32_t                audioAYNoiseCount = 0;
+    uint32_t                audioATaudioAYEnvelopeCount = 0;
+    int32_t                 audioAYaudioAYEnvelopeStep = 0;
+    uint8_t                 audioAYRegisters[ eAY_MAX_REGISTERS ]{0};
+    uint8_t                 audioAYCurrentRegister = 0;
+    uint8_t                 audioAYFloatingRegister = 0;
     bool                    audioAYaudioAYaudioAYEnvelopeHolding = 0;
     bool                    audioAYaudioAYEnvelopeHold = 0;
     bool                    audioAYaudioAYEnvelopeAlt = 0;
     bool                    audioAYEnvelope = 0;
-    unsigned int            audioAYAttackEndVol = 0;
+    uint32_t                audioAYAttackEndVol = 0;
     float                   audioAYTsStep = 0;
-    int                     audioAYTs = 0;
+    float                   audioAYTs = 0;
         
     // Keyboard
     bool                    keyboardCapsLockPressed = false;
     
     // ULA
-    unsigned int            ULAMemoryContentionTable[80000]{0};
-    unsigned int            ULAIOContentionTable[80000]{0};
-    const static unsigned int ULAConentionValues[];
-    int                     ULAPortFFFDValue = 0;
+    uint32_t                ULAMemoryContentionTable[80000]{0};
+    uint32_t                ULAIOContentionTable[80000]{0};
+    const static uint32_t   ULAConentionValues[];
+    int32_t                 ULAPortFFFDValue = 0;
 
     // Floating bus
-    const static unsigned int ULAFloatingBusValues[];
+    const static uint32_t   ULAFloatingBusValues[];
     
     // Tape object
     Tape                    *tape = nullptr;
 
 };
-
 
 #endif /* ZXSpectrum_hpp */
 

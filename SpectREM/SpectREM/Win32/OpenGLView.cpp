@@ -6,6 +6,7 @@
 //  Copyright © 2016 71Squared Ltd. All rights reserved.
 //
 
+#include <stdio.h>
 #include <string>
 #include <fstream>
 #include <vector>

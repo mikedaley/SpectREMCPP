@@ -12,6 +12,9 @@
 
 #pragma mark - Machine
 
+extern NSString * const MachineAcceleration;
+@property (nonatomic, assign) CGFloat machineAcceleration;
+
 extern NSString * const MachineSelectedModel;
 @property (nonatomic, assign) NSInteger machineSelectedModel;
 
@@ -79,6 +82,7 @@ extern NSString * const AudioLowPassFilter;
 #pragma mark - Init
 
 + (instancetype)defaults;
-+ (void)setupDefaults;
++ (instancetype)reload;
++ (void)setupDefaultsWithReset:(BOOL)reset;
 
 @end

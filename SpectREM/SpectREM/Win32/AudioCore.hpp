@@ -10,11 +10,12 @@
 
 //-----------------------------------------------------------------------------------------
 
+#include <stdint.h>
 #include "xaudio2.h"
 
 //-----------------------------------------------------------------------------------------
 
-typedef void (*AUDIOCORE_Callback)(int nNumSamples, unsigned char *pBuffer);
+typedef void (*AUDIOCORE_Callback)(uint32_t nNumSamples, uint8_t *pBuffer);
 
 //-----------------------------------------------------------------------------------------
 
@@ -26,7 +27,7 @@ public:
 
 public:
 	void						Deinit();
-	bool						Init(int sampleRate, float fps, AUDIOCORE_Callback callback);
+	bool						Init(uint32_t sampleRate, float fps, AUDIOCORE_Callback callback);
 	void						Start();
 
 	void STDMETHODCALLTYPE		OnStreamEnd();

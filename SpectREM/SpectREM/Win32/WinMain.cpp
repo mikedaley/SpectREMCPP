@@ -9,6 +9,7 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include <stdint.h>
 #include "AudioCore.hpp"
 #include "ZXSpectrum.hpp"
 #include "ZXSpectrum48.hpp"
@@ -117,11 +118,11 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 
 //-----------------------------------------------------------------------------------------
 
-static void audio_callback(int nNumSamples, unsigned char *pBuffer)
+static void audio_callback(uint32_t nNumSamples, uint8_t *pBuffer)
 {
 	if (m_pMachine)
 	{
-		m_pAudioQueue->read((unsigned short *)pBuffer, nNumSamples);
+		m_pAudioQueue->read((int16_t *)pBuffer, nNumSamples);
 
 		// Check if we have used a frames worth of buffer storage and if so then its time to generate another frame.
 		if (m_pAudioQueue->bufferUsed() < ((44100 * 2) / 50) )

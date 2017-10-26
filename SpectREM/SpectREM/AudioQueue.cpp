@@ -18,7 +18,7 @@
 AudioQueue::AudioQueue()
 {
     audioQueueBufferCapacity = 1 << kExponent;
-    audioQueueBuffer = new short[ audioQueueBufferCapacity << 2 ]();
+    audioQueueBuffer = new int16_t[ audioQueueBufferCapacity << 2 ]();
 	audioQueueBufferWritten = 0;
 	audioQueueBufferRead = 0;
 }
@@ -29,14 +29,14 @@ AudioQueue::~AudioQueue()
 }
 
 // Write the supplied number of bytes into the queues buffer from the supplied buffer pointer
-int AudioQueue::write(unsigned short *buffer, int count)
+uint32_t AudioQueue::write(int16_t *buffer, uint32_t count)
 {
     if (!count) {
         return 0;
     }
     
-    int t;
-    int i;
+    uint32_t t;
+    uint32_t i;
     
     t = kSpace;
     
@@ -65,10 +65,10 @@ int AudioQueue::write(unsigned short *buffer, int count)
 }
 
 // Read the supplied number of bytes from the queues buffer into the supplied buffer pointer
-int AudioQueue::read(unsigned short *buffer, int count)
+uint32_t AudioQueue::read(int16_t *buffer, uint32_t count)
 {
-    int t;
-    int i;
+    uint32_t t;
+    uint32_t i;
     
     t = kUsed;
     
@@ -96,7 +96,7 @@ int AudioQueue::read(unsigned short *buffer, int count)
 }
 
 // Return the number of used samples in the buffer
-int AudioQueue::bufferUsed()
+uint32_t AudioQueue::bufferUsed()
 {
     return kUsed;
 }

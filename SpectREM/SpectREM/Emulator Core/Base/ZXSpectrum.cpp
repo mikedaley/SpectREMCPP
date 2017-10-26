@@ -8,6 +8,9 @@
 
 #include "ZXSpectrum.hpp"
 
+const float cSAMPLE_RATE = 44100;
+const float cFPS = 50;
+
 #pragma mark - Constructor/Deconstructor
 
 ZXSpectrum::ZXSpectrum()
@@ -57,7 +60,7 @@ void ZXSpectrum::initialise(string romPath)
     
     ULABuildContentionTable();
 
-    audioSetup(44100, 50);
+    audioSetup(cSAMPLE_RATE, cFPS);
     audioBuildAYVolumesTable();
     
     resetMachine(true);
@@ -67,7 +70,7 @@ void ZXSpectrum::initialise(string romPath)
 
 void ZXSpectrum::generateFrame()
 {
-    int currentFrameTstates = machineInfo.tsPerFrame;
+    uint32_t currentFrameTstates = machineInfo.tsPerFrame;
     
     while (currentFrameTstates > 0 && !emuPaused)
     {
@@ -106,10 +109,7 @@ void ZXSpectrum::generateFrame()
                 
                 currentFrameTstates = 0;
             }
-        }
-        
-        // Decay the floating AY value provided when registers > 15 are read
-        audioAYRegisters[ eAYREGISTER_FLOATING ] >>= 1;
+        }        
     }
 }
 

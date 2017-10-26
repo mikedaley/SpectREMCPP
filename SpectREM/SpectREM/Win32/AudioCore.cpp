@@ -37,7 +37,7 @@ void AudioCore::Deinit()
 
 //-----------------------------------------------------------------------------------------
 
-bool AudioCore::Init(int sampleRate, float fps, AUDIOCORE_Callback callback)
+bool AudioCore::Init(uint32_t sampleRate, float fps, AUDIOCORE_Callback callback)
 {
 	// Remember the callback
 	m_pCallback = callback;

@@ -83,6 +83,7 @@ static OSStatus renderAudio(void *inRefCon,
         _defaults = [Defaults defaults];
         
         NSLog(@"Initialising AudioCore");
+        
         samplesPerFrame = sampleRate / fps;
     
         CheckError(NewAUGraph(&_graph), "NewAUGraph");
@@ -232,14 +233,17 @@ static OSStatus renderAudio(void *inRefCon,
 
 #pragma mark - Audio Render
 
-static OSStatus renderAudio(void *inRefCon, AudioUnitRenderActionFlags *ioActionFlags,
-                            const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber, UInt32 inNumberFrames,
+static OSStatus renderAudio(void *inRefCon,
+                            AudioUnitRenderActionFlags *ioActionFlags,
+                            const AudioTimeStamp *inTimeStamp,
+                            UInt32 inBusNumber,
+                            UInt32 inNumberFrames,
                             AudioBufferList *ioData)
 {
     EmulationViewController *callback = (__bridge EmulationViewController *)inRefCon;
     
     // Grab the buffer that core audio has passed in.
-    unsigned short *buffer = (unsigned short *)ioData->mBuffers[0].mData;
+    int16_t *buffer = (int16_t *)ioData->mBuffers[0].mData;
     
     // Reset the buffer to prevent any odd noises being played when a machine starts up
     memset(buffer, 0, inNumberFrames << 2);

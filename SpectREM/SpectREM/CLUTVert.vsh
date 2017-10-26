@@ -18,4 +18,3 @@ void main()
     // Set the vertex position to the value from the VBO, not applying anything clever here :o)
     gl_Position = vec4(vertexPosition, 1.0);
 }
-

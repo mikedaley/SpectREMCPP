@@ -10,6 +10,7 @@
 
 #pragma mark - Machine
 
+NSString * const MachineAcceleration = @"machineAcceleration";
 NSString * const MachineSelectedModel = @"machineSelectedModel";
 NSString * const MachineTapeInstantLoad = @"machineTapeInstantLoad";
 NSString * const MachineUseAYSound = @"machineUseAYSound";
@@ -39,28 +40,29 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
 
 @implementation Defaults
 
-+ (void)setupDefaults
++ (void)setupDefaultsWithReset:(BOOL)reset
 {
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-    
+
     NSDictionary *defaults = @{
+                               MachineAcceleration : @(1),
                                MachineSelectedModel : @(0),
                                MachineTapeInstantLoad : @YES,
                                MachineUseAYSound: @YES,
                                
-                               DisplayPixelFilterValue : @(0.0),
+                               DisplayPixelFilterValue : @(0.15),
                                DisplayBorderSize : @(32),
                                DisplayCurvature : @(0.0),
                                DisplayContrast : @(0.75),
-                               DisplayBrightness : @(1),
-                               DisplaySaturation : @(1),
-                               DisplayScanLines : @(0),
+                               DisplayBrightness : @(1.0),
+                               DisplaySaturation : @(1.0),
+                               DisplayScanLines : @(0.0),
                                DisplayScanLineSize : @(960),
-                               DisplayRGBOffset : @(0),
+                               DisplayRGBOffset : @(0.0),
                                DisplayHorizontalSync : @(0),
                                DisplayShowReflection : @NO,
                                DisplayShowVignette : @NO,
-                               DisplayVignetteX : @(1),
+                               DisplayVignetteX : @(1.0),
                                DisplayVignetteY : @(0.25),
                                
                                AudioMasterVolume : @(1.5),
@@ -68,7 +70,13 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
                                AudioLowPassFilter : @(5000)
                                };
     
-    [userDefaults registerDefaults:defaults];
+    for (NSString *key in defaults)
+    {
+        if (![userDefaults objectForKey:key] || reset)
+        {
+            [userDefaults setValue:defaults[key] forKey:key];
+        }
+    }
 }
 
 + (instancetype)defaults
@@ -77,7 +85,15 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         defaults = [Defaults new];
+        [Defaults setupDefaultsWithReset:NO];
     });
+    return defaults;
+}
+
++ (instancetype)reload
+{
+    static Defaults *defaults = nil;
+    defaults = [Defaults new];
     return defaults;
 }
 
@@ -88,6 +104,7 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
     {
         NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
         
+        _machineAcceleration = [[userDefaults valueForKey:MachineAcceleration] floatValue];
         _machineSelectedModel = [[userDefaults valueForKey:MachineSelectedModel] integerValue];
         _machineTapeInstantLoad = [[userDefaults valueForKey:MachineTapeInstantLoad] boolValue];
         _machineUseAYSound = [[userDefaults valueForKey:MachineUseAYSound] boolValue];
@@ -115,6 +132,12 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
 }
 
 #pragma mark - Machine
+
+- (void)setMachineAcceleration:(CGFloat)machineAcceleration
+{
+    _machineAcceleration = machineAcceleration;
+    [[NSUserDefaults standardUserDefaults] setInteger:machineAcceleration forKey:MachineAcceleration];
+}
 
 - (void)setMachineSelectedModel:(NSInteger)machineSelectedModel
 {
