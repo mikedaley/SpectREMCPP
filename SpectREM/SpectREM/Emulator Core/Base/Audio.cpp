@@ -34,7 +34,7 @@ void ZXSpectrum::audioBuildAYVolumesTable()
 
 void ZXSpectrum::audioSetup(float sampleRate, float fps)
 {
-    audioBufferSize = static_cast<int>((sampleRate / fps) * 5.0);
+    audioBufferSize = static_cast<int>((sampleRate / fps) * 4.0);
     audioBuffer = new unsigned short[ audioBufferSize ]();
     audioBeeperTsStep = machineInfo.tsPerFrame / (sampleRate / fps);
     audioAYTsStep = 32;
@@ -305,7 +305,7 @@ void ZXSpectrum::audioAYUpdate()
         {
             vol = audioAYaudioAYEnvelopeStep ^ audioAYAttackEndVol;
         }
-        
+
         audioAYChannelOutput[0] += audioAYVolumes[vol];
     }
     

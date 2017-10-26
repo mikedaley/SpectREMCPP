@@ -19,6 +19,8 @@ AudioQueue::AudioQueue()
 {
     audioQueueBufferCapacity = 1 << kExponent;
     audioQueueBuffer = new short[ audioQueueBufferCapacity << 2 ]();
+	audioQueueBufferWritten = 0;
+	audioQueueBufferRead = 0;
 }
 
 AudioQueue::~AudioQueue()

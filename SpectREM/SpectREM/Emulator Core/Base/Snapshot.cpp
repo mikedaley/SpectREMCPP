@@ -124,51 +124,56 @@ bool ZXSpectrum::snapshotSNALoadWithPath(const char *path)
     long size = ftell(fileHandle);
     fseek(fileHandle, 0, SEEK_SET);
     
-    unsigned char fileBytes[size];
+    unsigned char *pFileBytes = new unsigned char[size];
     
-    fread(&fileBytes, 1, size, fileHandle);
-    
-    // Decode the header
-    z80Core.SetRegister(CZ80Core::eREG_I, fileBytes[0]);
-    z80Core.SetRegister(CZ80Core::eREG_R, fileBytes[20]);
-    z80Core.SetRegister(CZ80Core::eREG_ALT_HL, ((unsigned short *)&fileBytes[1])[0]);
-    z80Core.SetRegister(CZ80Core::eREG_ALT_DE, ((unsigned short *)&fileBytes[1])[1]);
-    z80Core.SetRegister(CZ80Core::eREG_ALT_BC, ((unsigned short *)&fileBytes[1])[2]);
-    z80Core.SetRegister(CZ80Core::eREG_ALT_AF, ((unsigned short *)&fileBytes[1])[3]);
-    z80Core.SetRegister(CZ80Core::eREG_HL, ((unsigned short *)&fileBytes[1])[4]);
-    z80Core.SetRegister(CZ80Core::eREG_DE, ((unsigned short *)&fileBytes[1])[5]);
-    z80Core.SetRegister(CZ80Core::eREG_BC, ((unsigned short *)&fileBytes[1])[6]);
-    z80Core.SetRegister(CZ80Core::eREG_IY, ((unsigned short *)&fileBytes[1])[7]);
-    z80Core.SetRegister(CZ80Core::eREG_IX, ((unsigned short *)&fileBytes[1])[8]);
-    
-    z80Core.SetRegister(CZ80Core::eREG_AF, ((unsigned short *)&fileBytes[21])[0]);
-    
-    z80Core.SetRegister(CZ80Core::eREG_SP, ((unsigned short *)&fileBytes[21])[1]);
-    
-    // Border colour
-    displayBorderColor = fileBytes[26] & 0x07;
-    
-    // Set the IM
-    z80Core.SetIMMode(fileBytes[25]);
-    
-    // Do both on bit 2 as a RETN copies IFF2 to IFF1
-    z80Core.SetIFF1((fileBytes[19] >> 2) & 1);
-    z80Core.SetIFF2((fileBytes[19] >> 2) & 1);
-    
-    if (size == (48 * 1024) + cSNA_HEADER_SIZE)
-    {
-        int snaAddr = cSNA_HEADER_SIZE;
-        for (int i = 16384; i < (64 * 1024); i++)
-        {
-            memoryRam[i] = fileBytes[snaAddr++];
-        }
-        
-        // Set the PC
-        unsigned char pc_lsb = memoryRam[z80Core.GetRegister(CZ80Core::eREG_SP)];
-        unsigned char pc_msb = memoryRam[(z80Core.GetRegister(CZ80Core::eREG_SP) + 1)];
-        z80Core.SetRegister(CZ80Core::eREG_PC, (pc_msb << 8) | pc_lsb);
-        z80Core.SetRegister(CZ80Core::eREG_SP, z80Core.GetRegister(CZ80Core::eREG_SP) + 2);
-    }
+	if (pFileBytes != NULL)
+	{
+		fread(pFileBytes, 1, size, fileHandle);
+
+		// Decode the header
+		z80Core.SetRegister(CZ80Core::eREG_I, pFileBytes[0]);
+		z80Core.SetRegister(CZ80Core::eREG_R, pFileBytes[20]);
+		z80Core.SetRegister(CZ80Core::eREG_ALT_HL, ((unsigned short *)&pFileBytes[1])[0]);
+		z80Core.SetRegister(CZ80Core::eREG_ALT_DE, ((unsigned short *)&pFileBytes[1])[1]);
+		z80Core.SetRegister(CZ80Core::eREG_ALT_BC, ((unsigned short *)&pFileBytes[1])[2]);
+		z80Core.SetRegister(CZ80Core::eREG_ALT_AF, ((unsigned short *)&pFileBytes[1])[3]);
+		z80Core.SetRegister(CZ80Core::eREG_HL, ((unsigned short *)&pFileBytes[1])[4]);
+		z80Core.SetRegister(CZ80Core::eREG_DE, ((unsigned short *)&pFileBytes[1])[5]);
+		z80Core.SetRegister(CZ80Core::eREG_BC, ((unsigned short *)&pFileBytes[1])[6]);
+		z80Core.SetRegister(CZ80Core::eREG_IY, ((unsigned short *)&pFileBytes[1])[7]);
+		z80Core.SetRegister(CZ80Core::eREG_IX, ((unsigned short *)&pFileBytes[1])[8]);
+
+		z80Core.SetRegister(CZ80Core::eREG_AF, ((unsigned short *)&pFileBytes[21])[0]);
+
+		z80Core.SetRegister(CZ80Core::eREG_SP, ((unsigned short *)&pFileBytes[21])[1]);
+
+		// Border colour
+		displayBorderColor = pFileBytes[26] & 0x07;
+
+		// Set the IM
+		z80Core.SetIMMode(pFileBytes[25]);
+
+		// Do both on bit 2 as a RETN copies IFF2 to IFF1
+		z80Core.SetIFF1((pFileBytes[19] >> 2) & 1);
+		z80Core.SetIFF2((pFileBytes[19] >> 2) & 1);
+
+		if (size == (48 * 1024) + cSNA_HEADER_SIZE)
+		{
+			int snaAddr = cSNA_HEADER_SIZE;
+			for (int i = 16384; i < (64 * 1024); i++)
+			{
+				memoryRam[i] = pFileBytes[snaAddr++];
+			}
+
+			// Set the PC
+			unsigned char pc_lsb = memoryRam[z80Core.GetRegister(CZ80Core::eREG_SP)];
+			unsigned char pc_msb = memoryRam[(z80Core.GetRegister(CZ80Core::eREG_SP) + 1)];
+			z80Core.SetRegister(CZ80Core::eREG_PC, (pc_msb << 8) | pc_lsb);
+			z80Core.SetRegister(CZ80Core::eREG_SP, z80Core.GetRegister(CZ80Core::eREG_SP) + 2);
+		}
+
+		delete[] pFileBytes;
+	}
     
     resume();
     
@@ -349,6 +354,7 @@ ZXSpectrum::Snap ZXSpectrum::snapshotCreateZ80()
 bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
 {
     FILE *fileHandle;
+	bool bSuccess = false;
 
     fileHandle = fopen(path, "rb");
     
@@ -368,162 +374,168 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
     long size = ftell(fileHandle);
     fseek(fileHandle, 0, SEEK_SET);
 
-    unsigned char fileBytes[ size ];
+    unsigned char *pFileBytes = new unsigned char[ size ];
     
-    fread(&fileBytes, 1, size, fileHandle);
-    
-    // Decode the header
-    unsigned short headerLength = ((unsigned short *)&fileBytes[30])[0];
-    int version;
-    unsigned char hardwareType;
-    unsigned short pc;
-    
-    switch (headerLength) {
-        case 23:
-            version = 2;
-            pc = ((unsigned short *)&fileBytes[32])[0];
-            break;
-        case 54:
-        case 55:
-            version = 3;
-            pc = ((unsigned short *)&fileBytes[32])[0];
-            break;
-        default:
-            version = 1;
-            pc = ((unsigned short *)&fileBytes[6])[0];
-            break;
-    }
-    
-    if (pc == 0)
-    {
-        version = 2;
-        pc = ((unsigned short *)&fileBytes[32])[0];
-    }
-    
-    cout << "Loading Z80 snapshot v" << version << ": " << path << endl;
-    
-    z80Core.SetRegister(CZ80Core::eREG_A, (unsigned char)fileBytes[0]);
-    z80Core.SetRegister(CZ80Core::eREG_F, (unsigned char)fileBytes[1]);
-    z80Core.SetRegister(CZ80Core::eREG_BC, ((unsigned short *)&fileBytes[2])[0]);
-    z80Core.SetRegister(CZ80Core::eREG_HL, ((unsigned short *)&fileBytes[2])[1]);
-    z80Core.SetRegister(CZ80Core::eREG_PC, pc);
-    z80Core.SetRegister(CZ80Core::eREG_SP, ((unsigned short *)&fileBytes[8])[0]);
-    z80Core.SetRegister(CZ80Core::eREG_I, (unsigned char)fileBytes[10]);
-    z80Core.SetRegister(CZ80Core::eREG_R, (fileBytes[11] & 127) | ((fileBytes[12] & 1) << 7));
-    
-    // Decode byte 12
-    //    Bit 0  : Bit 7 of the R-register
-    //    Bit 1-3: Border colour
-    //    Bit 4  : 1=Basic SamRom switched in
-    //    Bit 5  : 1=Block of data is compressed
-    //    Bit 6-7: No meaning
-    unsigned char byte12 = fileBytes[12];
-    
-    // For campatibility reasons if byte 12 = 255 then it should be assumed to = 1
-    byte12 = (byte12 == 255) ? 1 : byte12;
-    
-    displayBorderColor = (byte12 & 14) >> 1;
-    bool compressed = byte12 & 32;
-    
-    z80Core.SetRegister(CZ80Core::eREG_DE, ((unsigned short *)&fileBytes[13])[0]);
-    z80Core.SetRegister(CZ80Core::eREG_ALT_BC, ((unsigned short *)&fileBytes[13])[1]);
-    z80Core.SetRegister(CZ80Core::eREG_ALT_DE, ((unsigned short *)&fileBytes[13])[2]);
-    z80Core.SetRegister(CZ80Core::eREG_ALT_HL, ((unsigned short *)&fileBytes[13])[3]);
-    z80Core.SetRegister(CZ80Core::eREG_ALT_A, (unsigned char)fileBytes[21]);
-    z80Core.SetRegister(CZ80Core::eREG_ALT_F, (unsigned char)fileBytes[22]);
-    z80Core.SetRegister(CZ80Core::eREG_IY, ((unsigned short *)&fileBytes[23])[0]);
-    z80Core.SetRegister(CZ80Core::eREG_IX, ((unsigned short *)&fileBytes[23])[1]);
-    z80Core.SetIFF1((unsigned char)fileBytes[27] & 1);
-    z80Core.SetIFF2((unsigned char)fileBytes[28] & 1);
-    z80Core.SetIMMode((unsigned char)fileBytes[29] & 3);
-    
-    // Load AY register values
-//    int fileBytesIndex = 39;
-//    for (int i = 0; i < 16; i++)
-//    {
-//        audioAYSetRegister(i);
-//        audioAYWriteData(fileBytes[ fileBytesIndex++ ]);
-//    }
+	if (pFileBytes != NULL)
+	{
+		fread(pFileBytes, 1, size, fileHandle);
 
-//    audioAYSetRegister(fileBytes[38]);
+		// Decode the header
+		unsigned short headerLength = ((unsigned short *)&pFileBytes[30])[0];
+		int version;
+		unsigned char hardwareType;
+		unsigned short pc;
 
-    // Based on the version number of the snapshot, decode the memory contents
-    switch (version) {
-        case 1:
-            snapshotExtractMemoryBlock(fileBytes, 0x4000, 30, compressed, 0xc000);
-            break;
-            
-        case 2:
-        case 3:
-            hardwareType = ((unsigned char *)&fileBytes[34])[0];
-            short additionHeaderBlockLength = 0;
-            additionHeaderBlockLength = ((unsigned short *)&fileBytes[30])[0];
-            int offset = 32 + additionHeaderBlockLength;
-            
-            if ( (version == 2 && (hardwareType == cZ80_V2_MACHINE_TYPE_128 || hardwareType == cZ80_V2_MACHINE_TYPE_128_IF1)) ||
-                (version == 3 && (hardwareType == cZ80_V3_MACHINE_TYPE_128 || hardwareType == cZ80_V3_MACHINE_TYPE_128_IF1 || hardwareType == cz80_V3_MACHINE_TYPE_128_MGT ||
-                                  hardwareType == cZ80_V3_MACHINE_TYPE_128_2)) )
-            {
-                // Decode byte 35 so that port 0x7ffd can be set on the 128k
-                unsigned char data = ((unsigned char *)&fileBytes[35])[0];
-                emuDisablePaging = ((data & 0x20) == 0x20) ? true : false;
-                emuROMPage = ((data & 0x10) == 0x10) ? 1 : 0;
-                emuDisplayPage = ((data & 0x08) == 0x08) ? 7 : 5;
-                emuRAMPage = (data & 0x07);
-            }
-            else
-            {
-                emuDisablePaging = true;
-                emuROMPage = 0;
-                emuRAMPage = 0;
-                emuDisplayPage = 1;
-            }
-            
-            while (offset < size)
-            {
-                int compressedLength = ((unsigned short *)&fileBytes[offset])[0];
-                bool isCompressed = true;
-                if (compressedLength == 0xffff)
-                {
-                    compressedLength = 0x4000;
-                    isCompressed = false;
-                }
-                
-                int pageId = fileBytes[offset + 2];
-                
-                if (version == 1 || ((version == 2 || version == 3) && (hardwareType == cZ80_V2_MACHINE_TYPE_48 || hardwareType == cZ80_V3_MACHINE_TYPE_48 ||
-                                                                        hardwareType == cZ80_V2_MACHINE_TYPE_48_IF1 || hardwareType == cZ80_V3_MACHINE_TYPE_48_IF1)
-                                     ))
-                {
-                    // 48k
-                    switch (pageId) {
-                        case 4:
-                            snapshotExtractMemoryBlock(fileBytes, 0x8000, offset + 3, isCompressed, 0x4000);
-                            break;
-                        case 5:
-                            snapshotExtractMemoryBlock(fileBytes, 0xc000, offset + 3, isCompressed, 0x4000);
-                            break;
-                        case 8:
-                            snapshotExtractMemoryBlock(fileBytes, 0x4000, offset + 3, isCompressed, 0x4000);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                else
-                {
-                    // 128k
-                    snapshotExtractMemoryBlock(fileBytes, (pageId - 3) * 0x4000, offset + 3, isCompressed, 0x4000);
-                }
-                
-                offset += compressedLength + 3;
-            }
-            break;
-    }
+		switch (headerLength) {
+		case 23:
+			version = 2;
+			pc = ((unsigned short *)&pFileBytes[32])[0];
+			break;
+		case 54:
+		case 55:
+			version = 3;
+			pc = ((unsigned short *)&pFileBytes[32])[0];
+			break;
+		default:
+			version = 1;
+			pc = ((unsigned short *)&pFileBytes[6])[0];
+			break;
+		}
+
+		if (pc == 0)
+		{
+			version = 2;
+			pc = ((unsigned short *)&pFileBytes[32])[0];
+		}
+
+		cout << "Loading Z80 snapshot v" << version << ": " << path << endl;
+
+		z80Core.SetRegister(CZ80Core::eREG_A, (unsigned char)pFileBytes[0]);
+		z80Core.SetRegister(CZ80Core::eREG_F, (unsigned char)pFileBytes[1]);
+		z80Core.SetRegister(CZ80Core::eREG_BC, ((unsigned short *)&pFileBytes[2])[0]);
+		z80Core.SetRegister(CZ80Core::eREG_HL, ((unsigned short *)&pFileBytes[2])[1]);
+		z80Core.SetRegister(CZ80Core::eREG_PC, pc);
+		z80Core.SetRegister(CZ80Core::eREG_SP, ((unsigned short *)&pFileBytes[8])[0]);
+		z80Core.SetRegister(CZ80Core::eREG_I, (unsigned char)pFileBytes[10]);
+		z80Core.SetRegister(CZ80Core::eREG_R, (pFileBytes[11] & 127) | ((pFileBytes[12] & 1) << 7));
+
+		// Decode byte 12
+		//    Bit 0  : Bit 7 of the R-register
+		//    Bit 1-3: Border colour
+		//    Bit 4  : 1=Basic SamRom switched in
+		//    Bit 5  : 1=Block of data is compressed
+		//    Bit 6-7: No meaning
+		unsigned char byte12 = pFileBytes[12];
+
+		// For campatibility reasons if byte 12 = 255 then it should be assumed to = 1
+		byte12 = (byte12 == 255) ? 1 : byte12;
+
+		displayBorderColor = (byte12 & 14) >> 1;
+		bool compressed = (byte12 & 32) != 0 ? true : false;
+
+		z80Core.SetRegister(CZ80Core::eREG_DE, ((unsigned short *)&pFileBytes[13])[0]);
+		z80Core.SetRegister(CZ80Core::eREG_ALT_BC, ((unsigned short *)&pFileBytes[13])[1]);
+		z80Core.SetRegister(CZ80Core::eREG_ALT_DE, ((unsigned short *)&pFileBytes[13])[2]);
+		z80Core.SetRegister(CZ80Core::eREG_ALT_HL, ((unsigned short *)&pFileBytes[13])[3]);
+		z80Core.SetRegister(CZ80Core::eREG_ALT_A, (unsigned char)pFileBytes[21]);
+		z80Core.SetRegister(CZ80Core::eREG_ALT_F, (unsigned char)pFileBytes[22]);
+		z80Core.SetRegister(CZ80Core::eREG_IY, ((unsigned short *)&pFileBytes[23])[0]);
+		z80Core.SetRegister(CZ80Core::eREG_IX, ((unsigned short *)&pFileBytes[23])[1]);
+		z80Core.SetIFF1((unsigned char)pFileBytes[27] & 1);
+		z80Core.SetIFF2((unsigned char)pFileBytes[28] & 1);
+		z80Core.SetIMMode((unsigned char)pFileBytes[29] & 3);
+
+		// Load AY register values
+	//    int fileBytesIndex = 39;
+	//    for (int i = 0; i < 16; i++)
+	//    {
+	//        audioAYSetRegister(i);
+	//        audioAYWriteData(pFileBytes[ fileBytesIndex++ ]);
+	//    }
+
+	//    audioAYSetRegister(pFileBytes[38]);
+
+		// Based on the version number of the snapshot, decode the memory contents
+		switch (version) {
+		case 1:
+			snapshotExtractMemoryBlock(pFileBytes, 0x4000, 30, compressed, 0xc000);
+			break;
+
+		case 2:
+		case 3:
+			hardwareType = ((unsigned char *)&pFileBytes[34])[0];
+			short additionHeaderBlockLength = 0;
+			additionHeaderBlockLength = ((unsigned short *)&pFileBytes[30])[0];
+			int offset = 32 + additionHeaderBlockLength;
+
+			if ((version == 2 && (hardwareType == cZ80_V2_MACHINE_TYPE_128 || hardwareType == cZ80_V2_MACHINE_TYPE_128_IF1)) ||
+				(version == 3 && (hardwareType == cZ80_V3_MACHINE_TYPE_128 || hardwareType == cZ80_V3_MACHINE_TYPE_128_IF1 || hardwareType == cz80_V3_MACHINE_TYPE_128_MGT ||
+					hardwareType == cZ80_V3_MACHINE_TYPE_128_2)))
+			{
+				// Decode byte 35 so that port 0x7ffd can be set on the 128k
+				unsigned char data = ((unsigned char *)&pFileBytes[35])[0];
+				emuDisablePaging = ((data & 0x20) == 0x20) ? true : false;
+				emuROMPage = ((data & 0x10) == 0x10) ? 1 : 0;
+				emuDisplayPage = ((data & 0x08) == 0x08) ? 7 : 5;
+				emuRAMPage = (data & 0x07);
+			}
+			else
+			{
+				emuDisablePaging = true;
+				emuROMPage = 0;
+				emuRAMPage = 0;
+				emuDisplayPage = 1;
+			}
+
+			while (offset < size)
+			{
+				int compressedLength = ((unsigned short *)&pFileBytes[offset])[0];
+				bool isCompressed = true;
+				if (compressedLength == 0xffff)
+				{
+					compressedLength = 0x4000;
+					isCompressed = false;
+				}
+
+				int pageId = pFileBytes[offset + 2];
+
+				if (version == 1 || ((version == 2 || version == 3) && (hardwareType == cZ80_V2_MACHINE_TYPE_48 || hardwareType == cZ80_V3_MACHINE_TYPE_48 ||
+					hardwareType == cZ80_V2_MACHINE_TYPE_48_IF1 || hardwareType == cZ80_V3_MACHINE_TYPE_48_IF1)
+					))
+				{
+					// 48k
+					switch (pageId) {
+					case 4:
+						snapshotExtractMemoryBlock(pFileBytes, 0x8000, offset + 3, isCompressed, 0x4000);
+						break;
+					case 5:
+						snapshotExtractMemoryBlock(pFileBytes, 0xc000, offset + 3, isCompressed, 0x4000);
+						break;
+					case 8:
+						snapshotExtractMemoryBlock(pFileBytes, 0x4000, offset + 3, isCompressed, 0x4000);
+						break;
+					default:
+						break;
+					}
+				}
+				else
+				{
+					// 128k
+					snapshotExtractMemoryBlock(pFileBytes, (pageId - 3) * 0x4000, offset + 3, isCompressed, 0x4000);
+				}
+
+				offset += compressedLength + 3;
+			}
+			break;
+		}
+
+		delete[] pFileBytes;
+		bSuccess = true;
+	}
     
     resume();
 
-    return true;
+    return bSuccess;
 }
 
 void ZXSpectrum::snapshotExtractMemoryBlock(unsigned char *fileBytes, int memAddr, int fileOffset, bool isCompressed, int unpackedLength)
@@ -623,6 +635,7 @@ string ZXSpectrum::snapshotHardwareTypeForVersion(int version, int hardwareType)
 int ZXSpectrum::snapshotMachineInSnapshotWithPath(const char *path)
 {
     FILE *fileHandle;
+	int machineType = -1;
     
     fileHandle = fopen(path, "rb");
     
@@ -637,76 +650,81 @@ int ZXSpectrum::snapshotMachineInSnapshotWithPath(const char *path)
     long size = ftell(fileHandle);
     fseek(fileHandle, 0, SEEK_SET);
     
-    unsigned char fileBytes[size];
+    unsigned char *pFileBytes = new unsigned char[size];
     
-    fread(&fileBytes, 1, size, fileHandle);
+	if (pFileBytes != NULL)
+	{
+		fread(pFileBytes, 1, size, fileHandle);
+
+		// Decode the header
+		unsigned short headerLength = ((unsigned short *)&pFileBytes[30])[0];
+		int version;
+		unsigned char hardwareType;
+		unsigned short pc;
+
+		switch (headerLength) {
+		case 23:
+			version = 2;
+			pc = ((unsigned short *)&pFileBytes[32])[0];
+			break;
+		case 54:
+		case 55:
+			version = 3;
+			pc = ((unsigned short *)&pFileBytes[32])[0];
+			break;
+		default:
+			version = 1;
+			pc = ((unsigned short *)&pFileBytes[6])[0];
+			break;
+		}
+
+		if (pc == 0)
+		{
+			version = 2;
+		}
+
+		switch (version)
+		{
+		case 1:
+			machineType = eZXSpectrum48;
+			break;
+
+		case 2:
+			hardwareType = ((unsigned char *)&pFileBytes[34])[0];
+			if (hardwareType == 0 || hardwareType == 1)
+			{
+				machineType = eZXSpectrum48;
+			}
+			else if (hardwareType == 3 || hardwareType == 4)
+			{
+				machineType = eZXSpectrum128;
+			}
+			else
+			{
+				machineType = eZXSpectrum48;
+			}
+			break;
+
+		case 3:
+			hardwareType = ((unsigned char *)&pFileBytes[34])[0];
+			if (hardwareType == cZ80_V3_MACHINE_TYPE_48 || hardwareType == cZ80_V3_MACHINE_TYPE_48_IF1 || hardwareType == cZ80_V3_MACHINE_TYPE_48_MGT)
+			{
+				machineType = eZXSpectrum48;
+			}
+			else if (hardwareType == cZ80_V3_MACHINE_TYPE_128 || hardwareType == cZ80_V3_MACHINE_TYPE_128_IF1 || hardwareType == cz80_V3_MACHINE_TYPE_128_MGT)
+			{
+				machineType = eZXSpectrum128;
+			}
+			else if (hardwareType == cZ80_V3_MACHINE_TYPE_128_2)
+			{
+				machineType = eZXSpectrum128_2;
+			}
+			break;
+		}
+
+		delete[]pFileBytes;
+	}
     
-    // Decode the header
-    unsigned short headerLength = ((unsigned short *)&fileBytes[30])[0];
-    int version;
-    unsigned char hardwareType;
-    unsigned short pc;
-    
-    switch (headerLength) {
-        case 23:
-            version = 2;
-            pc = ((unsigned short *)&fileBytes[32])[0];
-            break;
-        case 54:
-        case 55:
-            version = 3;
-            pc = ((unsigned short *)&fileBytes[32])[0];
-            break;
-        default:
-            version = 1;
-            pc = ((unsigned short *)&fileBytes[6])[0];
-            break;
-    }
-    
-    if (pc == 0)
-    {
-        version = 2;
-    }
-    
-    if (version == 1)
-    {
-        return eZXSpectrum48;
-    }
-    
-    if (version == 2)
-    {
-        hardwareType = ((unsigned char *)&fileBytes[34])[0];
-        if (hardwareType == 0 || hardwareType == 1)
-        {
-            return eZXSpectrum48;
-        }
-        else if (hardwareType == 3 || hardwareType == 4)
-        {
-            return eZXSpectrum128;
-        }
-        else
-        {
-            return eZXSpectrum48;
-        }
-    }
-    
-    if (version == 3)
-    {
-        hardwareType = ((unsigned char *)&fileBytes[34])[0];
-        if (hardwareType == cZ80_V3_MACHINE_TYPE_48 || hardwareType == cZ80_V3_MACHINE_TYPE_48_IF1 || hardwareType == cZ80_V3_MACHINE_TYPE_48_MGT)
-        {
-            return eZXSpectrum48;
-        }
-        else if (hardwareType == cZ80_V3_MACHINE_TYPE_128 || hardwareType == cZ80_V3_MACHINE_TYPE_128_IF1 || hardwareType == cz80_V3_MACHINE_TYPE_128_MGT)
-        {
-            return eZXSpectrum128;
-        }
-        else if (hardwareType == cZ80_V3_MACHINE_TYPE_128_2)
-        {
-            return eZXSpectrum128_2;
-        }
-    }
-    
-    return -1;
+    return machineType;
 }
 

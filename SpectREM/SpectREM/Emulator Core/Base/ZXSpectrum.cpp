@@ -57,7 +57,7 @@ void ZXSpectrum::initialise(string romPath)
     
     ULABuildContentionTable();
 
-    audioSetup(192000, 50);
+    audioSetup(44100, 50);
     audioBuildAYVolumesTable();
     
     resetMachine(true);
@@ -170,7 +170,7 @@ void ZXSpectrum::resetMachine(bool hard)
 {
     if (hard)
     {
-        for (int i = 0; i < machineInfo.ramSize; i++)
+        for (int i = 0; i < (int)machineInfo.ramSize; i++)
         {
             memoryRam[i] = rand() % 255;
         }
