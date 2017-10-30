@@ -458,6 +458,7 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
 		switch (version) {
 		case 1:
 			snapshotExtractMemoryBlock(pFileBytes, 0x4000, 30, compressed, 0xc000);
+            bSuccess = true;
 			break;
 
 		case 2:
@@ -525,6 +526,8 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
 
 				offset += compressedLength + 3;
 			}
+                
+            bSuccess = true;
 			break;
 		}
     }
