@@ -31,7 +31,6 @@ NSString *const cTAP_EXTENSION = @"TAP";
 
 uint32_t const cAUDIO_SAMPLE_RATE = 44100;
 uint32_t const cFRAMES_PER_SECOND = 50;
-uint32_t const cAUDIO_BUFFER_CAPACITY = (cAUDIO_SAMPLE_RATE / cFRAMES_PER_SECOND) * 2;
 
 static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
