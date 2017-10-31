@@ -502,7 +502,7 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 
 - (IBAction)resetPreferences:(id)sender
 {
-
+    [Defaults setupDefaultsWithReset:YES];
 }
 
 #pragma mark - View Menu Items

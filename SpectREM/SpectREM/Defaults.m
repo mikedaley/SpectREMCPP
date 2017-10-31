@@ -77,6 +77,33 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
             [userDefaults setValue:defaults[key] forKey:key];
         }
     }
+    
+    if (reset)
+    {
+        [Defaults defaults].machineAcceleration = [[userDefaults valueForKey:MachineAcceleration] floatValue];
+        [Defaults defaults].machineSelectedModel = [[userDefaults valueForKey:MachineSelectedModel] integerValue];
+        [Defaults defaults].machineTapeInstantLoad = [[userDefaults valueForKey:MachineTapeInstantLoad] boolValue];
+        [Defaults defaults].machineUseAYSound = [[userDefaults valueForKey:MachineUseAYSound] boolValue];
+        
+        [Defaults defaults].displayPixelFilterValue = [[userDefaults valueForKey:DisplayPixelFilterValue] floatValue];
+        [Defaults defaults].displayBorderSize = [[userDefaults valueForKey:DisplayBorderSize] integerValue];
+        [Defaults defaults].displayCurvature = [[userDefaults valueForKey:DisplayCurvature] floatValue];
+        [Defaults defaults].displayContrast = [[userDefaults valueForKey:DisplayContrast] floatValue];
+        [Defaults defaults].displayBrightness = [[userDefaults valueForKey:DisplayBrightness] floatValue];
+        [Defaults defaults].displaySaturation = [[userDefaults valueForKey:DisplaySaturation] floatValue];
+        [Defaults defaults].displayRGBOffset = [[userDefaults valueForKey:DisplayRGBOffset] floatValue];
+        [Defaults defaults].displayScanLines = [[userDefaults valueForKey:DisplayScanLines] floatValue];
+        [Defaults defaults].displayScanLineSize = [[userDefaults valueForKey:DisplayScanLineSize] floatValue];
+        [Defaults defaults].displayHorizontalSync = [[userDefaults valueForKey:DisplayHorizontalSync] floatValue];
+        [Defaults defaults].displayShowReflection = [[userDefaults valueForKey:DisplayShowReflection] boolValue];
+        [Defaults defaults].displayShowVignette = [[userDefaults valueForKey:DisplayShowVignette] boolValue];
+        [Defaults defaults].displayVignetteX = [[userDefaults valueForKey:DisplayVignetteX] floatValue];
+        [Defaults defaults].displayVignetteY = [[userDefaults valueForKey:DisplayVignetteY] floatValue];
+        
+        [Defaults defaults].audioMasterVolume = [[userDefaults valueForKey:AudioMasterVolume] floatValue];
+        [Defaults defaults].audioHighPassFilter = [[userDefaults valueForKey:AudioHighPassFilter] integerValue];
+        [Defaults defaults].audioLowPassFilter = [[userDefaults valueForKey:AudioLowPassFilter] integerValue];
+    }
 }
 
 + (instancetype)defaults
