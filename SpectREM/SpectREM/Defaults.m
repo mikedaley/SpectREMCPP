@@ -80,29 +80,7 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
     
     if (reset)
     {
-        [Defaults defaults].machineAcceleration = [[userDefaults valueForKey:MachineAcceleration] floatValue];
-        [Defaults defaults].machineSelectedModel = [[userDefaults valueForKey:MachineSelectedModel] integerValue];
-        [Defaults defaults].machineTapeInstantLoad = [[userDefaults valueForKey:MachineTapeInstantLoad] boolValue];
-        [Defaults defaults].machineUseAYSound = [[userDefaults valueForKey:MachineUseAYSound] boolValue];
-        
-        [Defaults defaults].displayPixelFilterValue = [[userDefaults valueForKey:DisplayPixelFilterValue] floatValue];
-        [Defaults defaults].displayBorderSize = [[userDefaults valueForKey:DisplayBorderSize] integerValue];
-        [Defaults defaults].displayCurvature = [[userDefaults valueForKey:DisplayCurvature] floatValue];
-        [Defaults defaults].displayContrast = [[userDefaults valueForKey:DisplayContrast] floatValue];
-        [Defaults defaults].displayBrightness = [[userDefaults valueForKey:DisplayBrightness] floatValue];
-        [Defaults defaults].displaySaturation = [[userDefaults valueForKey:DisplaySaturation] floatValue];
-        [Defaults defaults].displayRGBOffset = [[userDefaults valueForKey:DisplayRGBOffset] floatValue];
-        [Defaults defaults].displayScanLines = [[userDefaults valueForKey:DisplayScanLines] floatValue];
-        [Defaults defaults].displayScanLineSize = [[userDefaults valueForKey:DisplayScanLineSize] floatValue];
-        [Defaults defaults].displayHorizontalSync = [[userDefaults valueForKey:DisplayHorizontalSync] floatValue];
-        [Defaults defaults].displayShowReflection = [[userDefaults valueForKey:DisplayShowReflection] boolValue];
-        [Defaults defaults].displayShowVignette = [[userDefaults valueForKey:DisplayShowVignette] boolValue];
-        [Defaults defaults].displayVignetteX = [[userDefaults valueForKey:DisplayVignetteX] floatValue];
-        [Defaults defaults].displayVignetteY = [[userDefaults valueForKey:DisplayVignetteY] floatValue];
-        
-        [Defaults defaults].audioMasterVolume = [[userDefaults valueForKey:AudioMasterVolume] floatValue];
-        [Defaults defaults].audioHighPassFilter = [[userDefaults valueForKey:AudioHighPassFilter] integerValue];
-        [Defaults defaults].audioLowPassFilter = [[userDefaults valueForKey:AudioLowPassFilter] integerValue];
+        [[Defaults defaults] readDefaults];
     }
 }
 
@@ -129,33 +107,38 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
     self = [super init];
     if (self)
     {
-        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-        
-        _machineAcceleration = [[userDefaults valueForKey:MachineAcceleration] floatValue];
-        _machineSelectedModel = [[userDefaults valueForKey:MachineSelectedModel] integerValue];
-        _machineTapeInstantLoad = [[userDefaults valueForKey:MachineTapeInstantLoad] boolValue];
-        _machineUseAYSound = [[userDefaults valueForKey:MachineUseAYSound] boolValue];
-        
-        _displayPixelFilterValue = [[userDefaults valueForKey:DisplayPixelFilterValue] floatValue];
-        _displayBorderSize = [[userDefaults valueForKey:DisplayBorderSize] integerValue];
-        _displayCurvature = [[userDefaults valueForKey:DisplayCurvature] floatValue];
-        _displayContrast = [[userDefaults valueForKey:DisplayContrast] floatValue];
-        _displayBrightness = [[userDefaults valueForKey:DisplayBrightness] floatValue];
-        _displaySaturation = [[userDefaults valueForKey:DisplaySaturation] floatValue];
-        _displayRGBOffset = [[userDefaults valueForKey:DisplayRGBOffset] floatValue];
-        _displayScanLines = [[userDefaults valueForKey:DisplayScanLines] floatValue];
-        _displayScanLineSize = [[userDefaults valueForKey:DisplayScanLineSize] floatValue];
-        _displayHorizontalSync = [[userDefaults valueForKey:DisplayHorizontalSync] floatValue];
-        _displayShowReflection = [[userDefaults valueForKey:DisplayShowReflection] boolValue];
-        _displayShowVignette = [[userDefaults valueForKey:DisplayShowVignette] boolValue];
-        _displayVignetteX = [[userDefaults valueForKey:DisplayVignetteX] floatValue];
-        _displayVignetteY = [[userDefaults valueForKey:DisplayVignetteY] floatValue];
-
-        _audioMasterVolume = [[userDefaults valueForKey:AudioMasterVolume] floatValue];
-        _audioHighPassFilter = [[userDefaults valueForKey:AudioHighPassFilter] integerValue];
-        _audioLowPassFilter = [[userDefaults valueForKey:AudioLowPassFilter] integerValue];
+        [self readDefaults];
     }
     return self;
+}
+
+- (void)readDefaults
+{
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    
+    _machineAcceleration = [[userDefaults valueForKey:MachineAcceleration] floatValue];
+    _machineSelectedModel = [[userDefaults valueForKey:MachineSelectedModel] integerValue];
+    _machineTapeInstantLoad = [[userDefaults valueForKey:MachineTapeInstantLoad] boolValue];
+    _machineUseAYSound = [[userDefaults valueForKey:MachineUseAYSound] boolValue];
+    
+    _displayPixelFilterValue = [[userDefaults valueForKey:DisplayPixelFilterValue] floatValue];
+    _displayBorderSize = [[userDefaults valueForKey:DisplayBorderSize] integerValue];
+    _displayCurvature = [[userDefaults valueForKey:DisplayCurvature] floatValue];
+    _displayContrast = [[userDefaults valueForKey:DisplayContrast] floatValue];
+    _displayBrightness = [[userDefaults valueForKey:DisplayBrightness] floatValue];
+    _displaySaturation = [[userDefaults valueForKey:DisplaySaturation] floatValue];
+    _displayRGBOffset = [[userDefaults valueForKey:DisplayRGBOffset] floatValue];
+    _displayScanLines = [[userDefaults valueForKey:DisplayScanLines] floatValue];
+    _displayScanLineSize = [[userDefaults valueForKey:DisplayScanLineSize] floatValue];
+    _displayHorizontalSync = [[userDefaults valueForKey:DisplayHorizontalSync] floatValue];
+    _displayShowReflection = [[userDefaults valueForKey:DisplayShowReflection] boolValue];
+    _displayShowVignette = [[userDefaults valueForKey:DisplayShowVignette] boolValue];
+    _displayVignetteX = [[userDefaults valueForKey:DisplayVignetteX] floatValue];
+    _displayVignetteY = [[userDefaults valueForKey:DisplayVignetteY] floatValue];
+    
+    _audioMasterVolume = [[userDefaults valueForKey:AudioMasterVolume] floatValue];
+    _audioHighPassFilter = [[userDefaults valueForKey:AudioHighPassFilter] integerValue];
+    _audioLowPassFilter = [[userDefaults valueForKey:AudioLowPassFilter] integerValue];
 }
 
 #pragma mark - Machine
