@@ -25,10 +25,6 @@
 
 #pragma mark - Constants
 
-NSString *const cSNA_EXTENSION = @"SNA";
-NSString *const cZ80_EXTENSION = @"Z80";
-NSString *const cTAP_EXTENSION = @"TAP";
-
 uint32_t const cAUDIO_SAMPLE_RATE = 44100;
 uint32_t const cFRAMES_PER_SECOND = 50;
 

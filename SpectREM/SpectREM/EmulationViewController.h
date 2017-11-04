@@ -12,11 +12,17 @@
 @class EmulationScene;
 @class OpenGLView;
 
+#pragma mark - Constants
+
 enum
 {
     cZ80_SNAPSHOT_TYPE = 0,
     cSNA_SNAPSHOT_TYPE
 };
+
+static NSString *const cSNA_EXTENSION = @"SNA";
+static NSString *const cZ80_EXTENSION = @"Z80";
+static NSString *const cTAP_EXTENSION = @"TAP";
 
 @interface EmulationViewController : NSViewController 
 
