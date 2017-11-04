@@ -79,6 +79,24 @@ const GLuint textureUnit2 = 2;
 const GLuint screenWidth = 320;
 const GLuint screenHeight = 256;
 
+char const * cS_DISPLAY_TEXTURE =       "s_displayTexture";
+char const * cS_CLUT_TEXTURE =          "s_clutTexture";
+char const *cS_REFLECTION_TEXTURE =     "s_reflectionTexture";
+char const * cU_BORDER_SIZE =           "u_borderSize";
+char const * cU_CONTRAST =              "u_contrast";
+char const * cU_SATURATION =            "u_saturation";
+char const * cU_BRIGHTNESS =            "u_brightness";
+char const * cU_PIXEL_FILTER_VALUE =    "u_pixelFilterValue";
+char const * cU_SCAN_LINE_SIZE =        "u_scanlineSize";
+char const * cU_SCAN_LINES =            "u_scanlines";
+char const * cU_SCREEN_CURVE =          "u_screenCurve";
+char const * cU_RGB_OFFSET =            "u_rgbOffset";
+char const * cU_SHOW_VIGNETTE =         "u_showVignette";
+char const * cU_VIGNETTE_X =            "u_vignetteX";
+char const * cU_VIGNETTE_Y =            "u_vignetteY";
+char const * cU_SHOW_REFLECTION =       "u_showReflection";
+char const * cU_TIME =                  "u_time";
+
 #pragma mark - Private Ivars
 
 @interface OpenGLView ()
@@ -337,30 +355,30 @@ const GLuint screenHeight = 256;
     NSString *fragmentShaderPath = [[NSBundle mainBundle] pathForResource:@"CLUTFrag" ofType:@"fsh"];
     clutShader = LoadShaders([vertexShaderPath UTF8String], [fragmentShaderPath UTF8String]);
     
-    s_displayTexture = glGetUniformLocation(clutShader, "s_displayTexture");
-    s_clutTexture = glGetUniformLocation(clutShader, "s_clutTexture");
+    s_displayTexture = glGetUniformLocation(clutShader, cS_DISPLAY_TEXTURE);
+    s_clutTexture = glGetUniformLocation(clutShader, cS_CLUT_TEXTURE);
     
     // Display Shader
     vertexShaderPath = [[NSBundle mainBundle] pathForResource:@"DisplayVert" ofType:@"vsh"];
     fragmentShaderPath = [[NSBundle mainBundle] pathForResource:@"DisplayFrag" ofType:@"fsh"];
     displayShader = LoadShaders([vertexShaderPath UTF8String], [fragmentShaderPath UTF8String]);
     
-    s_texture = glGetUniformLocation(displayShader, "s_displayTexture");
-    s_reflectionTexture = glGetUniformLocation(displayShader, "s_reflectionTexture");
-    u_borderSize = glGetUniformLocation(displayShader, "u_borderSize");
-    u_contrast = glGetUniformLocation(displayShader, "u_contrast");
-    u_saturation = glGetUniformLocation(displayShader, "u_saturation");
-    u_brightness = glGetUniformLocation(displayShader, "u_brightness");
-    u_scanlineSize = glGetUniformLocation(displayShader, "u_scanlineSize");
-    u_scanlines = glGetUniformLocation(displayShader, "u_scanlines");
-    u_screenCurve = glGetUniformLocation(displayShader, "u_screenCurve");
-    u_pixelFilterValue = glGetUniformLocation(displayShader, "u_pixelFilterValue");
-    u_rgbOffset = glGetUniformLocation(displayShader, "u_rgbOffset");
-    u_showVignette = glGetUniformLocation(displayShader, "u_showVignette");
-    u_vignetteX = glGetUniformLocation(displayShader, "u_vignetteX");
-    u_vignetteY = glGetUniformLocation(displayShader, "u_vignetteY");
-    u_showReflection = glGetUniformLocation(displayShader, "u_showReflection");
-    u_time = glGetUniformLocation(displayShader, "u_time");
+    s_texture = glGetUniformLocation(displayShader, cS_DISPLAY_TEXTURE);
+    s_reflectionTexture = glGetUniformLocation(displayShader, cS_REFLECTION_TEXTURE);
+    u_borderSize = glGetUniformLocation(displayShader, cU_BORDER_SIZE);
+    u_contrast = glGetUniformLocation(displayShader, cU_CONTRAST);
+    u_saturation = glGetUniformLocation(displayShader, cU_SATURATION);
+    u_brightness = glGetUniformLocation(displayShader, cU_BRIGHTNESS);
+    u_scanlineSize = glGetUniformLocation(displayShader, cU_SCAN_LINE_SIZE);
+    u_scanlines = glGetUniformLocation(displayShader, cU_SCAN_LINES);
+    u_screenCurve = glGetUniformLocation(displayShader, cU_SCREEN_CURVE);
+    u_pixelFilterValue = glGetUniformLocation(displayShader, cU_PIXEL_FILTER_VALUE);
+    u_rgbOffset = glGetUniformLocation(displayShader, cU_RGB_OFFSET);
+    u_showVignette = glGetUniformLocation(displayShader, cU_SHOW_VIGNETTE);
+    u_vignetteX = glGetUniformLocation(displayShader, cU_VIGNETTE_X);
+    u_vignetteY = glGetUniformLocation(displayShader, cU_VIGNETTE_Y);
+    u_showReflection = glGetUniformLocation(displayShader, cU_SHOW_REFLECTION);
+    u_time = glGetUniformLocation(displayShader, cU_TIME);
 }
 
 - (void)setupTextures
