@@ -241,7 +241,7 @@ public:
     Tape                    *tape = nullptr;
     
     // SPI port
-    unsigned short          spiPort = 0xfaf1;
+    unsigned short          spiPort = 0xfaf7;
 
 };
 
