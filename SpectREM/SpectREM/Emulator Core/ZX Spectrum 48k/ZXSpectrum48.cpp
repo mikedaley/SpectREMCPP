@@ -104,11 +104,6 @@ unsigned char ZXSpectrum48::coreIORead(unsigned short address)
         return ULAFloatingBus();
     }
 
-    if (address == spiPort)
-    {
-        return ZXSpectrum48::spi_read();
-    }
-
     // Check to see if the keyboard is being read and if so return any keys currently pressed
     unsigned char result = 0xff;
     if (address & 0xfe)
