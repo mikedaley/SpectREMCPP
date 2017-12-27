@@ -55,6 +55,7 @@
 		EDD9ADF11F5D6F51004DD728 /* ZXSpectrum128.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDD9ADEF1F5D6F51004DD728 /* ZXSpectrum128.cpp */; };
 		EDD9ADF41F5D89AE004DD728 /* 128-0.ROM in Resources */ = {isa = PBXBuildFile; fileRef = EDD9ADF21F5D7E10004DD728 /* 128-0.ROM */; };
 		EDD9ADF51F5D89AE004DD728 /* 128-1.ROM in Resources */ = {isa = PBXBuildFile; fileRef = EDD9ADF31F5D7E10004DD728 /* 128-1.ROM */; };
+		EDF6604B1FF3E3A500769784 /* SPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDF6604A1FF3E3A500769784 /* SPI.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -134,6 +135,7 @@
 		EDD9ADF01F5D6F51004DD728 /* ZXSpectrum128.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ZXSpectrum128.hpp; sourceTree = "<group>"; };
 		EDD9ADF21F5D7E10004DD728 /* 128-0.ROM */ = {isa = PBXFileReference; lastKnownFileType = file; path = "128-0.ROM"; sourceTree = "<group>"; };
 		EDD9ADF31F5D7E10004DD728 /* 128-1.ROM */ = {isa = PBXFileReference; lastKnownFileType = file; path = "128-1.ROM"; sourceTree = "<group>"; };
+		EDF6604A1FF3E3A500769784 /* SPI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SPI.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -374,6 +376,7 @@
 			children = (
 				177E284E1F4DDF550053756B /* ZXSpectrum48.hpp */,
 				177E284B1F4DD7E90053756B /* ZXSpectrum48.cpp */,
+				EDF660491FF3E38000769784 /* SPI */,
 			);
 			path = "ZX Spectrum 48k";
 			sourceTree = "<group>";
@@ -448,6 +451,14 @@
 			name = "User Interface";
 			path = SpectREM;
 			sourceTree = SOURCE_ROOT;
+		};
+		EDF660491FF3E38000769784 /* SPI */ = {
+			isa = PBXGroup;
+			children = (
+				EDF6604A1FF3E3A500769784 /* SPI.cpp */,
+			);
+			path = SPI;
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
@@ -536,6 +547,7 @@
 				1745BB651F50AE1E003203FE /* FloatingBus.cpp in Sources */,
 				17B27F041F6877C800B811FC /* AudioQueue.cpp in Sources */,
 				EDC56FE21F6EE8ED00162739 /* ZXSpectrum128_2.cpp in Sources */,
+				EDF6604B1FF3E3A500769784 /* SPI.cpp in Sources */,
 				17B5DB971F5B14A7003E7EF3 /* AudioCore.mm in Sources */,
 				EDB7F7FE1F5EE2E4003053E3 /* Tape.cpp in Sources */,
 				ED2A6D101F616C43003CD6CE /* ExportAccessoryViewController.m in Sources */,

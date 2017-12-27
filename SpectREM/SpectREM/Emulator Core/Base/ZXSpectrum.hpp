@@ -151,7 +151,7 @@ public:
 
     virtual unsigned char   coreDebugRead(unsigned int address, void *data) = 0;
     virtual void            coreDebugWrite(unsigned int address, unsigned char byte, void *data) = 0;
-
+        
     // Machine hardware
     CZ80Core                z80Core;
     
@@ -195,8 +195,8 @@ public:
     bool                    displayReady = false;
 
     // Audio
-    int32_t                audioEarBit = 0;
-    int32_t                audioMicBit = 0;
+    int32_t                 audioEarBit = 0;
+    int32_t                 audioMicBit = 0;
     uint32_t                audioBufferSize = 0;
     uint32_t                audioBufferIndex = 0;
     float                   audioTsCounter = 0;
@@ -239,6 +239,9 @@ public:
     
     // Tape object
     Tape                    *tape = nullptr;
+    
+    // SPI port
+    unsigned short          spiPort = 0xfaf1;
 
 };
 

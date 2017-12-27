@@ -79,6 +79,11 @@ extern NSString * const AudioHighPassFilter;
 extern NSString * const AudioLowPassFilter;
 @property (nonatomic, assign) NSInteger audioLowPassFilter;
 
+#pragma mark - SPI
+
+extern NSString * const SPIPort;
+@property (nonatomic, assign) NSUInteger spiPort;
+
 #pragma mark - Init
 
 + (instancetype)defaults;

@@ -166,6 +166,7 @@ static const int cSCREEN_FILL = 1;
     [self.defaults addObserver:self forKeyPath:MachineSelectedModel options:NSKeyValueObservingOptionNew context:NULL];
     [self.defaults addObserver:self forKeyPath:MachineTapeInstantLoad options:NSKeyValueObservingOptionNew context:NULL];
     [self.defaults addObserver:self forKeyPath:MachineUseAYSound options:NSKeyValueObservingOptionNew context:NULL];
+    [self.defaults addObserver:self forKeyPath:SPIPort options:NSKeyValueObservingOptionNew context:NULL];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
@@ -185,6 +186,10 @@ static const int cSCREEN_FILL = 1;
     else if ([keyPath isEqualToString:MachineUseAYSound])
     {
         machine->emuUseAYSound = [change[NSKeyValueChangeNewKey] boolValue];
+    }
+    else if ([keyPath isEqualToString:SPIPort])
+    {
+        machine->spiPort = [change[NSKeyValueChangeNewKey] unsignedIntegerValue];
     }
 }
 

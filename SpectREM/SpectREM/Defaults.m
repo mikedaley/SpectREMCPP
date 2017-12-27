@@ -38,6 +38,10 @@ NSString * const AudioMasterVolume = @"audioMasterVolume";
 NSString * const AudioHighPassFilter = @"audioHighPassFilter";
 NSString * const AudioLowPassFilter = @"audioLowPassFilter";
 
+#pragma mark - SPI
+
+NSString * const SPIPort = @"spiPort";
+
 @implementation Defaults
 
 + (void)setupDefaultsWithReset:(BOOL)reset
@@ -67,7 +71,9 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
                                
                                AudioMasterVolume : @(1.5),
                                AudioHighPassFilter : @(0),
-                               AudioLowPassFilter : @(5000)
+                               AudioLowPassFilter : @(5000),
+                               
+                               SPIPort : @(64247)
                                };
     
     for (NSString *key in defaults)
@@ -139,6 +145,8 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
     _audioMasterVolume = [[userDefaults valueForKey:AudioMasterVolume] floatValue];
     _audioHighPassFilter = [[userDefaults valueForKey:AudioHighPassFilter] integerValue];
     _audioLowPassFilter = [[userDefaults valueForKey:AudioLowPassFilter] integerValue];
+    
+    _spiPort = [[userDefaults valueForKey:SPIPort] unsignedIntegerValue];
 }
 
 #pragma mark - Machine
@@ -271,6 +279,14 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
 {
     _audioLowPassFilter = audioLowPassFilter;
     [[NSUserDefaults standardUserDefaults] setInteger:audioLowPassFilter forKey:AudioLowPassFilter];
+}
+
+#pragma mark - SPI
+
+- (void)setSpiPort:(NSUInteger)spiPort
+{
+    _spiPort = spiPort;
+    [[NSUserDefaults standardUserDefaults] setInteger:spiPort forKey:SPIPort];
 }
 
 @end
