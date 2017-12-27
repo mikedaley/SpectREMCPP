@@ -93,6 +93,12 @@ unsigned char ZXSpectrum48::coreIORead(unsigned short address)
             return audioAYReadData();
         }
 
+        // SPI - HexTank
+        if (address == spiPort)
+        {
+            return ZXSpectrum48::spi_read();
+        }
+        
         // Getting here means that nothing has handled that port read so based on a real Spectrum
         // return the floating bus value
         return ULAFloatingBus();
@@ -152,6 +158,11 @@ void ZXSpectrum48::coreIOWrite(unsigned short address, unsigned char data)
         audioAYWriteData(data);
     }
 
+    // SPI - HexTank
+    if (address == spiPort)
+    {
+        return ZXSpectrum48::spi_write(data);
+    }
 }
 
 #pragma mark - Memory Read/Write

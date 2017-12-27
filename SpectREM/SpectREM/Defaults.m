@@ -10,6 +10,7 @@
 
 #pragma mark - Machine
 
+NSString * const MachineAcceleration = @"machineAcceleration";
 NSString * const MachineSelectedModel = @"machineSelectedModel";
 NSString * const MachineTapeInstantLoad = @"machineTapeInstantLoad";
 NSString * const MachineUseAYSound = @"machineUseAYSound";
@@ -37,38 +38,56 @@ NSString * const AudioMasterVolume = @"audioMasterVolume";
 NSString * const AudioHighPassFilter = @"audioHighPassFilter";
 NSString * const AudioLowPassFilter = @"audioLowPassFilter";
 
+#pragma mark - SPI
+
+NSString * const SPIPort = @"spiPort";
+
 @implementation Defaults
 
-+ (void)setupDefaults
++ (void)setupDefaultsWithReset:(BOOL)reset
 {
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-    
+
     NSDictionary *defaults = @{
+                               MachineAcceleration : @(1),
                                MachineSelectedModel : @(0),
                                MachineTapeInstantLoad : @YES,
                                MachineUseAYSound: @YES,
                                
-                               DisplayPixelFilterValue : @(0.0),
+                               DisplayPixelFilterValue : @(0.15),
                                DisplayBorderSize : @(32),
                                DisplayCurvature : @(0.0),
                                DisplayContrast : @(0.75),
-                               DisplayBrightness : @(1),
-                               DisplaySaturation : @(1),
-                               DisplayScanLines : @(0),
+                               DisplayBrightness : @(1.0),
+                               DisplaySaturation : @(1.0),
+                               DisplayScanLines : @(0.0),
                                DisplayScanLineSize : @(960),
-                               DisplayRGBOffset : @(0),
+                               DisplayRGBOffset : @(0.0),
                                DisplayHorizontalSync : @(0),
                                DisplayShowReflection : @NO,
                                DisplayShowVignette : @NO,
-                               DisplayVignetteX : @(1),
+                               DisplayVignetteX : @(1.0),
                                DisplayVignetteY : @(0.25),
                                
                                AudioMasterVolume : @(1.5),
                                AudioHighPassFilter : @(0),
-                               AudioLowPassFilter : @(5000)
+                               AudioLowPassFilter : @(5000),
+                               
+                               SPIPort : @(64247)
                                };
     
-    [userDefaults registerDefaults:defaults];
+    for (NSString *key in defaults)
+    {
+        if (![userDefaults objectForKey:key] || reset)
+        {
+            [userDefaults setValue:defaults[key] forKey:key];
+        }
+    }
+    
+    if (reset)
+    {
+        [[Defaults defaults] readDefaults];
+    }
 }
 
 + (instancetype)defaults
@@ -77,7 +96,15 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         defaults = [Defaults new];
+        [Defaults setupDefaultsWithReset:NO];
     });
+    return defaults;
+}
+
++ (instancetype)reload
+{
+    static Defaults *defaults = nil;
+    defaults = [Defaults new];
     return defaults;
 }
 
@@ -86,35 +113,49 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
     self = [super init];
     if (self)
     {
-        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-        
-        _machineSelectedModel = [[userDefaults valueForKey:MachineSelectedModel] integerValue];
-        _machineTapeInstantLoad = [[userDefaults valueForKey:MachineTapeInstantLoad] boolValue];
-        _machineUseAYSound = [[userDefaults valueForKey:MachineUseAYSound] boolValue];
-        
-        _displayPixelFilterValue = [[userDefaults valueForKey:DisplayPixelFilterValue] floatValue];
-        _displayBorderSize = [[userDefaults valueForKey:DisplayBorderSize] integerValue];
-        _displayCurvature = [[userDefaults valueForKey:DisplayCurvature] floatValue];
-        _displayContrast = [[userDefaults valueForKey:DisplayContrast] floatValue];
-        _displayBrightness = [[userDefaults valueForKey:DisplayBrightness] floatValue];
-        _displaySaturation = [[userDefaults valueForKey:DisplaySaturation] floatValue];
-        _displayRGBOffset = [[userDefaults valueForKey:DisplayRGBOffset] floatValue];
-        _displayScanLines = [[userDefaults valueForKey:DisplayScanLines] floatValue];
-        _displayScanLineSize = [[userDefaults valueForKey:DisplayScanLineSize] floatValue];
-        _displayHorizontalSync = [[userDefaults valueForKey:DisplayHorizontalSync] floatValue];
-        _displayShowReflection = [[userDefaults valueForKey:DisplayShowReflection] boolValue];
-        _displayShowVignette = [[userDefaults valueForKey:DisplayShowVignette] boolValue];
-        _displayVignetteX = [[userDefaults valueForKey:DisplayVignetteX] floatValue];
-        _displayVignetteY = [[userDefaults valueForKey:DisplayVignetteY] floatValue];
-
-        _audioMasterVolume = [[userDefaults valueForKey:AudioMasterVolume] floatValue];
-        _audioHighPassFilter = [[userDefaults valueForKey:AudioHighPassFilter] integerValue];
-        _audioLowPassFilter = [[userDefaults valueForKey:AudioLowPassFilter] integerValue];
+        [self readDefaults];
     }
     return self;
 }
 
+- (void)readDefaults
+{
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    
+    _machineAcceleration = [[userDefaults valueForKey:MachineAcceleration] floatValue];
+    _machineSelectedModel = [[userDefaults valueForKey:MachineSelectedModel] integerValue];
+    _machineTapeInstantLoad = [[userDefaults valueForKey:MachineTapeInstantLoad] boolValue];
+    _machineUseAYSound = [[userDefaults valueForKey:MachineUseAYSound] boolValue];
+    
+    _displayPixelFilterValue = [[userDefaults valueForKey:DisplayPixelFilterValue] floatValue];
+    _displayBorderSize = [[userDefaults valueForKey:DisplayBorderSize] integerValue];
+    _displayCurvature = [[userDefaults valueForKey:DisplayCurvature] floatValue];
+    _displayContrast = [[userDefaults valueForKey:DisplayContrast] floatValue];
+    _displayBrightness = [[userDefaults valueForKey:DisplayBrightness] floatValue];
+    _displaySaturation = [[userDefaults valueForKey:DisplaySaturation] floatValue];
+    _displayRGBOffset = [[userDefaults valueForKey:DisplayRGBOffset] floatValue];
+    _displayScanLines = [[userDefaults valueForKey:DisplayScanLines] floatValue];
+    _displayScanLineSize = [[userDefaults valueForKey:DisplayScanLineSize] floatValue];
+    _displayHorizontalSync = [[userDefaults valueForKey:DisplayHorizontalSync] floatValue];
+    _displayShowReflection = [[userDefaults valueForKey:DisplayShowReflection] boolValue];
+    _displayShowVignette = [[userDefaults valueForKey:DisplayShowVignette] boolValue];
+    _displayVignetteX = [[userDefaults valueForKey:DisplayVignetteX] floatValue];
+    _displayVignetteY = [[userDefaults valueForKey:DisplayVignetteY] floatValue];
+    
+    _audioMasterVolume = [[userDefaults valueForKey:AudioMasterVolume] floatValue];
+    _audioHighPassFilter = [[userDefaults valueForKey:AudioHighPassFilter] integerValue];
+    _audioLowPassFilter = [[userDefaults valueForKey:AudioLowPassFilter] integerValue];
+    
+    _spiPort = [[userDefaults valueForKey:SPIPort] unsignedIntegerValue];
+}
+
 #pragma mark - Machine
+
+- (void)setMachineAcceleration:(CGFloat)machineAcceleration
+{
+    _machineAcceleration = machineAcceleration;
+    [[NSUserDefaults standardUserDefaults] setInteger:machineAcceleration forKey:MachineAcceleration];
+}
 
 - (void)setMachineSelectedModel:(NSInteger)machineSelectedModel
 {
@@ -238,6 +279,14 @@ NSString * const AudioLowPassFilter = @"audioLowPassFilter";
 {
     _audioLowPassFilter = audioLowPassFilter;
     [[NSUserDefaults standardUserDefaults] setInteger:audioLowPassFilter forKey:AudioLowPassFilter];
+}
+
+#pragma mark - SPI
+
+- (void)setSpiPort:(NSUInteger)spiPort
+{
+    _spiPort = spiPort;
+    [[NSUserDefaults standardUserDefaults] setInteger:spiPort forKey:SPIPort];
 }
 
 @end

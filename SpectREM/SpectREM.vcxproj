@@ -1,0 +1,208 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{E9A06D82-3B8F-4649-902F-9B9F8AF207FE}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>SpectREM</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>SpectREM\Emulator Core\Base;SpectREM\Emulator Core\Z80 Core;SpectREM\Emulator Core\Tape;SpectREM\Win32;SpectREM\Emulator Core\ZX Spectrum +2;SpectREM\Emulator Core\ZX Spectrum 48k;SpectREM\Emulator Core\ZX Spectrum 128k;SpectREM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4068</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>xaudio2.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;opengl32.lib;glu32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="SpectREM\AudioQueue.cpp" />
+    <ClCompile Include="SpectREM\Emulator Core\Base\Audio.cpp" />
+    <ClCompile Include="SpectREM\Emulator Core\Base\Contention.cpp" />
+    <ClCompile Include="SpectREM\Emulator Core\Base\Display.cpp" />
+    <ClCompile Include="SpectREM\Emulator Core\Base\FloatingBus.cpp" />
+    <ClCompile Include="SpectREM\Emulator Core\Base\Keyboard.cpp" />
+    <ClCompile Include="SpectREM\Emulator Core\Base\Snapshot.cpp" />
+    <ClCompile Include="SpectREM\Emulator Core\Base\ZXSpectrum.cpp" />
+    <ClCompile Include="SpectREM\Emulator Core\Tape\Tape.cpp" />
+    <ClCompile Include="SpectREM\Emulator Core\Z80 Core\Z80Core.cpp" />
+    <ClCompile Include="SpectREM\Emulator Core\Z80 Core\Z80Core_CBOpcodes.cpp" />
+    <ClCompile Include="SpectREM\Emulator Core\Z80 Core\Z80Core_DDCB_FDCBOpcodes.cpp" />
+    <ClCompile Include="SpectREM\Emulator Core\Z80 Core\Z80Core_DDOpcodes.cpp" />
+    <ClCompile Include="SpectREM\Emulator Core\Z80 Core\Z80Core_EDOpcodes.cpp" />
+    <ClCompile Include="SpectREM\Emulator Core\Z80 Core\Z80Core_FDOpcodes.cpp" />
+    <ClCompile Include="SpectREM\Emulator Core\Z80 Core\Z80Core_MainOpcodes.cpp" />
+    <ClCompile Include="SpectREM\Emulator Core\ZX Spectrum +2\ZXSpectrum128_2.cpp" />
+    <ClCompile Include="SpectREM\Emulator Core\ZX Spectrum 128k\ZXSpectrum128.cpp" />
+    <ClCompile Include="SpectREM\Emulator Core\ZX Spectrum 48k\ZXSpectrum48.cpp" />
+    <ClCompile Include="SpectREM\Win32\AudioCore.cpp" />
+    <ClCompile Include="SpectREM\Win32\OpenGLView.cpp" />
+    <ClCompile Include="SpectREM\Win32\WinMain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="SpectREM\AudioQueue.hpp" />
+    <ClInclude Include="SpectREM\Emulator Core\Base\MachineInfo.h" />
+    <ClInclude Include="SpectREM\Emulator Core\Base\ZXSpectrum.hpp" />
+    <ClInclude Include="SpectREM\Emulator Core\Tape\Tape.hpp" />
+    <ClInclude Include="SpectREM\Emulator Core\Z80 Core\Z80Core.h" />
+    <ClInclude Include="SpectREM\Emulator Core\Z80 Core\Z80CoreOpcodeTables.h" />
+    <ClInclude Include="SpectREM\Emulator Core\Z80 Core\Z80Core_CBOpcodes.h" />
+    <ClInclude Include="SpectREM\Emulator Core\Z80 Core\Z80Core_DDCB_FDCBOpcodes.h" />
+    <ClInclude Include="SpectREM\Emulator Core\Z80 Core\Z80Core_DDOpcodes.h" />
+    <ClInclude Include="SpectREM\Emulator Core\Z80 Core\Z80Core_EDOpcodes.h" />
+    <ClInclude Include="SpectREM\Emulator Core\Z80 Core\Z80Core_FDOpcodes.h" />
+    <ClInclude Include="SpectREM\Emulator Core\Z80 Core\Z80Core_MainOpcodes.h" />
+    <ClInclude Include="SpectREM\Emulator Core\ZX Spectrum +2\ZXSpectrum128_2.hpp" />
+    <ClInclude Include="SpectREM\Emulator Core\ZX Spectrum 128k\ZXSpectrum128.hpp" />
+    <ClInclude Include="SpectREM\Emulator Core\ZX Spectrum 48k\ZXSpectrum48.hpp" />
+    <ClInclude Include="SpectREM\Win32\AudioCore.hpp" />
+    <ClInclude Include="SpectREM\Win32\OpenGLView.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SpectREM\Display.fsh">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </None>
+    <None Include="SpectREM\Emulator Core\ROMS\128-0.ROM" />
+    <None Include="SpectREM\Emulator Core\ROMS\128-1.ROM" />
+    <None Include="SpectREM\Emulator Core\ROMS\48.ROM" />
+    <None Include="SpectREM\Emulator Core\ROMS\plus2-0.ROM" />
+    <None Include="SpectREM\Emulator Core\ROMS\plus2-1.ROM" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="SpectREM\Display.vsh">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

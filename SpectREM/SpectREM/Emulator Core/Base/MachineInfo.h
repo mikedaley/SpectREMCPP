@@ -19,38 +19,38 @@ enum
 // Details for each machine type being emulated
 typedef struct
 {
-    int intLength;              // 1
+    int intLength;                      // 1
     
-    unsigned int tsPerFrame;             // 2
-    unsigned int tsToOrigin;             // 3
-    unsigned int tsPerLine;              // 4
-    unsigned int tsTopBorder;            // 5
-    unsigned int tsVerticalBlank;        // 6
-    unsigned int tsVerticalDisplay;      // 7
-    unsigned int tsHorizontalDisplay;    // 8
-    unsigned int tsPerChar;              // 9
+    unsigned int tsPerFrame;            // 2
+    unsigned int tsToOrigin;            // 3
+    unsigned int tsPerLine;             // 4
+    unsigned int tsTopBorder;           // 5
+    unsigned int tsVerticalBlank;       // 6
+    unsigned int tsVerticalDisplay;     // 7
+    unsigned int tsHorizontalDisplay;   // 8
+    unsigned int tsPerChar;             // 9
     
-    unsigned int pxVertBorder;           // 10
-    unsigned int pxVerticalBlank;        // 11
-    unsigned int pxHorizontalDisplay;    // 12
-    unsigned int pxVerticalDisplay;      // 13
-    unsigned int pxHorizontalTotal;      // 14
-    unsigned int pxVerticalTotal;        // 15
-    unsigned int pxEmuBorder;            // 16
+    unsigned int pxVertBorder;          // 10
+    unsigned int pxVerticalBlank;       // 11
+    unsigned int pxHorizontalDisplay;   // 12
+    unsigned int pxVerticalDisplay;     // 13
+    unsigned int pxHorizontalTotal;     // 14
+    unsigned int pxVerticalTotal;       // 15
+    unsigned int pxEmuBorder;           // 16
     
     bool hasAY;                         // 17
     bool hasPaging;                     // 18
     
     // Offsets used during border and screen drawing. Calculated using trial and error!!!
-    unsigned int borderDrawingOffset;    // 19
-    unsigned int paperDrawingOffset;     // 20
+    unsigned int borderDrawingOffset;   // 19
+    unsigned int paperDrawingOffset;    // 20
     
-    unsigned int romSize;                // 21
-    unsigned int ramSize;                // 22
+    unsigned int romSize;               // 21
+    unsigned int ramSize;               // 22
     
-    const char *machineName ;   // 23
+    const char *machineName ;           // 23
     
-    unsigned int machineType;            // 24
+    unsigned int machineType;           // 24
     
 } MachineInfo;
 

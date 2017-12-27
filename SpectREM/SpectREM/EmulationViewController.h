@@ -7,8 +7,12 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import <SpriteKit/SpriteKit.h>
 #import "Defaults.h"
+
+@class EmulationScene;
+@class OpenGLView;
+
+#pragma mark - Constants
 
 enum
 {
@@ -16,13 +20,18 @@ enum
     cSNA_SNAPSHOT_TYPE
 };
 
-@interface EmulationViewController : NSViewController
+static NSString *const cSNA_EXTENSION = @"SNA";
+static NSString *const cZ80_EXTENSION = @"Z80";
+static NSString *const cTAP_EXTENSION = @"TAP";
+
+@interface EmulationViewController : NSViewController 
 
 #pragma mark - Properties
 
 @property (weak)    IBOutlet    NSVisualEffectView  *configEffectsView;
 @property (weak)    IBOutlet    NSScrollView        *configScrollView;
 @property (strong)              Defaults            *defaults;
+@property (weak)    IBOutlet    OpenGLView          *glView;
 
 #pragma mark - Methods
 
@@ -30,7 +39,7 @@ enum
 - (BOOL)getDisplayReady;
 
 - (void)loadFileWithURL:(NSURL *)url addToRecent:(BOOL)addToRecent;
-- (void)audioCallback:(int)inNumberFrames buffer:(unsigned short *)buffer;
+- (void)audioCallback:(int)inNumberFrames buffer:(int16_t *)buffer;
 
 // Methods used to get informaiton from the current machine for the tape browser
 - (NSInteger)tapeNumberOfblocks;

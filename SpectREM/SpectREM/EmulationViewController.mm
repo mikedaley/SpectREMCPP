@@ -7,6 +7,7 @@
 //
 
 #import <QuartzCore/QuartzCore.h>
+#import <AVFoundation/AVFoundation.h>
 #import "EmulationViewController.h"
 #import "ZXSpectrum.hpp"
 #import "ZXSpectrum48.hpp"
@@ -24,12 +25,8 @@
 
 #pragma mark - Constants
 
-NSString *const cSNA_EXTENSION = @"SNA";
-NSString *const cZ80_EXTENSION = @"Z80";
-NSString *const cTAP_EXTENSION = @"TAP";
-
-int const cAUDIO_SAMPLE_RATE = 192000;
-float const cFRAMES_PER_SECOND = 50;
+uint32_t const cAUDIO_SAMPLE_RATE = 44100;
+uint32_t const cFRAMES_PER_SECOND = 50;
 
 static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
@@ -49,13 +46,16 @@ static const int cSCREEN_FILL = 1;
     
     AudioCore                       *audioCore;
     AudioQueue                      *audioQueue;
-    short                           audioBuffer;
+    int16_t                         audioBuffer;
     
     NSStoryboard                    *storyBoard;
     ConfigurationViewController     *configViewController;
     ExportAccessoryViewController   *saveAccessoryController;
     NSWindowController              *tapeBrowserWindowController;
     TapeBrowserViewController       *tapeBrowserViewController;
+    
+    NSTimer                         *accelerationTimer;
+    
 }
 @end
 
@@ -72,6 +72,8 @@ static const int cSCREEN_FILL = 1;
 {
     [super viewDidLoad];
     
+    _defaults = [Defaults defaults];
+    
     mainBundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/Contents/Resources/"];
     storyBoard = [NSStoryboard storyboardWithName:@"Main" bundle:nil];
     
@@ -85,36 +87,67 @@ static const int cSCREEN_FILL = 1;
     //Create a tape instance
     tape = new Tape(tapeStatusCallback);
     
-    [Defaults setupDefaults];
-    _defaults = [Defaults defaults];
-    
     [self initMachineWithRomPath:mainBundlePath machineType:(int)_defaults.machineSelectedModel];
 
     [self setupConfigView];
     [self setupControllers];
     [self setupObservers];
     [self restoreSession];
+    
+    if (_defaults.machineAcceleration > 1)
+    {
+        [self setupAccelerationTimer];
+    }
 }
 
 #pragma mark - Audio Callback
 
-- (void)audioCallback:(int)inNumberFrames buffer:(unsigned short *)buffer
+- (void)audioCallback:(int)inNumberFrames buffer:(int16_t *)buffer
 {
     if (machine)
     {
+        const uint32_t b = (cAUDIO_SAMPLE_RATE / (cFRAMES_PER_SECOND * _defaults.machineAcceleration)) * 2;
+        
         audioQueue->read(buffer, (inNumberFrames * 2));
         
         // Check if we have used a frames worth of buffer storage and if so then its time to generate another frame.
-        if (audioQueue->bufferUsed() < 7680)
+        if (audioQueue->bufferUsed() < b)
         {
+            if (_defaults.machineAcceleration == 1)
+            {
+                machine->generateFrame();
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [(OpenGLView *)self.glView updateTextureData:machine->displayBuffer];
+                });
+            }
+            audioQueue->write(machine->audioBuffer, b);
+        }
+    }
+}
+
+- (void)setupAccelerationTimer
+{
+    if (_defaults.machineAcceleration > 1)
+    {
+        [accelerationTimer invalidate];
+        accelerationTimer = [NSTimer timerWithTimeInterval:1.0 / (50.0 * _defaults.machineAcceleration) repeats:YES block:^(NSTimer * _Nonnull timer) {
+            
             machine->generateFrame();
             
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [(OpenGLView *)self.view updateTextureData:machine->displayBuffer];
-            });
+            if (!(machine->emuFrameCounter % static_cast<uint32_t>(_defaults.machineAcceleration)))
+            {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [(OpenGLView *)self.glView updateTextureData:machine->displayBuffer];
+                });
+            }
             
-            audioQueue->write(machine->audioBuffer, 7680);
-        }
+        }];
+        
+        [[NSRunLoop mainRunLoop] addTimer:accelerationTimer forMode:NSRunLoopCommonModes];
+    }
+    else
+    {
+        [accelerationTimer invalidate];
     }
 }
 
@@ -129,14 +162,20 @@ static const int cSCREEN_FILL = 1;
 
 - (void)setupObservers
 {
+    [self.defaults addObserver:self forKeyPath:MachineAcceleration options:NSKeyValueObservingOptionNew context:NULL];
     [self.defaults addObserver:self forKeyPath:MachineSelectedModel options:NSKeyValueObservingOptionNew context:NULL];
     [self.defaults addObserver:self forKeyPath:MachineTapeInstantLoad options:NSKeyValueObservingOptionNew context:NULL];
     [self.defaults addObserver:self forKeyPath:MachineUseAYSound options:NSKeyValueObservingOptionNew context:NULL];
+    [self.defaults addObserver:self forKeyPath:SPIPort options:NSKeyValueObservingOptionNew context:NULL];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
 {
-    if ([keyPath isEqualToString:MachineSelectedModel])
+    if ([keyPath isEqualToString:MachineAcceleration])
+    {
+        [self setupAccelerationTimer];
+    }
+    else if ([keyPath isEqualToString:MachineSelectedModel])
     {
         [self initMachineWithRomPath:mainBundlePath machineType:(int)self.defaults.machineSelectedModel];
     }
@@ -147,6 +186,10 @@ static const int cSCREEN_FILL = 1;
     else if ([keyPath isEqualToString:MachineUseAYSound])
     {
         machine->emuUseAYSound = [change[NSKeyValueChangeNewKey] boolValue];
+    }
+    else if ([keyPath isEqualToString:SPIPort])
+    {
+        machine->spiPort = [change[NSKeyValueChangeNewKey] unsignedIntegerValue];
     }
 }
 
@@ -179,48 +222,45 @@ static const int cSCREEN_FILL = 1;
 
 - (void)initMachineWithRomPath:(NSString *)romPath machineType:(int)machineType
 {
-    @synchronized(self)
-        {
-        if (audioCore)
-        {
-            [audioCore stop];
-            while (audioCore.isRunning) { };
-        }
-        
-        if (machine) {
-            machine->pause();
-            delete machine;
-        }
-        
-        if (machineType == eZXSpectrum48)
-        {
-            machine = new ZXSpectrum48(tape);
-        }
-        else if (machineType == eZXSpectrum128)
-        {
-            machine = new ZXSpectrum128(tape);
-        }
-        else if (machineType == eZXSpectrum128_2)
-        {
-            machine = new ZXSpectrum128_2(tape);
-        }
-        else
-        {
-            NSLog(@"Unknown machine type!");
-            return;
-        }
-        
-        machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
-        
-        [self applyDefaults];
-        
-        [audioCore start];
-        machine->resume();
-        
-        [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@",
-                                    [NSString stringWithCString:machine->machineInfo.machineName
-                                                       encoding:NSUTF8StringEncoding]]];
+    if (audioCore)
+    {
+        [audioCore stop];
+        while (audioCore.isRunning) { };
     }
+    
+    if (machine) {
+        machine->pause();
+        delete machine;
+    }
+    
+    if (machineType == eZXSpectrum48)
+    {
+        machine = new ZXSpectrum48(tape);
+    }
+    else if (machineType == eZXSpectrum128)
+    {
+        machine = new ZXSpectrum128(tape);
+    }
+    else if (machineType == eZXSpectrum128_2)
+    {
+        machine = new ZXSpectrum128_2(tape);
+    }
+    else
+    {
+        NSLog(@"Unknown machine type!");
+        return;
+    }
+    
+    machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
+    
+    [self applyDefaults];
+    
+    [audioCore start];
+    machine->resume();
+    
+    [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@",
+                                [NSString stringWithCString:machine->machineInfo.machineName
+                                                   encoding:NSUTF8StringEncoding]]];
 }
 
 #pragma mark - Keyboard
@@ -463,7 +503,7 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 
 - (IBAction)resetPreferences:(id)sender
 {
-    [[NSUserDefaultsController sharedUserDefaultsController] revertToInitialValues:NULL];
+    [Defaults setupDefaultsWithReset:YES];
 }
 
 #pragma mark - View Menu Items
@@ -524,6 +564,14 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     {
         configFrame.origin.x = 0;
         configFrame.origin.y = 0;
+
+//        CASpringAnimation *spring = [CASpringAnimation animation];
+//        spring.fromValue = [NSValue valueWithRect:self.configEffectsView.layer.presentationLayer.frame];
+//        spring.toValue = [NSValue valueWithRect:configFrame];
+//        spring.duration = 1;
+//        spring.damping = 10;
+//        [self.configEffectsView.layer addAnimation:spring forKey:@"position.x"];
+//        self.configEffectsView.frame = configFrame;
     }
     else
     {
@@ -539,6 +587,7 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     }  completionHandler:^{
         
     }];
+
 }
 
 #pragma mark - Tape Menu Items

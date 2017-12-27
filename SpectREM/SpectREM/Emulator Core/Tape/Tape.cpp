@@ -234,6 +234,7 @@ void Tape::reset(bool clearBlocks)
 
 bool Tape::loadWithPath(const char *path)
 {
+	bool success = false;
     FILE *fileHandle;
     
     fileHandle = fopen(path, "rb");
@@ -249,24 +250,29 @@ bool Tape::loadWithPath(const char *path)
     long size = ftell(fileHandle);
     fseek(fileHandle, 0, SEEK_SET);
     
-    unsigned char fileBytes[size];
+    unsigned char *pFileBytes = new unsigned char[size];
     
-    fread(&fileBytes, 1, size, fileHandle);
+	if (pFileBytes != NULL)
+	{
+		fread(pFileBytes, 1, size, fileHandle);
 
-    reset(true);
+		reset(true);
+
+		if (processData(pFileBytes, size))
+		{
+			loaded = true;
+			success = true;
+		}
+
+		delete[] pFileBytes;
+	}
     
-    if (processData(fileBytes, size))
-    {
-        loaded = true;
-        return true;
-    }
-    
-    return false;
+    return success;
 }
 
 void Tape::updateWithTs(int tStates)
 {
-    if (currentBlockIndex > blocks.size() - 1)
+    if (currentBlockIndex > (int)(blocks.size() - 1))
     {
         cout << "TAPE STOPPED" << endl;
         playing = false;
@@ -344,7 +350,7 @@ void Tape::updateWithTs(int tStates)
     
 }
 
-void Tape::generateHeaderPilotWithTs(int tStates)
+void Tape::generateHeaderPilotWithTs(uint32_t tStates)
 {
     if (pilotPulses < cPILOT_HEADER_PULSES)
     {
@@ -371,7 +377,7 @@ void Tape::generateHeaderPilotWithTs(int tStates)
 }
 
 
-void Tape::generateDataPilotWithTs(int tStates)
+void Tape::generateDataPilotWithTs(uint32_t tStates)
 {
     if (pilotPulses < cPILOT_DATA_PULSES)
     {
@@ -397,7 +403,7 @@ void Tape::generateDataPilotWithTs(int tStates)
     pilotPulseTStates += tStates;
 }
 
-void Tape::generateSync1WithTs(int tStates)
+void Tape::generateSync1WithTs(uint32_t tStates)
 {
     if (flipTapeBit)
     {
@@ -417,7 +423,7 @@ void Tape::generateSync1WithTs(int tStates)
     }
 }
 
-void Tape::generateSync2WithTs(int tStates)
+void Tape::generateSync2WithTs(uint32_t tStates)
 {
     if (flipTapeBit)
     {
@@ -438,7 +444,7 @@ void Tape::generateSync2WithTs(int tStates)
     }
 }
 
-void Tape::tapeGenerateDataStreamWithTs(int tStates)
+void Tape::tapeGenerateDataStreamWithTs(uint32_t tStates)
 {
     int currentBlockLength = blocks[ currentBlockIndex ]->getDataLength();
     unsigned char byte = blocks[ currentBlockIndex ]->blockData[ currentBytePtr ];
@@ -471,7 +477,7 @@ void Tape::tapeGenerateDataStreamWithTs(int tStates)
     processingState = eDATA_BIT;
 }
 
-void Tape::generateHeaderDataStreamWithTs(int tStates)
+void Tape::generateHeaderDataStreamWithTs(uint32_t tStates)
 {
     int currentBlockLength = cHEADER_BLOCK_LENGTH;
     unsigned char byte = blocks[ currentBlockIndex ]->blockData[ currentBytePtr ];
@@ -505,7 +511,7 @@ void Tape::generateHeaderDataStreamWithTs(int tStates)
     processingState = eDATA_BIT;
 }
 
-void Tape::generateDataBitWithTs(int tStates)
+void Tape::generateDataBitWithTs(uint32_t tStates)
 {
     if (flipTapeBit)
     {
@@ -532,7 +538,7 @@ void Tape::generateDataBitWithTs(int tStates)
     }
 }
 
-void Tape::tapeBlockPauseWithTs(int tStates)
+void Tape::tapeBlockPauseWithTs(uint32_t tStates)
 {
     blockPauseTStates += tStates;
     if (blockPauseTStates > 3500000 * 3)
@@ -543,10 +549,12 @@ void Tape::tapeBlockPauseWithTs(int tStates)
     
     // Introduce a random crackle in between blocks to produce a similar experience as loading from a real tape
     // on a ZX Spectrum.
+#ifndef WIN32
     if (arc4random_uniform(200000) == 1)
     {
         inputBit ^= 1;
-    }
+	}
+#endif
 }
 
 #pragma mark - Process Tape Data
@@ -621,15 +629,15 @@ void Tape::loadBlock(void *m)
 {
     ZXSpectrum *machine = static_cast<ZXSpectrum *>(m);
     
-    int expectedBlockType = machine->z80Core.GetRegister(CZ80Core::eREG_ALT_A);
-    int startAddress = machine->z80Core.GetRegister(CZ80Core::eREG_IX);
+    uint32_t expectedBlockType = machine->z80Core.GetRegister(CZ80Core::eREG_ALT_A);
+    uint32_t startAddress = machine->z80Core.GetRegister(CZ80Core::eREG_IX);
     
     // Some TAP files have blocks which are shorter that what is expected in DE (Chuckie Egg 2)
     // so just take the smallest value
-    int blockLength = machine->z80Core.GetRegister(CZ80Core::eREG_DE);
-    int tapBlockLength = blocks[ currentBlockIndex ]->getDataLength();
+    uint32_t blockLength = machine->z80Core.GetRegister(CZ80Core::eREG_DE);
+    uint32_t tapBlockLength = blocks[ currentBlockIndex ]->getDataLength();
     blockLength = (blockLength < tapBlockLength) ? blockLength : tapBlockLength;
-    int success = 1;
+    uint32_t success = 1;
     
     if (blocks[ currentBlockIndex ]->getFlag() == expectedBlockType)
     {
@@ -640,7 +648,7 @@ void Tape::loadBlock(void *m)
             
             for (int i = 0; i < blockLength; i++)
             {
-                unsigned char tapByte = blocks[ currentBlockIndex ]->blockData[ currentBytePtr ];
+                uint8_t tapByte = blocks[ currentBlockIndex ]->blockData[ currentBytePtr ];
                 machine->z80Core.Z80CoreDebugMemWrite(startAddress + i, tapByte, NULL);
                 checksum ^= tapByte;
                 currentBytePtr++;
@@ -687,30 +695,35 @@ void Tape::saveBlock(void *m)
     short dataIndex = 0;
     loaded = true;
     
-    unsigned char data[ length ];
+    unsigned char *pData = new unsigned char[ length ];
     
-    data[ dataIndex++ ] = length & 255;
-    data[ dataIndex++ ] = length >> 8;
+	if (pData != NULL)
+	{
+		pData[dataIndex++] = length & 255;
+		pData[dataIndex++] = length >> 8;
 
-    parity = machine->z80Core.GetRegister(CZ80Core::eREG_A);
+		parity = machine->z80Core.GetRegister(CZ80Core::eREG_A);
 
-    data[ dataIndex++ ] = parity;
-    
-    for (int i = 0; i < machine->z80Core.GetRegister(CZ80Core::eREG_DE); i++)
-    {
-        // Read memory using the debug read from the core which takes into account any paging
-        // on the 128k Spectrum
-        char byte = machine->z80Core.Z80CoreDebugMemRead(machine->z80Core.GetRegister(CZ80Core::eREG_IX) + i, NULL);
-        parity ^= byte;
-        data[ dataIndex++ ] = byte;
-    }
-    
-    data[ dataIndex++ ] = parity;
-    
-    processData(data, length);
-    
-    // Once a block has been saved this is the RET address
-    machine->z80Core.SetRegister(CZ80Core::eREG_PC, 0x053e);
+		pData[dataIndex++] = parity;
+
+		for (int i = 0; i < machine->z80Core.GetRegister(CZ80Core::eREG_DE); i++)
+		{
+			// Read memory using the debug read from the core which takes into account any paging
+			// on the 128k Spectrum
+			char byte = machine->z80Core.Z80CoreDebugMemRead(machine->z80Core.GetRegister(CZ80Core::eREG_IX) + i, NULL);
+			parity ^= byte;
+			pData[dataIndex++] = byte;
+		}
+
+		pData[dataIndex++] = parity;
+
+		processData(pData, length);
+
+		// Once a block has been saved this is the RET address
+		machine->z80Core.SetRegister(CZ80Core::eREG_PC, 0x053e);
+
+		delete[] pData;
+	}
     
     newBlock = true;
 }
@@ -779,7 +792,7 @@ void Tape::eject()
 vector<unsigned char> Tape::getTapeData()
 {
     vector<unsigned char> tapeData;
-    for (int i = 0; i < blocks.size(); i++)
+    for (int i = 0; i < (int)blocks.size(); i++)
     {
         unsigned short blockLength = blocks[ i ]->getDataLength();
         tapeData.push_back(blockLength & 0xff);

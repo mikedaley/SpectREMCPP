@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		1745BB631F50876E003203FE /* Contention.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1745BB621F50876E003203FE /* Contention.cpp */; };
 		1745BB651F50AE1E003203FE /* FloatingBus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1745BB641F50AE1E003203FE /* FloatingBus.cpp */; };
-		174AAFBC1F585DCC00B75535 /* PixelShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 174AAFBA1F585AF100B75535 /* PixelShader.fsh */; };
 		177E284D1F4DD7E90053756B /* ZXSpectrum48.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 177E284B1F4DD7E90053756B /* ZXSpectrum48.cpp */; };
 		17A089511F4F5B2700CAA178 /* Keyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A089501F4F5B2700CAA178 /* Keyboard.cpp */; };
 		17A089531F4F677200CAA178 /* Display.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A089521F4F677200CAA178 /* Display.cpp */; };
@@ -19,8 +18,13 @@
 		17C33DFA1F6578E600720A06 /* TapeBrowserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 17C33DF91F6578E600720A06 /* TapeBrowserViewController.m */; };
 		17C33DFE1F6583A400720A06 /* TapeCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 17C33DFD1F6583A400720A06 /* TapeCellView.m */; };
 		17EC89101F5B1FC500B6EFAF /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17EC890F1F5B1FC500B6EFAF /* AudioToolbox.framework */; };
-		ED22E0E21F7E4804004807A9 /* Display.fsh in Resources */ = {isa = PBXBuildFile; fileRef = ED22E0E01F7E45F4004807A9 /* Display.fsh */; };
-		ED22E0E31F7E4804004807A9 /* Display.vsh in Resources */ = {isa = PBXBuildFile; fileRef = ED22E0E11F7E45F4004807A9 /* Display.vsh */; };
+		276E3F9C1F97A06B00020BB3 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17B5DB9C1F5B1CCE003E7EF3 /* AVFoundation.framework */; };
+		276E3F9E1F97AAE800020BB3 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 276E3F9D1F97AAD600020BB3 /* CoreMedia.framework */; };
+		276E3FA01F9FA01100020BB3 /* reflection.png in Resources */ = {isa = PBXBuildFile; fileRef = 276E3F9F1F9FA01000020BB3 /* reflection.png */; };
+		2778A11C1F94E5DA00385137 /* CLUTVert.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 2778A1191F94E5D900385137 /* CLUTVert.vsh */; };
+		2778A11D1F94E5DA00385137 /* DisplayFrag.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 2778A11A1F94E5DA00385137 /* DisplayFrag.fsh */; };
+		2778A11E1F94E5DA00385137 /* DisplayVert.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 2778A11B1F94E5DA00385137 /* DisplayVert.vsh */; };
+		2778A1201F94E60600385137 /* CLUTFrag.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 2778A11F1F94E60600385137 /* CLUTFrag.fsh */; };
 		ED2A6D051F6036D3003CD6CE /* ConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D041F6036D3003CD6CE /* ConfigurationViewController.m */; };
 		ED2A6D0A1F603D18003CD6CE /* NSClipView+Flipped.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D091F603D18003CD6CE /* NSClipView+Flipped.m */; };
 		ED2A6D0C1F604CD0003CD6CE /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = ED2A6D0B1F604CD0003CD6CE /* Defaults.plist */; };
@@ -29,7 +33,6 @@
 		ED504A641F51BBFF00BD289E /* Snapshot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED504A631F51BBFF00BD289E /* Snapshot.cpp */; };
 		ED913F9A1F30759300316E1A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = ED913F991F30759300316E1A /* AppDelegate.m */; };
 		ED913F9D1F30759300316E1A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = ED913F9C1F30759300316E1A /* main.m */; };
-		ED913FA41F30759300316E1A /* EmulationScene.m in Sources */ = {isa = PBXBuildFile; fileRef = ED913FA31F30759300316E1A /* EmulationScene.m */; };
 		ED913FA71F30759300316E1A /* EmulationViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = ED913FA61F30759300316E1A /* EmulationViewController.mm */; };
 		ED913FA91F30759300316E1A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ED913FA81F30759300316E1A /* Assets.xcassets */; };
 		ED913FAC1F30759300316E1A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ED913FAA1F30759300316E1A /* Main.storyboard */; };
@@ -52,12 +55,12 @@
 		EDD9ADF11F5D6F51004DD728 /* ZXSpectrum128.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDD9ADEF1F5D6F51004DD728 /* ZXSpectrum128.cpp */; };
 		EDD9ADF41F5D89AE004DD728 /* 128-0.ROM in Resources */ = {isa = PBXBuildFile; fileRef = EDD9ADF21F5D7E10004DD728 /* 128-0.ROM */; };
 		EDD9ADF51F5D89AE004DD728 /* 128-1.ROM in Resources */ = {isa = PBXBuildFile; fileRef = EDD9ADF31F5D7E10004DD728 /* 128-1.ROM */; };
+		EDF6604B1FF3E3A500769784 /* SPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDF6604A1FF3E3A500769784 /* SPI.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		1745BB621F50876E003203FE /* Contention.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Contention.cpp; sourceTree = "<group>"; };
 		1745BB641F50AE1E003203FE /* FloatingBus.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FloatingBus.cpp; sourceTree = "<group>"; };
-		174AAFBA1F585AF100B75535 /* PixelShader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = PixelShader.fsh; sourceTree = "<group>"; };
 		177E284B1F4DD7E90053756B /* ZXSpectrum48.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZXSpectrum48.cpp; sourceTree = "<group>"; };
 		177E284E1F4DDF550053756B /* ZXSpectrum48.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ZXSpectrum48.hpp; sourceTree = "<group>"; };
 		17A0894F1F4F513300CAA178 /* MachineInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MachineInfo.h; sourceTree = "<group>"; };
@@ -74,8 +77,12 @@
 		17C33DFC1F6583A400720A06 /* TapeCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TapeCellView.h; sourceTree = "<group>"; };
 		17C33DFD1F6583A400720A06 /* TapeCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TapeCellView.m; sourceTree = "<group>"; };
 		17EC890F1F5B1FC500B6EFAF /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
-		ED22E0E01F7E45F4004807A9 /* Display.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = Display.fsh; sourceTree = "<group>"; };
-		ED22E0E11F7E45F4004807A9 /* Display.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = Display.vsh; sourceTree = "<group>"; };
+		276E3F9D1F97AAD600020BB3 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		276E3F9F1F9FA01000020BB3 /* reflection.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = reflection.png; path = Assets.xcassets/reflection.imageset/reflection.png; sourceTree = "<group>"; };
+		2778A1191F94E5D900385137 /* CLUTVert.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = CLUTVert.vsh; sourceTree = "<group>"; };
+		2778A11A1F94E5DA00385137 /* DisplayFrag.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = DisplayFrag.fsh; sourceTree = "<group>"; };
+		2778A11B1F94E5DA00385137 /* DisplayVert.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = DisplayVert.vsh; sourceTree = "<group>"; };
+		2778A11F1F94E60600385137 /* CLUTFrag.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = CLUTFrag.fsh; sourceTree = "<group>"; };
 		ED2A6D031F6036D3003CD6CE /* ConfigurationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigurationViewController.h; sourceTree = "<group>"; };
 		ED2A6D041F6036D3003CD6CE /* ConfigurationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigurationViewController.m; sourceTree = "<group>"; };
 		ED2A6D081F603D18003CD6CE /* NSClipView+Flipped.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSClipView+Flipped.h"; sourceTree = "<group>"; };
@@ -91,8 +98,6 @@
 		ED913F981F30759300316E1A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		ED913F991F30759300316E1A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		ED913F9C1F30759300316E1A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		ED913FA21F30759300316E1A /* EmulationScene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmulationScene.h; sourceTree = "<group>"; };
-		ED913FA31F30759300316E1A /* EmulationScene.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EmulationScene.m; sourceTree = "<group>"; };
 		ED913FA51F30759300316E1A /* EmulationViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmulationViewController.h; sourceTree = "<group>"; };
 		ED913FA61F30759300316E1A /* EmulationViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = EmulationViewController.mm; sourceTree = "<group>"; };
 		ED913FA81F30759300316E1A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -130,6 +135,7 @@
 		EDD9ADF01F5D6F51004DD728 /* ZXSpectrum128.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ZXSpectrum128.hpp; sourceTree = "<group>"; };
 		EDD9ADF21F5D7E10004DD728 /* 128-0.ROM */ = {isa = PBXFileReference; lastKnownFileType = file; path = "128-0.ROM"; sourceTree = "<group>"; };
 		EDD9ADF31F5D7E10004DD728 /* 128-1.ROM */ = {isa = PBXFileReference; lastKnownFileType = file; path = "128-1.ROM"; sourceTree = "<group>"; };
+		EDF6604A1FF3E3A500769784 /* SPI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SPI.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -137,6 +143,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				276E3F9E1F97AAE800020BB3 /* CoreMedia.framework in Frameworks */,
+				276E3F9C1F97A06B00020BB3 /* AVFoundation.framework in Frameworks */,
 				17EC89101F5B1FC500B6EFAF /* AudioToolbox.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -144,14 +152,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		174AAFBD1F58626E00B75535 /* Shader */ = {
+		174AAFBD1F58626E00B75535 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
-				174AAFBA1F585AF100B75535 /* PixelShader.fsh */,
-				ED22E0E11F7E45F4004807A9 /* Display.vsh */,
-				ED22E0E01F7E45F4004807A9 /* Display.fsh */,
+				2778A1191F94E5D900385137 /* CLUTVert.vsh */,
+				2778A11F1F94E60600385137 /* CLUTFrag.fsh */,
+				2778A11B1F94E5DA00385137 /* DisplayVert.vsh */,
+				2778A11A1F94E5DA00385137 /* DisplayFrag.fsh */,
 			);
-			name = Shader;
+			name = Shaders;
 			sourceTree = "<group>";
 		};
 		17B5DB921F5B146C003E7EF3 /* Audio Core */ = {
@@ -168,6 +177,7 @@
 		17B5DB9B1F5B1CCE003E7EF3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				276E3F9D1F97AAD600020BB3 /* CoreMedia.framework */,
 				17EC890F1F5B1FC500B6EFAF /* AudioToolbox.framework */,
 				17B5DB9C1F5B1CCE003E7EF3 /* AVFoundation.framework */,
 			);
@@ -242,6 +252,7 @@
 			isa = PBXGroup;
 			children = (
 				ED913FB41F30762600316E1A /* App Delegate */,
+				EDC56FD71F6C226E00162739 /* Defaults */,
 				EDEDE71D1F7556BD00DAC9AE /* User Interface */,
 				EDEDE7151F75561100DAC9AE /* Emulator Core */,
 				ED2A6D071F603D0F003CD6CE /* Class Extensions */,
@@ -293,27 +304,19 @@
 				ED913FA81F30759300316E1A /* Assets.xcassets */,
 				ED913FAD1F30759300316E1A /* Info.plist */,
 				ED2A6D0B1F604CD0003CD6CE /* Defaults.plist */,
+				276E3F9F1F9FA01000020BB3 /* reflection.png */,
 			);
 			name = Resources;
-			sourceTree = "<group>";
-		};
-		ED913FB71F30765D00316E1A /* Emulation Scene */ = {
-			isa = PBXGroup;
-			children = (
-				ED913FA21F30759300316E1A /* EmulationScene.h */,
-				ED913FA31F30759300316E1A /* EmulationScene.m */,
-			);
-			name = "Emulation Scene";
 			sourceTree = "<group>";
 		};
 		ED913FB81F30767A00316E1A /* Emulation */ = {
 			isa = PBXGroup;
 			children = (
+				174AAFBD1F58626E00B75535 /* Shaders */,
 				ED913FA51F30759300316E1A /* EmulationViewController.h */,
 				ED913FA61F30759300316E1A /* EmulationViewController.mm */,
 				ED4137451F7D24DE008ACB30 /* OpenGLView.h */,
 				ED4137461F7D24DE008ACB30 /* OpenGLView.mm */,
-				174AAFBD1F58626E00B75535 /* Shader */,
 			);
 			name = Emulation;
 			sourceTree = "<group>";
@@ -373,6 +376,7 @@
 			children = (
 				177E284E1F4DDF550053756B /* ZXSpectrum48.hpp */,
 				177E284B1F4DD7E90053756B /* ZXSpectrum48.cpp */,
+				EDF660491FF3E38000769784 /* SPI */,
 			);
 			path = "ZX Spectrum 48k";
 			sourceTree = "<group>";
@@ -439,9 +443,7 @@
 		EDEDE71D1F7556BD00DAC9AE /* User Interface */ = {
 			isa = PBXGroup;
 			children = (
-				EDC56FD71F6C226E00162739 /* Defaults */,
 				ED913FB31F30761B00316E1A /* StoryBoard */,
-				ED913FB71F30765D00316E1A /* Emulation Scene */,
 				ED913FB51F30763500316E1A /* View Controllers */,
 				EDB7F7F91F5ED3D7003053E3 /* Window Controllers */,
 				17B5DB921F5B146C003E7EF3 /* Audio Core */,
@@ -449,6 +451,14 @@
 			name = "User Interface";
 			path = SpectREM;
 			sourceTree = SOURCE_ROOT;
+		};
+		EDF660491FF3E38000769784 /* SPI */ = {
+			isa = PBXGroup;
+			children = (
+				EDF6604A1FF3E3A500769784 /* SPI.cpp */,
+			);
+			path = SPI;
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
@@ -476,7 +486,7 @@
 		ED913F8D1F30759300316E1A /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				CLASSPREFIX = SS;
+				CLASSPREFIX = "";
 				LastUpgradeCheck = 0900;
 				ORGANIZATIONNAME = "71Squared Ltd";
 				TargetAttributes = {
@@ -509,18 +519,20 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ED22E0E21F7E4804004807A9 /* Display.fsh in Resources */,
-				ED22E0E31F7E4804004807A9 /* Display.vsh in Resources */,
 				ED2A6D0C1F604CD0003CD6CE /* Defaults.plist in Resources */,
 				EDD9ADF41F5D89AE004DD728 /* 128-0.ROM in Resources */,
 				EDC56FDE1F6EE8A800162739 /* plus2-0.ROM in Resources */,
+				2778A1201F94E60600385137 /* CLUTFrag.fsh in Resources */,
 				EDD9ADF51F5D89AE004DD728 /* 128-1.ROM in Resources */,
 				EDC56FDC1F6EE89E00162739 /* plus2-1.ROM in Resources */,
-				174AAFBC1F585DCC00B75535 /* PixelShader.fsh in Resources */,
 				EDD9ADED1F59C111004DD728 /* Credits.rtf in Resources */,
 				ED913FD71F30789300316E1A /* 48.ROM in Resources */,
+				276E3FA01F9FA01100020BB3 /* reflection.png in Resources */,
+				2778A11D1F94E5DA00385137 /* DisplayFrag.fsh in Resources */,
 				ED913FA91F30759300316E1A /* Assets.xcassets in Resources */,
 				ED913FAC1F30759300316E1A /* Main.storyboard in Resources */,
+				2778A11C1F94E5DA00385137 /* CLUTVert.vsh in Resources */,
+				2778A11E1F94E5DA00385137 /* DisplayVert.vsh in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -535,6 +547,7 @@
 				1745BB651F50AE1E003203FE /* FloatingBus.cpp in Sources */,
 				17B27F041F6877C800B811FC /* AudioQueue.cpp in Sources */,
 				EDC56FE21F6EE8ED00162739 /* ZXSpectrum128_2.cpp in Sources */,
+				EDF6604B1FF3E3A500769784 /* SPI.cpp in Sources */,
 				17B5DB971F5B14A7003E7EF3 /* AudioCore.mm in Sources */,
 				EDB7F7FE1F5EE2E4003053E3 /* Tape.cpp in Sources */,
 				ED2A6D101F616C43003CD6CE /* ExportAccessoryViewController.m in Sources */,
@@ -547,7 +560,6 @@
 				ED913FCD1F30781000316E1A /* Z80Core_FDOpcodes.cpp in Sources */,
 				EDC56FDA1F6C228700162739 /* Defaults.m in Sources */,
 				ED913FC91F30781000316E1A /* Z80Core_CBOpcodes.cpp in Sources */,
-				ED913FA41F30759300316E1A /* EmulationScene.m in Sources */,
 				17C33DFE1F6583A400720A06 /* TapeCellView.m in Sources */,
 				ED913FD41F30787000316E1A /* ZXSpectrum.cpp in Sources */,
 				ED2A6D0A1F603D18003CD6CE /* NSClipView+Flipped.m in Sources */,
@@ -695,6 +707,7 @@
 				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
 				INFOPLIST_FILE = SpectREM/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_BUNDLE_IDENTIFIER = com.71squared.SpectREM;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -715,6 +728,7 @@
 				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
 				INFOPLIST_FILE = SpectREM/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_BUNDLE_IDENTIFIER = com.71squared.SpectREM;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

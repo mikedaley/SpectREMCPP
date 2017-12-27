@@ -1,0 +1,170 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Emulator Core">
+      <UniqueIdentifier>{60592400-af50-4c32-83fe-f14a102204bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Emulator Core\Z80 Core">
+      <UniqueIdentifier>{9ac52e55-60ac-468e-8d26-44930e16968b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Emulator Core\Tape">
+      <UniqueIdentifier>{6c8b00e1-7e21-4bc4-b5e5-7002772351cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Emulator Core\Base">
+      <UniqueIdentifier>{5b0371de-a278-4b18-b689-758df0ccf79a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Emulator Core\ROMS">
+      <UniqueIdentifier>{edba6f96-64af-4b35-bb90-11e56eecea7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Emulator Core\ZX Spectrum +2">
+      <UniqueIdentifier>{deb410a9-96f4-4b25-ae00-73993b5757af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Emulator Core\ZX Spectrum 48k">
+      <UniqueIdentifier>{d3849b68-a5eb-418a-950e-ab4e1f5c5b5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Emulator Core\ZX Spectrum 128k">
+      <UniqueIdentifier>{2932aac9-f81c-448e-98b8-74cbb0c0b924}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Win32">
+      <UniqueIdentifier>{7309a18e-f4c3-483e-bbd8-f2d8b4954c39}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="SpectREM\Emulator Core\Z80 Core\Z80Core.cpp">
+      <Filter>Emulator Core\Z80 Core</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectREM\Emulator Core\Z80 Core\Z80Core_CBOpcodes.cpp">
+      <Filter>Emulator Core\Z80 Core</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectREM\Emulator Core\Z80 Core\Z80Core_DDCB_FDCBOpcodes.cpp">
+      <Filter>Emulator Core\Z80 Core</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectREM\Emulator Core\Z80 Core\Z80Core_DDOpcodes.cpp">
+      <Filter>Emulator Core\Z80 Core</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectREM\Emulator Core\Z80 Core\Z80Core_EDOpcodes.cpp">
+      <Filter>Emulator Core\Z80 Core</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectREM\Emulator Core\Z80 Core\Z80Core_FDOpcodes.cpp">
+      <Filter>Emulator Core\Z80 Core</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectREM\Emulator Core\Z80 Core\Z80Core_MainOpcodes.cpp">
+      <Filter>Emulator Core\Z80 Core</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectREM\Emulator Core\Tape\Tape.cpp">
+      <Filter>Emulator Core\Tape</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectREM\Emulator Core\Base\Audio.cpp">
+      <Filter>Emulator Core\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectREM\Emulator Core\Base\Contention.cpp">
+      <Filter>Emulator Core\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectREM\Emulator Core\Base\Display.cpp">
+      <Filter>Emulator Core\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectREM\Emulator Core\Base\FloatingBus.cpp">
+      <Filter>Emulator Core\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectREM\Emulator Core\Base\Keyboard.cpp">
+      <Filter>Emulator Core\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectREM\Emulator Core\Base\Snapshot.cpp">
+      <Filter>Emulator Core\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectREM\Emulator Core\Base\ZXSpectrum.cpp">
+      <Filter>Emulator Core\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectREM\Emulator Core\ZX Spectrum +2\ZXSpectrum128_2.cpp">
+      <Filter>Emulator Core\ZX Spectrum +2</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectREM\Emulator Core\ZX Spectrum 48k\ZXSpectrum48.cpp">
+      <Filter>Emulator Core\ZX Spectrum 48k</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectREM\Emulator Core\ZX Spectrum 128k\ZXSpectrum128.cpp">
+      <Filter>Emulator Core\ZX Spectrum 128k</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectREM\Win32\WinMain.cpp">
+      <Filter>Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectREM\AudioQueue.cpp" />
+    <ClCompile Include="SpectREM\Win32\AudioCore.cpp">
+      <Filter>Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="SpectREM\Win32\OpenGLView.cpp">
+      <Filter>Win32</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="SpectREM\Emulator Core\Z80 Core\Z80Core.h">
+      <Filter>Emulator Core\Z80 Core</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectREM\Emulator Core\Z80 Core\Z80Core_CBOpcodes.h">
+      <Filter>Emulator Core\Z80 Core</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectREM\Emulator Core\Z80 Core\Z80Core_DDCB_FDCBOpcodes.h">
+      <Filter>Emulator Core\Z80 Core</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectREM\Emulator Core\Z80 Core\Z80Core_DDOpcodes.h">
+      <Filter>Emulator Core\Z80 Core</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectREM\Emulator Core\Z80 Core\Z80Core_EDOpcodes.h">
+      <Filter>Emulator Core\Z80 Core</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectREM\Emulator Core\Z80 Core\Z80Core_FDOpcodes.h">
+      <Filter>Emulator Core\Z80 Core</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectREM\Emulator Core\Z80 Core\Z80Core_MainOpcodes.h">
+      <Filter>Emulator Core\Z80 Core</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectREM\Emulator Core\Z80 Core\Z80CoreOpcodeTables.h">
+      <Filter>Emulator Core\Z80 Core</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectREM\Emulator Core\Tape\Tape.hpp">
+      <Filter>Emulator Core\Tape</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectREM\Emulator Core\Base\MachineInfo.h">
+      <Filter>Emulator Core\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectREM\Emulator Core\Base\ZXSpectrum.hpp">
+      <Filter>Emulator Core\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectREM\Emulator Core\ZX Spectrum +2\ZXSpectrum128_2.hpp">
+      <Filter>Emulator Core\ZX Spectrum +2</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectREM\Emulator Core\ZX Spectrum 48k\ZXSpectrum48.hpp">
+      <Filter>Emulator Core\ZX Spectrum 48k</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectREM\Emulator Core\ZX Spectrum 128k\ZXSpectrum128.hpp">
+      <Filter>Emulator Core\ZX Spectrum 128k</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectREM\AudioQueue.hpp" />
+    <ClInclude Include="SpectREM\Win32\AudioCore.hpp">
+      <Filter>Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectREM\Win32\OpenGLView.hpp">
+      <Filter>Win32</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SpectREM\Emulator Core\ROMS\48.ROM">
+      <Filter>Emulator Core\ROMS</Filter>
+    </None>
+    <None Include="SpectREM\Emulator Core\ROMS\128-0.ROM">
+      <Filter>Emulator Core\ROMS</Filter>
+    </None>
+    <None Include="SpectREM\Emulator Core\ROMS\128-1.ROM">
+      <Filter>Emulator Core\ROMS</Filter>
+    </None>
+    <None Include="SpectREM\Emulator Core\ROMS\plus2-0.ROM">
+      <Filter>Emulator Core\ROMS</Filter>
+    </None>
+    <None Include="SpectREM\Emulator Core\ROMS\plus2-1.ROM">
+      <Filter>Emulator Core\ROMS</Filter>
+    </None>
+    <None Include="SpectREM\Display.fsh" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="SpectREM\Display.vsh" />
+  </ItemGroup>
+</Project>

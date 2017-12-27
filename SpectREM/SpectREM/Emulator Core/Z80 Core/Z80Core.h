@@ -158,10 +158,10 @@ private:
 		unsigned char	IFF2;
 		unsigned char	IM;
 
-		bool			Halted = false;
-		bool			EIHandled = false;
-		bool			IntReq = false;
-        bool            NMIReq = false;
+		bool			Halted;
+		bool			EIHandled;
+		bool			IntReq;
+        bool            NMIReq;
         
         bool            DDFDmultiByte;
         
@@ -223,7 +223,7 @@ public:
 	void					ResetTStates() { m_CPURegisters.TStates = 0; }
 	void					ResetTStates(unsigned int tstates_per_frame) { m_CPURegisters.TStates -= tstates_per_frame; }
 
-	unsigned char			Z80CoreMemRead(unsigned short address, unsigned int tstates = 3);
+	unsigned char	        Z80CoreMemRead(unsigned short address, unsigned int tstates = 3);
 	void					Z80CoreMemWrite(unsigned short address, unsigned char data, unsigned int tstates = 3);
 	unsigned char			Z80CoreIORead(unsigned short address);
 	void					Z80CoreIOWrite(unsigned short address, unsigned char data);

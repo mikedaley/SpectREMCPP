@@ -170,36 +170,36 @@ public:
 private:
     void                    reset(bool clearBlocks);
     bool                    processData(unsigned char *fileBytes, long size);
-    void                    generateHeaderPilotWithTs(int tStates);
-    void                    generateSync1WithTs(int tStates);
-    void                    generateSync2WithTs(int tStates);
-    void                    generateDataPilotWithTs(int tStates);
-    void                    tapeGenerateDataStreamWithTs(int tStates);
-    void                    generateHeaderDataStreamWithTs(int tStates);
-    void                    generateDataBitWithTs(int tStates);
-    void                    tapeBlockPauseWithTs(int tStates);
+    void                    generateHeaderPilotWithTs(uint32_t tStates);
+    void                    generateSync1WithTs(uint32_t tStates);
+    void                    generateSync2WithTs(uint32_t tStates);
+    void                    generateDataPilotWithTs(uint32_t tStates);
+    void                    tapeGenerateDataStreamWithTs(uint32_t tStates);
+    void                    generateHeaderDataStreamWithTs(uint32_t tStates);
+    void                    generateDataBitWithTs(uint32_t tStates);
+    void                    tapeBlockPauseWithTs(uint32_t tStates);
     
 public:
     bool                    loaded = false;
     bool                    playing = false;
-    int                     currentBytePtr = 0;
-    int                     currentBlockIndex = 0;
+    uint32_t                currentBlockIndex = 0;
     bool                    newBlock = false;
     vector<TapeBlock *>     blocks;
     int                     inputBit = 0;
     
 private:
-    int                     pilotPulseTStates = 0;          // How many Ts have passed since the start of the pilot pulses
-    int                     pilotPulses = 0;                // How many pilot pulses have been generated
-    int                     syncPulseTStates = 0;           // Sync pulse tStates
-    int                     dataPulseTStates = 0;           // How many Ts have passed since the start of the data pulse
+    uint32_t                currentBytePtr = 0;
+    uint32_t                pilotPulseTStates = 0;          // How many Ts have passed since the start of the pilot pulses
+    uint32_t                pilotPulses = 0;                // How many pilot pulses have been generated
+    uint32_t                syncPulseTStates = 0;           // Sync pulse tStates
+    uint32_t                dataPulseTStates = 0;           // How many Ts have passed since the start of the data pulse
     bool                    flipTapeBit = 0;                // Should the tape bit be flipped
-    int                     processingState = 0;            // Current processing state e.g. generating pilot, streaming data
-    int                     nextProcessingState = 0;        // Next processing state to be used
-    int                     currentDataBit = 0;             // Which bit of the current byte in the data stream is being processed
-    int                     blockPauseTStates = 0;          // How many tStates have passed since starting the pause between data blocks
-    int                     dataBitTStates = 0;             // How many tStates to pause when processing data bit pulses
-    int                     dataPulseCount = 0;             // How many pulses have been generated for the current data bit;
+    uint32_t                processingState = 0;            // Current processing state e.g. generating pilot, streaming data
+    uint32_t                nextProcessingState = 0;        // Next processing state to be used
+    uint32_t                currentDataBit = 0;             // Which bit of the current byte in the data stream is being processed
+    uint32_t                blockPauseTStates = 0;          // How many tStates have passed since starting the pause between data blocks
+    uint32_t                dataBitTStates = 0;             // How many tStates to pause when processing data bit pulses
+    uint32_t                dataPulseCount = 0;             // How many pulses have been generated for the current data bit;
     TapeBlock               *tapeCurrentBlock = nullptr;    // Current tape block
     
     // Function called whenever the status of the tape changes e.g. new block, rewind, stop etc

@@ -12,6 +12,9 @@
 
 #pragma mark - Machine
 
+extern NSString * const MachineAcceleration;
+@property (nonatomic, assign) CGFloat machineAcceleration;
+
 extern NSString * const MachineSelectedModel;
 @property (nonatomic, assign) NSInteger machineSelectedModel;
 
@@ -76,9 +79,15 @@ extern NSString * const AudioHighPassFilter;
 extern NSString * const AudioLowPassFilter;
 @property (nonatomic, assign) NSInteger audioLowPassFilter;
 
+#pragma mark - SPI
+
+extern NSString * const SPIPort;
+@property (nonatomic, assign) NSUInteger spiPort;
+
 #pragma mark - Init
 
 + (instancetype)defaults;
-+ (void)setupDefaults;
++ (instancetype)reload;
++ (void)setupDefaultsWithReset:(BOOL)reset;
 
 @end

@@ -8,7 +8,7 @@
 
 #include "ZXSpectrum.hpp"
 
-const unsigned int ZXSpectrum::ULAFloatingBusValues[] = { 0, 0, 1, 2, 1, 2, 0, 0 };
+const uint32_t ZXSpectrum::ULAFloatingBusValues[] = { 0, 0, 1, 2, 1, 2, 0, 0 };
 
 enum
 {
@@ -23,11 +23,11 @@ enum
  predict if the ULA is reading a pixel or attribute byte based on the current t-state.
  This routine works out what would be on the ULA bus for a given tstate and returns the result
  **/
-unsigned char ZXSpectrum::ULAFloatingBus()
+uint8_t ZXSpectrum::ULAFloatingBus()
 {
-    int cpuTs = z80Core.GetTStates() - 1;
-    int currentDisplayLine = (cpuTs / machineInfo.tsPerLine);
-    int currentTs = (cpuTs % machineInfo.tsPerLine);
+    int32_t cpuTs = z80Core.GetTStates() - 1;
+    int32_t currentDisplayLine = (cpuTs / machineInfo.tsPerLine);
+    int32_t currentTs = (cpuTs % machineInfo.tsPerLine);
     
     // If the line and tState are within the paper area of the screen then grab the
     // pixel or attribute value which is determined by looking at the current tState
@@ -35,10 +35,10 @@ unsigned char ZXSpectrum::ULAFloatingBus()
         && currentDisplayLine < (machineInfo.pxVertBorder + machineInfo.pxVerticalBlank + machineInfo.pxVerticalDisplay)
         && currentTs <= machineInfo.tsHorizontalDisplay)
     {
-        unsigned char ulaValueType = ULAFloatingBusValues[ currentTs & 0x07 ];
+        uint8_t ulaValueType = ULAFloatingBusValues[ currentTs & 0x07 ];
         
-        int y = currentDisplayLine - (machineInfo.pxVertBorder + machineInfo.pxVerticalBlank);
-        int x = currentTs >> 2;
+        int32_t y = currentDisplayLine - (machineInfo.pxVertBorder + machineInfo.pxVerticalBlank);
+        int32_t x = currentTs >> 2;
         
         if (ulaValueType == eFloatBusTypeValuePixel)
         {

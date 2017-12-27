@@ -34,6 +34,10 @@ public:
     virtual void            coreDebugWrite(unsigned int address, unsigned char byte, void *data) override;
     
     static bool             opcodeCallback(unsigned char opcode, unsigned short address, void *param);
+    
+    // SPI
+    virtual void            spi_write(uint8_t data);
+    virtual uint8_t         spi_read();
 };
 
 #endif /* ZXSpectrum48_h */
