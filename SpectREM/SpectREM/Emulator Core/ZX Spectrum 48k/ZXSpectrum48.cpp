@@ -16,6 +16,11 @@
 static const int cROM_SIZE = 16384;
 static const char *cROM0 = "48.ROM";
 
+// SmartCard ROM and sundries
+unsigned char smartCardPortFAF3 = 0;
+unsigned char smartCardPortFAFB = 0;
+unsigned char smartCardSRAM[8*64*1024];		// 8 * 8k banks, mapped @ $2000-$3FFF
+
 #pragma mark - Constructor/Destructor
 
 ZXSpectrum48::ZXSpectrum48(Tape *t) : ZXSpectrum()
@@ -98,12 +103,27 @@ unsigned char ZXSpectrum48::coreIORead(unsigned short address)
         {
             return ZXSpectrum48::spi_read();
         }
-        
+		// Retroleum Smart Card - HexTank
+		else if ((address & 0xfff1) == 0xfaf1)
+		{
+			if(address == 0xfaf3)
+			{
+				return smartCardPortFAF3;
+			}
+			else if(address == 0xfafb)
+			{
+				return smartCardPortFAFB | 0x10;
+			}
+		}
+		
         // Getting here means that nothing has handled that port read so based on a real Spectrum
         // return the floating bus value
         return ULAFloatingBus();
     }
 
+
+	
+	
     // Check to see if the keyboard is being read and if so return any keys currently pressed
     unsigned char result = 0xff;
     if (address & 0xfe)
@@ -163,6 +183,18 @@ void ZXSpectrum48::coreIOWrite(unsigned short address, unsigned char data)
     {
         return ZXSpectrum48::spi_write(data);
     }
+	// Retroleum Smart Card - HexTank
+	else if ((address & 0xfff1) == 0xfaf1)
+	{
+		if(address == 0xfaf3)
+		{
+			smartCardPortFAF3 = data;
+		}
+		else if(address == 0xfafb)
+		{
+			smartCardPortFAFB = data;
+		}
+	}
 }
 
 #pragma mark - Memory Read/Write
@@ -171,6 +203,12 @@ void ZXSpectrum48::coreMemoryWrite(unsigned short address, unsigned char data)
 {
     if (address < cROM_SIZE)
     {
+		
+		if ((smartCardPortFAF3&0x80) && address >= 8192 && address < 16384)
+		{
+			smartCardSRAM[ (address - 8192) + ((smartCardPortFAF3&7)*8192) ] = data;
+		}
+		
         return;
     }
     
@@ -185,6 +223,11 @@ unsigned char ZXSpectrum48::coreMemoryRead(unsigned short address)
 {
     if (address < cROM_SIZE)
     {
+		if ((smartCardPortFAF3&0x80) && address >= 8192 && address < 16384)
+		{
+			return smartCardSRAM[  (address - 8192) + ((smartCardPortFAF3&7) * 8192) ];
+		}
+		
         return memoryRom[address];
     }
     
