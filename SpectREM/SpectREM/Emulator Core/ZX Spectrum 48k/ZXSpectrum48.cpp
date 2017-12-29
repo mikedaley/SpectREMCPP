@@ -227,6 +227,16 @@ unsigned char ZXSpectrum48::coreMemoryRead(unsigned short address)
 		{
 			return smartCardSRAM[  (address - 8192) + ((smartCardPortFAF3&7) * 8192) ];
 		}
+		if((address&0xff)==0x72)
+		{
+			if (smartCardPortFAFB&0x40)
+			{
+				unsigned char retOpCode = memoryRom[address];
+				loadDefaultROM();
+				smartCardPortFAFB&=~0x40;
+				return retOpCode;
+			}
+		}
 		
         return memoryRom[address];
     }
