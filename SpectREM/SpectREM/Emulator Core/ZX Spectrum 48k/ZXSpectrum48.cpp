@@ -14,7 +14,9 @@
 #pragma mark - Constants
 
 static const int cROM_SIZE = 16384;
-static const char *cROM0 = "48.ROM";
+//static const char *cROM0 = "48.ROM";
+static const char *cROM0 = "snapload.v31";
+//static const char *cROM0 = "DiagROM.v33";
 
 // SmartCard ROM and sundries
 unsigned char smartCardPortFAF3 = 0;

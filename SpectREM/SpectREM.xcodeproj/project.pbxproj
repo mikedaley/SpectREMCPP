@@ -56,6 +56,7 @@
 		EDD9ADF41F5D89AE004DD728 /* 128-0.ROM in Resources */ = {isa = PBXBuildFile; fileRef = EDD9ADF21F5D7E10004DD728 /* 128-0.ROM */; };
 		EDD9ADF51F5D89AE004DD728 /* 128-1.ROM in Resources */ = {isa = PBXBuildFile; fileRef = EDD9ADF31F5D7E10004DD728 /* 128-1.ROM */; };
 		EDF6604B1FF3E3A500769784 /* SPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDF6604A1FF3E3A500769784 /* SPI.cpp */; };
+		EDF660511FF535E300769784 /* snapload.v31 in Resources */ = {isa = PBXBuildFile; fileRef = EDF660501FF535E300769784 /* snapload.v31 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -136,6 +137,8 @@
 		EDD9ADF21F5D7E10004DD728 /* 128-0.ROM */ = {isa = PBXFileReference; lastKnownFileType = file; path = "128-0.ROM"; sourceTree = "<group>"; };
 		EDD9ADF31F5D7E10004DD728 /* 128-1.ROM */ = {isa = PBXFileReference; lastKnownFileType = file; path = "128-1.ROM"; sourceTree = "<group>"; };
 		EDF6604A1FF3E3A500769784 /* SPI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SPI.cpp; sourceTree = "<group>"; };
+		EDF660501FF535E300769784 /* snapload.v31 */ = {isa = PBXFileReference; lastKnownFileType = file; path = snapload.v31; sourceTree = "<group>"; };
+		EDF660521FF536CF00769784 /* testsd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = testsd.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -431,6 +434,7 @@
 		EDEDE71C1F75569800DAC9AE /* ROMS */ = {
 			isa = PBXGroup;
 			children = (
+				EDF660501FF535E300769784 /* snapload.v31 */,
 				EDC56FDB1F6EE89E00162739 /* plus2-1.ROM */,
 				EDC56FDD1F6EE8A800162739 /* plus2-0.ROM */,
 				ED913FD61F30789300316E1A /* 48.ROM */,
@@ -455,6 +459,7 @@
 		EDF660491FF3E38000769784 /* SPI */ = {
 			isa = PBXGroup;
 			children = (
+				EDF660521FF536CF00769784 /* testsd.h */,
 				EDF6604A1FF3E3A500769784 /* SPI.cpp */,
 			);
 			path = SPI;
@@ -521,6 +526,7 @@
 			files = (
 				ED2A6D0C1F604CD0003CD6CE /* Defaults.plist in Resources */,
 				EDD9ADF41F5D89AE004DD728 /* 128-0.ROM in Resources */,
+				EDF660511FF535E300769784 /* snapload.v31 in Resources */,
 				EDC56FDE1F6EE8A800162739 /* plus2-0.ROM in Resources */,
 				2778A1201F94E60600385137 /* CLUTFrag.fsh in Resources */,
 				EDD9ADF51F5D89AE004DD728 /* 128-1.ROM in Resources */,
@@ -702,7 +708,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = E5X5HE7V7C;
+				DEVELOPMENT_TEAM = PJNBHRUE79;
 				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
 				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
 				INFOPLIST_FILE = SpectREM/Info.plist;
@@ -723,7 +729,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = E5X5HE7V7C;
+				DEVELOPMENT_TEAM = PJNBHRUE79;
 				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
 				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
 				INFOPLIST_FILE = SpectREM/Info.plist;

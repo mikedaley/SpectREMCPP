@@ -56,11 +56,9 @@ constexpr uint8_t cmdNoSupport[]    = {0x05};
 constexpr size_t  cmdNoSupport_size = std::extent<decltype(acmd41)>::value;
 
 
-
-
 void ZXSpectrum48::spi_write( uint8_t data ) {
 	
-	if(command_buffer==cmdtoken)
+    	if(command_buffer==cmdtoken)
 	{
 		if(command_buffer_index > 0 || (command_buffer_index==0 && (data & 0xc0) == 0x40)) {
 			cmdtoken[command_buffer_index++] = data;
@@ -116,9 +114,19 @@ void ZXSpectrum48::spi_write( uint8_t data ) {
 		data = command_buffer[command_buffer_index++];
 		if(command_buffer_index==command_buffer_size) {
 			if(command_buffer==cmd17) {
-				command_buffer = &virtual_smartlink_sdcard[(cmdtoken[1] << 24) | (cmdtoken[2] << 16) | (cmdtoken[3] << 8) | (cmdtoken[4])];
+				
+                FILE *file = fopen("/Users/mikedaley/Desktop/smart.dmg", "rb");
+                
+                unsigned int address = (cmdtoken[1] << 24) | (cmdtoken[2] << 16) | (cmdtoken[3] << 8) | (cmdtoken[4]);
+                uint8_t *fileData = (uint8_t *)malloc(512);
+                fseek(file, address, SEEK_CUR);
+                fread(fileData, 512, 1, file);
+                command_buffer = fileData;
 				command_buffer_size = 512;
 				command_buffer_index = 0;
+                
+                fclose(file);
+                
 			} else {
 				command_buffer = cmdtoken;
 				command_buffer_size = cmdtoken_size;

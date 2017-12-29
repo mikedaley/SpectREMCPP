@@ -73,7 +73,7 @@ NSString * const SPIPort = @"spiPort";
                                AudioHighPassFilter : @(0),
                                AudioLowPassFilter : @(5000),
                                
-                               SPIPort : @(64247)
+                               SPIPort : @(0xfaf7)
                                };
     
     for (NSString *key in defaults)
