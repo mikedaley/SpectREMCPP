@@ -14,14 +14,14 @@
 #pragma mark - Constants
 
 static const int cROM_SIZE = 16384;
-//static const char *cROM0 = "48.ROM";
-static const char *cROM0 = "snapload.v31";
+static const char *cROM0 = "48.ROM";
+//static const char *cROM0 = "snapload.v31";
 //static const char *cROM0 = "DiagROM.v33";
 
 // SmartCard ROM and sundries
 unsigned char smartCardPortFAF3 = 0;
 unsigned char smartCardPortFAFB = 0;
-unsigned char smartCardSRAM[8*64*1024];		// 8 * 8k banks, mapped @ $2000-$3FFF
+unsigned char smartCardSRAM[8 * 64 * 1024];		// 8 * 8k banks, mapped @ $2000-$3FFF
 
 #pragma mark - Constructor/Destructor
 
@@ -205,10 +205,9 @@ void ZXSpectrum48::coreMemoryWrite(unsigned short address, unsigned char data)
 {
     if (address < cROM_SIZE)
     {
-		
-		if ((smartCardPortFAF3&0x80) && address >= 8192 && address < 16384)
+		if ((smartCardPortFAF3 & 0x80) && address >= 8192 && address < 16384)
 		{
-			smartCardSRAM[ (address - 8192) + ((smartCardPortFAF3&7)*8192) ] = data;
+			smartCardSRAM[ (address - 8192) + ((smartCardPortFAF3 & 0x07) * 8192) ] = data;
 		}
 		
         return;
@@ -225,17 +224,17 @@ unsigned char ZXSpectrum48::coreMemoryRead(unsigned short address)
 {
     if (address < cROM_SIZE)
     {
-		if ((smartCardPortFAF3&0x80) && address >= 8192 && address < 16384)
+		if ((smartCardPortFAF3 & 0x80) && address >= 8192 && address < 16384)
 		{
-			return smartCardSRAM[  (address - 8192) + ((smartCardPortFAF3&7) * 8192) ];
+			return smartCardSRAM[  (address - 8192) + ((smartCardPortFAF3 & 0x07) * 8192) ];
 		}
-		if((address&0xff)==0x72)
+		if((address & 0xff) == 0x72)
 		{
-			if (smartCardPortFAFB&0x40)
+			if (smartCardPortFAFB & 0x40)
 			{
 				unsigned char retOpCode = memoryRom[address];
 				loadDefaultROM();
-				smartCardPortFAFB&=~0x40;
+				smartCardPortFAFB &= ~0x40;
 				return retOpCode;
 			}
 		}
