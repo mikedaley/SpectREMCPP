@@ -142,8 +142,8 @@
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="Eer-Gg-dN9"/>
-                                        <menuItem title="Snap Load" tag="1" id="98g-Zx-lsG">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                        <menuItem title="Snap Load" tag="1" keyEquivalent="s" id="98g-Zx-lsG">
+                                            <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="resetToSnapLoad:" target="Ady-hI-5gd" id="qd7-uW-zi2"/>
                                             </connections>
