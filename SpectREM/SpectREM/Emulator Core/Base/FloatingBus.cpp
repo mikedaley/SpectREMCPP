@@ -26,14 +26,14 @@ enum
 uint8_t ZXSpectrum::ULAFloatingBus()
 {
     int32_t cpuTs = z80Core.GetTStates() - 1;
-    int32_t currentDisplayLine = (cpuTs / machineInfo.tsPerLine);
-    int32_t currentTs = (cpuTs % machineInfo.tsPerLine);
+    int32_t currentDisplayLine = cpuTs / machineInfo.tsPerLine;
+    int32_t currentTs = cpuTs % machineInfo.tsPerLine;
     
     // If the line and tState are within the paper area of the screen then grab the
     // pixel or attribute value which is determined by looking at the current tState
     if (currentDisplayLine >= (machineInfo.pxVertBorder + machineInfo.pxVerticalBlank)
         && currentDisplayLine < (machineInfo.pxVertBorder + machineInfo.pxVerticalBlank + machineInfo.pxVerticalDisplay)
-        && currentTs <= machineInfo.tsHorizontalDisplay)
+        && currentTs < machineInfo.tsHorizontalDisplay)
     {
         uint8_t ulaValueType = ULAFloatingBusValues[ currentTs & 0x07 ];
         
@@ -42,12 +42,12 @@ uint8_t ZXSpectrum::ULAFloatingBus()
         
         if (ulaValueType == eFloatBusTypeValuePixel)
         {
-            return memoryRam[(cBITMAP_ADDRESS) + displayLineAddrTable[y] + x];
+            return memoryRam[ (cBITMAP_ADDRESS) + displayLineAddrTable[y] + x ];
         }
         
         if (ulaValueType == eFloatBusTypeValueAttribute)
         {
-            return memoryRam[(cBITMAP_ADDRESS) + cBITMAP_SIZE + ((y >> 3) << 5) + x];
+            return memoryRam[ (cBITMAP_ADDRESS) + cBITMAP_SIZE + ((y >> 3) << 5) + x ];
         }
     }
     

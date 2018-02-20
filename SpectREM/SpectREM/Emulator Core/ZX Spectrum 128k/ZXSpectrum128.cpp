@@ -110,6 +110,7 @@ unsigned char ZXSpectrum128::coreIORead(unsigned short address)
             return 0x0;
         }
         
+        
         // AY-3-8912 ports
         else if ((address & 0xc002) == 0xc000 && machineInfo.hasAY)
         {
@@ -133,7 +134,7 @@ unsigned char ZXSpectrum128::coreIORead(unsigned short address)
             }
         }
     }
-    
+
     result = (result & 191) | (audioEarBit << 6) | (tape->inputBit << 6);
     
     return result;
@@ -356,7 +357,8 @@ bool ZXSpectrum128::opcodeCallback(unsigned char opcode, unsigned short address,
     }
     
     // Trap ROM tape SAVING
-    else if (opcode == 0x08 && address == 0x04d0)
+    
+    if (opcode == 0x08 && address == 0x04d0)
     {
         if (opcode == 0x08)
         {

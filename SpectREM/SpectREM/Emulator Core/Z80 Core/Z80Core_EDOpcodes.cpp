@@ -210,6 +210,8 @@ void CZ80Core::LD_A_I(unsigned char opcode)
 	m_CPURegisters.regs.regF = (m_CPURegisters.regs.regF & FLAG_C);
 	m_CPURegisters.regs.regF |= m_SZ35Table[m_CPURegisters.regs.regA];
 	m_CPURegisters.regs.regF |= (m_CPURegisters.IFF2 == 0) ? 0 : FLAG_V;
+    
+    m_Iff2_read = true;
 }
 
 //-----------------------------------------------------------------------------------------
@@ -274,6 +276,8 @@ void CZ80Core::LD_A_R(unsigned char opcode)
 	m_CPURegisters.regs.regF = (m_CPURegisters.regs.regF & FLAG_C);
 	m_CPURegisters.regs.regF |= m_SZ35Table[m_CPURegisters.regs.regA];
 	m_CPURegisters.regs.regF |= (m_CPURegisters.IFF2 == 0) ? 0 : FLAG_V;
+    
+    m_Iff2_read = true;
 }
 
 //-----------------------------------------------------------------------------------------

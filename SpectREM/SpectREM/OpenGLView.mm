@@ -161,6 +161,8 @@ char const * cU_TIME =                  "u_time";
 
 - (void) awakeFromNib
 {
+    self.wantsLayer = YES;
+    
     [self registerForDraggedTypes:@[NSURLPboardType]];
     
     defaults = [Defaults defaults];
@@ -288,13 +290,13 @@ char const * cU_TIME =                  "u_time";
 
 - (void) drawRect: (NSRect) theRect
 {
-    [[self openGLContext] makeCurrentContext];
-    CGLLockContext(contextObj);
+//    [[self openGLContext] makeCurrentContext];
+//    CGLLockContext(contextObj);
     
-    glClear(GL_COLOR_BUFFER_BIT);
-    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+//    glClear(GL_COLOR_BUFFER_BIT);
+//    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     
-    CGLUnlockContext(contextObj);
+//    CGLUnlockContext(contextObj);
 }
 
 - (void) prepareOpenGL
@@ -313,32 +315,19 @@ char const * cU_TIME =                  "u_time";
     [[self openGLContext] setValues:&swapInt forParameter:NSOpenGLContextParameterSwapInterval];
 }
 
-- (void) resizeWithWidth:(GLuint)width AndHeight:(GLuint)height
-{
-    glViewport(0, 0, width, height);
-    viewWidth = width;
-    viewHeight = height;
-}
-
 - (void) reshape
 {
     [super reshape];
-    
-    CGLLockContext([[self openGLContext] CGLContextObj]);
-    
+
     NSRect viewRectPoints = [self bounds];
     NSRect viewRectPixels = [self convertRectToBacking:viewRectPoints];
-    
-    [self resizeWithWidth:viewRectPixels.size.width
-                AndHeight:viewRectPixels.size.height];
-    
-    CGLUnlockContext([[self openGLContext] CGLContextObj]);
-}
 
-- (void)renewGState
-{
-    [[self window] disableScreenUpdatesUntilFlush];
-    [super renewGState];
+    CGLLockContext(contextObj);
+    glViewport(0, 0, viewRectPixels.size.width, viewRectPixels.size.height);
+    CGLUnlockContext(contextObj);
+
+    viewWidth = viewRectPixels.size.width;
+    viewHeight = viewRectPixels.size.height;
 }
 
 - (BOOL)acceptsFirstResponder

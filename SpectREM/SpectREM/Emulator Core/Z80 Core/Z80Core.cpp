@@ -204,6 +204,16 @@ int CZ80Core::Execute(unsigned int num_tstates, unsigned int int_t_states)
                 m_CPURegisters.IFF1 != 0 &&
                 m_CPURegisters.TStates < int_t_states )
             {
+                /* We just executed LD A,I or LD A,R, causing IFF2 to be copied to the
+                 parity flag.  This occured whilst accepting an interrupt.  For NMOS
+                 Z80s only, clear the parity flag to reflect the fact that IFF2 would
+                 have actually been cleared before its value was transferred by LD A,I
+                 or LD A,R.  We cannot do this when emulating LD itself as we cannot
+                 tell whether the next instruction will be interrupted. */
+                if ( m_Iff2_read )
+                {
+                    m_CPURegisters.regs.regF &= ~FLAG_V;
+                }
                 
                 // First see if we are halted?
                 if ( m_CPURegisters.Halted )
@@ -258,6 +268,10 @@ int CZ80Core::Execute(unsigned int num_tstates, unsigned int int_t_states)
         // Clear the multibyte flags in case the next instruction is not part of a multibyte instruction
         m_CPURegisters.DDFDmultiByte = false;
 
+        // Clear the iff2 read flag before the opcode is run. If LD A, I or LD A, R is the next opcode and is followed by
+        // an interrupt, then the parity flag needs to be reset. This only effects NMOS chips and not CMOS
+        m_Iff2_read = false;
+        
 		Z80OpcodeTable *table = &Main_Opcodes;
 
         // Read the opcode

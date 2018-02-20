@@ -22,6 +22,7 @@
 #import "ConfigurationViewController.h"
 #import "ExportAccessoryViewController.h"
 #import "TapeBrowserViewController.h"
+#import "DebugViewController.h"
 
 #pragma mark - Constants
 
@@ -53,6 +54,8 @@ static const int cSCREEN_FILL = 1;
     ExportAccessoryViewController   *saveAccessoryController;
     NSWindowController              *tapeBrowserWindowController;
     TapeBrowserViewController       *tapeBrowserViewController;
+    NSWindowController              *debugWindowController;
+    DebugViewController             *debugViewController;
     
     NSTimer                         *accelerationTimer;
     
@@ -216,6 +219,8 @@ static const int cSCREEN_FILL = 1;
     tapeBrowserWindowController = [storyBoard instantiateControllerWithIdentifier:@"TAPE_BROWSER_WINDOW"];
     tapeBrowserViewController = (TapeBrowserViewController *)tapeBrowserWindowController.contentViewController;
     tapeBrowserViewController.emulationViewController = self;
+    debugWindowController = [storyBoard instantiateControllerWithIdentifier:@"DEBUG_WINDOW"];
+    debugViewController = (DebugViewController *)debugWindowController.contentViewController;
 }
 
 #pragma mark - Init/Switch Machine
@@ -588,6 +593,13 @@ static void tapeStatusCallback(int blockIndex, int bytes)
         
     }];
 
+}
+
+#pragma mark - Debug Menu Items
+
+- (IBAction)showDebugger:(id)sender
+{
+    [debugWindowController showWindow:NULL];
 }
 
 #pragma mark - Tape Menu Items
