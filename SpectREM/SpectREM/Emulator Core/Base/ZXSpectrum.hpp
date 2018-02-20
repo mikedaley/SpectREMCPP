@@ -83,6 +83,7 @@ public:
 public:
     virtual void            initialise(string romPath);
     virtual void            resetMachine(bool hard = true);
+    virtual void            resetToSnapLoad();
     void                    pause();
     void                    resume();
     virtual void            release();
@@ -104,7 +105,7 @@ public:
     
 protected:
     void                    emuReset();
-    virtual void            loadDefaultROM() = 0;
+    virtual void            loadROM(const char *rom) = 0;
     
     void                    displayFrameReset();
     void                    displayUpdateWithTs(int32_t tStates);

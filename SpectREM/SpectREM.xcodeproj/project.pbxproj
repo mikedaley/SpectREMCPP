@@ -51,7 +51,6 @@
 		EDC56FDA1F6C228700162739 /* Defaults.m in Sources */ = {isa = PBXBuildFile; fileRef = EDC56FD91F6C228700162739 /* Defaults.m */; };
 		EDC56FDC1F6EE89E00162739 /* plus2-1.ROM in Resources */ = {isa = PBXBuildFile; fileRef = EDC56FDB1F6EE89E00162739 /* plus2-1.ROM */; };
 		EDC56FDE1F6EE8A800162739 /* plus2-0.ROM in Resources */ = {isa = PBXBuildFile; fileRef = EDC56FDD1F6EE8A800162739 /* plus2-0.ROM */; };
-		EDC56FE21F6EE8ED00162739 /* ZXSpectrum128_2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDC56FE01F6EE8ED00162739 /* ZXSpectrum128_2.cpp */; };
 		EDD9ADED1F59C111004DD728 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = EDD9ADEC1F59C111004DD728 /* Credits.rtf */; };
 		EDD9ADF11F5D6F51004DD728 /* ZXSpectrum128.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDD9ADEF1F5D6F51004DD728 /* ZXSpectrum128.cpp */; };
 		EDD9ADF41F5D89AE004DD728 /* 128-0.ROM in Resources */ = {isa = PBXBuildFile; fileRef = EDD9ADF21F5D7E10004DD728 /* 128-0.ROM */; };
@@ -132,8 +131,6 @@
 		EDC56FD91F6C228700162739 /* Defaults.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Defaults.m; sourceTree = "<group>"; };
 		EDC56FDB1F6EE89E00162739 /* plus2-1.ROM */ = {isa = PBXFileReference; lastKnownFileType = file; path = "plus2-1.ROM"; sourceTree = "<group>"; };
 		EDC56FDD1F6EE8A800162739 /* plus2-0.ROM */ = {isa = PBXFileReference; lastKnownFileType = file; path = "plus2-0.ROM"; sourceTree = "<group>"; };
-		EDC56FE01F6EE8ED00162739 /* ZXSpectrum128_2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZXSpectrum128_2.cpp; sourceTree = "<group>"; };
-		EDC56FE11F6EE8ED00162739 /* ZXSpectrum128_2.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ZXSpectrum128_2.hpp; sourceTree = "<group>"; };
 		EDD9ADEC1F59C111004DD728 /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		EDD9ADEF1F5D6F51004DD728 /* ZXSpectrum128.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZXSpectrum128.cpp; sourceTree = "<group>"; };
 		EDD9ADF01F5D6F51004DD728 /* ZXSpectrum128.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ZXSpectrum128.hpp; sourceTree = "<group>"; };
@@ -362,20 +359,10 @@
 				EDEDE7191F75563E00DAC9AE /* Base */,
 				EDEDE7181F75563400DAC9AE /* ZX Spectrum 48k */,
 				EDEDE7171F75562C00DAC9AE /* ZX Spectrum 128k */,
-				EDEDE7161F75562000DAC9AE /* ZX Spectrum +2 */,
 				EDEDE71B1F75567100DAC9AE /* Z80 Core */,
 				EDEDE71C1F75569800DAC9AE /* ROMS */,
 			);
 			path = "Emulator Core";
-			sourceTree = "<group>";
-		};
-		EDEDE7161F75562000DAC9AE /* ZX Spectrum +2 */ = {
-			isa = PBXGroup;
-			children = (
-				EDC56FE11F6EE8ED00162739 /* ZXSpectrum128_2.hpp */,
-				EDC56FE01F6EE8ED00162739 /* ZXSpectrum128_2.cpp */,
-			);
-			path = "ZX Spectrum +2";
 			sourceTree = "<group>";
 		};
 		EDEDE7171F75562C00DAC9AE /* ZX Spectrum 128k */ = {
@@ -565,7 +552,6 @@
 				EDD9ADF11F5D6F51004DD728 /* ZXSpectrum128.cpp in Sources */,
 				1745BB651F50AE1E003203FE /* FloatingBus.cpp in Sources */,
 				17B27F041F6877C800B811FC /* AudioQueue.cpp in Sources */,
-				EDC56FE21F6EE8ED00162739 /* ZXSpectrum128_2.cpp in Sources */,
 				EDF6604B1FF3E3A500769784 /* SPI.cpp in Sources */,
 				17B5DB971F5B14A7003E7EF3 /* AudioCore.mm in Sources */,
 				EDB7F7FE1F5EE2E4003053E3 /* Tape.cpp in Sources */,

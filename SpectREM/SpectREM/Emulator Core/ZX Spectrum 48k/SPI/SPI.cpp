@@ -115,7 +115,7 @@ void ZXSpectrum48::spi_write( uint8_t data ) {
 		if(command_buffer_index==command_buffer_size) {
 			if(command_buffer==cmd17) {
 				
-                FILE *file = fopen("/Users/mikedaley/Desktop/smart.dmg", "rb");
+                FILE *file = fopen("/Users/mike/Desktop/smart.dmg", "rb");
                 
                 unsigned int address = (cmdtoken[1] << 24) | (cmdtoken[2] << 16) | (cmdtoken[3] << 8) | (cmdtoken[4]);
                 uint8_t *fileData = (uint8_t *)malloc(512);

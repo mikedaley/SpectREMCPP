@@ -14,8 +14,8 @@
 #pragma mark - Constants
 
 static const int cROM_SIZE = 16384;
-static const char *cROM0 = "48.ROM";
-//static const char *cROM0 = "snapload.v31";
+static const char *cDEFAULT_ROM = "48.ROM";
+static const char *cSMART_ROM = "snapload.v31";
 //static const char *cROM0 = "DiagROM.v33";
 
 // SmartCard ROM and sundries
@@ -56,17 +56,18 @@ void ZXSpectrum48::initialise(string romPath)
     
     z80Core.RegisterOpcodeCallback(ZXSpectrum48::opcodeCallback);
     
-    loadDefaultROM();
-    
+    loadROM( cSMART_ROM );
 }
 
-void ZXSpectrum48::loadDefaultROM()
+void ZXSpectrum48::loadROM(const char *rom)
 {
-    string romPath = emuROMPath.append( cROM0 );
-    
+    string romPath = emuROMPath;
+    romPath.append( rom );
+
     ifstream romFile(romPath, ios::binary|ios::ate);
+    size_t fileSize = romFile.tellg();
     romFile.seekg(0, ios::beg);
-    romFile.read(memoryRom.data(), cROM_SIZE);
+    romFile.read(memoryRom.data(), fileSize);
 }
 
 #pragma mark - ULA
@@ -114,7 +115,7 @@ unsigned char ZXSpectrum48::coreIORead(unsigned short address)
 			}
 			else if(address == 0xfafb)
 			{
-				return smartCardPortFAFB | 0x10;
+				return smartCardPortFAFB & 0x7f;
 			}
 		}
 		
@@ -217,7 +218,7 @@ void ZXSpectrum48::coreMemoryWrite(unsigned short address, unsigned char data)
         displayUpdateWithTs((z80Core.GetTStates() - emuCurrentDisplayTs) + machineInfo.paperDrawingOffset);
     }
     
-    memoryRam[address] = data;
+    memoryRam[ address ] = data;
 }
 
 unsigned char ZXSpectrum48::coreMemoryRead(unsigned short address)
@@ -232,9 +233,10 @@ unsigned char ZXSpectrum48::coreMemoryRead(unsigned short address)
 		{
 			if (smartCardPortFAFB & 0x40)
 			{
-				unsigned char retOpCode = memoryRom[address];
-				loadDefaultROM();
-				smartCardPortFAFB &= ~0x40;
+                smartCardPortFAFB &= ~0x40;
+                smartCardPortFAF3 &= ~0x80;
+				unsigned char retOpCode = memoryRom[ address ];
+                loadROM( cDEFAULT_ROM );
 				return retOpCode;
 			}
 		}
@@ -290,6 +292,12 @@ void ZXSpectrum48::resetMachine(bool hard)
 {
     emuDisplayPage = 1;
     ZXSpectrum::resetMachine(hard);
+}
+
+void ZXSpectrum48::resetToSnapLoad()
+{
+    loadROM( cSMART_ROM );
+    resetMachine(false);
 }
 
 #pragma mark - Opcode Callback Function

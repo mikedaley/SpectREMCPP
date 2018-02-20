@@ -187,6 +187,11 @@ void ZXSpectrum::resetMachine(bool hard)
     audioReset();
 }
 
+void ZXSpectrum::resetToSnapLoad()
+{
+    
+}
+
 void ZXSpectrum::emuReset()
 {
     emuFrameCounter = 0;
