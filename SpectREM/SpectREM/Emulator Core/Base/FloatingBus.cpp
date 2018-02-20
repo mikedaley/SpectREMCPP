@@ -8,14 +8,6 @@
 
 #include "ZXSpectrum.hpp"
 
-const uint32_t ZXSpectrum::ULAFloatingBusValues[] = { 0, 0, 1, 2, 1, 2, 0, 0 };
-
-enum
-{
-    eFloatBusTypeValuePixel = 1,
-    eFloatBusTypeValueAttribute = 2
-};
-
 /**
  When the Z80 reads from an unattached port, such as 0xFF, it actually reads the data currently on the
  Spectrums ULA data bus. This may happen to be a byte being transferred from screen memory. If the ULA
@@ -25,7 +17,7 @@ enum
  **/
 uint8_t ZXSpectrum::ULAFloatingBus()
 {
-    int32_t cpuTs = z80Core.GetTStates() - 1;
+    int32_t cpuTs = z80Core.GetTStates() + machineInfo.floatBusAdjust;
     int32_t currentDisplayLine = cpuTs / machineInfo.tsPerLine;
     int32_t currentTs = cpuTs % machineInfo.tsPerLine;
     
@@ -35,20 +27,24 @@ uint8_t ZXSpectrum::ULAFloatingBus()
         && currentDisplayLine < (machineInfo.pxVertBorder + machineInfo.pxVerticalBlank + machineInfo.pxVerticalDisplay)
         && currentTs < machineInfo.tsHorizontalDisplay)
     {
-        uint8_t ulaValueType = ULAFloatingBusValues[ currentTs & 0x07 ];
         
         int32_t y = currentDisplayLine - (machineInfo.pxVertBorder + machineInfo.pxVerticalBlank);
         int32_t x = currentTs >> 2;
         
-        if (ulaValueType == eFloatBusTypeValuePixel)
+        switch(currentTs % 8)
         {
-            return memoryRam[ (cBITMAP_ADDRESS) + displayLineAddrTable[y] + x ];
+            case 5:
+            case 3:
+                return coreMemoryRead(cBITMAP_ADDRESS + cBITMAP_SIZE + ((y >> 3) << 5) + x);
+                
+            case 4:
+            case 2:
+                return coreMemoryRead(cBITMAP_ADDRESS + displayLineAddrTable[ y ] + x);
+            
+            case 0: case 1: case 6: case 7:
+                return 0xff;
         }
         
-        if (ulaValueType == eFloatBusTypeValueAttribute)
-        {
-            return memoryRam[ (cBITMAP_ADDRESS) + cBITMAP_SIZE + ((y >> 3) << 5) + x ];
-        }
     }
     
     return 0xff;
