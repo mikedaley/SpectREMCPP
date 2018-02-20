@@ -47,7 +47,7 @@ typedef struct
 } Color;
 
 // Constants for the colour lookup table
-const GLfloat normalColor = 208.0 / 255.0;
+const GLfloat normalColor = 189.0 / 255.0;
 const GLfloat brightColor = 1.0;
 const Color CLUT[] = {
     
