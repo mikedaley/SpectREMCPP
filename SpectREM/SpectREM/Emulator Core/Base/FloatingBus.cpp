@@ -17,6 +17,8 @@
  **/
 uint8_t ZXSpectrum::ULAFloatingBus()
 {
+    // The Z80 samples the data bus on the last tState of IO, so having already applied contention to the cores tStates
+    // we need to reduce the current tStates by 1 to get the correct data bus value
     int32_t cpuTs = z80Core.GetTStates() + machineInfo.floatBusAdjust;
     int32_t currentDisplayLine = cpuTs / machineInfo.tsPerLine;
     int32_t currentTs = cpuTs % machineInfo.tsPerLine;
@@ -48,4 +50,28 @@ uint8_t ZXSpectrum::ULAFloatingBus()
     }
     
     return 0xff;
+}
+
+#pragma mark - Build Float bus state table
+
+void ZXSpectrum::ULABuildFloatingBusTable()
+{
+    for (uint32_t i = 0; i < machineInfo.tsPerFrame; i++)
+    {
+        ULAFloatingBusTable[ i ] = 0;
+        
+        if (i >= machineInfo.tsToOrigin)
+        {
+            uint32_t line = (i - machineInfo.tsToOrigin) / machineInfo.tsPerLine;
+            uint32_t ts = (i - machineInfo.tsToOrigin) % machineInfo.tsPerLine;
+            
+            if (line < machineInfo.pxVerticalDisplay && ts < 128)
+            {
+                ULAMemoryContentionTable[i] = ULAConentionValues[ ts & 0x07 ];
+                ULAIOContentionTable[i] = ULAConentionValues[ ts & 0x07 ];
+            }
+        }
+    }
+    
+    
 }
