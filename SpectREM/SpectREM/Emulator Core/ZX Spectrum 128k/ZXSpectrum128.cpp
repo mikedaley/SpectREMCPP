@@ -322,8 +322,7 @@ void ZXSpectrum128::resetMachine(bool hard)
 
 void ZXSpectrum128::resetToSnapLoad()
 {
-    loadROM( cSMART_ROM, 0 );
-    resetMachine(false);
+    // Not implemented yet
 }
 
 #pragma mark - Opcode Callback Function

@@ -11,6 +11,8 @@
 const float cSAMPLE_RATE = 44100;
 const float cFPS = 50;
 const float cROM_SIZE = 16384;
+const char *cSMART_ROM = "smartload.v31";
+
 
 #pragma mark - Constructor/Deconstructor
 
@@ -188,11 +190,6 @@ void ZXSpectrum::resetMachine(bool hard)
     audioReset();
 }
 
-void ZXSpectrum::resetToSnapLoad()
-{
-    
-}
-
 void ZXSpectrum::emuReset()
 {
     emuFrameCounter = 0;
@@ -204,11 +201,11 @@ void ZXSpectrum::emuReset()
 
 void ZXSpectrum::loadROM(const char *rom, int page)
 {
-    uint16_t romAddress = cROM_SIZE * page;
+    size_t romAddress = cROM_SIZE * page;
     
     if (memoryRom.size() < romAddress)
     {
-        cout << "Incorrect memoryRom size!" << endl;
+        cout << "ZXSpectrum::loadROM - Unable to load into ROM page " << page << endl;
         exit(1);
     }
     

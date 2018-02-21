@@ -83,7 +83,7 @@ public:
 public:
     virtual void            initialise(string romPath);
     virtual void            resetMachine(bool hard = true);
-    virtual void            resetToSnapLoad();
+    virtual void            resetToSnapLoad() = 0;
     void                    pause();
     void                    resume();
     virtual void            release();
