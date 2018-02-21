@@ -24,28 +24,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SpectREM/Emulator Core/Base/Snapshot.cpp"
-            timestampString = "540836067.265588"
+            timestampString = "540910456.894915"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "580"
             endingLineNumber = "580"
             landmarkName = "ZXSpectrum::snapshotHardwareTypeForVersion(uint32_t version, uint32_t hardwareType)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "SpectREM/Emulator Core/ZX Spectrum 48k/ZXSpectrum48.cpp"
-            timestampString = "540836067.2656879"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "194"
-            endingLineNumber = "194"
-            landmarkName = "ZXSpectrum48::coreIOWrite(unsigned short address, unsigned char data)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

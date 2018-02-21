@@ -16,9 +16,11 @@
 static const int cROM_SIZE = 16384;
 static const char *cDEFAULT_ROM = "48.ROM";
 static const char *cSMART_ROM = "snapload.v31";
-//static const char *cROM0 = "DiagROM.v33";
 
 // SmartCard ROM and sundries
+static const uint8_t cFAFB_ROM_SWITCHOUT = 0x40;
+static const uint8_t cFAF3_SRAM_ENABLE = 0x80;
+
 unsigned char smartCardPortFAF3 = 0;
 unsigned char smartCardPortFAFB = 0;
 unsigned char smartCardSRAM[8 * 64 * 1024];		// 8 * 8k banks, mapped @ $2000-$3FFF
@@ -56,18 +58,7 @@ void ZXSpectrum48::initialise(string romPath)
     
     z80Core.RegisterOpcodeCallback(ZXSpectrum48::opcodeCallback);
     
-    loadROM( cSMART_ROM );
-}
-
-void ZXSpectrum48::loadROM(const char *rom)
-{
-    string romPath = emuROMPath;
-    romPath.append( rom );
-
-    ifstream romFile(romPath, ios::binary|ios::ate);
-    size_t fileSize = romFile.tellg();
-    romFile.seekg(0, ios::beg);
-    romFile.read(memoryRom.data(), fileSize);
+    loadROM( cDEFAULT_ROM, 0 );
 }
 
 #pragma mark - ULA
@@ -124,9 +115,6 @@ unsigned char ZXSpectrum48::coreIORead(unsigned short address)
         return ULAFloatingBus();
     }
 
-
-	
-	
     // Check to see if the keyboard is being read and if so return any keys currently pressed
     unsigned char result = 0xff;
     if (address & 0xfe)
@@ -233,10 +221,10 @@ unsigned char ZXSpectrum48::coreMemoryRead(unsigned short address)
 		{
 			if (smartCardPortFAFB & 0x40)
 			{
-                smartCardPortFAFB &= ~0x40;
-                smartCardPortFAF3 &= ~0x80;
+                smartCardPortFAFB &= ~cFAFB_ROM_SWITCHOUT;
+                smartCardPortFAF3 &= ~cFAF3_SRAM_ENABLE;
 				unsigned char retOpCode = memoryRom[ address ];
-                loadROM( cDEFAULT_ROM );
+                loadROM( cDEFAULT_ROM, 0 );
 				return retOpCode;
 			}
 		}
@@ -291,12 +279,20 @@ void ZXSpectrum48::release()
 void ZXSpectrum48::resetMachine(bool hard)
 {
     emuDisplayPage = 1;
+    if (hard)
+    {
+        // If a hard reset is requested, reload the default ROM and make sure that the smart card
+        // ROM switch is disabled along with the smart card SRAM
+        loadROM( cDEFAULT_ROM, 0 );
+        smartCardPortFAFB &= ~cFAFB_ROM_SWITCHOUT;
+        smartCardPortFAF3 &= ~cFAF3_SRAM_ENABLE;
+    }
     ZXSpectrum::resetMachine(hard);
 }
 
 void ZXSpectrum48::resetToSnapLoad()
 {
-    loadROM( cSMART_ROM );
+    loadROM( cSMART_ROM, 0 );
     resetMachine(false);
 }
 

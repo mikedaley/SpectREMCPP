@@ -359,6 +359,7 @@
 				EDEDE7191F75563E00DAC9AE /* Base */,
 				EDEDE7181F75563400DAC9AE /* ZX Spectrum 48k */,
 				EDEDE7171F75562C00DAC9AE /* ZX Spectrum 128k */,
+				EDF660491FF3E38000769784 /* SPI */,
 				EDEDE71B1F75567100DAC9AE /* Z80 Core */,
 				EDEDE71C1F75569800DAC9AE /* ROMS */,
 			);
@@ -379,7 +380,6 @@
 			children = (
 				177E284E1F4DDF550053756B /* ZXSpectrum48.hpp */,
 				177E284B1F4DD7E90053756B /* ZXSpectrum48.cpp */,
-				EDF660491FF3E38000769784 /* SPI */,
 			);
 			path = "ZX Spectrum 48k";
 			sourceTree = "<group>";

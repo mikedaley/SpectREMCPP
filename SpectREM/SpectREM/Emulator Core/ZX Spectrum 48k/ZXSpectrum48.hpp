@@ -20,7 +20,6 @@ public:
     
 public:
     virtual void            initialise(string romPath) override;
-    virtual void            loadROM(const char *rom) override;
     virtual void            release() override;
     virtual void            resetMachine(bool hard = true) override;
     virtual void            resetToSnapLoad() override;

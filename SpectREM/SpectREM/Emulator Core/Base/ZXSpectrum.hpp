@@ -30,7 +30,7 @@ public:
     static const int32_t    cBITMAP_SIZE = 6144;
     static const int32_t    cATTR_SIZE = 768;
     static const int32_t    cMEMORY_PAGE_SIZE = 16384;
-
+    
     enum
     {
         eAYREGISTER_A_FINE = 0,
@@ -105,12 +105,13 @@ public:
     
 protected:
     void                    emuReset();
-    virtual void            loadROM(const char *rom) = 0;
+    void                    loadROM(const char *rom, int page);
     
     void                    displayFrameReset();
     void                    displayUpdateWithTs(int32_t tStates);
 
     void                    ULAApplyIOContention(uint16_t address, bool contended);
+    void                    ULABuildFloatingBusTable();
     uint8_t                 ULAFloatingBus();
 
     void                    audioAYSetRegister(uint8_t reg);
@@ -232,6 +233,7 @@ public:
     // ULA
     uint32_t                ULAMemoryContentionTable[80000]{0};
     uint32_t                ULAIOContentionTable[80000]{0};
+    uint32_t                ULAFloatingBusTable[80000]{0};
     const static uint32_t   ULAConentionValues[];
     int32_t                 ULAPortFFFDValue = 0;
 

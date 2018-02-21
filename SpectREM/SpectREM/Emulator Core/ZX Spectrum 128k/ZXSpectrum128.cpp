@@ -16,6 +16,7 @@
 static const int cROM_SIZE = 16384;
 static const char *cDEFAULT_ROM_0 = "128-0.ROM";
 static const char *cDEFAULT_ROM_1 = "128-1.ROM";
+static const char *cSMART_ROM = "smartload.v31";
 
 #pragma mark - Constructor/Destructor
 
@@ -50,33 +51,15 @@ void ZXSpectrum128::initialise(string romPath)
     
     z80Core.RegisterOpcodeCallback(opcodeCallback);
     
-    loadROM( cDEFAULT_ROM_0 );
-    
+    loadROM( cDEFAULT_ROM_0, 0 );
+    loadROM( cDEFAULT_ROM_1, 1 );
+
     emuROMPage = 0;
     emuRAMPage = 0;
     emuDisplayPage = 5;
     emuDisablePaging = false;
     ULAPortFFFDValue = 0;
 
-}
-
-void ZXSpectrum128::loadROM(const char *rom)
-{
-    string romPath = emuROMPath;
-    romPath.append( cDEFAULT_ROM_0 );
-    
-    ifstream romFile0(romPath, ios::binary|ios::ate);
-    romFile0.seekg(0, ios::beg);
-    romFile0.read(memoryRom.data(), cROM_SIZE);
-    romFile0.close();
-    
-    string romPath1 = emuROMPath;
-    romPath1.append( cDEFAULT_ROM_1 );
-    
-    ifstream romFile1(romPath1, ios::binary|ios::ate);
-    romFile1.seekg(0, ios::beg);
-    romFile1.read(memoryRom.data() + cROM_SIZE, cROM_SIZE);
-    romFile1.close();
 }
 
 #pragma mark - ULA
@@ -198,6 +181,7 @@ void ZXSpectrum128::coreIOWrite(unsigned short address, unsigned char data)
         {
             emuDisablePaging = true;
         }
+        
         emuROMPage = ((data & 0x10) == 0x10) ? 1 : 0;
         emuRAMPage = (data & 0x07);
         emuDisplayPage = ((data & 0x08) == 0x08) ? 7 : 5;
@@ -338,7 +322,8 @@ void ZXSpectrum128::resetMachine(bool hard)
 
 void ZXSpectrum128::resetToSnapLoad()
 {
-    
+    loadROM( cSMART_ROM, 0 );
+    resetMachine(false);
 }
 
 #pragma mark - Opcode Callback Function

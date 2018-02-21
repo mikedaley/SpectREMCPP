@@ -10,6 +10,7 @@
 
 const float cSAMPLE_RATE = 44100;
 const float cFPS = 50;
+const float cROM_SIZE = 16384;
 
 #pragma mark - Constructor/Deconstructor
 
@@ -197,6 +198,28 @@ void ZXSpectrum::emuReset()
     emuFrameCounter = 0;
     emuSaveTrapTriggered = false;
     emuLoadTrapTriggered = false;
+}
+
+#pragma mark - ROM Loading
+
+void ZXSpectrum::loadROM(const char *rom, int page)
+{
+    uint16_t romAddress = cROM_SIZE * page;
+    
+    if (memoryRom.size() < romAddress)
+    {
+        cout << "Incorrect memoryRom size!" << endl;
+        exit(1);
+    }
+    
+    string romPath = emuROMPath;
+    romPath.append( rom );
+    
+    ifstream romFile(romPath, ios::binary|ios::ate);
+    size_t fileSize = romFile.tellg();
+    romFile.seekg(0, ios::beg);
+    romFile.read(memoryRom.data() + romAddress, fileSize);
+    romFile.close();
 }
 
 #pragma mark - Release
