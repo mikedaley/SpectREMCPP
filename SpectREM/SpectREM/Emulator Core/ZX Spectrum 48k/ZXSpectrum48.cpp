@@ -53,9 +53,10 @@ void ZXSpectrum48::initialise(string romPath)
     cout << "ZXSpectrum48::initialise(char *rom)" << endl;
     
     machineInfo = machines[ eZXSpectrum48 ];
-
     ZXSpectrum::initialise(romPath);
-    
+
+    // Register an opcode callback function with the Z80 core so that opcodes can be intercepted
+    // when handling things like ROM saving and loading
     z80Core.RegisterOpcodeCallback(ZXSpectrum48::opcodeCallback);
     
     loadROM( cDEFAULT_ROM, 0 );
@@ -278,7 +279,6 @@ void ZXSpectrum48::release()
 
 void ZXSpectrum48::resetMachine(bool hard)
 {
-    emuDisplayPage = 1;
     if (hard)
     {
         // If a hard reset is requested, reload the default ROM and make sure that the smart card
@@ -287,6 +287,8 @@ void ZXSpectrum48::resetMachine(bool hard)
         smartCardPortFAFB &= ~cFAFB_ROM_SWITCHOUT;
         smartCardPortFAF3 &= ~cFAF3_SRAM_ENABLE;
     }
+
+    emuDisplayPage = 1;
     ZXSpectrum::resetMachine(hard);
 }
 

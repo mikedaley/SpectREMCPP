@@ -19,14 +19,13 @@
 #pragma mark - Constants
 
 /**
-     3-----2 <-----  1
+     3-----2 <--  1
      |\    |
-     |  \  | <-----  0
+     |  \  | <--  0
      |    \|
-     0-----1 <----- -1
+     0-----1 <-- -1
 
      ^  ^  ^
-     |  |  |
      |  |  |
     -1  0  1
  **/
@@ -76,8 +75,9 @@ const GLuint textureUnit0 = 0;
 const GLuint textureUnit1 = 1;
 const GLuint textureUnit2 = 2;
 
-const GLuint screenWidth = 320;
-const GLuint screenHeight = 256;
+const GLuint border = 32;
+const GLuint screenWidth = border + 256 + border;
+const GLuint screenHeight = border + 192 + border;
 
 char const * cS_DISPLAY_TEXTURE =       "s_displayTexture";
 char const * cS_CLUT_TEXTURE =          "s_clutTexture";
@@ -97,6 +97,8 @@ char const * cU_VIGNETTE_Y =            "u_vignetteY";
 char const * cU_SHOW_REFLECTION =       "u_showReflection";
 char const * cU_TIME =                  "u_time";
 
+static CVReturn GlobalDisplayLinkCallback(CVDisplayLinkRef, const CVTimeStamp*, const CVTimeStamp*, CVOptionFlags, CVOptionFlags*, void*);
+
 #pragma mark - Private Ivars
 
 @interface OpenGLView ()
@@ -104,6 +106,7 @@ char const * cU_TIME =                  "u_time";
     NSTrackingArea *trackingArea;
     NSWindowController *windowController;
     CGLContextObj contextObj;
+    NSOpenGLContext *context;
     
     float          viewWidth;
     float          viewHeight;
@@ -150,6 +153,10 @@ char const * cU_TIME =                  "u_time";
     AVCaptureDeviceInput            *captureDeviceInput;
     AVCaptureVideoDataOutput        *captureDeviceOutput;
     dispatch_queue_t                captureQueue;
+    
+    CVDisplayLinkRef displayLink;
+    bool             frameReady;
+    bool             resizing;
 
 }
 
@@ -170,7 +177,7 @@ char const * cU_TIME =                  "u_time";
     NSOpenGLPixelFormatAttribute attrs[] =
     {
         NSOpenGLPFADoubleBuffer,
-        NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core,
+        NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion4_1Core,
         0
     };
     
@@ -191,6 +198,7 @@ char const * cU_TIME =                  "u_time";
     viewHeight = screenHeight;
     
     contextObj = [[self openGLContext] CGLContextObj];
+    context = [self openGLContext];
     
     [self loadShaders];
     [self setupTextures];
@@ -232,7 +240,61 @@ char const * cU_TIME =                  "u_time";
         NSLog(@"No camera device found!");
         [self setupDefaultReflectionTexture];
     }
+    
+    frameReady = false;
+    resizing = false;
+    
+    // Create a display link capable of being used with all active displays
+    CVDisplayLinkCreateWithActiveCGDisplays(&displayLink);
+    
+    // Set the renderer output callback function
+    CVDisplayLinkSetOutputCallback(displayLink, &MyDisplayLinkCallback, (__bridge void*)self);
+    
+    // Set the display link for the current renderer
+    CGLContextObj cglContext = [[self openGLContext] CGLContextObj];
+    CGLPixelFormatObj cglPixelFormat = [[self pixelFormat] CGLPixelFormatObj];
+    CVDisplayLinkSetCurrentCGDisplayFromOpenGLContext(displayLink, cglContext, cglPixelFormat);
+    
+    // Activate the display link
+    CVDisplayLinkStart(displayLink);
+
 }
+
+- (BOOL)acceptsFirstResponder
+{
+    return YES;
+}
+
+#pragma mark - Display Link
+
+- (CVReturn) getFrameForTime:(const CVTimeStamp*)outputTime
+{
+    // This is called at 60Hz, so only flush changes to the screen if there is a new freame ready. This
+    // If you flush the buffer contents at a different hz to the screen refresh, the window resize can
+    // be jumpy
+    @autoreleasepool {
+        if (frameReady && !resizing)
+        {
+            CGLFlushDrawable(contextObj);
+            frameReady = false;
+        }
+    }
+    return kCVReturnSuccess;
+}
+
+// This is the renderer output callback function
+static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
+                                      const CVTimeStamp* now,
+                                      const CVTimeStamp* outputTime,
+                                      CVOptionFlags flagsIn,
+                                      CVOptionFlags* flagsOut,
+                                      void* displayLinkContext)
+{
+    CVReturn result = [(__bridge OpenGLView*)displayLinkContext getFrameForTime:outputTime];
+    return result;
+}
+
+#pragma mark - Defaults
 
 - (void)reloadDefaults
 {
@@ -292,10 +354,11 @@ char const * cU_TIME =                  "u_time";
 {
 //    [[self openGLContext] makeCurrentContext];
 //    CGLLockContext(contextObj);
-    
-//    glClear(GL_COLOR_BUFFER_BIT);
-//    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-    
+//    if (frameReady)
+//    {
+//        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+//        CGLFlushDrawable(contextObj);
+//    }
 //    CGLUnlockContext(contextObj);
 }
 
@@ -315,6 +378,8 @@ char const * cU_TIME =                  "u_time";
     [[self openGLContext] setValues:&swapInt forParameter:NSOpenGLContextParameterSwapInterval];
 }
 
+#pragma mark - Window resizing
+
 - (void) reshape
 {
     [super reshape];
@@ -330,12 +395,31 @@ char const * cU_TIME =                  "u_time";
     viewHeight = viewRectPixels.size.height;
 }
 
-- (BOOL)acceptsFirstResponder
+- (void)renewGState
 {
-    return YES;
+    // Called whenever graphics state updated (such as window resize)
+    
+    // OpenGL rendering is not synchronous with other rendering on the OSX.
+    // Therefore, call disableScreenUpdatesUntilFlush so the window server
+    // doesn't render non-OpenGL content in the window asynchronously from
+    // OpenGL content, which could cause flickering.  (non-OpenGL content
+    // includes the title bar and drawing done by the app with other APIs)
+    [[self window] disableScreenUpdatesUntilFlush];
+    
+    [super renewGState];
 }
 
-#pragma mark - Renderer
+- (void)viewWillStartLiveResize
+{
+    resizing = true;
+}
+
+- (void)viewDidEndLiveResize
+{
+    resizing = false;
+}
+
+#pragma mark - Shaders
 
 - (void)loadShaders
 {
@@ -369,6 +453,8 @@ char const * cU_TIME =                  "u_time";
     u_showReflection = glGetUniformLocation(displayShader, cU_SHOW_REFLECTION);
     u_time = glGetUniformLocation(displayShader, cU_TIME);
 }
+
+#pragma mark - Texture Setup
 
 - (void)setupTextures
 {
@@ -449,13 +535,13 @@ char const * cU_TIME =                  "u_time";
     glEnableVertexAttribArray(0);
 }
 
+#pragma mark - Texture update
+
 - (void)updateTextureData:(void *)displayBuffer
 {
     [[self openGLContext] makeCurrentContext];
     CGLLockContext(contextObj);
  
-    glClear(GL_COLOR_BUFFER_BIT);
-    
     // Render the output to a texture which has the default dimentions of the output image
     glBindFramebuffer(GL_FRAMEBUFFER, clutFrameBuffer);
     glViewport(0, 0, screenWidth, screenHeight);
@@ -501,8 +587,8 @@ char const * cU_TIME =                  "u_time";
     
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
-    CGLFlushDrawable(contextObj);
     CGLUnlockContext(contextObj);
+    frameReady = true;
 }
 
 #pragma mark - Load Shaders

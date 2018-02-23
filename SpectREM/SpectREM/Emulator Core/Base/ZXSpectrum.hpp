@@ -186,8 +186,8 @@ public:
     // Display
     uint8_t                 *displayBuffer = nullptr;
     uint32_t                displayBufferIndex = 0;
-    uint32_t                screenWidth = 320;
-    uint32_t                screenHeight = 256;
+    uint32_t                screenWidth = 48 + 256 + 48;
+    uint32_t                screenHeight = 48 + 192 + 48;
     uint32_t                screenBufferSize = 0;
     uint32_t                displayTstateTable[312][228]{0};
     uint32_t                displayLineAddrTable[192]{0};

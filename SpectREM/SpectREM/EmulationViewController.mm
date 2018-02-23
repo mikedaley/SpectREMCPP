@@ -513,8 +513,8 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     if (([self.view.window styleMask] & NSWindowStyleMaskFullScreen) != NSWindowStyleMaskFullScreen)
     {
         NSMenuItem *menuItem = (NSMenuItem*)sender;
-        float width = 320 * menuItem.tag;
-        float height = 256 * menuItem.tag;
+        float width = (32 + 256 + 32) * menuItem.tag;
+        float height = (32 + 192 + 32) * menuItem.tag;
         [self.view.window.animator setContentSize:(NSSize){width, height}];
     }
 }

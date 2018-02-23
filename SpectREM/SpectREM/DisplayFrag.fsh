@@ -80,8 +80,8 @@ vec3 vignetteColor(vec2 coord, float vig_x, float vig_y)
 void main()
 {
     // Variables to be used for calculating the size of the border to be drawn
-    const float w = 320;
-    const float h = 256;
+    const float w = 32 + 256 + 32;
+    const float h = 32 + 192 + 32;
     float border = 32 - u_borderSize;
     float new_w = w - (border * 2);
     float new_h = h - (border * 2);
