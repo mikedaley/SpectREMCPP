@@ -16,7 +16,6 @@
 static const int cROM_SIZE = 16384;
 static const char *cDEFAULT_ROM_0 = "128-0.ROM";
 static const char *cDEFAULT_ROM_1 = "128-1.ROM";
-static const char *cSMART_ROM = "smartload.v31";
 
 #pragma mark - Constructor/Destructor
 
@@ -46,9 +45,10 @@ void ZXSpectrum128::initialise(string romPath)
     cout << "ZXSpectrum128::initialise(char *rom)" << endl;
     
     machineInfo = machines[ eZXSpectrum128 ];
-    
     ZXSpectrum::initialise(romPath);
     
+    // Register an opcode callback function with the Z80 core so that opcodes can be intercepted
+    // when handling things like ROM saving and loading
     z80Core.RegisterOpcodeCallback(opcodeCallback);
     
     loadROM( cDEFAULT_ROM_0, 0 );
@@ -92,7 +92,6 @@ unsigned char ZXSpectrum128::coreIORead(unsigned short address)
         {
             return 0x0;
         }
-        
         
         // AY-3-8912 ports
         else if ((address & 0xc002) == 0xc000 && machineInfo.hasAY)
@@ -166,7 +165,7 @@ void ZXSpectrum128::coreIOWrite(unsigned short address, unsigned char data)
     }
     
     // Memory paging port
-    if ( address == 0x7ffd && emuDisablePaging == false)
+    if ( (address & 0x8002) == 0 && emuDisablePaging == false)
     {
         // Save the last byte set, used when generating a Z80 snapshot
         ULAPortFFFDValue = data;
