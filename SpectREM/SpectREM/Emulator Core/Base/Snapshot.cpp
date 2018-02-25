@@ -264,7 +264,7 @@ ZXSpectrum::Snap ZXSpectrum::snapshotCreateZ80()
     
     if (machineInfo.machineType == eZXSpectrum128 || machineInfo.machineType == eZXSpectrum128_2)
     {
-        snapData.data[35] = ULAPortFFFDValue; // last 128k 0x7ffd port value
+        snapData.data[35] = ULAPortnnFDValue; // last 128k 0x7ffd port value
     }
     else
     {
@@ -273,7 +273,7 @@ ZXSpectrum::Snap ZXSpectrum::snapshotCreateZ80()
     
     snapData.data[36] = 0; // Interface 1 ROM
     snapData.data[37] = 4; // AY Sound
-    snapData.data[38] = ULAPortFFFDValue; // Last OUT fffd
+    snapData.data[38] = ULAPortnnFDValue; // Last OUT fffd
     
     // Save the AY register values
     uint32_t dataIndex = 39;

@@ -161,7 +161,7 @@ void ZXSpectrum48::coreIOWrite(unsigned short address, unsigned char data)
     // AY-3-8912 ports
     if(address == 0xfffd && (machineInfo.hasAY || emuUseAYSound))
     {
-        ULAPortFFFDValue = data;
+        ULAPortnnFDValue = data;
         audioAYSetRegister(data);
     }
     
@@ -206,7 +206,7 @@ void ZXSpectrum48::coreMemoryWrite(unsigned short address, unsigned char data)
     if (address >= cROM_SIZE && address < cBITMAP_ADDRESS + cBITMAP_SIZE + cATTR_SIZE){
         displayUpdateWithTs((z80Core.GetTStates() - emuCurrentDisplayTs) + machineInfo.paperDrawingOffset);
     }
-    
+
     memoryRam[ address ] = data;
 }
 
@@ -232,8 +232,8 @@ unsigned char ZXSpectrum48::coreMemoryRead(unsigned short address)
 		
         return memoryRom[address];
     }
-    
-    return memoryRam[address];
+
+    return memoryRam[ address ];
 }
 
 #pragma mark - Debug Memory Read/Write
