@@ -58,7 +58,7 @@ void ZXSpectrum128::initialise(string romPath)
     emuRAMPage = 0;
     emuDisplayPage = 5;
     emuDisablePaging = false;
-    ULAPortFFFDValue = 0;
+    ULAPortnnFDValue = 0;
 
 }
 
@@ -99,6 +99,16 @@ unsigned char ZXSpectrum128::coreIORead(unsigned short address)
             return audioAYReadData();
         }        
         
+        // port 7FFD memory port read bug on the 128k. When reading from 0x7FFD, it actually performs a right to the port
+        // with what is on the floating bus.
+        if ( (address & 0x8002) == 0)
+        {
+            uint8_t floatingBusData = ULAFloatingBus();
+            uint32_t currentTStates = z80Core.GetTStates();
+            UpdatePortF77D(floatingBusData);
+            z80Core.ResetTStates(z80Core.GetTStates() - currentTStates);
+        }
+
         // Getting here means that nothing has handled that port read so based on a real Spectrum
         // return the floating bus value
         return ULAFloatingBus();
@@ -155,7 +165,7 @@ void ZXSpectrum128::coreIOWrite(unsigned short address, unsigned char data)
     // AY-3-8912 ports
     if(address == 0xfffd && machineInfo.hasAY)
     {
-        ULAPortFFFDValue = data;
+        ULAPortnnFDValue = data;
         audioAYSetRegister(data);
     }
     
@@ -167,24 +177,29 @@ void ZXSpectrum128::coreIOWrite(unsigned short address, unsigned char data)
     // Memory paging port
     if ( (address & 0x8002) == 0 && emuDisablePaging == false)
     {
-        // Save the last byte set, used when generating a Z80 snapshot
-        ULAPortFFFDValue = data;
-        
-        if (emuDisplayPage != ((data & 0x08) == 0x08) ? 7 : 5)
-        {
-            displayUpdateWithTs((z80Core.GetTStates() - emuCurrentDisplayTs) + machineInfo.borderDrawingOffset);
-        }
-        
-        // You should only be able to disable paging once. To enable paging again then a reset is necessary.
-        if (data & 0x20 && emuDisablePaging != true)
-        {
-            emuDisablePaging = true;
-        }
-        
-        emuROMPage = ((data & 0x10) == 0x10) ? 1 : 0;
-        emuRAMPage = (data & 0x07);
-        emuDisplayPage = ((data & 0x08) == 0x08) ? 7 : 5;
+        UpdatePortF77D(data);
     }
+}
+
+void ZXSpectrum128::UpdatePortF77D(uint8_t data)
+{
+    // Save the last byte set, used when generating a Z80 snapshot
+    ULAPortnnFDValue = data;
+    
+    if (emuDisplayPage != ((data & 0x08) == 0x08) ? 7 : 5)
+    {
+        displayUpdateWithTs((z80Core.GetTStates() - emuCurrentDisplayTs) + machineInfo.borderDrawingOffset);
+    }
+    
+    // You should only be able to disable paging once. To enable paging again then a reset is necessary.
+    if (data & 0x20 && emuDisablePaging != true)
+    {
+        emuDisablePaging = true;
+    }
+    
+    emuROMPage = ((data & 0x10) == 0x10) ? 1 : 0;
+    emuRAMPage = (data & 0x07);
+    emuDisplayPage = ((data & 0x08) == 0x08) ? 7 : 5;
 }
 
 #pragma mark - Memory Read/Write
@@ -315,7 +330,7 @@ void ZXSpectrum128::resetMachine(bool hard)
     emuRAMPage = 0;
     emuDisplayPage = 5;
     emuDisablePaging = false;
-    ULAPortFFFDValue = 0;
+    ULAPortnnFDValue = 0;
     ZXSpectrum::resetMachine(hard);
 }
 
