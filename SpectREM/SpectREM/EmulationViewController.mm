@@ -451,11 +451,12 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     openPanel.allowsMultipleSelection = NO;
     openPanel.allowedFileTypes = @[cSNA_EXTENSION, cZ80_EXTENSION, cTAP_EXTENSION];
     
-    [openPanel beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger result) {
+    [openPanel beginWithCompletionHandler:^(NSModalResponse result) {
         if (result == NSModalResponseOK)
         {
             [self loadFileWithURL:openPanel.URLs[0] addToRecent:YES];
         }
+
     }];
 }
 
@@ -477,7 +478,7 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     
     savePanel.accessoryView = saveAccessoryController.view;
     
-    [savePanel beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger result) {
+    [savePanel beginWithCompletionHandler:^(NSInteger result) {
         if (result == NSModalResponseOK)
         {
             ZXSpectrum::Snap snapshot;

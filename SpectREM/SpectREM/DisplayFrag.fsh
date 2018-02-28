@@ -24,6 +24,7 @@ uniform int   u_showVignette;
 uniform float u_vignetteX;
 uniform float u_vignetteY;
 uniform int   u_showReflection;
+uniform vec2  u_screenSize;
 
 // Provides elapsed time that can be used for time based effects
 uniform float u_time;
@@ -80,6 +81,7 @@ vec3 vignetteColor(vec2 coord, float vig_x, float vig_y)
 void main()
 {
     // Variables to be used for calculating the size of the border to be drawn
+    float max = pow(u_vignetteX, u_vignetteY);
     const float w = 32 + 256 + 32;
     const float h = 32 + 192 + 32;
     float border = 32 - u_borderSize;
@@ -91,18 +93,12 @@ void main()
     vec2 texCoord = radialDistortion(v_texCoord, u_screenCurve);
     vec2 scanTexCoord = texCoord;
     
+    vec2 pos = (gl_FragCoord.xy - 0) / u_screenSize;
+    float vignette = pos.x * pos.y * (1.-pos.x) * (1.-pos.y);
+    
     if (texCoord.x < 0 || texCoord.y < 0 || texCoord.x > 1 || texCoord.y > 1)
     {
-        if (texCoord.x > -0.004 && texCoord.y > -0.004 && texCoord.x < 1.004 && texCoord.y < 1.004)
-        {
-            color = vec4(0.2, 0.2, 0.2, 1);
-        }
-        else
-        {
-            vec2 u_c = vec2(0.5,0.5);
-            float distanceFromLight = length(v_texCoord - u_c);
-            color = mix(vec4(1.0, 1.0, 1.0, 1.0), vec4(0.3, 0.3, 0.3, 1.0), distanceFromLight * 1.7);
-        }
+        color = vec4(0, 0, 0, 1);
     }
     else
     {
@@ -136,7 +132,9 @@ void main()
         
         if (u_showVignette == 1)
         {
-            color *= vec4(vignetteColor(v_texCoord, u_vignetteX, u_vignetteY), 1.0);
+//            color *= vec4(vignetteColor(v_texCoord, u_vignetteX, u_vignetteY), 1.0);
+            // Output the final colour
+            color.rgb = color.rgb * smoothstep(0, max, vignette);
         }
         
         if (u_showReflection == 1)
@@ -148,8 +146,7 @@ void main()
         float scanline = sin(scanTexCoord.y * u_scanlineSize) * 0.09 * u_scanlines;
         color.rgb -= scanline;
     }
-    
-    // Output the final colour
+
     out_fragColor = vec4(color.rgb, 1.0);
 }
 

@@ -96,6 +96,7 @@ char const * cU_VIGNETTE_X =            "u_vignetteX";
 char const * cU_VIGNETTE_Y =            "u_vignetteY";
 char const * cU_SHOW_REFLECTION =       "u_showReflection";
 char const * cU_TIME =                  "u_time";
+char const * cU_SCREEN_SIZE =           "u_screenSize";
 
 static CVReturn GlobalDisplayLinkCallback(CVDisplayLinkRef, const CVTimeStamp*, const CVTimeStamp*, CVOptionFlags, CVOptionFlags*, void*);
 
@@ -145,6 +146,7 @@ static CVReturn GlobalDisplayLinkCallback(CVDisplayLinkRef, const CVTimeStamp*, 
     GLint           u_vignetteY;
     GLint           u_showReflection;
     GLint           u_time;
+    GLint           u_screenSize;
     
     Defaults        *defaults;
     
@@ -452,6 +454,7 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
     u_vignetteY = glGetUniformLocation(displayShader, cU_VIGNETTE_Y);
     u_showReflection = glGetUniformLocation(displayShader, cU_SHOW_REFLECTION);
     u_time = glGetUniformLocation(displayShader, cU_TIME);
+    u_screenSize = glGetUniformLocation(displayShader, cU_SCREEN_SIZE);
 }
 
 #pragma mark - Texture Setup
@@ -584,7 +587,8 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
     glProgramUniform1f(displayShader, u_vignetteY, defaults.displayVignetteY);
     glProgramUniform1i(displayShader, u_showReflection, defaults.displayShowReflection);
     glProgramUniform1f(displayShader, u_time, CACurrentMediaTime());
-    
+    glProgramUniform2f(displayShader, u_screenSize, float(self.frame.size.width), float(self.frame.size.height));
+
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
     CGLUnlockContext(contextObj);

@@ -581,7 +581,7 @@
                                         <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8qF-Rf-as9">
                                             <rect key="frame" x="111" y="49" width="92" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="0.5" maxValue="1" doubleValue="0.5" tickMarkPosition="above" numberOfTickMarks="2" sliderType="linear" id="fgI-N3-eUg"/>
+                                            <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" maxValue="0.59999999999999998" doubleValue="0.25" tickMarkPosition="above" numberOfTickMarks="2" sliderType="linear" id="fgI-N3-eUg"/>
                                             <connections>
                                                 <binding destination="AHt-Sz-7wU" name="value" keyPath="defaults.displayVignetteX" id="p2w-UH-Fin"/>
                                             </connections>
@@ -616,7 +616,7 @@
                                         <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rgE-cb-axT">
                                             <rect key="frame" x="111" y="24" width="92" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <sliderCell key="cell" controlSize="small" continuous="YES" alignment="left" maxValue="0.5" doubleValue="0.5" tickMarkPosition="above" numberOfTickMarks="2" sliderType="linear" id="Ch1-r6-FBj"/>
+                                            <sliderCell key="cell" controlSize="small" continuous="YES" alignment="left" maxValue="8" doubleValue="4" tickMarkPosition="above" numberOfTickMarks="2" sliderType="linear" id="Ch1-r6-FBj"/>
                                             <connections>
                                                 <binding destination="AHt-Sz-7wU" name="value" keyPath="defaults.displayVignetteY" id="EbL-Q9-lv0"/>
                                             </connections>
@@ -655,9 +655,9 @@
                                         <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EyY-f9-kvv">
                                             <rect key="frame" x="111" y="168" width="92" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="1" maxValue="3200" doubleValue="960" tickMarkPosition="above" numberOfTickMarks="2" sliderType="linear" id="iwp-7k-KS1"/>
+                                            <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="1" maxValue="2000" doubleValue="1" tickMarkPosition="above" numberOfTickMarks="2" sliderType="linear" id="iwp-7k-KS1"/>
                                             <connections>
-                                                <binding destination="AHt-Sz-7wU" name="value" keyPath="defaults.displayScanLineSize" id="SD1-DX-xbx"/>
+                                                <binding destination="AHt-Sz-7wU" name="value" keyPath="defaults.displayScanLineSize" id="pHz-Fg-o5R"/>
                                             </connections>
                                         </slider>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iXD-LL-GoQ">
