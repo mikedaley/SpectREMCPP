@@ -13,7 +13,7 @@
 
 #pragma mark - Constants
 
-static const int cROM_SIZE = 16384;
+//static const int cROM_SIZE = 16384;
 static const char *cDEFAULT_ROM_0 = "128-0.ROM";
 static const char *cDEFAULT_ROM_1 = "128-1.ROM";
 
@@ -69,12 +69,7 @@ unsigned char ZXSpectrum128::coreIORead(unsigned short address)
     bool contended = false;
     int memoryPage = address / cMEMORY_PAGE_SIZE;
     
-    if (machineInfo.hasPaging &&
-        (memoryPage == 1 ||
-         (memoryPage == 3 && (emuRAMPage == 1 ||
-                              emuRAMPage == 3 ||
-                              emuRAMPage == 5 ||
-                              emuRAMPage == 7))))
+    if (machineInfo.hasPaging && (memoryPage == 1 || (memoryPage == 3 && (emuRAMPage == 1 || emuRAMPage == 3 || emuRAMPage == 5 || emuRAMPage == 7))))
     {
         contended = true;
     }
@@ -105,7 +100,7 @@ unsigned char ZXSpectrum128::coreIORead(unsigned short address)
         {
             uint8_t floatingBusData = ULAFloatingBus();
             uint32_t currentTStates = z80Core.GetTStates();
-            UpdatePortF77D(floatingBusData);
+            UpdatePort7FFD(floatingBusData);
             z80Core.ResetTStates(z80Core.GetTStates() - currentTStates);
         }
 
@@ -137,12 +132,7 @@ void ZXSpectrum128::coreIOWrite(unsigned short address, unsigned char data)
     bool contended = false;
     int memoryPage = address / cMEMORY_PAGE_SIZE;
     
-    if (machineInfo.hasPaging &&
-        (memoryPage == 1 ||
-         (memoryPage == 3 && (emuRAMPage == 1 ||
-                              emuRAMPage == 3 ||
-                              emuRAMPage == 5 ||
-                              emuRAMPage == 7))))
+    if (machineInfo.hasPaging && (memoryPage == 1 || (memoryPage == 3 && (emuRAMPage == 1 || emuRAMPage == 3 || emuRAMPage == 5 || emuRAMPage == 7))))
     {
         contended = true;
     }
@@ -177,11 +167,11 @@ void ZXSpectrum128::coreIOWrite(unsigned short address, unsigned char data)
     // Memory paging port
     if ( (address & 0x8002) == 0 && emuDisablePaging == false)
     {
-        UpdatePortF77D(data);
+        UpdatePort7FFD(data);
     }
 }
 
-void ZXSpectrum128::UpdatePortF77D(uint8_t data)
+void ZXSpectrum128::UpdatePort7FFD(uint8_t data)
 {
     // Save the last byte set, used when generating a Z80 snapshot
     ULAPortnnFDValue = data;
@@ -200,6 +190,7 @@ void ZXSpectrum128::UpdatePortF77D(uint8_t data)
     emuROMPage = ((data & 0x10) == 0x10) ? 1 : 0;
     emuRAMPage = (data & 0x07);
     emuDisplayPage = ((data & 0x08) == 0x08) ? 7 : 5;
+    
 }
 
 #pragma mark - Memory Read/Write

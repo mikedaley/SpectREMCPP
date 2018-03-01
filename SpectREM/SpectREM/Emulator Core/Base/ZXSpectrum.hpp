@@ -96,7 +96,6 @@ public:
     void                    keyboardKeyUp(uint16_t key);
     void                    keyboardFlagsChanged(uint64_t flags, uint16_t key);
     
-    
     bool                    snapshotZ80LoadWithPath(const char *path);
     bool                    snapshotSNALoadWithPath(const char *path);
     int                     snapshotMachineInSnapshotWithPath(const char *path);
@@ -120,6 +119,7 @@ protected:
     void                    audioAYUpdate();
     void                    audioReset();
     void                    audioUpdateWithTs(int32_t tStates);
+    void                    audioDecayAYFloatingRegister();
     
 private:
     void                    displayBuildTsTable();
@@ -236,6 +236,7 @@ public:
     uint32_t                ULAFloatingBusTable[80000]{0};
     const static uint32_t   ULAConentionValues[];
     uint8_t                 ULAPortnnFDValue = 0;
+    bool                    ULAApplySnow = false;
 
     // Floating bus
     const static uint32_t   ULAFloatingBusValues[];

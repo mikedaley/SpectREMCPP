@@ -1633,7 +1633,7 @@
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
                                                                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tqp-8K-bAS">
-                                                                                <rect key="frame" x="-3" y="23" width="53" height="17"/>
+                                                                                <rect key="frame" x="-3" y="23" width="47" height="18"/>
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                                                 <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="$FFFF" id="QOZ-IR-qQH">
                                                                                     <font key="font" size="14" name="Courier"/>

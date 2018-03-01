@@ -11,7 +11,7 @@ uniform sampler2D s_displayTexture;
 uniform sampler2D s_reflectionTexture;
 
 // Uniforms linked to different screen settings
-uniform int u_borderSize;
+uniform int   u_borderSize;
 uniform float u_contrast;
 uniform float u_saturation;
 uniform float u_brightness;
@@ -67,15 +67,6 @@ vec3 channelSplit(sampler2D tex, vec2 coord, float spread){
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
-// Calculate colour including vignette effort for texCoord
-///////////////////////////////////////////////////////////////////////////////////////
-vec3 vignetteColor(vec2 coord, float vig_x, float vig_y)
-{
-    float dist = distance(coord, vec2(0.5, 0.5));
-    return vec3(smoothstep(vig_x, vig_y, dist));
-}
-
-///////////////////////////////////////////////////////////////////////////////////////
 // Main
 ///////////////////////////////////////////////////////////////////////////////////////
 void main()
@@ -93,9 +84,7 @@ void main()
     vec2 texCoord = radialDistortion(v_texCoord, u_screenCurve);
     vec2 scanTexCoord = texCoord;
     
-    vec2 pos = (gl_FragCoord.xy - 0) / u_screenSize;
-    float vignette = pos.x * pos.y * (1.-pos.x) * (1.-pos.y);
-    
+    // Anything outside the texture should be black, otherwise sample the texel in the texture
     if (texCoord.x < 0 || texCoord.y < 0 || texCoord.x > 1 || texCoord.y > 1)
     {
         color = vec4(0, 0, 0, 1);
@@ -130,13 +119,6 @@ void main()
         // Adjust colour based on contrast, saturation and brightness
         color.rgb = colorCorrection(color.rgb, u_saturation, u_contrast, u_brightness);
         
-        if (u_showVignette == 1)
-        {
-//            color *= vec4(vignetteColor(v_texCoord, u_vignetteX, u_vignetteY), 1.0);
-            // Output the final colour
-            color.rgb = color.rgb * smoothstep(0, max, vignette);
-        }
-        
         if (u_showReflection == 1)
         {
             color = mix(color, vec4(colorCorrection(vec3(texture( s_reflectionTexture, texCoord * vec2(-1.0, 1.0))), 0.2, 0.5, 0.8), 1.0), 0.18);
@@ -145,8 +127,17 @@ void main()
         // Add scanlines
         float scanline = sin(scanTexCoord.y * u_scanlineSize) * 0.09 * u_scanlines;
         color.rgb -= scanline;
+
+        // Add the vignette which adds a shadow and curving to the corners of the screen. Do this after applying the scan lines so
+        // they are faded out into the shadow as well
+        if (u_showVignette == 1)
+        {
+            float vignette = scanTexCoord.x * scanTexCoord.y * (1.0 - scanTexCoord.x) * (1.0 - scanTexCoord.y);
+            color.rgb *= smoothstep(0, max, vignette);
+        }
     }
 
+    // Output the final colour
     out_fragColor = vec4(color.rgb, 1.0);
 }
 

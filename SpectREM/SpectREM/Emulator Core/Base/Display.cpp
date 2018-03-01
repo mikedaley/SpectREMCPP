@@ -58,12 +58,21 @@ void ZXSpectrum::displayUpdateWithTs(int32_t tStates)
                 const uint32_t y = line - yAdjust;
                 const uint32_t x = ( ts >> 2 ) - 4;
                 
-                const uint32_t pixelAddress = displayLineAddrTable[ y ] + x;
-                const uint32_t attributeAddress = cBITMAP_SIZE + ( ( y >> 3 ) << 5 ) + x;
+                uint32_t pixelAddress = displayLineAddrTable[ y ] + x;
+                uint32_t attributeAddress = cBITMAP_SIZE + ( ( y >> 3 ) << 5 ) + x;
                 
+                if ( ULAApplySnow )
+                {
+                    pixelAddress = pixelAddress & 0xff80;
+                    pixelAddress |= z80Core.GetRegister(z80Core.eREG_R) & 0x7f;
+                    
+                    attributeAddress = attributeAddress & 0xff80;
+                    attributeAddress |= z80Core.GetRegister(z80Core.eREG_R) & 0x7f;
+                }
+
                 const uint8_t pixelByte = memoryAddress[ pixelAddress ];
                 uint8_t attributeByte = displayALUT[ memoryAddress[ attributeAddress ] & flashMask ];
-                
+
                 uint64_t *colour8 = displayCLUT + ( ( attributeByte & 0x7f ) * 256 ) + pixelByte;
                 *displayBuffer8++ = *colour8;
                 break;

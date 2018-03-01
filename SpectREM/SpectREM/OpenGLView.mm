@@ -98,8 +98,6 @@ char const * cU_SHOW_REFLECTION =       "u_showReflection";
 char const * cU_TIME =                  "u_time";
 char const * cU_SCREEN_SIZE =           "u_screenSize";
 
-static CVReturn GlobalDisplayLinkCallback(CVDisplayLinkRef, const CVTimeStamp*, const CVTimeStamp*, CVOptionFlags, CVOptionFlags*, void*);
-
 #pragma mark - Private Ivars
 
 @interface OpenGLView ()

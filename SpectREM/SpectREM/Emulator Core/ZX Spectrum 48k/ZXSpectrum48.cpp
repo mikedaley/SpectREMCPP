@@ -53,11 +53,11 @@ void ZXSpectrum48::initialise(string romPath)
     cout << "ZXSpectrum48::initialise(char *rom)" << endl;
     
     machineInfo = machines[ eZXSpectrum48 ];
-    ZXSpectrum::initialise(romPath);
+    ZXSpectrum::initialise( romPath );
 
     // Register an opcode callback function with the Z80 core so that opcodes can be intercepted
     // when handling things like ROM saving and loading
-    z80Core.RegisterOpcodeCallback(ZXSpectrum48::opcodeCallback);
+    z80Core.RegisterOpcodeCallback( ZXSpectrum48::opcodeCallback );
     
     loadROM( cDEFAULT_ROM, 0 );
 }
@@ -303,7 +303,7 @@ void ZXSpectrum48::resetToSnapLoad()
 bool ZXSpectrum48::opcodeCallback(unsigned char opcode, unsigned short address, void *param)
 {
     ZXSpectrum48 *machine = static_cast<ZXSpectrum48*>(param);
-    
+
     if (machine->emuTapeInstantLoad)
     {
         // Trap ROM tap LOADING

@@ -219,6 +219,12 @@ void ZXSpectrum::audioAYWriteData(uint8_t data)
     audioAYRegisters[ audioAYCurrentRegister ] = data;
 }
 
+void ZXSpectrum::audioDecayAYFloatingRegister()
+{
+    // Decay the AY registers result returned for registers above 15
+    audioAYRegisters[ eAYREGISTER_FLOATING ] >>= 1;
+}
+
 uint8_t ZXSpectrum::audioAYReadData()
 {
     return audioAYRegisters[ audioAYCurrentRegister ];
@@ -226,6 +232,7 @@ uint8_t ZXSpectrum::audioAYReadData()
 
 void ZXSpectrum::audioAYUpdate()
 {
+    
     if (!audioAYaudioAYaudioAYEnvelopeHolding)
     {
         audioATaudioAYEnvelopeCount++;
@@ -373,8 +380,6 @@ void ZXSpectrum::audioAYUpdate()
         audioAYChannelOutput[2] += audioAYVolumes[vol];
     }
     
-    // Decay the AY registers result returned for registers above 15
-    audioAYRegisters[ eAYREGISTER_FLOATING ] >>= 1;
 }
 
 

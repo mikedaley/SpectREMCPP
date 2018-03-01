@@ -111,6 +111,8 @@ void ZXSpectrum::generateFrame()
                 keyboardCheckCapsLockStatus();
                 
                 currentFrameTstates = 0;
+                
+                audioDecayAYFloatingRegister();
             }
         }        
     }

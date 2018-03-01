@@ -215,6 +215,8 @@ public:
 	bool					GetHalted(void) const { return m_CPURegisters.Halted; }
 	void					SetHalted(bool halted) { m_CPURegisters.Halted = halted; }
     void                    setNMIReq(bool nmi) { m_CPURegisters.NMIReq = nmi; };
+    
+    bool                    isLD_I_A() { return m_LD_I_A; };
 		 
 	void					AddContentionTStates(unsigned int extra_tstates) { m_CPURegisters.TStates += extra_tstates; }
 	void					AddTStates(unsigned int extra_tstates) { m_CPURegisters.TStates += extra_tstates; }
@@ -284,6 +286,7 @@ protected:
     eCPUTYPE				m_CPUType;
 	unsigned int			m_PrevOpcodeFlags;
     bool                    m_Iff2_read = false;
+    bool                    m_LD_I_A = false;
 	
 	void *                  m_Param;
 	Z80CoreRead				m_MemRead;

@@ -80,6 +80,7 @@ void CZ80Core::LD_I_A(unsigned char opcode)
 {
 	Z80CoreMemoryContention((m_CPURegisters.regI << 8) | m_CPURegisters.regR, 1);
 	m_CPURegisters.regI = m_CPURegisters.regs.regA;
+    m_LD_I_A = true;
 }
 
 //-----------------------------------------------------------------------------------------
@@ -212,6 +213,8 @@ void CZ80Core::LD_A_I(unsigned char opcode)
 	m_CPURegisters.regs.regF |= (m_CPURegisters.IFF2 == 0) ? 0 : FLAG_V;
     
     m_Iff2_read = true;
+    m_LD_I_A = true;
+
 }
 
 //-----------------------------------------------------------------------------------------

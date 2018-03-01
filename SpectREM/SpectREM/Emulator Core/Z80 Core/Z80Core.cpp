@@ -272,6 +272,10 @@ int CZ80Core::Execute(unsigned int num_tstates, unsigned int int_t_states)
         // an interrupt, then the parity flag needs to be reset. This only effects NMOS chips and not CMOS
         m_Iff2_read = false;
         
+        // Set flag if the instruction to be executed is LD I,A. This allows us to then catch this outside the core for the
+        // purposes of handling the ULA Snow bug on the ZX Spectrum
+        m_LD_I_A = false;
+        
 		Z80OpcodeTable *table = &Main_Opcodes;
 
         // Read the opcode

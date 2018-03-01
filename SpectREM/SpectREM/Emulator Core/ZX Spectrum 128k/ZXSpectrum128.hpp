@@ -35,7 +35,7 @@ public:
     
     static bool             opcodeCallback(unsigned char opcode, unsigned short address, void *param);
     
-    void                    UpdatePortF77D(uint8_t data);
+    void                    UpdatePort7FFD(uint8_t data);
     
 };
 
