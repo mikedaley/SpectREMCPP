@@ -19,8 +19,7 @@
 - (void)windowDidLoad
 {
     [super windowDidLoad];
-    self.window.movableByWindowBackground = YES;
-    
+    self.window.movableByWindowBackground = YES;    
 }
 
 @end

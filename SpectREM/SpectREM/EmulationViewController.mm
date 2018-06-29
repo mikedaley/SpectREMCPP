@@ -67,7 +67,17 @@ static const int cSCREEN_FILL = 1;
 
 - (void)dealloc
 {
-    delete machine;
+    if (machine)
+    {
+        delete machine;
+    }
+    [self.defaults removeObserver:self forKeyPath:MachineAcceleration];
+    [self.defaults removeObserver:self forKeyPath:MachineSelectedModel];
+    [self.defaults removeObserver:self forKeyPath:MachineTapeInstantLoad];
+    [self.defaults removeObserver:self forKeyPath:MachineUseAYSound];
+    [self.defaults removeObserver:self forKeyPath:SPIPort];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:cDISPLAY_UPDATE_NOTIFICATION];
 }
 
 - (void)viewDidLoad
@@ -94,6 +104,7 @@ static const int cSCREEN_FILL = 1;
     [self setupConfigView];
     [self setupControllers];
     [self setupObservers];
+    [self setupNotifications];
     [self restoreSession];
     
     if (_defaults.machineAcceleration > 1)
@@ -153,11 +164,29 @@ static const int cSCREEN_FILL = 1;
     }
 }
 
+- (void)updateDisplay
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [(OpenGLView *)self.glView updateTextureData:machine->displayBuffer];
+    });
+}
+
 #pragma mark - View Methods
 
 - (void)viewWillAppear
 {
     [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@", [NSString stringWithCString:machine->machineInfo.machineName encoding:NSUTF8StringEncoding]]];
+}
+
+#pragma mark - Notifications
+
+- (void)setupNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserverForName:cDISPLAY_UPDATE_NOTIFICATION object:NULL queue:NULL usingBlock:^(NSNotification * _Nonnull note) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [(OpenGLView *)self.glView updateTextureData:machine->displayBuffer];
+        });
+    }];
 }
 
 #pragma mark - Observers
@@ -220,6 +249,7 @@ static const int cSCREEN_FILL = 1;
     tapeBrowserViewController.emulationViewController = self;
     debugWindowController = [storyBoard instantiateControllerWithIdentifier:@"DEBUG_WINDOW"];
     debugViewController = (DebugViewController *)debugWindowController.contentViewController;
+    debugViewController.emulationViewController = self;
 }
 
 #pragma mark - Init/Switch Machine
@@ -516,7 +546,7 @@ static void tapeStatusCallback(int blockIndex, int bytes)
         NSMenuItem *menuItem = (NSMenuItem*)sender;
         float width = (32 + 256 + 32) * menuItem.tag;
         float height = (32 + 192 + 32) * menuItem.tag;
-        [self.view.window.animator setContentSize:(NSSize){width, height}];
+        [self.view.window setContentSize:(NSSize){width, height}];
     }
 }
 
@@ -600,7 +630,24 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 
 - (IBAction)showDebugger:(id)sender
 {
+    machine->emuPaused = true;
     [debugWindowController showWindow:NULL];
+}
+
+- (void)pauseMachine
+{
+    if (machine)
+    {
+        [audioCore stop];
+    }
+}
+
+- (void)startMachine
+{
+    if (machine)
+    {
+        [audioCore start];
+    }
 }
 
 #pragma mark - Tape Menu Items
@@ -656,6 +703,12 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 {
     return machine->displayReady;
 }
+
+- (void *)getCurrentMachine
+{
+    return machine;
+}
+
 @end
 
 

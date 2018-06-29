@@ -8,7 +8,7 @@
 
 #include "ZXSpectrum.hpp"
 
-const int cBEEPER_VOLUME_MULTIPLIER = 50;
+const int cBEEPER_VOLUME_MULTIPLIER = 64;
 
 // AY chip envelope flag type
 enum

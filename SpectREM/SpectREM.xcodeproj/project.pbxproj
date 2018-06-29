@@ -25,6 +25,7 @@
 		2778A11D1F94E5DA00385137 /* DisplayFrag.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 2778A11A1F94E5DA00385137 /* DisplayFrag.fsh */; };
 		2778A11E1F94E5DA00385137 /* DisplayVert.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 2778A11B1F94E5DA00385137 /* DisplayVert.vsh */; };
 		2778A1201F94E60600385137 /* CLUTFrag.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 2778A11F1F94E60600385137 /* CLUTFrag.fsh */; };
+		279C6E5820C91CA20053CC07 /* 128.rom in Resources */ = {isa = PBXBuildFile; fileRef = 279C6E5720C91CA20053CC07 /* 128.rom */; };
 		27C5DBA51FFC000A0064C661 /* DebugViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 27C5DBA41FFC000A0064C661 /* DebugViewController.mm */; };
 		ED2A6D051F6036D3003CD6CE /* ConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D041F6036D3003CD6CE /* ConfigurationViewController.m */; };
 		ED2A6D0A1F603D18003CD6CE /* NSClipView+Flipped.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D091F603D18003CD6CE /* NSClipView+Flipped.m */; };
@@ -84,6 +85,7 @@
 		2778A11A1F94E5DA00385137 /* DisplayFrag.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = DisplayFrag.fsh; sourceTree = "<group>"; };
 		2778A11B1F94E5DA00385137 /* DisplayVert.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = DisplayVert.vsh; sourceTree = "<group>"; };
 		2778A11F1F94E60600385137 /* CLUTFrag.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = CLUTFrag.fsh; sourceTree = "<group>"; };
+		279C6E5720C91CA20053CC07 /* 128.rom */ = {isa = PBXFileReference; lastKnownFileType = file; path = 128.rom; sourceTree = "<group>"; };
 		27C5DBA31FFC000A0064C661 /* DebugViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DebugViewController.h; sourceTree = "<group>"; };
 		27C5DBA41FFC000A0064C661 /* DebugViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = DebugViewController.mm; sourceTree = "<group>"; };
 		ED2A6D031F6036D3003CD6CE /* ConfigurationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigurationViewController.h; sourceTree = "<group>"; };
@@ -440,6 +442,7 @@
 				ED913FD61F30789300316E1A /* 48.ROM */,
 				EDD9ADF21F5D7E10004DD728 /* 128-0.ROM */,
 				EDD9ADF31F5D7E10004DD728 /* 128-1.ROM */,
+				279C6E5720C91CA20053CC07 /* 128.rom */,
 			);
 			path = ROMS;
 			sourceTree = "<group>";
@@ -492,7 +495,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = "";
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = "71Squared Ltd";
 				TargetAttributes = {
 					ED913F941F30759300316E1A = {
@@ -538,6 +541,7 @@
 				ED913FA91F30759300316E1A /* Assets.xcassets in Resources */,
 				ED913FAC1F30759300316E1A /* Main.storyboard in Resources */,
 				2778A11C1F94E5DA00385137 /* CLUTVert.vsh in Resources */,
+				279C6E5820C91CA20053CC07 /* 128.rom in Resources */,
 				2778A11E1F94E5DA00385137 /* DisplayVert.vsh in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -612,6 +616,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -619,6 +624,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = NO;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -645,7 +651,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -666,6 +672,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -673,6 +680,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = NO;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -693,7 +701,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 			};
@@ -713,7 +721,7 @@
 				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
 				INFOPLIST_FILE = SpectREM/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_BUNDLE_IDENTIFIER = com.71squared.SpectREM;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -734,7 +742,7 @@
 				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
 				INFOPLIST_FILE = SpectREM/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_BUNDLE_IDENTIFIER = com.71squared.SpectREM;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

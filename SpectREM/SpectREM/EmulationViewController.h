@@ -24,6 +24,8 @@ static NSString *const cSNA_EXTENSION = @"SNA";
 static NSString *const cZ80_EXTENSION = @"Z80";
 static NSString *const cTAP_EXTENSION = @"TAP";
 
+static NSString *const cDISPLAY_UPDATE_NOTIFICATION = @"DisplayUpdateNotification";
+
 @interface EmulationViewController : NSViewController 
 
 #pragma mark - Properties
@@ -37,6 +39,7 @@ static NSString *const cTAP_EXTENSION = @"TAP";
 
 - (void *)getDisplayBuffer;
 - (BOOL)getDisplayReady;
+- (void *)getCurrentMachine;
 
 - (void)loadFileWithURL:(NSURL *)url addToRecent:(BOOL)addToRecent;
 - (void)audioCallback:(int)inNumberFrames buffer:(int16_t *)buffer;
@@ -51,6 +54,9 @@ static NSString *const cTAP_EXTENSION = @"TAP";
 - (NSInteger)tapeCurrentBlock;
 - (BOOL)tapeIsplaying;
 - (void)tapeSetCurrentBlock:(NSInteger)blockIndex;
+- (void)pauseMachine;
+- (void)startMachine;
+- (void)updateDisplay;
 
 - (IBAction)showTapeBrowser:(id)sender;
 - (IBAction)startPlayingTape:(id)sender;

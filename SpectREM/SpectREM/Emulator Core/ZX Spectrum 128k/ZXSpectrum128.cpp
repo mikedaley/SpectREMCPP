@@ -351,7 +351,6 @@ bool ZXSpectrum128::opcodeCallback(unsigned char opcode, unsigned short address,
     }
     
     // Trap ROM tape SAVING
-    
     if (opcode == 0x08 && address == 0x04d0)
     {
         if (opcode == 0x08)

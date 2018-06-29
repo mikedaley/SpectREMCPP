@@ -58,6 +58,13 @@ public:
         eAY_MAX_REGISTERS
     };
     
+    // ULAPlus mode values
+    enum
+    {
+        eULAplusPaletteGroup,
+        eULAplusModeGroup
+    };
+    
 private:    
     
     // Holds details of the host platforms key codes and how they map to the spectrum keyboard matrix
@@ -74,6 +81,12 @@ public:
     struct Snap {
         int32_t     length = 0;
         uint8_t     *data = nullptr;
+    };
+    
+    // Breakpoint information
+    struct Breakpoint {
+        uint16_t    address = 0;
+        bool        breakPoint = false;
     };
     
 public:
@@ -101,6 +114,8 @@ public:
     int                     snapshotMachineInSnapshotWithPath(const char *path);
     Snap                    snapshotCreateSNA();
     Snap                    snapshotCreateZ80();
+    
+    void                    step();
     
 protected:
     void                    emuReset();
@@ -237,6 +252,9 @@ public:
     const static uint32_t   ULAConentionValues[];
     uint8_t                 ULAPortnnFDValue = 0;
     bool                    ULAApplySnow = false;
+    uint8_t                 ULAPlusMode = eULAplusModeGroup;
+    uint8_t                 ULAPlusCurrentReg = 0;
+    uint8_t                 ULAPlusPaletteOn = 0;
 
     // Floating bus
     const static uint32_t   ULAFloatingBusValues[];
@@ -246,6 +264,9 @@ public:
     
     // SPI port
     unsigned short          spiPort = 0xfaf7;
+    
+    // Debug
+    bool                    breakpoints[ 65536 ]{0};
 
 };
 

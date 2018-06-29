@@ -11,7 +11,7 @@ uniform sampler2D s_displayTexture;
 uniform sampler1D s_clutTexture;
 
 // CLUT is 16 pixels wide, so work out the UV step per colour
-const float clutUVAdjust = 1.0 / 16.0;
+const float clutUVAdjust = 1.0 / 64.0;
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Main

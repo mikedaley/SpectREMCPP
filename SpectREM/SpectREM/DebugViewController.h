@@ -14,7 +14,7 @@
 @property (assign) BOOL decimalFormat;
 
 // Registers
-@property (strong) NSString *pc;
+@property (strong, nonatomic) NSString *pc;
 @property (strong) NSString *sp;
 
 @property (strong) NSString *af;
@@ -35,7 +35,7 @@
 
 @property (strong) NSString *im;
 
-// Flag
+// Flags
 @property (strong) NSString *fs;
 @property (strong) NSString *fz;
 @property (strong) NSString *f5;
@@ -58,10 +58,13 @@
 @property (weak) IBOutlet NSTableView *stackTable;
 @property (strong) NSData *imageData;
 @property (strong) NSImage *displayImage;
+@property (weak) IBOutlet NSTableView *breakpointTableView;
+@property (strong) IBOutlet NSVisualEffectView *effectView;
+
+@property (assign) void *machine;
 
 #pragma mark - Methods
 
-- (void)step;
 - (void)updateMemoryTableSize;
 
 @end
@@ -73,5 +76,14 @@
 @property (assign) int address;
 @property (strong) NSString *bytes;
 @property (strong) NSString *instruction;
+
+@end
+
+#pragma mark - Breakpoint Class
+
+@interface Breakpoint : NSObject
+
+@property (assign) uint16_t address;
+@property (strong) NSString *condition;
 
 @end

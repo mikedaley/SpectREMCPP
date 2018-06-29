@@ -97,14 +97,14 @@ void ZXSpectrum::generateFrame()
             currentFrameTstates -= tStates;
             
             audioUpdateWithTs(tStates);
-
+            
             if (z80Core.GetTStates() >= machineInfo.tsPerFrame)
             {
                 z80Core.ResetTStates( machineInfo.tsPerFrame );
                 z80Core.SignalInterrupt();
                 
                 displayUpdateWithTs(machineInfo.tsPerFrame - emuCurrentDisplayTs);
-
+                
                 emuFrameCounter++;
                 
                 displayFrameReset();
@@ -114,8 +114,46 @@ void ZXSpectrum::generateFrame()
                 
                 audioDecayAYFloatingRegister();
             }
-        }        
+        }
     }
+}
+
+#pragma mark - Debug
+
+void ZXSpectrum::step()
+{
+    int tStates = z80Core.Execute(1, machineInfo.intLength);
+    
+    if (tape && tape->playing)
+    {
+        tape->updateWithTs(tStates);
+    }
+    
+    if (tape && emuSaveTrapTriggered)
+    {
+        tape->saveBlock(this);
+    }
+    else if (emuLoadTrapTriggered && tape && tape->loaded)
+    {
+        tape->loadBlock(this);
+    }
+    else
+    {
+        if (z80Core.GetTStates() >= machineInfo.tsPerFrame)
+        {
+            z80Core.ResetTStates( machineInfo.tsPerFrame );
+            z80Core.SignalInterrupt();
+            
+            emuFrameCounter++;
+            
+            displayFrameReset();
+            keyboardCheckCapsLockStatus();
+            
+            audioDecayAYFloatingRegister();
+        }
+    }
+
+    displayUpdateWithTs(machineInfo.tsPerFrame - emuCurrentDisplayTs);
 }
 
 #pragma mark - Memory Access

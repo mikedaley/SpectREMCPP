@@ -277,7 +277,7 @@ void Tape::updateWithTs(int tStates)
         cout << "TAPE STOPPED" << endl;
         playing = false;
         inputBit = 0;
-        currentBlockIndex = static_cast<int>(blocks.size()) - 1;
+        rewindTape();
 
         if (updateStatusCallback)
         {
@@ -622,6 +622,7 @@ bool Tape::processData(unsigned char *dataBytes, long size)
     return true;
 }
 
+
 #pragma mark - Instant Tape Load
 
 
@@ -632,7 +633,7 @@ void Tape::loadBlock(void *m)
     uint32_t expectedBlockType = machine->z80Core.GetRegister(CZ80Core::eREG_ALT_A);
     uint32_t startAddress = machine->z80Core.GetRegister(CZ80Core::eREG_IX);
     
-    // Some TAP files have blocks which are shorter that what is expected in DE (Chuckie Egg 2)
+    // Some TAP files have blocks which are shorter than what is expected in DE (Chuckie Egg 2)
     // so just take the smallest value
     uint32_t blockLength = machine->z80Core.GetRegister(CZ80Core::eREG_DE);
     uint32_t tapBlockLength = blocks[ currentBlockIndex ]->getDataLength();

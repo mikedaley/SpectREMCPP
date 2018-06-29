@@ -303,7 +303,13 @@ void ZXSpectrum48::resetToSnapLoad()
 bool ZXSpectrum48::opcodeCallback(unsigned char opcode, unsigned short address, void *param)
 {
     ZXSpectrum48 *machine = static_cast<ZXSpectrum48*>(param);
+    CZ80Core core = machine->z80Core;
 
+    if (machine->breakpoints[ core.GetRegister(CZ80Core::eREG_PC) ] )
+    {
+        machine->emuPaused = true;
+    }
+    
     if (machine->emuTapeInstantLoad)
     {
         // Trap ROM tap LOADING
@@ -319,7 +325,7 @@ bool ZXSpectrum48::opcodeCallback(unsigned char opcode, unsigned short address, 
     }
     
     // Trap ROM tape SAVING
-    else if (opcode == 0x08 && address == 0x04d0)
+    if (opcode == 0x08 && address == 0x04d0)
     {
         if (opcode == 0x08)
         {

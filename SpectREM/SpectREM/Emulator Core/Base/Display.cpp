@@ -61,15 +61,6 @@ void ZXSpectrum::displayUpdateWithTs(int32_t tStates)
                 uint32_t pixelAddress = displayLineAddrTable[ y ] + x;
                 uint32_t attributeAddress = cBITMAP_SIZE + ( ( y >> 3 ) << 5 ) + x;
                 
-                if ( ULAApplySnow )
-                {
-                    pixelAddress = pixelAddress & 0xff80;
-                    pixelAddress |= z80Core.GetRegister(z80Core.eREG_R) & 0x7f;
-                    
-                    attributeAddress = attributeAddress & 0xff80;
-                    attributeAddress |= z80Core.GetRegister(z80Core.eREG_R) & 0x7f;
-                }
-
                 const uint8_t pixelByte = memoryAddress[ pixelAddress ];
                 uint8_t attributeByte = displayALUT[ memoryAddress[ attributeAddress ] & flashMask ];
 

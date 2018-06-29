@@ -58,7 +58,7 @@ constexpr size_t  cmdNoSupport_size = std::extent<decltype(acmd41)>::value;
 
 void ZXSpectrum48::spi_write( uint8_t data ) {
 	
-    	if(command_buffer==cmdtoken)
+    if(command_buffer==cmdtoken)
 	{
 		if(command_buffer_index > 0 || (command_buffer_index==0 && (data & 0xc0) == 0x40)) {
 			cmdtoken[command_buffer_index++] = data;

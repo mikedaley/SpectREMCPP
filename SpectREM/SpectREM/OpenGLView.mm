@@ -68,6 +68,66 @@ const Color CLUT[] = {
     { 0.0,          brightColor,    0.0,            1.0 },
     { 0.0,          brightColor,    brightColor,    1.0 },
     { brightColor,  brightColor,    0.0,            1.0 },
+    { brightColor,  brightColor,    brightColor,    1.0 },
+
+    // Non-bright colours
+    { 0.0,          0.0,            0.0,            1.0 },
+    { 0.0,          0.0,            normalColor,    1.0 },
+    { normalColor,  0.0,            0.0,            1.0 },
+    { normalColor,  0.0,            normalColor,    1.0 },
+    { 0.0,          normalColor,    0.0,            1.0 },
+    { 0.0,          normalColor,    normalColor,    1.0 },
+    { normalColor,  normalColor,    0.0,            1.0 },
+    { normalColor,  normalColor,    normalColor,    1.0 },
+    
+    // Bright colours
+    { 0.0,          0.0,            0.0,            1.0 },
+    { 0.0,          0.0,            brightColor,    1.0 },
+    { brightColor,  0.0,            0.0,            1.0 },
+    { brightColor,  0.0,            brightColor,    1.0 },
+    { 0.0,          brightColor,    0.0,            1.0 },
+    { 0.0,          brightColor,    brightColor,    1.0 },
+    { brightColor,  brightColor,    0.0,            1.0 },
+    { brightColor,  brightColor,    brightColor,    1.0 },
+    
+    // Non-bright colours
+    { 0.0,          0.0,            0.0,            1.0 },
+    { 0.0,          0.0,            normalColor,    1.0 },
+    { normalColor,  0.0,            0.0,            1.0 },
+    { normalColor,  0.0,            normalColor,    1.0 },
+    { 0.0,          normalColor,    0.0,            1.0 },
+    { 0.0,          normalColor,    normalColor,    1.0 },
+    { normalColor,  normalColor,    0.0,            1.0 },
+    { normalColor,  normalColor,    normalColor,    1.0 },
+    
+    // Bright colours
+    { 0.0,          0.0,            0.0,            1.0 },
+    { 0.0,          0.0,            brightColor,    1.0 },
+    { brightColor,  0.0,            0.0,            1.0 },
+    { brightColor,  0.0,            brightColor,    1.0 },
+    { 0.0,          brightColor,    0.0,            1.0 },
+    { 0.0,          brightColor,    brightColor,    1.0 },
+    { brightColor,  brightColor,    0.0,            1.0 },
+    { brightColor,  brightColor,    brightColor,    1.0 },
+    
+    // Non-bright colours
+    { 0.0,          0.0,            0.0,            1.0 },
+    { 0.0,          0.0,            normalColor,    1.0 },
+    { normalColor,  0.0,            0.0,            1.0 },
+    { normalColor,  0.0,            normalColor,    1.0 },
+    { 0.0,          normalColor,    0.0,            1.0 },
+    { 0.0,          normalColor,    normalColor,    1.0 },
+    { normalColor,  normalColor,    0.0,            1.0 },
+    { normalColor,  normalColor,    normalColor,    1.0 },
+    
+    // Bright colours
+    { 0.0,          0.0,            0.0,            1.0 },
+    { 0.0,          0.0,            brightColor,    1.0 },
+    { brightColor,  0.0,            0.0,            1.0 },
+    { brightColor,  0.0,            brightColor,    1.0 },
+    { 0.0,          brightColor,    0.0,            1.0 },
+    { 0.0,          brightColor,    brightColor,    1.0 },
+    { brightColor,  brightColor,    0.0,            1.0 },
     { brightColor,  brightColor,    brightColor,    1.0 }
 };
 
@@ -352,14 +412,7 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
 
 - (void) drawRect: (NSRect) theRect
 {
-//    [[self openGLContext] makeCurrentContext];
-//    CGLLockContext(contextObj);
-//    if (frameReady)
-//    {
-//        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-//        CGLFlushDrawable(contextObj);
-//    }
-//    CGLUnlockContext(contextObj);
+
 }
 
 - (void) prepareOpenGL
@@ -395,19 +448,19 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
     viewHeight = viewRectPixels.size.height;
 }
 
-- (void)renewGState
-{
-    // Called whenever graphics state updated (such as window resize)
-    
-    // OpenGL rendering is not synchronous with other rendering on the OSX.
-    // Therefore, call disableScreenUpdatesUntilFlush so the window server
-    // doesn't render non-OpenGL content in the window asynchronously from
-    // OpenGL content, which could cause flickering.  (non-OpenGL content
-    // includes the title bar and drawing done by the app with other APIs)
-    [[self window] disableScreenUpdatesUntilFlush];
-    
-    [super renewGState];
-}
+//- (void)renewGState
+//{
+//    // Called whenever graphics state updated (such as window resize)
+//    
+//    // OpenGL rendering is not synchronous with other rendering on the OSX.
+//    // Therefore, call disableScreenUpdatesUntilFlush so the window server
+//    // doesn't render non-OpenGL content in the window asynchronously from
+//    // OpenGL content, which could cause flickering.  (non-OpenGL content
+//    // includes the title bar and drawing done by the app with other APIs)
+//    [[self window] disableScreenUpdatesUntilFlush];
+//    
+//    [super renewGState];
+//}
 
 - (void)viewWillStartLiveResize
 {
@@ -471,7 +524,7 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
     // in the emulator image output data and is used within the fragment shader to pick the right colour to display
     glGenTextures(1, &clutTexture);
     glBindTexture(GL_TEXTURE_2D, clutTexture);
-    glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, 16, 0, GL_RGBA, GL_FLOAT, CLUT);
+    glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, 64, 0, GL_RGBA, GL_FLOAT, CLUT);
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     
