@@ -86,7 +86,7 @@
     self.breakpointTableView.enclosingScrollView.layer.cornerRadius = 6;
     
     self.effectView.material = NSVisualEffectMaterialUltraDark;
-
+    
 }
 
 - (void)viewWillDisappear
@@ -107,6 +107,9 @@
     }];
 
     [[NSNotificationCenter defaultCenter] postNotificationName:cDISPLAY_UPDATE_NOTIFICATION object:NULL];
+    
+//    [self.displayView addSubview:self.emulationViewController.view];
+//    [self.emulationViewController.view setFrame:(NSRect){0, 0, 320, 256}];
     
     [self disassemmbleFromAddress:0 length:65535];
     [self updateDisassemblyTable];
@@ -429,23 +432,39 @@
 
 - (void)updateMemoryTableSize
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        for (NSTableColumn *col in self.memoryTableView.tableColumns)
-        {
-            if ([col.identifier isEqualToString:@"MemoryBytesColID"])
-            {
-                col.width = self.memoryTableView.frame.size.width * 0.68;
-                self.byteWidth = col.width / 23.38;
-            }
-            
-            if ([col.identifier isEqualToString:@"MemoryASCIIColID"])
-            {
-                col.width = self.memoryTableView.frame.size.width * 0.24;
-            }
-        }
-        
-        [self.memoryTableView reloadData];
-    });
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        for (NSTableColumn *col in self.memoryTableView.tableColumns)
+//        {
+//            if ([col.identifier isEqualToString:@"MemoryBytesColID"])
+//            {
+//                col.width = self.memoryTableView.frame.size.width * 0.68;
+//                self.byteWidth = col.width / 23.38;
+//            }
+//
+//            if ([col.identifier isEqualToString:@"MemoryASCIIColID"])
+//            {
+//                col.width = self.memoryTableView.frame.size.width * 0.24;
+//            }
+//        }
+//
+//        [self.memoryTableView reloadData];
+//    });
+}
+
+- (CGFloat)splitView:(NSSplitView *)splitView constrainMaxCoordinate:(CGFloat)proposedMinimumPosition ofSubviewAt:(NSInteger)dividerIndex
+{
+    NSLog(@"%i - %f", dividerIndex, proposedMinimumPosition);
+    if (dividerIndex == 0 && proposedMinimumPosition < 700)
+    {
+        return 450;
+    }
+
+    if (dividerIndex == 1 && proposedMinimumPosition < 200)
+    {
+        return 450;
+    }
+
+    return proposedMinimumPosition;
 }
 
 #pragma mark - Debug Controls
