@@ -30,7 +30,7 @@
     if ([super initWithCoder:coder])
     {
         NSLog(@"DEBUG_VIEW_CONTROLLER INIT");
-        self.byteWidth = 28;
+        self.byteWidth = 12;
         self.disassembleAddress = 0;
         self.memoryTableSearchAddress = -1;
         self.breakpointsArray = [NSMutableArray new];
@@ -77,6 +77,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do view setup here.
+    
     self.decimalFormat = NO;
     self.disassemblyTableview.enclosingScrollView.wantsLayer = YES;
     self.disassemblyTableview.enclosingScrollView.layer.cornerRadius = 5;
@@ -84,8 +85,10 @@
     self.stackTable.enclosingScrollView.layer.cornerRadius = 6;
     self.breakpointTableView.enclosingScrollView.wantsLayer = YES;
     self.breakpointTableView.enclosingScrollView.layer.cornerRadius = 6;
+    self.memoryTableView.enclosingScrollView.wantsLayer = YES;
+    self.memoryTableView.enclosingScrollView.layer.cornerRadius = 6;
     
-    self.effectView.material = NSVisualEffectMaterialUltraDark;
+    self.effectView.material = NSVisualEffectMaterialDark;
     
 }
 
@@ -115,6 +118,7 @@
     [self updateDisassemblyTable];
     [self updateCPUDetails];
     [self updateStackTable];
+    [self updateMemoryTable];
 }
 
 #pragma mark - Table View Methods
@@ -149,7 +153,7 @@
 -(NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
 {
     ZXSpectrum *machine = (ZXSpectrum *)[self.emulationViewController getCurrentMachine];
-    NSAssert(machine, @"****> No Machine Instance Found!");
+    if (!machine) { return nil; }
     CZ80Core core = machine->z80Core;
     
     // DISASSEMBLY TABLE
@@ -314,7 +318,7 @@
 - (void)tableView:(NSTableView *)tableView didAddRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
 {
     ZXSpectrum *machine = (ZXSpectrum *)[self.emulationViewController getCurrentMachine];
-    NSAssert(machine, @"****> No Machine Instance Found!");
+    if (!machine) { return; }
     CZ80Core core = machine->z80Core;
 
     if ([tableView.identifier isEqualToString:@"DisassembleTableView"])
@@ -368,7 +372,7 @@
 {
     Breakpoint *bp = [Breakpoint new];
     bp.address = address;
-    bp.condition = @"Not implemented";
+    bp.condition = @"";
     [self.breakpointsArray addObject:bp];
 }
 
@@ -432,39 +436,8 @@
 
 - (void)updateMemoryTableSize
 {
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//        for (NSTableColumn *col in self.memoryTableView.tableColumns)
-//        {
-//            if ([col.identifier isEqualToString:@"MemoryBytesColID"])
-//            {
-//                col.width = self.memoryTableView.frame.size.width * 0.68;
-//                self.byteWidth = col.width / 23.38;
-//            }
-//
-//            if ([col.identifier isEqualToString:@"MemoryASCIIColID"])
-//            {
-//                col.width = self.memoryTableView.frame.size.width * 0.24;
-//            }
-//        }
-//
-//        [self.memoryTableView reloadData];
-//    });
-}
-
-- (CGFloat)splitView:(NSSplitView *)splitView constrainMaxCoordinate:(CGFloat)proposedMinimumPosition ofSubviewAt:(NSInteger)dividerIndex
-{
-    NSLog(@"%i - %f", dividerIndex, proposedMinimumPosition);
-    if (dividerIndex == 0 && proposedMinimumPosition < 700)
-    {
-        return 450;
-    }
-
-    if (dividerIndex == 1 && proposedMinimumPosition < 200)
-    {
-        return 450;
-    }
-
-    return proposedMinimumPosition;
+    self.byteWidth = fabs(self.memoryTableView.tableColumns[1].width / 21.66);
+    [self.memoryTableView reloadData];
 }
 
 #pragma mark - Debug Controls

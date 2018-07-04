@@ -9,7 +9,7 @@
 #import <Cocoa/Cocoa.h>
 #import "EmulationViewController.h"
 
-@interface DebugViewController : NSViewController <NSTableViewDataSource, NSTabViewDelegate, NSTextFieldDelegate, NSSplitViewDelegate>
+@interface DebugViewController : NSViewController <NSTableViewDataSource, NSTabViewDelegate, NSTextFieldDelegate>
 
 @property (assign) BOOL decimalFormat;
 
@@ -61,6 +61,7 @@
 @property (weak) IBOutlet NSTableView *breakpointTableView;
 @property (strong) IBOutlet NSVisualEffectView *effectView;
 @property (weak) IBOutlet NSView *displayView;
+@property (weak) IBOutlet NSSplitView *splitView;
 
 @property (assign) void *machine;
 
