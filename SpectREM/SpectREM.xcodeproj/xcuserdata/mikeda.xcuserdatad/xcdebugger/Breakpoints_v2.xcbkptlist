@@ -47,12 +47,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SpectREM/DebugViewController.mm"
-            timestampString = "551990538.987708"
+            timestampString = "552390399.764329"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "456"
             endingLineNumber = "456"
-            landmarkName = "-splitView:constrainMaxCoordinate:ofSubviewAt:"
+            landmarkName = "-step:"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

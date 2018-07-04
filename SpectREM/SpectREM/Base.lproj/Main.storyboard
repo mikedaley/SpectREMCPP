@@ -1835,7 +1835,7 @@
                                         <scrollView misplaced="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="xOm-xF-Hvi">
                                             <rect key="frame" x="0.0" y="0.0" width="220" height="159"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" heightSizable="YES"/>
-                                            <clipView key="contentView" id="pMV-VF-1JN">
+                                            <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="pMV-VF-1JN">
                                                 <rect key="frame" x="0.0" y="0.0" width="220" height="159"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
@@ -2210,7 +2210,7 @@
                                         <scrollView misplaced="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="22" horizontalPageScroll="10" verticalLineScroll="22" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="S45-t6-Pr8">
                                             <rect key="frame" x="0.0" y="0.0" width="423" height="586"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                            <clipView key="contentView" id="hHi-lS-vkF">
+                                            <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="hHi-lS-vkF">
                                                 <rect key="frame" x="0.0" y="0.0" width="423" height="586"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
@@ -2330,7 +2330,7 @@
                                                 </subviews>
                                             </clipView>
                                             <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="KHG-eV-OMV">
-                                                <rect key="frame" x="0.0" y="570" width="423" height="16"/>
+                                                <rect key="frame" x="0.0" y="560" width="413" height="16"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                             <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="aqt-Tl-cF6">
