@@ -44,9 +44,10 @@ static const int cSCREEN_FILL = 1;
     NSString                        *mainBundlePath;
     bool                            configViewVisible;
     
-    AudioCore                       *audioCore;
+//    AudioCore                       *audioCore;
     AudioQueue                      *audioQueue;
     int16_t                         audioBuffer;
+    DebugOpCallbackBlock            debugBlock;
     
     NSStoryboard                    *storyBoard;
     ConfigurationViewController     *configViewController;
@@ -57,7 +58,6 @@ static const int cSCREEN_FILL = 1;
     DebugViewController             *debugViewController;
     
     NSTimer                         *accelerationTimer;
-    
 }
 @end
 
@@ -94,17 +94,18 @@ static const int cSCREEN_FILL = 1;
     // The AudioCore uses the sound buffer to identify when a new frame should be drawn for accurate timing. The AudioQueue
     // is used to help measure usage of the audio buffer
     audioQueue = new AudioQueue();
-    audioCore = [[AudioCore alloc] initWithSampleRate:cAUDIO_SAMPLE_RATE framesPerSecond:cFRAMES_PER_SECOND callback:self];
+    self.audioCore = [[AudioCore alloc] initWithSampleRate:cAUDIO_SAMPLE_RATE framesPerSecond:cFRAMES_PER_SECOND callback:self];
     
     //Create a tape instance
     tape = new Tape(tapeStatusCallback);
     
-    [self initMachineWithRomPath:mainBundlePath machineType:(int)_defaults.machineSelectedModel];
-
     [self setupConfigView];
     [self setupControllers];
     [self setupObservers];
     [self setupNotifications];
+    
+    [self initMachineWithRomPath:mainBundlePath machineType:(int)_defaults.machineSelectedModel];
+
     [self restoreSession];
     
     if (_defaults.machineAcceleration > 1)
@@ -121,7 +122,7 @@ static const int cSCREEN_FILL = 1;
     {
         const uint32_t b = (cAUDIO_SAMPLE_RATE / (cFRAMES_PER_SECOND * _defaults.machineAcceleration)) * 2;
         
-        audioQueue->read(buffer, (inNumberFrames * 2));
+        audioQueue->read(buffer, (inNumberFrames << 1));
         
         // Check if we have used a frames worth of buffer storage and if so then its time to generate another frame.
         if (audioQueue->bufferUsed() < b)
@@ -256,10 +257,10 @@ static const int cSCREEN_FILL = 1;
 
 - (void)initMachineWithRomPath:(NSString *)romPath machineType:(int)machineType
 {
-    if (audioCore)
+    if (self.audioCore)
     {
-        [audioCore stop];
-        while (audioCore.isRunning) { };
+        [self.audioCore stop];
+        while (self.audioCore.isRunning) { };
     }
     
     if (machine) {
@@ -283,9 +284,18 @@ static const int cSCREEN_FILL = 1;
     
     machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
     
+    __block EmulationViewController *blockSelf = self;
+    __block DebugViewController *blockDebugViewController = debugViewController;
+    debugBlock = (^(unsigned short address, uint8_t operation) {
+        [blockSelf.audioCore stop];
+        [blockDebugViewController breakpointHitAddress:address operation:operation];
+    });
+    
+    machine->registerDebugOpCallback( debugBlock );
+    
     [self applyDefaults];
     
-    [audioCore start];
+    [self.audioCore start];
     machine->resume();
     
     [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@",
@@ -630,7 +640,6 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 
 - (IBAction)showDebugger:(id)sender
 {
-    machine->emuPaused = true;
     [debugWindowController showWindow:NULL];
 }
 
@@ -638,7 +647,8 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 {
     if (machine)
     {
-        [audioCore stop];
+        [self.audioCore stop];
+        [[NSNotificationCenter defaultCenter] postNotificationName:cCPU_PAUSED_NOTIFICATION object:NULL];
     }
 }
 
@@ -646,7 +656,8 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 {
     if (machine)
     {
-        [audioCore start];
+        [self.audioCore start];
+        [[NSNotificationCenter defaultCenter] postNotificationName:cCPU_RESUMED_NOTIFICATION object:NULL];
     }
 }
 
@@ -707,6 +718,23 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 - (void *)getCurrentMachine
 {
     return machine;
+}
+
+- (BOOL)getCPUState
+{
+    return machine->emuPaused;
+}
+
+- (void)pauseCPU
+{
+    machine->emuPaused = true;
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"kCPU_PAUSED_NOTIFICATION" object:NULL];
+}
+
+- (void)resumeCPU
+{
+    machine->emuPaused = false;
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"kCPU_RESUMED_NOTIFICATION" object:NULL];
 }
 
 @end

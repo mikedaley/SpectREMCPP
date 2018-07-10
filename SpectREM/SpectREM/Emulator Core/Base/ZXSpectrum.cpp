@@ -69,6 +69,11 @@ void ZXSpectrum::initialise(string romPath)
     resetMachine(true);
 }
 
+void ZXSpectrum::registerDebugOpCallback(DebugOpCallbackBlock debugOpCallbackBlock)
+{
+    this->debugOpCallbackBlock = debugOpCallbackBlock;
+}
+
 #pragma mark - Generate a frame
 
 void ZXSpectrum::generateFrame()
@@ -77,8 +82,14 @@ void ZXSpectrum::generateFrame()
     
     while (currentFrameTstates > 0 && !emuPaused)
     {
-        int tStates = z80Core.Execute(1, machineInfo.intLength);
+        if (breakpoints [ z80Core.GetRegister(CZ80Core::eREG_PC) ] & eDebugExecuteOp)
+        {
+            debugOpCallbackBlock( z80Core.GetRegister(CZ80Core::eREG_PC), eDebugExecuteOp );
+            break;
+        }
         
+        int tStates = z80Core.Execute(1, machineInfo.intLength);
+                
         if (tape && tape->playing)
         {
             tape->updateWithTs(tStates);

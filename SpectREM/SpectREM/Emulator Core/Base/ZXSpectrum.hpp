@@ -22,6 +22,9 @@ using namespace std;
 
 #pragma mark - Base ZXSpectrum class
 
+typedef void (*Z80DebugOpCallback)(unsigned short address, uint8_t operation, void *param);
+typedef void (^DebugOpCallbackBlock)(unsigned short address, uint8_t operation);
+
 class ZXSpectrum
 {
 
@@ -63,6 +66,14 @@ public:
     {
         eULAplusPaletteGroup,
         eULAplusModeGroup
+    };
+    
+    // Debug operation type
+    enum
+    {
+        eDebugReadOp = 0x01,
+        eDebugWriteOp = 0x02,
+        eDebugExecuteOp = 0x04
     };
     
 private:    
@@ -117,6 +128,9 @@ public:
     
     void                    step();
     
+    void                    registerDebugOpCallback(DebugOpCallbackBlock debugOpCallbackBlock);
+    DebugOpCallbackBlock    debugOpCallbackBlock;
+
 protected:
     void                    emuReset();
     void                    loadROM(const char *rom, int page);
@@ -266,7 +280,7 @@ public:
     unsigned short          spiPort = 0xfaf7;
     
     // Debug
-    bool                    breakpoints[ 65536 ]{0};
+    uint8_t                 breakpoints[ 65536 ]{0};
 
 };
 

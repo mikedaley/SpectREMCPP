@@ -63,11 +63,10 @@
 @property (weak) IBOutlet NSView *displayView;
 @property (weak) IBOutlet NSSplitView *splitView;
 
-@property (assign) void *machine;
-
 #pragma mark - Methods
 
 - (void)updateMemoryTableSize;
+- (void)breakpointHitAddress:(unsigned short)address operation:(uint8_t)operation;
 
 @end
 

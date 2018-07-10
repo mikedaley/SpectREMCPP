@@ -11,6 +11,7 @@
 
 @class EmulationScene;
 @class OpenGLView;
+@class AudioCore;
 
 #pragma mark - Constants
 
@@ -25,6 +26,8 @@ static NSString *const cZ80_EXTENSION = @"Z80";
 static NSString *const cTAP_EXTENSION = @"TAP";
 
 static NSString *const cDISPLAY_UPDATE_NOTIFICATION = @"DisplayUpdateNotification";
+static NSString *const cCPU_PAUSED_NOTIFICATION = @"CPUPausedNotification";
+static NSString *const cCPU_RESUMED_NOTIFICATION = @"CPUResumedNotification";
 
 @interface EmulationViewController : NSViewController 
 
@@ -34,6 +37,7 @@ static NSString *const cDISPLAY_UPDATE_NOTIFICATION = @"DisplayUpdateNotificatio
 @property (weak)    IBOutlet    NSScrollView        *configScrollView;
 @property (strong)              Defaults            *defaults;
 @property (weak)    IBOutlet    OpenGLView          *glView;
+@property (strong)              AudioCore           *audioCore;
 
 #pragma mark - Methods
 

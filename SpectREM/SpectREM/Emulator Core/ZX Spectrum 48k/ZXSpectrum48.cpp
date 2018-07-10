@@ -207,6 +207,14 @@ void ZXSpectrum48::coreMemoryWrite(unsigned short address, unsigned char data)
         displayUpdateWithTs((z80Core.GetTStates() - emuCurrentDisplayTs) + machineInfo.paperDrawingOffset);
     }
 
+    if (debugOpCallbackBlock != NULL)
+    {
+        if (breakpoints[ address ] & eDebugWriteOp)
+        {
+            debugOpCallbackBlock( address, eDebugWriteOp );
+        }
+    }
+
     memoryRam[ address ] = data;
 }
 
@@ -230,7 +238,23 @@ unsigned char ZXSpectrum48::coreMemoryRead(unsigned short address)
 			}
 		}
 		
+        if (debugOpCallbackBlock != NULL)
+        {
+            if (breakpoints[ address ] & eDebugReadOp)
+            {
+                debugOpCallbackBlock( address, eDebugReadOp );
+            }
+        }
+
         return memoryRom[address];
+    }
+
+    if (debugOpCallbackBlock != NULL)
+    {
+        if (breakpoints[ address ] & eDebugReadOp)
+        {
+            debugOpCallbackBlock( address, eDebugReadOp );
+        }
     }
 
     return memoryRam[ address ];
@@ -304,11 +328,6 @@ bool ZXSpectrum48::opcodeCallback(unsigned char opcode, unsigned short address, 
 {
     ZXSpectrum48 *machine = static_cast<ZXSpectrum48*>(param);
     CZ80Core core = machine->z80Core;
-
-    if (machine->breakpoints[ core.GetRegister(CZ80Core::eREG_PC) ] )
-    {
-        machine->emuPaused = true;
-    }
     
     if (machine->emuTapeInstantLoad)
     {

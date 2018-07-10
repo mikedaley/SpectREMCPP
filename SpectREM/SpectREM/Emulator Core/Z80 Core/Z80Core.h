@@ -287,6 +287,8 @@ protected:
 	unsigned int			m_PrevOpcodeFlags;
     bool                    m_Iff2_read = false;
     bool                    m_LD_I_A = false;
+    
+    bool                    paused = false;
 	
 	void *                  m_Param;
 	Z80CoreRead				m_MemRead;

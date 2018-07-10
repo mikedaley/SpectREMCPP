@@ -280,7 +280,7 @@ int CZ80Core::Execute(unsigned int num_tstates, unsigned int int_t_states)
 
         // Read the opcode
         unsigned char opcode = Z80CoreMemRead(m_CPURegisters.regPC, 4);
-        
+                
         m_CPURegisters.regPC++;
         m_CPURegisters.regR = (m_CPURegisters.regR & 0x80) | ((m_CPURegisters.regR + 1) & 0x7f);
 		
