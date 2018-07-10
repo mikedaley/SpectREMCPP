@@ -10,6 +10,28 @@
 #include "ZXSpectrum.hpp"
 #include "Z80Core.h"
 
+#pragma mark - Debugger Command Tokens/Operators & Actions
+
+static NSString *const cTOKEN_BREAKPOINT = @"BP";
+static NSString *const cTOKEN_PAUSE = @"P";
+static NSString *const cTOKEN_RESUME = @"R";
+static NSString *const cTOKEN_STEP = @"S";
+static NSString *const cTOKEN_STEP_FRAME = @"SF";
+static NSString *const cTOKEN_SEARCH_MEMORY = @"SM";
+static NSString *const cTOKEN_WRITE_MEMORY = @"WM";
+static NSString *const cTOKEN_DISASSEMBLE = @"D";
+static NSString *const cTOKEN_SET_REGISTER = @"SR";
+
+static NSString *const cOPERATOR_GREATER_THAN = @">";
+static NSString *const cOPERATOR_LESS_THAN = @"<";
+static NSString *const cOPERATOR_EQUAL_TO = @"=";
+
+static NSString *const cTOKEN_BREAKPOINT_ACTION_EXECUTE = @"X";
+static NSString *const cTOKEN_BREAKPOINT_ACTION_READ = @"R";
+static NSString *const cTOKEN_BREAKPOINT_ACTION_WRITE = @"W";
+
+#pragma mark - Private Interface
+
 @interface DebugViewController ()
 
 @property (assign) unsigned short disassembleAddress;
@@ -99,7 +121,6 @@
     [[NSNotificationCenter defaultCenter] removeObserver:NSViewFrameDidChangeNotification];
     [[NSNotificationCenter defaultCenter] removeObserver:cCPU_PAUSED_NOTIFICATION];
     [[NSNotificationCenter defaultCenter] removeObserver:cCPU_RESUMED_NOTIFICATION];
-    [[NSNotificationCenter defaultCenter] removeObserver:@"READ_BREAKPOINT"];
     [self.updateTimer invalidate];
 }
 
@@ -220,11 +241,11 @@
                     {
                         [content appendAttributedString:[[NSAttributedString alloc] initWithString:@"   "]];
                     }
-                    else if (machine->breakpoints[ address ] & (0x01 | 0x02))
+                    else if (machine->breakpoints[ address ] & (ZXSpectrum::eDebugReadOp | ZXSpectrum::eDebugWriteOp))
                     {
                         [attrString addAttribute:NSBackgroundColorAttributeName value:[NSColor colorWithRed:0.75 green:0 blue:0 alpha:1.0] range:NSMakeRange(0, 2)];
                     }
-                    else if (machine->breakpoints[ address ] & 0x04)
+                    else if (machine->breakpoints[ address ] & ZXSpectrum::eDebugExecuteOp)
                     {
                         [attrString addAttribute:NSBackgroundColorAttributeName value:[NSColor colorWithRed:0.75 green:0 blue:0.75 alpha:1.0] range:NSMakeRange(0, 2)];
                     }
@@ -350,8 +371,8 @@
     }
     else
     {
-        machine->breakpoints[ address ] = 0x04;
-        [self addBreakpointAtAddress:address operation:0x04];
+        machine->breakpoints[ address ] = ZXSpectrum::eDebugExecuteOp;
+        [self addBreakpointAtAddress:address operation:ZXSpectrum::eDebugExecuteOp];
     }
     
     [self reloadDisassemblyData];
@@ -366,13 +387,13 @@
     bp.condition = @"";
 
     switch (operation) {
-        case 0x01:
+        case ZXSpectrum::eDebugReadOp:
             bp.condition = [bp.condition stringByAppendingString:@"READ "];
             break;
-        case 0x02:
+        case ZXSpectrum::eDebugWriteOp:
             bp.condition = [bp.condition stringByAppendingString:@"WRITE "];
             break;
-        case 0x04:
+        case ZXSpectrum::eDebugExecuteOp:
             bp.condition = [bp.condition stringByAppendingString:@"EXECUTE"];
             break;
             
@@ -485,177 +506,252 @@
     [self updateDisassemblyTable];
 }
 
+#pragma mark - Parse Commands
+
 - (void)controlTextDidEndEditing:(NSNotification *)obj
 {
     NSAssert(self.emulationViewController, @"****> No EmulationViewController Instance Found!");
     ZXSpectrum *machine = (ZXSpectrum *)[self.emulationViewController getCurrentMachine];
     NSAssert(machine, @"****> No Machine Instance Found!");
-    CZ80Core core = machine->z80Core;
 
     // Explode the entered command on space
     NSArray *commandList = [[(NSTextField *)obj.object stringValue] componentsSeparatedByString:@" "];
-    
     NSString *command = [(NSString *)commandList[0] uppercaseString];
     
     // Check to see if the command is recognised
-    if ([command isEqualToString:@"D"])
+    if ([command isEqualToString:cTOKEN_DISASSEMBLE])
+    {
+        [self tokenDisassemble:commandList machine:machine];
+    }
+    else if ([command isEqualToString:cTOKEN_RESUME])
+    {
+        [self tokenResume:commandList];
+    }
+    else if ([command isEqualToString:cTOKEN_PAUSE])
+    {
+        [self tokenPause:commandList];
+    }
+    else if ([command isEqualToString:cTOKEN_STEP])
+    {
+        [self tokenStep:commandList];
+    }
+    else if ([command isEqualToString:cTOKEN_SEARCH_MEMORY])
+    {
+        [self tokenMemorySearch:commandList];
+    }
+    else if ([command isEqualToString:cTOKEN_WRITE_MEMORY])
+    {
+        [self tokenMemoryWrite:commandList machine:machine];
+    }
+    else if ([command isEqualToString:cTOKEN_SET_REGISTER])
+    {
+        [self tokenSetRegister:commandList machine:machine];
+    }
+    else if ([command isEqualToString:cTOKEN_STEP_FRAME])
+    {
+        [self tokenStepFrame:commandList machine:machine];
+    }
+    else if ([command isEqualToString:cTOKEN_BREAKPOINT])
+    {
+        [self tokenBreakpoint:commandList machine:machine];
+    }
+}
+
+#pragma mark - Token Methods
+
+- (void)tokenPause:(NSArray *)commandList
+{
+    [self.emulationViewController pauseMachine];
+    [self updateViewDetails];
+}
+
+- (void)tokenResume:(NSArray *)commandList
+{
+    [self.emulationViewController startMachine];
+}
+
+- (void)tokenStep:(NSArray *)commandList
+{
+    [self.emulationViewController pauseMachine];
+    [self step:nil];
+    [self updateViewDetails];
+}
+
+- (void)tokenStepFrame:(NSArray *)commandList machine:(ZXSpectrum *)machine
+{
+    [self.emulationViewController pauseMachine];
+    machine->generateFrame();
+    [self updateViewDetails];
+}
+
+- (void)tokenMemorySearch:(NSArray *)commandList
+{
+    if ( commandList.count > 1 )
     {
         NSScanner *scanner = [NSScanner scannerWithString:commandList[1]];
         unsigned int address;
-        if ([scanner scanHexInt:&address])
+        if ( [scanner scanHexInt:&address]  && address <= 0xffff )
+        {
+            self.memoryTableSearchAddress = address;
+            NSUInteger row = (address / self.byteWidth);
+            [self.memoryTableView scrollRowToVisible:row];
+            [self updateMemoryTable];
+        }
+        else
+        {
+            [self displayTokenError:@"Address must be in the range 0x0000 to 0xFFFF"];
+        }
+    }
+    else
+    {
+        [self displayTokenError:@"No valid address was provided!"];
+    }
+}
+
+- (void)tokenMemoryWrite:(NSArray *)commandList machine:(ZXSpectrum *)machine
+{
+    if ( commandList.count > 2 )
+    {
+        NSScanner *scanner = [NSScanner scannerWithString:commandList[1]];
+        unsigned int address;
+        if ( [scanner scanHexInt:&address] && address <= 0xffff )
+        {
+            scanner = [NSScanner scannerWithString:commandList[2]];
+            unsigned int value;
+            if ( [scanner scanHexInt:&value] && value <= 0xff )
+            {
+                self.memoryTableSearchAddress = address;
+                machine->z80Core.Z80CoreDebugMemWrite(address, value, NULL);
+                NSUInteger row = (address / self.byteWidth);
+                [self.memoryTableView scrollRowToVisible:row];
+                [self updateMemoryTable];
+            }
+            else
+            {
+                [self displayTokenError:@"Value must be in the range 0x00 to 0xFF"];
+            }
+        }
+        else
+        {
+            [self displayTokenError:@"Address must be in the range 0x0000 to 0xFFFF"];
+        }
+    }
+    else
+    {
+        [self displayTokenError:@"An address and value must be supplied!"];
+    }
+}
+
+- (void)tokenDisassemble:(NSArray *)commandList machine:(ZXSpectrum *)machine
+{
+    if (commandList.count >= 1)
+    {
+        NSScanner *scanner = [NSScanner scannerWithString:commandList[1]];
+        unsigned int address;
+        if ( [scanner scanHexInt:&address] )
         {
             self.disassembleAddress = address;
             [self disassemmbleFromAddress:self.disassembleAddress length:65536 - self.disassembleAddress];
-            [self reloadDisassemblyData];
         }
-        else if ([[commandList[1] uppercaseString]isEqualToString:@"PC"])
+        else if ( [[commandList[1] uppercaseString]isEqualToString:@"PC"] )
         {
-            self.disassembleAddress = core.GetRegister(CZ80Core::eREG_PC);
+            self.disassembleAddress = machine->z80Core.GetRegister(CZ80Core::eREG_PC);
             [self disassemmbleFromAddress:self.disassembleAddress length:65536 - self.disassembleAddress];
-            [self reloadDisassemblyData];
         }
-        else if ([[commandList[1] uppercaseString]isEqualToString:@"SP"])
+        else if ( [[commandList[1] uppercaseString]isEqualToString:@"SP"] )
         {
             if (self.stackArray.count > 0)
             {
                 self.disassembleAddress = [self.stackArray[0] unsignedShortValue];
                 [self disassemmbleFromAddress:self.disassembleAddress length:65536 - self.disassembleAddress];
-                [self reloadDisassemblyData];
             }
         }
+        [self reloadDisassemblyData];
     }
-    else if ([command isEqualToString:@"R"])
+    else
     {
-        [self.emulationViewController startMachine];
+        [self displayTokenError:@"An address to disassemble from must be provided!"];
     }
-    else if ([command isEqualToString:@"P"])
-    {
-        [self.emulationViewController pauseMachine];
-        [self updateDisassemblyTable];
-        [self updateViewDetails];
-    }
-    else if ([command isEqualToString:@"S"])
-    {
-        [self.emulationViewController pauseMachine];
-        [self step:nil];
-        [self updateDisassemblyTable];
-        [self updateViewDetails];
-        [[NSNotificationCenter defaultCenter] postNotificationName:cDISPLAY_UPDATE_NOTIFICATION object:NULL];
+}
 
-    }
-    else if ([command isEqualToString:@"M"])
+- (void)tokenBreakpoint:(NSArray *)commandList machine:(ZXSpectrum *)machine
+{
+    if ( [[commandList[1] uppercaseString] isEqualToString:cTOKEN_BREAKPOINT_ACTION_EXECUTE] )
     {
-        NSScanner *scanner = [NSScanner scannerWithString:commandList[1]];
-        unsigned int address;
-        if ([scanner scanHexInt:&address])
+        NSScanner *scanner = [NSScanner scannerWithString:commandList[2]];
+        unsigned int value;
+        if ( [scanner scanHexInt:&value] )
         {
-            self.memoryTableSearchAddress = address;
-            NSUInteger row = (address / self.byteWidth);
-            [self updateMemoryTable];
-            [self.memoryTableView scrollRowToVisible:row];
+            machine->breakpoints[ value ] = machine->breakpoints[ value ] | ZXSpectrum::eDebugExecuteOp;
+            [self addBreakpointAtAddress:value operation:ZXSpectrum::eDebugExecuteOp];
+            [self updateViewDetails];
         }
     }
-    else if ([command isEqualToString:@"WM"])
+    else if ( [[commandList[1] uppercaseString] isEqualToString:cTOKEN_BREAKPOINT_ACTION_READ] )
     {
-        NSScanner *scanner = [NSScanner scannerWithString:commandList[1]];
-        unsigned int address;
-        if ([scanner scanHexInt:&address])
+        NSScanner *scanner = [NSScanner scannerWithString:commandList[2]];
+        unsigned int value;
+        if ( [scanner scanHexInt:&value] )
         {
-            scanner = [NSScanner scannerWithString:commandList[2]];
-            unsigned int value;
-            if ([scanner scanHexInt:&value])
-            {
-                self.memoryTableSearchAddress = address;
-                core.Z80CoreDebugMemWrite(address, value, NULL);
-                NSUInteger row = (address / self.byteWidth);
-                [self updateViewDetails];
-                [self.memoryTableView scrollRowToVisible:row];
-                [[NSNotificationCenter defaultCenter] postNotificationName:cDISPLAY_UPDATE_NOTIFICATION object:NULL];
-            }
+            machine->breakpoints[ value ] = machine->breakpoints[ value ] | ZXSpectrum::eDebugReadOp;
+            [self addBreakpointAtAddress:value operation:ZXSpectrum::eDebugReadOp];
+            [self updateViewDetails];
         }
     }
-    else if ([command isEqualToString:@"SR"])
+    else if ( [[commandList[1] uppercaseString] isEqualToString:cTOKEN_BREAKPOINT_ACTION_WRITE] )
     {
-        NSString *reg = [commandList[1] uppercaseString];
-        for (NSString *key in self.z80ByteRegisters)
+        NSScanner *scanner = [NSScanner scannerWithString:commandList[2]];
+        unsigned int value;
+        if ( [scanner scanHexInt:&value] )
         {
-            if ([key isEqualToString:reg])
-            {
-                NSScanner *scanner = [NSScanner scannerWithString:commandList[2]];
-                unsigned int value;
-                if ([scanner scanHexInt:&value])
-                {
-                    core.SetRegister((CZ80Core::eZ80BYTEREGISTERS)[self.z80ByteRegisters[key] integerValue], value);
-                }
-                [self updateCPUDetails];
-                return;
-            }
+            machine->breakpoints[ value ] = machine->breakpoints[ value ] | ZXSpectrum::eDebugWriteOp;
+            [self addBreakpointAtAddress:value operation:ZXSpectrum::eDebugWriteOp];
+            [self updateViewDetails];
         }
-        
-        for (NSString *key in self.z80WordRegisters)
-        {
-            if ([key isEqualToString:reg])
-            {
-                NSScanner *scanner = [NSScanner scannerWithString:commandList[2]];
-                unsigned int value;
-                if ([scanner scanHexInt:&value])
-                {
-                    core.SetRegister((CZ80Core::eZ80WORDREGISTERS)[self.z80WordRegisters[key] integerValue], value);
-                    NSLog(@"%u", (CZ80Core::eZ80WORDREGISTERS)[self.z80WordRegisters[key] integerValue]);
-                }
-                [self updateCPUDetails];
-                return;
-            }
-        }
-        
     }
-    else if ([command isEqualToString:@"RF"])
+}
+
+- (void)tokenSetRegister:(NSArray *)commandList machine:(ZXSpectrum *)machine
+{
+    NSString *reg = [commandList[1] uppercaseString];
+    for ( NSString *key in self.z80ByteRegisters )
     {
-        [self.emulationViewController pauseMachine];
-        machine->generateFrame();
-        [self updateDisassemblyTable];
-        [self updateViewDetails];
-        [[NSNotificationCenter defaultCenter] postNotificationName:cDISPLAY_UPDATE_NOTIFICATION object:NULL];
-    }
-    else if ([command isEqualToString:@"BP"])
-    {
-        if ([[commandList[1] uppercaseString] isEqualToString:@"X"])
+        if ([key isEqualToString:reg])
         {
             NSScanner *scanner = [NSScanner scannerWithString:commandList[2]];
             unsigned int value;
-            if ([scanner scanHexInt:&value])
+            if ( [scanner scanHexInt:&value] )
             {
-                machine->breakpoints[ value ] = machine->breakpoints[ value ] | 0x04;
-                [self addBreakpointAtAddress:value operation:0x04];
-                [self.breakpointTableView reloadData];
-                [self.memoryTableView reloadData];
+                machine->z80Core.SetRegister((CZ80Core::eZ80BYTEREGISTERS)[self.z80ByteRegisters[key] integerValue], value);
             }
-        }
-        else if ([[commandList[1] uppercaseString] isEqualToString:@"R"])
-        {
-            NSScanner *scanner = [NSScanner scannerWithString:commandList[2]];
-            unsigned int value;
-            if ([scanner scanHexInt:&value])
-            {
-                machine->breakpoints[ value ] = machine->breakpoints[ value ] | 0x01;
-                [self addBreakpointAtAddress:value operation:0x01];
-                [self.breakpointTableView reloadData];
-                [self.memoryTableView reloadData];
-            }
-        }
-        else if ([[commandList[1] uppercaseString] isEqualToString:@"W"])
-        {
-            NSScanner *scanner = [NSScanner scannerWithString:commandList[2]];
-            unsigned int value;
-            if ([scanner scanHexInt:&value])
-            {
-                machine->breakpoints[ value ] = machine->breakpoints[ value ] | 0x02;
-                [self addBreakpointAtAddress:value operation:0x02];
-                [self.breakpointTableView reloadData];
-                [self.memoryTableView reloadData];
-            }
+            [self updateViewDetails];
+            return;
         }
     }
+    
+    for ( NSString *key in self.z80WordRegisters )
+    {
+        if ([key isEqualToString:reg])
+        {
+            NSScanner *scanner = [NSScanner scannerWithString:commandList[2]];
+            unsigned int value;
+            if ( [scanner scanHexInt:&value] )
+            {
+                machine->z80Core.SetRegister((CZ80Core::eZ80WORDREGISTERS)[self.z80WordRegisters[key] integerValue], value);
+            }
+            [self updateViewDetails];
+            return;
+        }
+    }
+}
+
+- (void)displayTokenError:(NSString*)errorString
+{
+    NSAlert *alert = [NSAlert new];
+    [alert addButtonWithTitle:@"OK"];
+    [alert setMessageText:@"Syntax Error"];
+    [alert setInformativeText:errorString];
+    [alert runModal];
 }
 
 #pragma mark - View Updates
@@ -669,7 +765,6 @@
     [self updateDisassemblyTable];
     [self reloadDisassemblyData];
     [self updateViewDetails];
-    [self.emulationViewController updateDisplay];
 }
 
 - (void)reloadDisassemblyData
@@ -684,6 +779,9 @@
     [self updateCPUDetails];
     [self updateMemoryTable];
     [self updateStackTable];
+    [self updateDisassemblyTable];
+    [self updateBreakpointTable];
+    [[NSNotificationCenter defaultCenter] postNotificationName:cDISPLAY_UPDATE_NOTIFICATION object:NULL];
 }
 
 - (void)updateDisassemblyTable
@@ -823,6 +921,16 @@
         NSRange visibleRows = [self.memoryTableView rowsInRect:visibleRect];
         NSIndexSet *visibleCols = [self.memoryTableView columnIndexesInRect:visibleRect];
         [self.memoryTableView reloadDataForRowIndexes:[NSIndexSet indexSetWithIndexesInRange:visibleRows] columnIndexes:visibleCols];
+    });
+}
+
+- (void)updateBreakpointTable
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSRect visibleRect = self.breakpointTableView.visibleRect;
+        NSRange visibleRows = [self.breakpointTableView rowsInRect:visibleRect];
+        NSIndexSet *visibleCols = [self.breakpointTableView columnIndexesInRect:visibleRect];
+        [self.breakpointTableView reloadDataForRowIndexes:[NSIndexSet indexSetWithIndexesInRange:visibleRows] columnIndexes:visibleCols];
     });
 }
 

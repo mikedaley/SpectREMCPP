@@ -26,6 +26,8 @@
 		2778A11E1F94E5DA00385137 /* DisplayVert.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 2778A11B1F94E5DA00385137 /* DisplayVert.vsh */; };
 		2778A1201F94E60600385137 /* CLUTFrag.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 2778A11F1F94E60600385137 /* CLUTFrag.fsh */; };
 		279C6E5820C91CA20053CC07 /* 128.rom in Resources */ = {isa = PBXBuildFile; fileRef = 279C6E5720C91CA20053CC07 /* 128.rom */; };
+		27BAE9A520F4CB68007A8CFB /* Commands.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 27BAE9A420F4CB68007A8CFB /* Commands.rtf */; };
+		27BAE9A820F4CE9C007A8CFB /* InstructionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BAE9A720F4CE9C007A8CFB /* InstructionViewController.m */; };
 		27C5DBA51FFC000A0064C661 /* DebugViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 27C5DBA41FFC000A0064C661 /* DebugViewController.mm */; };
 		ED2A6D051F6036D3003CD6CE /* ConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D041F6036D3003CD6CE /* ConfigurationViewController.m */; };
 		ED2A6D0A1F603D18003CD6CE /* NSClipView+Flipped.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D091F603D18003CD6CE /* NSClipView+Flipped.m */; };
@@ -86,6 +88,9 @@
 		2778A11B1F94E5DA00385137 /* DisplayVert.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = DisplayVert.vsh; sourceTree = "<group>"; };
 		2778A11F1F94E60600385137 /* CLUTFrag.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = CLUTFrag.fsh; sourceTree = "<group>"; };
 		279C6E5720C91CA20053CC07 /* 128.rom */ = {isa = PBXFileReference; lastKnownFileType = file; path = 128.rom; sourceTree = "<group>"; };
+		27BAE9A420F4CB68007A8CFB /* Commands.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Commands.rtf; sourceTree = "<group>"; };
+		27BAE9A620F4CE9C007A8CFB /* InstructionViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InstructionViewController.h; sourceTree = "<group>"; };
+		27BAE9A720F4CE9C007A8CFB /* InstructionViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InstructionViewController.m; sourceTree = "<group>"; };
 		27C5DBA31FFC000A0064C661 /* DebugViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DebugViewController.h; sourceTree = "<group>"; };
 		27C5DBA41FFC000A0064C661 /* DebugViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = DebugViewController.mm; sourceTree = "<group>"; };
 		ED2A6D031F6036D3003CD6CE /* ConfigurationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigurationViewController.h; sourceTree = "<group>"; };
@@ -214,6 +219,8 @@
 			children = (
 				27C5DBA31FFC000A0064C661 /* DebugViewController.h */,
 				27C5DBA41FFC000A0064C661 /* DebugViewController.mm */,
+				27BAE9A620F4CE9C007A8CFB /* InstructionViewController.h */,
+				27BAE9A720F4CE9C007A8CFB /* InstructionViewController.m */,
 			);
 			name = "Debug View Controller";
 			sourceTree = "<group>";
@@ -320,6 +327,7 @@
 				ED913FAD1F30759300316E1A /* Info.plist */,
 				ED2A6D0B1F604CD0003CD6CE /* Defaults.plist */,
 				276E3F9F1F9FA01000020BB3 /* reflection.png */,
+				27BAE9A420F4CB68007A8CFB /* Commands.rtf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -531,6 +539,7 @@
 				EDD9ADF41F5D89AE004DD728 /* 128-0.ROM in Resources */,
 				EDF660511FF535E300769784 /* snapload.v31 in Resources */,
 				EDC56FDE1F6EE8A800162739 /* plus2-0.ROM in Resources */,
+				27BAE9A520F4CB68007A8CFB /* Commands.rtf in Resources */,
 				2778A1201F94E60600385137 /* CLUTFrag.fsh in Resources */,
 				EDD9ADF51F5D89AE004DD728 /* 128-1.ROM in Resources */,
 				EDC56FDC1F6EE89E00162739 /* plus2-1.ROM in Resources */,
@@ -575,6 +584,7 @@
 				ED2A6D0A1F603D18003CD6CE /* NSClipView+Flipped.m in Sources */,
 				17A089511F4F5B2700CAA178 /* Keyboard.cpp in Sources */,
 				ED913FCE1F30781000316E1A /* Z80Core_MainOpcodes.cpp in Sources */,
+				27BAE9A820F4CE9C007A8CFB /* InstructionViewController.m in Sources */,
 				ED913FA71F30759300316E1A /* EmulationViewController.mm in Sources */,
 				ED913FCC1F30781000316E1A /* Z80Core_EDOpcodes.cpp in Sources */,
 				ED913FCF1F30781000316E1A /* Z80Core.cpp in Sources */,

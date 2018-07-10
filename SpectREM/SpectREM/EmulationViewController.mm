@@ -184,9 +184,7 @@ static const int cSCREEN_FILL = 1;
 - (void)setupNotifications
 {
     [[NSNotificationCenter defaultCenter] addObserverForName:cDISPLAY_UPDATE_NOTIFICATION object:NULL queue:NULL usingBlock:^(NSNotification * _Nonnull note) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [(OpenGLView *)self.glView updateTextureData:machine->displayBuffer];
-        });
+        [self updateDisplay];
     }];
 }
 
