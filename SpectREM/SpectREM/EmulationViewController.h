@@ -29,7 +29,7 @@ static NSString *const cDISPLAY_UPDATE_NOTIFICATION = @"DisplayUpdateNotificatio
 static NSString *const cCPU_PAUSED_NOTIFICATION = @"CPUPausedNotification";
 static NSString *const cCPU_RESUMED_NOTIFICATION = @"CPUResumedNotification";
 
-@interface EmulationViewController : NSViewController 
+@interface EmulationViewController : NSViewController
 
 #pragma mark - Properties
 
@@ -44,6 +44,7 @@ static NSString *const cCPU_RESUMED_NOTIFICATION = @"CPUResumedNotification";
 - (void *)getDisplayBuffer;
 - (BOOL)getDisplayReady;
 - (void *)getCurrentMachine;
+- (void *)getDebugger;
 
 - (void)loadFileWithURL:(NSURL *)url addToRecent:(BOOL)addToRecent;
 - (void)audioCallback:(int)inNumberFrames buffer:(int16_t *)buffer;

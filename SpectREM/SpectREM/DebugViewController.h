@@ -11,7 +11,7 @@
 
 @interface DebugViewController : NSViewController <NSTableViewDataSource, NSTabViewDelegate, NSTextFieldDelegate>
 
-@property (assign) BOOL decimalFormat;
+@property (assign) BOOL hexFormat;
 
 // Registers
 @property (strong, nonatomic) NSString *pc;
@@ -52,39 +52,17 @@
 @property (strong) NSString *iff1;
 @property (strong) NSString *tStates;
 
-@property (assign) EmulationViewController *emulationViewController;
+@property (assign)  EmulationViewController *emulationViewController;
 @property (weak) IBOutlet NSTableView *disassemblyTableview;
 @property (weak) IBOutlet NSTableView *memoryTableView;
 @property (weak) IBOutlet NSTableView *stackTable;
-@property (strong) NSData *imageData;
-@property (strong) NSImage *displayImage;
 @property (weak) IBOutlet NSTableView *breakpointTableView;
 @property (strong) IBOutlet NSVisualEffectView *effectView;
-@property (weak) IBOutlet NSView *displayView;
-@property (weak) IBOutlet NSSplitView *splitView;
 
 #pragma mark - Methods
 
 - (void)updateMemoryTableSize;
-- (void)breakpointHitAddress:(unsigned short)address operation:(uint8_t)operation;
-
-@end
-
-#pragma mark - Disassembled Instruction Class
-
-@interface DisassembledOpcode : NSObject
-
-@property (assign) int address;
-@property (strong) NSString *bytes;
-@property (strong) NSString *instruction;
-
-@end
-
-#pragma mark - Breakpoint Class
-
-@interface Breakpoint : NSObject
-
-@property (assign) uint16_t address;
-@property (strong) NSString *condition;
+//- (void)breakpointHitAddress:(unsigned short)address operation:(uint8_t)operation;
+- (void)updateViewDetails;
 
 @end

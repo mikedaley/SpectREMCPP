@@ -14,6 +14,7 @@
 #import "ZXSpectrum128.hpp"
 #import "Tape.hpp"
 #import "AudioQueue.hpp"
+#import "Debug.hpp"
 
 #import "AudioCore.h"
 #import "OpenGLView.h"
@@ -39,12 +40,12 @@ static const int cSCREEN_FILL = 1;
 {
 @public
     ZXSpectrum                      *machine;
+    Debug                           *debugger;
     Tape                            *tape;
     dispatch_source_t               displayTimer;
     NSString                        *mainBundlePath;
     bool                            configViewVisible;
     
-//    AudioCore                       *audioCore;
     AudioQueue                      *audioQueue;
     int16_t                         audioBuffer;
     DebugOpCallbackBlock            debugBlock;
@@ -246,9 +247,11 @@ static const int cSCREEN_FILL = 1;
     tapeBrowserWindowController = [storyBoard instantiateControllerWithIdentifier:@"TAPE_BROWSER_WINDOW"];
     tapeBrowserViewController = (TapeBrowserViewController *)tapeBrowserWindowController.contentViewController;
     tapeBrowserViewController.emulationViewController = self;
+
     debugWindowController = [storyBoard instantiateControllerWithIdentifier:@"DEBUG_WINDOW"];
     debugViewController = (DebugViewController *)debugWindowController.contentViewController;
     debugViewController.emulationViewController = self;
+
 }
 
 #pragma mark - Init/Switch Machine
@@ -282,11 +285,20 @@ static const int cSCREEN_FILL = 1;
     
     machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
     
+    debugger = new Debug;
+    debugger->registerMachine(machine);
+    
     __block EmulationViewController *blockSelf = self;
-    __block DebugViewController *blockDebugViewController = debugViewController;
-    debugBlock = (^(unsigned short address, uint8_t operation) {
-        [blockSelf.audioCore stop];
-        [blockDebugViewController breakpointHitAddress:address operation:operation];
+    
+    debugBlock = (^bool(unsigned short address, uint8_t operation) {
+        
+        if (blockSelf->debugger->checkForBreakpoint(address, operation))
+        {
+            [blockSelf.audioCore stop];
+            return true;
+        }
+        return false;
+        
     });
     
     machine->registerDebugOpCallback( debugBlock );
@@ -641,6 +653,12 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     [debugWindowController showWindow:NULL];
 }
 
+- (IBAction)switchHexDecimal:(id)sender
+{
+    debugViewController.hexFormat = (debugViewController.hexFormat) ? NO : YES;
+    [debugViewController updateViewDetails];
+}
+
 - (void)pauseMachine
 {
     if (machine)
@@ -716,6 +734,11 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 - (void *)getCurrentMachine
 {
     return machine;
+}
+
+- (void *)getDebugger
+{
+    return debugger;
 }
 
 - (BOOL)getCPUState

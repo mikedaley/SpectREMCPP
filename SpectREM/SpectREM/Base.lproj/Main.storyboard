@@ -174,9 +174,14 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Debug" id="SD2-Dx-upf">
                                     <items>
-                                        <menuItem title="Show Debugger" enabled="NO" keyEquivalent="D" id="FDy-8V-fvO" userLabel="Debugger ">
+                                        <menuItem title="Show Debugger" keyEquivalent="D" id="FDy-8V-fvO">
                                             <connections>
                                                 <action selector="showDebugger:" target="Ady-hI-5gd" id="s6t-Me-F9A"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Switch Hex/Decimal" keyEquivalent="H" id="MJO-Sp-O1J" userLabel="Switch Hex/Decimal">
+                                            <connections>
+                                                <action selector="switchHexDecimal:" target="Ady-hI-5gd" id="ud4-Vs-TKa"/>
                                             </connections>
                                         </menuItem>
                                     </items>
@@ -1172,7 +1177,7 @@
                     <window key="window" identifier="DEBUG_WINDOW_CONTROLLER" title="Debugger" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="debuggerWindow" animationBehavior="default" id="Ita-eI-Vzo" customClass="NSPanel">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-                        <rect key="contentRect" x="425" y="461" width="480" height="270"/>
+                        <rect key="contentRect" x="425" y="461" width="1166" height="680"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1418"/>
                         <value key="minSize" type="size" width="1166" height="680"/>
                         <connections>
@@ -1185,7 +1190,7 @@
                 </windowController>
                 <customObject id="ZBw-3d-C8j" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1560" y="225"/>
+            <point key="canvasLocation" x="1728" y="33"/>
         </scene>
         <!--Debugger-->
         <scene sceneID="dpk-JM-Vyf">
@@ -1586,8 +1591,8 @@
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="ujR-c0-KUY">
-                                            <rect key="frame" x="153" y="56" width="56" height="18"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" id="ujR-c0-KUY">
+                                            <rect key="frame" x="153" y="55" width="56" height="19"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" borderStyle="border" alignment="center" title="0xFFFF" drawsBackground="YES" id="vZ3-Me-dKg">
                                                 <font key="font" size="12" name="Monaco"/>
@@ -1598,8 +1603,8 @@
                                                 <binding destination="yi0-Aq-HDc" name="value" keyPath="self.currentRom" id="MDU-Cs-yVJ"/>
                                             </connections>
                                         </textField>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Kzo-Da-ZwK">
-                                            <rect key="frame" x="153" y="32" width="56" height="18"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" id="Kzo-Da-ZwK">
+                                            <rect key="frame" x="153" y="30" width="56" height="19"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" borderStyle="border" alignment="center" title="0xFFFF" drawsBackground="YES" id="VY1-3c-9gn">
                                                 <font key="font" size="12" name="Monaco"/>
@@ -1610,8 +1615,8 @@
                                                 <binding destination="yi0-Aq-HDc" name="value" keyPath="self.ramPage" id="QvC-wN-xhc"/>
                                             </connections>
                                         </textField>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="GaP-y4-HFM">
-                                            <rect key="frame" x="153" y="7" width="56" height="18"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" id="GaP-y4-HFM">
+                                            <rect key="frame" x="153" y="5" width="56" height="19"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" borderStyle="border" alignment="center" title="0xFFFF" drawsBackground="YES" id="VF4-Ys-tfq">
                                                 <font key="font" size="12" name="Monaco"/>
@@ -2089,7 +2094,7 @@
                                                                     </tableCellView>
                                                                 </prototypeCellViews>
                                                             </tableColumn>
-                                                            <tableColumn identifier="BytesColID" width="98" minWidth="40" maxWidth="1000" id="san-Ro-cil">
+                                                            <tableColumn identifier="BytesColID" width="121" minWidth="40" maxWidth="1000" id="san-Ro-cil">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Bytes">
                                                                     <font key="font" metaFont="smallSystem"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -2103,13 +2108,13 @@
                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                 <prototypeCellViews>
                                                                     <tableCellView id="HZg-6c-zQ2">
-                                                                        <rect key="frame" x="63" y="1" width="98" height="20"/>
+                                                                        <rect key="frame" x="63" y="1" width="121" height="20"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
-                                                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="dH5-Ef-Ygz">
-                                                                                <rect key="frame" x="0.0" y="3" width="96" height="15"/>
+                                                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" misplaced="YES" id="dH5-Ef-Ygz">
+                                                                                <rect key="frame" x="0.0" y="3" width="120" height="15"/>
                                                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                                                <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="FF FF FF FF" id="RYf-Iz-xro">
+                                                                                <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="255 255 255 255" id="RYf-Iz-xro">
                                                                                     <font key="font" size="12" name="Monaco"/>
                                                                                     <color key="textColor" red="0.92143100499999997" green="0.92145264149999995" blue="0.92144101860000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -2122,7 +2127,7 @@
                                                                     </tableCellView>
                                                                 </prototypeCellViews>
                                                             </tableColumn>
-                                                            <tableColumn identifier="DisassemblyColID" width="230" minWidth="10" maxWidth="3.4028234663852886e+38" id="TPw-FU-DDR">
+                                                            <tableColumn identifier="DisassemblyColID" width="207" minWidth="10" maxWidth="3.4028234663852886e+38" id="TPw-FU-DDR">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Mnemonic">
                                                                     <font key="font" metaFont="smallSystem"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -2136,11 +2141,11 @@
                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                 <prototypeCellViews>
                                                                     <tableCellView id="xHh-Dp-SnF">
-                                                                        <rect key="frame" x="166" y="1" width="230" height="20"/>
+                                                                        <rect key="frame" x="189" y="1" width="207" height="20"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
-                                                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="3EB-aF-WSK">
-                                                                                <rect key="frame" x="0.0" y="3" width="276" height="15"/>
+                                                                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" misplaced="YES" id="3EB-aF-WSK">
+                                                                                <rect key="frame" x="0.0" y="3" width="206" height="15"/>
                                                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                                 <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="SET 5, (IY+$FF)" id="4he-iW-bzB">
                                                                                     <font key="font" size="12" name="Monaco"/>
@@ -2416,7 +2421,7 @@
                 <customObject id="dBu-LK-TyR" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <userDefaultsController id="ovV-4U-gFB"/>
             </objects>
-            <point key="canvasLocation" x="1560" y="914"/>
+            <point key="canvasLocation" x="1728" y="923"/>
         </scene>
         <!--Instruction View Controller-->
         <scene sceneID="vlG-jd-bha">

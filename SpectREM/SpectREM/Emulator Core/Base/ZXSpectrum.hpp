@@ -23,7 +23,7 @@ using namespace std;
 #pragma mark - Base ZXSpectrum class
 
 typedef void (*Z80DebugOpCallback)(unsigned short address, uint8_t operation, void *param);
-typedef void (^DebugOpCallbackBlock)(unsigned short address, uint8_t operation);
+typedef bool (^DebugOpCallbackBlock)(unsigned short address, uint8_t operation);
 
 class ZXSpectrum
 {
@@ -97,7 +97,7 @@ public:
     // Breakpoint information
     struct Breakpoint {
         uint16_t    address = 0;
-        bool        breakPoint = false;
+        bool        breakPoint = 0;
     };
     
 public:
