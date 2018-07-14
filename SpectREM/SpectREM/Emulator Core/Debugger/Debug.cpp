@@ -82,7 +82,25 @@ unsigned long Debug::numberOfBreakpoints()
 
 Debug::Breakpoint Debug::breakpoint(unsigned long index)
 {
-    return m_breakpoints[ index ];
+    if (index < m_breakpoints.size())
+    {
+        return m_breakpoints[ index ];
+    }
+    Breakpoint bp;
+    return bp;
+}
+
+uint8_t Debug::breakpointAtAddress(uint16_t address)
+{
+    for (int i = 0; i < m_breakpoints.size(); i++)
+    {
+        if (m_breakpoints[ i ].address == address)
+        {
+            return m_breakpoints[ i ].type;
+        }
+    }
+    
+    return 0;
 }
 
 #pragma mark - Disassemble
@@ -128,10 +146,40 @@ void Debug::disassemble(uint16_t fromAddress, uint16_t bytes, bool hexFormat)
 
 Debug::DisassembledOpcode Debug::disassembly(unsigned long index)
 {
-    return m_disassembly[ index ];
+    if (index < m_disassembly.size())
+    {
+        return m_disassembly[ index ];
+    }
+    
+    DisassembledOpcode dop;
+    return dop;
 }
 
 unsigned long Debug::numberOfMnemonics()
 {
     return m_disassembly.size();
+}
+
+#pragma mark - Stack
+
+unsigned long Debug::numberOfStackEntries()
+{
+    return m_stack.size();
+}
+
+void Debug::stackTableUpdate()
+{
+    m_stack.clear();
+    for (unsigned int i = machine->z80Core.GetRegister(CZ80Core::eREG_SP); i <= 0xfffe; i += 2)
+    {
+        uint16_t address = machine->z80Core.Z80CoreDebugMemRead(i + 1, NULL) << 8;
+        address |= machine->z80Core.Z80CoreDebugMemRead(i, NULL);
+        m_stack.push_back(address);
+    }
+
+}
+
+uint16_t Debug::stackAddress(unsigned long index)
+{
+    return m_stack[ index ];
 }

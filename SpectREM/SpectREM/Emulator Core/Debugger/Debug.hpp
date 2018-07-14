@@ -52,10 +52,15 @@ public:
     void                        removeBreakpoint(uint16_t address, uint8_t type);
     unsigned long               numberOfBreakpoints();
     Debug::Breakpoint           breakpoint(unsigned long index);
+    uint8_t                     breakpointAtAddress(uint16_t address);
     
     void                        disassemble(uint16_t fromAddress, uint16_t bytes, bool hexFormat);
     Debug::DisassembledOpcode   disassembly(unsigned long index);
     unsigned long               numberOfMnemonics();
+    
+    unsigned long               numberOfStackEntries();
+    void                        stackTableUpdate();
+    uint16_t                    stackAddress(unsigned long index);
     
 #pragma mark - Members
 
