@@ -28,7 +28,7 @@ public:
     // Holds details of each disassembled instruction
     struct DisassembledOpcode
     {
-        string      address;
+        uint16_t    address;
         string      bytes;
         string      mnemonic;
     };
@@ -62,13 +62,19 @@ public:
     void                        stackTableUpdate();
     uint16_t                    stackAddress(unsigned long index);
     
+    bool                        setRegister(string register, unsigned int value);
+    
+    void                        fillMemory(uint16_t fromAddress, uint16_t toAddress, uint8_t value);
+    
 #pragma mark - Members
 
 protected:
     
-    vector<DisassembledOpcode>  m_disassembly;
-    vector<Breakpoint>          m_breakpoints;
-    vector<uint16_t>            m_stack;
+    vector<DisassembledOpcode>                  m_disassembly;
+    vector<Breakpoint>                          m_breakpoints;
+    vector<uint16_t>                            m_stack;
+    map<string, CZ80Core::eZ80BYTEREGISTERS>    m_byteRegisters;
+    map<string, CZ80Core::eZ80WORDREGISTERS>    m_wordRegisters;
     
 public:
     ZXSpectrum *                machine;

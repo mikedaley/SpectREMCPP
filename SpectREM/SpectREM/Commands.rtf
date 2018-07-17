@@ -10,48 +10,52 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
 
 \b \cf0 \ulnone P
-\b0  					Pause emulation \
+\b0  						Pause emulation \
 \
 
 \b R
-\b0  					Resume emulation\
+\b0  						Resume emulation\
 \
 
-\b RF
-\b0  					Run the emulation for a single frame\
+\b SF
+\b0  						Step an entire frame\
 \
 
 \b S
-\b0  					Step a single instruction\
+\b0  						Step a single instruction\
 \
 
 \b D
-\b0  address 			Disassemble memory from the address provided \
+\b0  address 				Disassemble memory from the address provided \
 \
 
 \b M
 \b0  
 \i address
-\i0  			Find the address provided in the memory table\
+\i0  				Find the address provided in the memory table\
 \
 
 \b WM
 \b0  
 \i address value
-\i0  		Write the value to the memory address provided\
+\i0  			Write the value to the memory address provided\
 \
 
 \b SR
 \b0  
 \i register value
-\i0  		Set the register to the value provided\
+\i0  			Set the register to the value provided\
 \
 
 \b BR
-\b0  
+\b0  (+/-)
 \i operation address
 \i0  	Set a breakpoint at address for the supplied operations. valid \
-					operations are E(X)exute, (R)ead, (W)rite\
+						operations are E(X)exute, (R)ead, (W)rite. So to add a \
+						breakpoint at address $0010 on a read operation the \
+						command is:\
+		\
+						bp +r 0010\
 \
 \pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
 \cf0 \

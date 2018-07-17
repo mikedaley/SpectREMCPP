@@ -80,13 +80,13 @@ void ZXSpectrum::generateFrame()
 {
     uint32_t currentFrameTstates = machineInfo.tsPerFrame;
     
-    while (currentFrameTstates > 0 && !emuPaused)
+    while (currentFrameTstates > 0 && !emuPaused && !breakpointHit)
     {
         if (debugOpCallbackBlock)
         {
-            if( debugOpCallbackBlock( z80Core.GetRegister(CZ80Core::eREG_PC), eDebugExecuteOp ) )
+            if( debugOpCallbackBlock( z80Core.GetRegister(CZ80Core::eREG_PC), eDebugExecuteOp ) || emuPaused)
             {
-                break;
+                return;
             }
         }
         

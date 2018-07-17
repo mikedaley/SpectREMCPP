@@ -278,9 +278,8 @@ public:
     
     // SPI port
     unsigned short          spiPort = 0xfaf7;
-    
-    // Debug
-    uint8_t                 breakpoints[ 65536 ]{0};
+
+    bool                    breakpointHit = false;
 
 };
 

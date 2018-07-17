@@ -258,7 +258,7 @@ char const * cU_SCREEN_SIZE =           "u_screenSize";
     viewHeight = screenHeight;
     
     contextObj = [[self openGLContext] CGLContextObj];
-    context = [self openGLContext];
+//    context = [self openGLContext];
     
     [self loadShaders];
     [self setupTextures];

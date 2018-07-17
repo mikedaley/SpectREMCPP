@@ -294,7 +294,7 @@ static const int cSCREEN_FILL = 1;
         
         if (blockSelf->debugger->checkForBreakpoint(address, operation))
         {
-            [blockSelf.audioCore stop];
+            [blockSelf pauseMachine];
             return true;
         }
         return false;
@@ -663,6 +663,7 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 {
     if (machine)
     {
+        machine->emuPaused = true;
         [self.audioCore stop];
         [[NSNotificationCenter defaultCenter] postNotificationName:cCPU_PAUSED_NOTIFICATION object:NULL];
     }
@@ -672,6 +673,7 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 {
     if (machine)
     {
+        machine->emuPaused = false;
         [self.audioCore start];
         [[NSNotificationCenter defaultCenter] postNotificationName:cCPU_RESUMED_NOTIFICATION object:NULL];
     }

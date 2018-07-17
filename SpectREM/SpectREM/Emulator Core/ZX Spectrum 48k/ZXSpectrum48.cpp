@@ -209,8 +209,13 @@ void ZXSpectrum48::coreMemoryWrite(unsigned short address, unsigned char data)
 
     if (debugOpCallbackBlock != NULL)
     {
-        debugOpCallbackBlock( address, eDebugWriteOp );
+        if (debugOpCallbackBlock( address, eDebugWriteOp ))
+        {
+            breakpointHit = true;
+        }
     }
+    
+    breakpointHit = false;
 
     memoryRam[ address ] = data;
 }
@@ -237,9 +242,13 @@ unsigned char ZXSpectrum48::coreMemoryRead(unsigned short address)
 		
         if (debugOpCallbackBlock != NULL)
         {
-            debugOpCallbackBlock( address, eDebugReadOp );
+            if (debugOpCallbackBlock( address, eDebugReadOp ))
+            {
+                breakpointHit = true;
+            }
         }
 
+        breakpointHit = false;
         return memoryRom[address];
     }
 

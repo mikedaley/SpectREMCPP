@@ -13,6 +13,39 @@
 Debug::Debug()
 {
     cout << "Debugger::Constructor" << endl;
+    m_byteRegisters = {
+        {"A" , CZ80Core::eREG_A},
+        {"F" , CZ80Core::eREG_F},
+        {"B" , CZ80Core::eREG_B},
+        {"C" , CZ80Core::eREG_C},
+        {"D" , CZ80Core::eREG_D},
+        {"E" , CZ80Core::eREG_E},
+        {"H" , CZ80Core::eREG_H},
+        {"L" , CZ80Core::eREG_L},
+        {"A'" , CZ80Core::eREG_ALT_A},
+        {"F'" , CZ80Core::eREG_ALT_F},
+        {"B'" , CZ80Core::eREG_ALT_B},
+        {"C'" , CZ80Core::eREG_ALT_C},
+        {"D'" , CZ80Core::eREG_ALT_D},
+        {"E'" , CZ80Core::eREG_ALT_E},
+        {"H'" , CZ80Core::eREG_ALT_H},
+        {"L'" , CZ80Core::eREG_ALT_L},
+        {"I" , CZ80Core::eREG_I},
+        {"R" , CZ80Core::eREG_R}
+    };
+    
+    m_wordRegisters = {
+        {"AF" , CZ80Core::eREG_AF},
+        {"BC" , CZ80Core::eREG_BC},
+        {"DE" , CZ80Core::eREG_DE},
+        {"HL" , CZ80Core::eREG_HL},
+        {"AF'" , CZ80Core::eREG_ALT_AF},
+        {"BC'" , CZ80Core::eREG_ALT_BC},
+        {"DE'" , CZ80Core::eREG_ALT_DE},
+        {"HL'" , CZ80Core::eREG_ALT_HL},
+        {"PC" , CZ80Core::eREG_PC},
+        {"SP" , CZ80Core::eREG_SP}
+    };
 }
 
 Debug::~Debug()
@@ -29,12 +62,13 @@ void Debug::registerMachine(ZXSpectrum * new_machine)
 
 #pragma mark - Breakpoints
 
-bool Debug::checkForBreakpoint(uint16_t address, uint8_t type)
+bool Debug::checkForBreakpoint(uint16_t address, uint8_t bpType)
 {
     for (vector<unsigned long>::size_type i = 0; i != m_breakpoints.size(); i++)
     {
-        if (m_breakpoints[ i ].type & type)
+        if (m_breakpoints[ i ].address == address &&  m_breakpoints[ i ].type & bpType)
         {
+            cout << "BREAK ON " << to_string(bpType) << " at address " << address << endl;
             return true;
         }
     }
@@ -87,6 +121,7 @@ Debug::Breakpoint Debug::breakpoint(unsigned long index)
         return m_breakpoints[ index ];
     }
     Breakpoint bp;
+    bp.type = 0xff;
     return bp;
 }
 
@@ -119,14 +154,14 @@ void Debug::disassemble(uint16_t fromAddress, uint16_t bytes, bool hexFormat)
         
         if (length == 0)
         {
-            dop.address = to_string(pc);
+            dop.address = pc;
             dop.bytes = to_string(machine->z80Core.Z80CoreDebugMemRead(pc, NULL));
             dop.mnemonic = "DB " + dop.bytes;
             pc++;
         }
         else
         {
-            dop.address = to_string(pc);
+            dop.address = pc;
 
             for (int i = 0; i < length; i++)
             {
@@ -170,7 +205,7 @@ unsigned long Debug::numberOfStackEntries()
 void Debug::stackTableUpdate()
 {
     m_stack.clear();
-    for (unsigned int i = machine->z80Core.GetRegister(CZ80Core::eREG_SP); i <= 0xfffe; i += 2)
+    for (uint i = machine->z80Core.GetRegister(CZ80Core::eREG_SP); i <= 0xfffe; i += 2)
     {
         uint16_t address = machine->z80Core.Z80CoreDebugMemRead(i + 1, NULL) << 8;
         address |= machine->z80Core.Z80CoreDebugMemRead(i, NULL);
@@ -182,4 +217,41 @@ void Debug::stackTableUpdate()
 uint16_t Debug::stackAddress(unsigned long index)
 {
     return m_stack[ index ];
+}
+
+#pragma mark - Set Registers
+
+bool Debug::setRegister(string reg, unsigned int value)
+{
+    map<string, CZ80Core::eZ80BYTEREGISTERS>::iterator byteit;
+    for (byteit = m_byteRegisters.begin(); byteit != m_byteRegisters.end(); byteit++)
+    {
+        if (byteit->first == reg)
+        {
+            machine->z80Core.SetRegister(byteit->second, value);
+            return true;
+        }
+    }
+
+    map<string, CZ80Core::eZ80WORDREGISTERS>::iterator wordit;
+    for (wordit = m_wordRegisters.begin(); wordit != m_wordRegisters.end(); wordit++)
+    {
+        if (wordit->first == reg)
+        {
+            machine->z80Core.SetRegister(wordit->second, value);
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+#pragma mark - Fill Memory
+
+void Debug::fillMemory(uint16_t fromAddress, uint16_t toAddress, uint8_t value)
+{
+    for (uint16_t addr = fromAddress; addr < toAddress; addr++)
+    {
+        machine->coreDebugWrite(addr, value, NULL);
+    }
 }
