@@ -39,6 +39,12 @@ public:
         uint8_t     type;
     };
     
+    struct Stack
+    {
+        uint16_t    address;
+        uint16_t    value;
+    };
+    
 #pragma mark - Methods
     
 public:
@@ -60,7 +66,7 @@ public:
     
     unsigned long               numberOfStackEntries();
     void                        stackTableUpdate();
-    uint16_t                    stackAddress(unsigned long index);
+    Stack                       stackAddress(unsigned long index);
     
     bool                        setRegister(string register, unsigned int value);
     
@@ -72,7 +78,7 @@ protected:
     
     vector<DisassembledOpcode>                  m_disassembly;
     vector<Breakpoint>                          m_breakpoints;
-    vector<uint16_t>                            m_stack;
+    vector<Stack>                               m_stack;
     map<string, CZ80Core::eZ80BYTEREGISTERS>    m_byteRegisters;
     map<string, CZ80Core::eZ80WORDREGISTERS>    m_wordRegisters;
     

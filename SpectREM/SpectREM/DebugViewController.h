@@ -62,7 +62,6 @@
 #pragma mark - Methods
 
 - (void)updateMemoryTableSize;
-//- (void)breakpointHitAddress:(unsigned short)address operation:(uint8_t)operation;
 - (void)updateViewDetails;
 
 @end

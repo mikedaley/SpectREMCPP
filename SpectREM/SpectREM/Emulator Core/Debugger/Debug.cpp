@@ -207,14 +207,18 @@ void Debug::stackTableUpdate()
     m_stack.clear();
     for (uint i = machine->z80Core.GetRegister(CZ80Core::eREG_SP); i <= 0xfffe; i += 2)
     {
-        uint16_t address = machine->z80Core.Z80CoreDebugMemRead(i + 1, NULL) << 8;
-        address |= machine->z80Core.Z80CoreDebugMemRead(i, NULL);
-        m_stack.push_back(address);
-    }
+        uint16_t value = machine->z80Core.Z80CoreDebugMemRead(i + 1, NULL) << 8;
+        value |= machine->z80Core.Z80CoreDebugMemRead(i, NULL);
 
+        Stack sp;
+        sp.address = i;
+        sp.value = value;
+
+        m_stack.push_back(sp);
+    }
 }
 
-uint16_t Debug::stackAddress(unsigned long index)
+Debug::Stack Debug::stackAddress(unsigned long index)
 {
     return m_stack[ index ];
 }

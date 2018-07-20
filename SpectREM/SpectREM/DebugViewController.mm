@@ -14,8 +14,8 @@
 #pragma mark - Debugger Command Tokens/Operators & Actions
 
 static NSString *const cTOKEN_BREAKPOINT = @"BP";
-static NSString *const cTOKEN_PAUSE = @"P";
-static NSString *const cTOKEN_RESUME = @"R";
+static NSString *const cTOKEN_BREAK = @"B";
+static NSString *const cTOKEN_CONTINUE = @"C";
 static NSString *const cTOKEN_STEP = @"S";
 static NSString *const cTOKEN_STEP_FRAME = @"SF";
 static NSString *const cTOKEN_SEARCH_MEMORY = @"SM";
@@ -47,6 +47,7 @@ static NSString *const cBREAKPOINT_ADDRESS_COL = @"BreakpointAddressColID";
 static NSString *const cBREAKPOINT_CONDITION_COL = @"BreakpointConditionColID";
 
 static NSString *const cSTACK_ADDRESS_COL = @"StackAddressColID";
+static NSString *const cSTACK_VALUE_COL = @"StackValueColID";
 
 static NSString *const cDISASSEMBLY_ADDRESS_COL = @"DisassemblyAddressColID";
 static NSString *const cDISASSEMBLY_BYTES_COL = @"DisassemblyBytesColID";
@@ -58,9 +59,9 @@ static NSString *const cMEMORY_ASCII_COL = @"MemoryASCIIColID";
 
 #pragma mark - Colors
 
-static NSColor *const cHIGHLIGHT_COLOR = [NSColor colorWithRed:0 green:0.5 blue:0 alpha:1.0];
-static NSColor *const cEXEC_BREAKPOINT_COLOR = [NSColor colorWithRed:0.5 green:0.0 blue:0 alpha:1.0];
-static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.5 green:0.0 blue:0.5 alpha:1.0];
+static NSColor *const cHIGHLIGHT_COLOR = [NSColor colorWithRed:0 green:0.6 blue:0 alpha:1.0];
+static NSColor *const cEXEC_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0.0 blue:0 alpha:1.0];
+static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0.0 blue:0.6 alpha:1.0];
 
 #pragma mark - Private Interface
 
@@ -81,6 +82,8 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.5 green:0
 @end
 
 @implementation DebugViewController
+
+@synthesize hexFormat = _hexFormat;
 
 - (instancetype)initWithCoder:(NSCoder *)coder
 {
@@ -329,7 +332,7 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.5 green:0
             {
                 unsigned int address = ((int)row * self.byteWidth) + i;
                 
-                NSMutableAttributedString *attrString = [NSMutableAttributedString new];
+                NSMutableAttributedString *attrString;
                 if (address <= 0xffff)
                 {
                     if (self.hexFormat)
@@ -373,7 +376,7 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.5 green:0
         else if ([tableColumn.identifier isEqualToString:cMEMORY_ASCII_COL])
         {
             NSMutableAttributedString *attrString = [NSMutableAttributedString new];
-            NSColor *color = [NSColor clearColor];
+            NSColor *color;
             for (int i = 0; i < self.byteWidth; i++)
             {
                 color = [NSColor clearColor];
@@ -389,19 +392,18 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.5 green:0
                     unsigned char c = debugger->machine->z80Core.Z80CoreDebugMemRead(address, NULL);
                     if ((c >= 0 && c < 32) || c > 126)
                     {
-                        [attrString appendAttributedString:[[NSAttributedString alloc] initWithString:@"."]];
-                        [attrString addAttribute:NSBackgroundColorAttributeName value:color range:NSMakeRange(i, 1)];
+                        [attrString appendAttributedString:[[NSAttributedString alloc] initWithString:@"・ "]];
+                        [attrString addAttribute:NSBackgroundColorAttributeName value:color range:NSMakeRange(i * 2, 1)];
                     }
                     else
                     {
-                        [attrString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%c", c]]];
-                        [attrString addAttribute:NSBackgroundColorAttributeName value:color range:NSMakeRange(i, 1)];
+                        [attrString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%c ", c]]];
+                        [attrString addAttribute:NSBackgroundColorAttributeName value:color range:NSMakeRange(i * 2, 1)];
                     }
                 }
                 else
                 {
                     [attrString appendAttributedString:[[NSAttributedString alloc] initWithString:@" "]];
-                    [attrString addAttribute:NSBackgroundColorAttributeName value:color range:NSMakeRange(i, 1)];
                 }
             }
                      
@@ -420,13 +422,27 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.5 green:0
     view = [tableView makeViewWithIdentifier:tableColumn.identifier owner:self];
     if (view)
     {
-        if (self.hexFormat)
+        if ([tableColumn.identifier isEqualToString:cSTACK_ADDRESS_COL])
         {
-            view.textField.stringValue = [NSString stringWithFormat:@"$%04X", debugger->stackAddress(row)];
+            if (self.hexFormat)
+            {
+                view.textField.stringValue = [NSString stringWithFormat:@"$%04X", debugger->stackAddress(row).address];
+            }
+            else
+            {
+                view.textField.stringValue = [NSString stringWithFormat:@"%05i", debugger->stackAddress(row).address];
+            }
         }
-        else
+        else if ([tableColumn.identifier isEqualToString:cSTACK_VALUE_COL])
         {
-            view.textField.stringValue = [NSString stringWithFormat:@"%05i", debugger->stackAddress(row)];
+            if (self.hexFormat)
+            {
+                view.textField.stringValue = [NSString stringWithFormat:@"$%04X", debugger->stackAddress(row).value];
+            }
+            else
+            {
+                view.textField.stringValue = [NSString stringWithFormat:@"%05i", debugger->stackAddress(row).value];
+            }
         }
     }
     
@@ -502,8 +518,13 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.5 green:0
 
 - (void)updateMemoryTableSize
 {
+    float byteColWidthPercentage = 0.53;
+    if (!self.hexFormat)
+    {
+        byteColWidthPercentage = 0.50;
+    }
     NSInteger width = self.memoryTableView.enclosingScrollView.frame.size.width - (self.memoryTableView.tableColumns[0].width + 9);
-    NSInteger col1Width = width * 0.70;
+    NSInteger col1Width = width * byteColWidthPercentage;
     NSInteger col2Width = width - col1Width;
     [self.memoryTableView.tableColumns[1] setWidth:col1Width];
     [self.memoryTableView.tableColumns[2] setWidth:col2Width];
@@ -513,7 +534,7 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.5 green:0
     }
     else
     {
-        self.byteWidth = (int)col1Width / 30;
+        self.byteWidth = (int)col1Width / 31;
     }
     
     [self.memoryTableView reloadData];
@@ -554,11 +575,11 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.5 green:0
     {
         [self tokenDisassemble:commandList machine:debugger->machine];
     }
-    else if ([command isEqualToString:cTOKEN_RESUME])
+    else if ([command isEqualToString:cTOKEN_CONTINUE])
     {
         [self tokenResume:commandList];
     }
-    else if ([command isEqualToString:cTOKEN_PAUSE])
+    else if ([command isEqualToString:cTOKEN_BREAK])
     {
         [self tokenPause:commandList];
     }
@@ -971,10 +992,17 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.5 green:0
     });
 }
 
-- (void)setHexFormat:(BOOL)hexFormat
+#pragma mark - Accessors
+
+- (void)setHexFormat:(BOOL)hexFormat1
 {
-    _hexFormat = hexFormat;
+    _hexFormat = hexFormat1;
     [self updateMemoryTableSize];
+}
+
+- (BOOL)hexFormat
+{
+    return _hexFormat;
 }
 
 @end

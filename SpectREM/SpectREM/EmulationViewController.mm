@@ -650,7 +650,7 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 
 - (IBAction)showDebugger:(id)sender
 {
-    [debugWindowController showWindow:NULL];
+    [debugWindowController showWindow:self];
 }
 
 - (IBAction)switchHexDecimal:(id)sender
