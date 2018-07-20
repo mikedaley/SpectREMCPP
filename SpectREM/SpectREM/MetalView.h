@@ -8,11 +8,6 @@
 
 #import <MetalKit/MetalKit.h>
 
-@interface MetalView : NSObject <MTKViewDelegate>
-
-- (nonnull instancetype)initWithMetalKitView:(nonnull MTKView *)mtkView;
-
-// Called once per emulation frame to update the texture with the emulators screen data
-- (void)updateTextureData:(void *_Nonnull)displayBuffer;
+@interface MetalView : MTKView
 
 @end

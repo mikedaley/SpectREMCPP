@@ -23,6 +23,7 @@ typedef enum TextureIndex
 {
     TextureIndexBaseColor = 0,
     TextureCLUTColor = 1,
+    TextureUniforms = 2,
 } TextureIndex;
 
 // This structure defines the layout of each vertex in the array of vertices set as an input to the Metal
@@ -44,5 +45,12 @@ typedef struct
     float b;
     float a;
 } Color;
+
+typedef struct
+{
+    float displayCurvature;
+    float displayBorderSize;
+    float displayPixelFilterValue;
+} Uniforms;
 
 #endif /* ShaderTypes_h */

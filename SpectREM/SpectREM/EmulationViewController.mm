@@ -24,7 +24,7 @@
 #import "TapeBrowserViewController.h"
 #import "DebugViewController.h"
 
-#import "MetalView.h"
+#import "MetalRenderer.h"
 
 #pragma mark - Constants
 
@@ -63,7 +63,7 @@ static const int cSCREEN_FILL = 1;
     NSTimer                         *_accelerationTimer;
     
     MTKView                         *_view;
-    MetalView                       *_renderer;
+    MetalRenderer                       *_renderer;
 }
 @end
 
@@ -99,7 +99,7 @@ static const int cSCREEN_FILL = 1;
         return;
     }
     
-    _renderer = [[MetalView alloc] initWithMetalKitView:_view];
+    _renderer = [[MetalRenderer alloc] initWithMetalKitView:_view];
     
     if (!_renderer)
     {
@@ -109,13 +109,14 @@ static const int cSCREEN_FILL = 1;
     
     [_renderer mtkView:_view drawableSizeWillChange:_view.drawableSize];
     _view.delegate = _renderer;
+    _view.nextResponder = self;
     
     _defaults = [Defaults defaults];
     
     _mainBundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/Contents/Resources/"];
     _storyBoard = [NSStoryboard storyboardWithName:@"Main" bundle:nil];
     
-    self.view.nextResponder = self;
+//    self.view.nextResponder = self;
     
     // The AudioCore uses the sound buffer to identify when a new frame should be drawn for accurate timing. The AudioQueue
     // is used to help measure usage of the audio buffer
@@ -176,7 +177,6 @@ static const int cSCREEN_FILL = 1;
             {
                 [_renderer updateTextureData:_machine->displayBuffer];
             }
-            
         }];
         
         [[NSRunLoop mainRunLoop] addTimer:_accelerationTimer forMode:NSRunLoopCommonModes];

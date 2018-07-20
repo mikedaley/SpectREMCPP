@@ -18,9 +18,10 @@
 		17C33DFA1F6578E600720A06 /* TapeBrowserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 17C33DF91F6578E600720A06 /* TapeBrowserViewController.m */; };
 		17C33DFE1F6583A400720A06 /* TapeCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 17C33DFD1F6583A400720A06 /* TapeCellView.m */; };
 		17EC89101F5B1FC500B6EFAF /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17EC890F1F5B1FC500B6EFAF /* AudioToolbox.framework */; };
-		276ADE262101C64E00EC7DC9 /* MetalView.m in Sources */ = {isa = PBXBuildFile; fileRef = 276ADE252101C64E00EC7DC9 /* MetalView.m */; };
 		276ADE292101CAA900EC7DC9 /* Display.metal in Sources */ = {isa = PBXBuildFile; fileRef = 276ADE282101CAA900EC7DC9 /* Display.metal */; };
 		276ADE2D2101CE6500EC7DC9 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 276ADE2C2101CE6500EC7DC9 /* MetalKit.framework */; };
+		276ADE2F21021A2200EC7DC9 /* MetalRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 276ADE2E21021A2200EC7DC9 /* MetalRenderer.m */; };
+		276ADE3421021B5100EC7DC9 /* MetalView.m in Sources */ = {isa = PBXBuildFile; fileRef = 276ADE3321021B5100EC7DC9 /* MetalView.m */; };
 		276E3F9C1F97A06B00020BB3 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17B5DB9C1F5B1CCE003E7EF3 /* AVFoundation.framework */; };
 		276E3F9E1F97AAE800020BB3 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 276E3F9D1F97AAD600020BB3 /* CoreMedia.framework */; };
 		276E3FA01F9FA01100020BB3 /* reflection.png in Resources */ = {isa = PBXBuildFile; fileRef = 276E3F9F1F9FA01000020BB3 /* reflection.png */; };
@@ -85,11 +86,13 @@
 		17C33DFC1F6583A400720A06 /* TapeCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TapeCellView.h; sourceTree = "<group>"; };
 		17C33DFD1F6583A400720A06 /* TapeCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TapeCellView.m; sourceTree = "<group>"; };
 		17EC890F1F5B1FC500B6EFAF /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
-		276ADE242101C64E00EC7DC9 /* MetalView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MetalView.h; sourceTree = "<group>"; };
-		276ADE252101C64E00EC7DC9 /* MetalView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MetalView.m; sourceTree = "<group>"; };
+		276ADE242101C64E00EC7DC9 /* MetalRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MetalRenderer.h; sourceTree = "<group>"; };
 		276ADE272101C75B00EC7DC9 /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
 		276ADE282101CAA900EC7DC9 /* Display.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Display.metal; sourceTree = "<group>"; };
 		276ADE2C2101CE6500EC7DC9 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
+		276ADE2E21021A2200EC7DC9 /* MetalRenderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MetalRenderer.m; sourceTree = "<group>"; };
+		276ADE3221021B5100EC7DC9 /* MetalView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MetalView.h; sourceTree = "<group>"; };
+		276ADE3321021B5100EC7DC9 /* MetalView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MetalView.m; sourceTree = "<group>"; };
 		276E3F9D1F97AAD600020BB3 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		276E3F9F1F9FA01000020BB3 /* reflection.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = reflection.png; path = Assets.xcassets/reflection.imageset/reflection.png; sourceTree = "<group>"; };
 		2778A1191F94E5D900385137 /* CLUTVert.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = CLUTVert.vsh; sourceTree = "<group>"; };
@@ -174,18 +177,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		174AAFBD1F58626E00B75535 /* Shaders */ = {
-			isa = PBXGroup;
-			children = (
-				2778A1191F94E5D900385137 /* CLUTVert.vsh */,
-				2778A11F1F94E60600385137 /* CLUTFrag.fsh */,
-				2778A11B1F94E5DA00385137 /* DisplayVert.vsh */,
-				2778A11A1F94E5DA00385137 /* DisplayFrag.fsh */,
-				276ADE282101CAA900EC7DC9 /* Display.metal */,
-			);
-			name = Shaders;
-			sourceTree = "<group>";
-		};
 		17B5DB921F5B146C003E7EF3 /* Audio Core */ = {
 			isa = PBXGroup;
 			children = (
@@ -226,6 +217,32 @@
 				EDB7F7FB1F5ED3EF003053E3 /* EmulationWindowController.m */,
 			);
 			name = "Main Window";
+			sourceTree = "<group>";
+		};
+		276ADE3021021B0400EC7DC9 /* OpenGL */ = {
+			isa = PBXGroup;
+			children = (
+				ED4137451F7D24DE008ACB30 /* OpenGLView.h */,
+				ED4137461F7D24DE008ACB30 /* OpenGLView.mm */,
+				2778A1191F94E5D900385137 /* CLUTVert.vsh */,
+				2778A11F1F94E60600385137 /* CLUTFrag.fsh */,
+				2778A11B1F94E5DA00385137 /* DisplayVert.vsh */,
+				2778A11A1F94E5DA00385137 /* DisplayFrag.fsh */,
+			);
+			name = OpenGL;
+			sourceTree = "<group>";
+		};
+		276ADE3121021B1700EC7DC9 /* Metal */ = {
+			isa = PBXGroup;
+			children = (
+				276ADE272101C75B00EC7DC9 /* ShaderTypes.h */,
+				276ADE242101C64E00EC7DC9 /* MetalRenderer.h */,
+				276ADE2E21021A2200EC7DC9 /* MetalRenderer.m */,
+				276ADE282101CAA900EC7DC9 /* Display.metal */,
+				276ADE3221021B5100EC7DC9 /* MetalView.h */,
+				276ADE3321021B5100EC7DC9 /* MetalView.m */,
+			);
+			name = Metal;
 			sourceTree = "<group>";
 		};
 		27BAE9A920F64481007A8CFB /* Debugger */ = {
@@ -358,14 +375,10 @@
 		ED913FB81F30767A00316E1A /* Emulation */ = {
 			isa = PBXGroup;
 			children = (
-				174AAFBD1F58626E00B75535 /* Shaders */,
+				276ADE3021021B0400EC7DC9 /* OpenGL */,
+				276ADE3121021B1700EC7DC9 /* Metal */,
 				ED913FA51F30759300316E1A /* EmulationViewController.h */,
 				ED913FA61F30759300316E1A /* EmulationViewController.mm */,
-				ED4137451F7D24DE008ACB30 /* OpenGLView.h */,
-				ED4137461F7D24DE008ACB30 /* OpenGLView.mm */,
-				276ADE242101C64E00EC7DC9 /* MetalView.h */,
-				276ADE252101C64E00EC7DC9 /* MetalView.m */,
-				276ADE272101C75B00EC7DC9 /* ShaderTypes.h */,
 			);
 			name = Emulation;
 			sourceTree = "<group>";
@@ -590,6 +603,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EDD9ADF11F5D6F51004DD728 /* ZXSpectrum128.cpp in Sources */,
+				276ADE3421021B5100EC7DC9 /* MetalView.m in Sources */,
 				1745BB651F50AE1E003203FE /* FloatingBus.cpp in Sources */,
 				17B27F041F6877C800B811FC /* AudioQueue.cpp in Sources */,
 				EDF6604B1FF3E3A500769784 /* SPI.cpp in Sources */,
@@ -605,6 +619,7 @@
 				ED913FCD1F30781000316E1A /* Z80Core_FDOpcodes.cpp in Sources */,
 				EDC56FDA1F6C228700162739 /* Defaults.m in Sources */,
 				ED913FC91F30781000316E1A /* Z80Core_CBOpcodes.cpp in Sources */,
+				276ADE2F21021A2200EC7DC9 /* MetalRenderer.m in Sources */,
 				27C5DBA51FFC000A0064C661 /* DebugViewController.mm in Sources */,
 				17C33DFE1F6583A400720A06 /* TapeCellView.m in Sources */,
 				ED913FD41F30787000316E1A /* ZXSpectrum.cpp in Sources */,
@@ -624,7 +639,6 @@
 				ED504A641F51BBFF00BD289E /* Snapshot.cpp in Sources */,
 				ED2A6D051F6036D3003CD6CE /* ConfigurationViewController.m in Sources */,
 				17C33DFA1F6578E600720A06 /* TapeBrowserViewController.m in Sources */,
-				276ADE262101C64E00EC7DC9 /* MetalView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
