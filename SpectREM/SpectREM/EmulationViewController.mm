@@ -24,6 +24,8 @@
 #import "TapeBrowserViewController.h"
 #import "DebugViewController.h"
 
+#import "MetalView.h"
+
 #pragma mark - Constants
 
 uint32_t const cAUDIO_SAMPLE_RATE = 44100;
@@ -39,26 +41,29 @@ static const int cSCREEN_FILL = 1;
 @interface EmulationViewController()
 {
 @public
-    ZXSpectrum                      *machine;
-    Debug                           *debugger;
-    Tape                            *tape;
-    dispatch_source_t               displayTimer;
-    NSString                        *mainBundlePath;
-    bool                            configViewVisible;
+    ZXSpectrum                      *_machine;
+    Debug                           *_debugger;
+    Tape                            *_tape;
+    dispatch_source_t               _displayTimer;
+    NSString                        *_mainBundlePath;
+    bool                            _configViewVisible;
     
-    AudioQueue                      *audioQueue;
-    int16_t                         audioBuffer;
-    DebugOpCallbackBlock            debugBlock;
+    AudioQueue                      *_audioQueue;
+    int16_t                         _audioBuffer;
+    DebugOpCallbackBlock            _debugBlock;
     
-    NSStoryboard                    *storyBoard;
-    ConfigurationViewController     *configViewController;
-    ExportAccessoryViewController   *saveAccessoryController;
-    NSWindowController              *tapeBrowserWindowController;
-    TapeBrowserViewController       *tapeBrowserViewController;
-    NSWindowController              *debugWindowController;
-    DebugViewController             *debugViewController;
+    NSStoryboard                    *_storyBoard;
+    ConfigurationViewController     *_configViewController;
+    ExportAccessoryViewController   *_saveAccessoryController;
+    NSWindowController              *_tapeBrowserWindowController;
+    TapeBrowserViewController       *_tapeBrowserViewController;
+    NSWindowController              *_debugWindowController;
+    DebugViewController             *_debugViewController;
     
-    NSTimer                         *accelerationTimer;
+    NSTimer                         *_accelerationTimer;
+    
+    MTKView                         *_view;
+    MetalView                       *_renderer;
 }
 @end
 
@@ -68,9 +73,9 @@ static const int cSCREEN_FILL = 1;
 
 - (void)dealloc
 {
-    if (machine)
+    if (_machine)
     {
-        delete machine;
+        delete _machine;
     }
     [self.defaults removeObserver:self forKeyPath:MachineAcceleration];
     [self.defaults removeObserver:self forKeyPath:MachineSelectedModel];
@@ -85,27 +90,47 @@ static const int cSCREEN_FILL = 1;
 {
     [super viewDidLoad];
     
+    _view = (MTKView *)self.view;
+    _view.device = MTLCreateSystemDefaultDevice();
+    
+    if (!_view.device)
+    {
+        NSLog(@"Metal is not supported on this device!");
+        return;
+    }
+    
+    _renderer = [[MetalView alloc] initWithMetalKitView:_view];
+    
+    if (!_renderer)
+    {
+        NSLog(@"Renderer failed init");
+        return;
+    }
+    
+    [_renderer mtkView:_view drawableSizeWillChange:_view.drawableSize];
+    _view.delegate = _renderer;
+    
     _defaults = [Defaults defaults];
     
-    mainBundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/Contents/Resources/"];
-    storyBoard = [NSStoryboard storyboardWithName:@"Main" bundle:nil];
+    _mainBundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/Contents/Resources/"];
+    _storyBoard = [NSStoryboard storyboardWithName:@"Main" bundle:nil];
     
     self.view.nextResponder = self;
     
     // The AudioCore uses the sound buffer to identify when a new frame should be drawn for accurate timing. The AudioQueue
     // is used to help measure usage of the audio buffer
-    audioQueue = new AudioQueue();
+    _audioQueue = new AudioQueue();
     self.audioCore = [[AudioCore alloc] initWithSampleRate:cAUDIO_SAMPLE_RATE framesPerSecond:cFRAMES_PER_SECOND callback:self];
     
     //Create a tape instance
-    tape = new Tape(tapeStatusCallback);
+    _tape = new Tape(tapeStatusCallback);
     
     [self setupConfigView];
     [self setupControllers];
     [self setupObservers];
     [self setupNotifications];
     
-    [self initMachineWithRomPath:mainBundlePath machineType:(int)_defaults.machineSelectedModel];
+    [self initMachineWithRomPath:_mainBundlePath machineType:(int)_defaults.machineSelectedModel];
 
     [self restoreSession];
     
@@ -119,23 +144,21 @@ static const int cSCREEN_FILL = 1;
 
 - (void)audioCallback:(int)inNumberFrames buffer:(int16_t *)buffer
 {
-    if (machine)
+    if (_machine)
     {
         const uint32_t b = (cAUDIO_SAMPLE_RATE / (cFRAMES_PER_SECOND * _defaults.machineAcceleration)) * 2;
         
-        audioQueue->read(buffer, (inNumberFrames << 1));
+        _audioQueue->read(buffer, (inNumberFrames << 1));
         
         // Check if we have used a frames worth of buffer storage and if so then its time to generate another frame.
-        if (audioQueue->bufferUsed() < b)
+        if (_audioQueue->bufferUsed() < b)
         {
             if (_defaults.machineAcceleration == 1)
             {
-                machine->generateFrame();
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [(OpenGLView *)self.glView updateTextureData:machine->displayBuffer];
-                });
+                _machine->generateFrame();
+                [_renderer updateTextureData:_machine->displayBuffer];
             }
-            audioQueue->write(machine->audioBuffer, b);
+            _audioQueue->write(_machine->audioBuffer, b);
         }
     }
 }
@@ -144,40 +167,36 @@ static const int cSCREEN_FILL = 1;
 {
     if (_defaults.machineAcceleration > 1)
     {
-        [accelerationTimer invalidate];
-        accelerationTimer = [NSTimer timerWithTimeInterval:1.0 / (50.0 * _defaults.machineAcceleration) repeats:YES block:^(NSTimer * _Nonnull timer) {
+        [_accelerationTimer invalidate];
+        _accelerationTimer = [NSTimer timerWithTimeInterval:1.0 / (50.0 * _defaults.machineAcceleration) repeats:YES block:^(NSTimer * _Nonnull timer) {
             
-            machine->generateFrame();
+            _machine->generateFrame();
             
-            if (!(machine->emuFrameCounter % static_cast<uint32_t>(_defaults.machineAcceleration)))
+            if (!(_machine->emuFrameCounter % static_cast<uint32_t>(_defaults.machineAcceleration)))
             {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [(OpenGLView *)self.glView updateTextureData:machine->displayBuffer];
-                });
+                [_renderer updateTextureData:_machine->displayBuffer];
             }
             
         }];
         
-        [[NSRunLoop mainRunLoop] addTimer:accelerationTimer forMode:NSRunLoopCommonModes];
+        [[NSRunLoop mainRunLoop] addTimer:_accelerationTimer forMode:NSRunLoopCommonModes];
     }
     else
     {
-        [accelerationTimer invalidate];
+        [_accelerationTimer invalidate];
     }
 }
 
 - (void)updateDisplay
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [(OpenGLView *)self.glView updateTextureData:machine->displayBuffer];
-    });
+    [_renderer updateTextureData:_machine->displayBuffer];
 }
 
 #pragma mark - View Methods
 
 - (void)viewWillAppear
 {
-    [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@", [NSString stringWithCString:machine->machineInfo.machineName encoding:NSUTF8StringEncoding]]];
+    [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@", [NSString stringWithCString:_machine->machineInfo.machineName encoding:NSUTF8StringEncoding]]];
 }
 
 #pragma mark - Notifications
@@ -208,19 +227,19 @@ static const int cSCREEN_FILL = 1;
     }
     else if ([keyPath isEqualToString:MachineSelectedModel])
     {
-        [self initMachineWithRomPath:mainBundlePath machineType:(int)self.defaults.machineSelectedModel];
+        [self initMachineWithRomPath:_mainBundlePath machineType:(int)self.defaults.machineSelectedModel];
     }
     else if ([keyPath isEqualToString:MachineTapeInstantLoad])
     {
-        machine->emuTapeInstantLoad = [change[NSKeyValueChangeNewKey] boolValue];
+        _machine->emuTapeInstantLoad = [change[NSKeyValueChangeNewKey] boolValue];
     }
     else if ([keyPath isEqualToString:MachineUseAYSound])
     {
-        machine->emuUseAYSound = [change[NSKeyValueChangeNewKey] boolValue];
+        _machine->emuUseAYSound = [change[NSKeyValueChangeNewKey] boolValue];
     }
     else if ([keyPath isEqualToString:SPIPort])
     {
-        machine->spiPort = [change[NSKeyValueChangeNewKey] unsignedIntegerValue];
+        _machine->spiPort = [change[NSKeyValueChangeNewKey] unsignedIntegerValue];
     }
 }
 
@@ -228,29 +247,29 @@ static const int cSCREEN_FILL = 1;
 
 - (void)applyDefaults
 {
-    machine->emuTapeInstantLoad = self.defaults.machineTapeInstantLoad;
-    machine->emuUseAYSound = self.defaults.machineUseAYSound;
+    _machine->emuTapeInstantLoad = self.defaults.machineTapeInstantLoad;
+    _machine->emuUseAYSound = self.defaults.machineUseAYSound;
 }
 
 #pragma mark - View/Controller Setup
 
 - (void)setupConfigView
 {
-    configViewController = [storyBoard instantiateControllerWithIdentifier:@"CONFIG_VIEW_CONTROLLER"];
+    _configViewController = [_storyBoard instantiateControllerWithIdentifier:@"CONFIG_VIEW_CONTROLLER"];
     [self.configEffectsView setFrameOrigin:(CGPoint){-self.configEffectsView.frame.size.width, 0}];
-    self.configScrollView.documentView = configViewController.view;
+    self.configScrollView.documentView = _configViewController.view;
 }
 
 - (void)setupControllers
 {
-    saveAccessoryController = [storyBoard instantiateControllerWithIdentifier:@"SAVE_ACCESSORY_VIEW_CONTROLLER"];
-    tapeBrowserWindowController = [storyBoard instantiateControllerWithIdentifier:@"TAPE_BROWSER_WINDOW"];
-    tapeBrowserViewController = (TapeBrowserViewController *)tapeBrowserWindowController.contentViewController;
-    tapeBrowserViewController.emulationViewController = self;
+    _saveAccessoryController = [_storyBoard instantiateControllerWithIdentifier:@"SAVE_ACCESSORY_VIEW_CONTROLLER"];
+    _tapeBrowserWindowController = [_storyBoard instantiateControllerWithIdentifier:@"TAPE_BROWSER_WINDOW"];
+    _tapeBrowserViewController = (TapeBrowserViewController *)_tapeBrowserWindowController.contentViewController;
+    _tapeBrowserViewController.emulationViewController = self;
 
-    debugWindowController = [storyBoard instantiateControllerWithIdentifier:@"DEBUG_WINDOW"];
-    debugViewController = (DebugViewController *)debugWindowController.contentViewController;
-    debugViewController.emulationViewController = self;
+    _debugWindowController = [_storyBoard instantiateControllerWithIdentifier:@"DEBUG_WINDOW"];
+    _debugViewController = (DebugViewController *)_debugWindowController.contentViewController;
+    _debugViewController.emulationViewController = self;
 
 }
 
@@ -264,18 +283,18 @@ static const int cSCREEN_FILL = 1;
         while (self.audioCore.isRunning) { };
     }
     
-    if (machine) {
-        machine->pause();
-        delete machine;
+    if (_machine) {
+        _machine->pause();
+        delete _machine;
     }
     
     if (machineType == eZXSpectrum48)
     {
-        machine = new ZXSpectrum48(tape);
+        _machine = new ZXSpectrum48(_tape);
     }
     else if (machineType == eZXSpectrum128)
     {
-        machine = new ZXSpectrum128(tape);
+        _machine = new ZXSpectrum128(_tape);
     }
     else
     {
@@ -283,16 +302,16 @@ static const int cSCREEN_FILL = 1;
         return;
     }
     
-    machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
+    _machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
     
-    debugger = new Debug;
-    debugger->registerMachine(machine);
+    _debugger = new Debug;
+    _debugger->registerMachine(_machine);
     
     __block EmulationViewController *blockSelf = self;
     
-    debugBlock = (^bool(unsigned short address, uint8_t operation) {
+    _debugBlock = (^bool(unsigned short address, uint8_t operation) {
         
-        if (blockSelf->debugger->checkForBreakpoint(address, operation))
+        if (blockSelf->_debugger->checkForBreakpoint(address, operation))
         {
             [blockSelf pauseMachine];
             return true;
@@ -301,15 +320,15 @@ static const int cSCREEN_FILL = 1;
         
     });
     
-    machine->registerDebugOpCallback( debugBlock );
+    _machine->registerDebugOpCallback( _debugBlock );
     
     [self applyDefaults];
     
     [self.audioCore start];
-    machine->resume();
+    _machine->resume();
     
     [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@",
-                                [NSString stringWithCString:machine->machineInfo.machineName
+                                [NSString stringWithCString:_machine->machineInfo.machineName
                                                    encoding:NSUTF8StringEncoding]]];
 }
 
@@ -319,7 +338,7 @@ static const int cSCREEN_FILL = 1;
 {
     if (!event.isARepeat && !(event.modifierFlags & NSEventModifierFlagCommand))
     {
-        machine->keyboardKeyDown(event.keyCode);
+        _machine->keyboardKeyDown(event.keyCode);
     }
 }
 
@@ -327,7 +346,7 @@ static const int cSCREEN_FILL = 1;
 {
     if (!event.isARepeat && !(event.modifierFlags & NSEventModifierFlagCommand))
     {
-        machine->keyboardKeyUp(event.keyCode);
+        _machine->keyboardKeyUp(event.keyCode);
     }
 }
 
@@ -335,7 +354,7 @@ static const int cSCREEN_FILL = 1;
 {
     if (!(event.modifierFlags & NSEventModifierFlagCommand))
     {
-        machine->keyboardFlagsChanged(event.modifierFlags, event.keyCode);
+        _machine->keyboardFlagsChanged(event.modifierFlags, event.keyCode);
     }
 }
 
@@ -348,8 +367,8 @@ static const int cSCREEN_FILL = 1;
     NSString *urlPath = [url.pathExtension uppercaseString];
     if (([urlPath isEqualToString:cZ80_EXTENSION] || [urlPath isEqualToString:cSNA_EXTENSION]))
     {
-        int snapshotMachineType = machine->snapshotMachineInSnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
-        if (machine->machineInfo.machineType != snapshotMachineType)
+        int snapshotMachineType = _machine->snapshotMachineInSnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+        if (_machine->machineInfo.machineType != snapshotMachineType)
         {
             self.defaults.machineSelectedModel = snapshotMachineType;
         }
@@ -357,15 +376,15 @@ static const int cSCREEN_FILL = 1;
     
     if ([[url.pathExtension uppercaseString] isEqualToString:cZ80_EXTENSION])
     {
-        success = machine->snapshotZ80LoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+        success = _machine->snapshotZ80LoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
     }
     else if ([[url.pathExtension uppercaseString] isEqualToString:cSNA_EXTENSION])
     {
-        success = machine->snapshotSNALoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+        success = _machine->snapshotSNALoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
     }
     else if ([[url.pathExtension uppercaseString] isEqualToString:cTAP_EXTENSION])
     {
-        success = tape->loadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+        success = _tape->loadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
         [[NSNotificationCenter defaultCenter] postNotificationName:@"TAPE_CHANGED_NOTIFICATION" object:NULL];
     }
     
@@ -400,7 +419,7 @@ static const int cSCREEN_FILL = 1;
         }
         
         supportDirUrl = [supportDirUrl URLByAppendingPathComponent:cSESSION_FILE_NAME];
-        ZXSpectrum::Snap sessionSnapshot = machine->snapshotCreateZ80();
+        ZXSpectrum::Snap sessionSnapshot = _machine->snapshotCreateZ80();
         NSData *data = [NSData dataWithBytes:sessionSnapshot.data length:sessionSnapshot.length];
         [data writeToURL:supportDirUrl atomically:YES];
     }
@@ -440,50 +459,50 @@ static const int cSCREEN_FILL = 1;
 
 - (NSInteger)tapeNumberOfblocks
 {
-    return tape->numberOfTapeBlocks();
+    return _tape->numberOfTapeBlocks();
 }
 
 - (NSString *)tapeBlockTypeForIndex:(NSInteger)blockIndex
 {
-    return @(tape->blocks[ blockIndex ]->getBlockName().c_str());
+    return @(_tape->blocks[ blockIndex ]->getBlockName().c_str());
 }
 
 - (NSString *)tapeFilenameForIndex:(NSInteger)blockIndex
 {
-    return @(tape->blocks[ blockIndex ]->getFilename().c_str());
+    return @(_tape->blocks[ blockIndex ]->getFilename().c_str());
 }
 
 - (int)tapeAutostartLineForIndex:(NSInteger)blockIndex
 {
-    int lineNumber = tape->blocks [blockIndex ]->getAutoStartLine();
+    int lineNumber = _tape->blocks [blockIndex ]->getAutoStartLine();
     return (lineNumber == 32768) ? 0 : lineNumber;
 }
 
 - (unsigned short)tapeBlockStartAddressForIndex:(NSInteger)blockIndex
 {
-    return tape->blocks[ blockIndex ]->getStartAddress();
+    return _tape->blocks[ blockIndex ]->getStartAddress();
 }
 
 - (unsigned short)tapeBlockLengthForIndex:(NSInteger)blockIndex
 {
-    return tape->blocks[ blockIndex ]->getDataLength();
+    return _tape->blocks[ blockIndex ]->getDataLength();
 }
 
 - (NSInteger)tapeCurrentBlock
 {
-    return tape->currentBlockIndex;
+    return _tape->currentBlockIndex;
 }
 
 - (BOOL)tapeIsplaying
 {
-    return tape->playing;
+    return _tape->playing;
 }
 
 - (void)tapeSetCurrentBlock:(NSInteger)blockIndex
 {
-    tape->setSelectedBlock( static_cast<int>(blockIndex) );
-    tape->rewindBlock();
-    tape->stopPlaying();
+    _tape->setSelectedBlock( static_cast<int>(blockIndex) );
+    _tape->rewindBlock();
+    _tape->stopPlaying();
 }
 
 static void tapeStatusCallback(int blockIndex, int bytes)
@@ -514,19 +533,19 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 {
     NSSavePanel *savePanel = [NSSavePanel new];
     
-    if (machine->machineInfo.machineType == eZXSpectrum48)
+    if (_machine->machineInfo.machineType == eZXSpectrum48)
     {
-        [[saveAccessoryController.exportPopup itemAtIndex:cSNA_SNAPSHOT_TYPE] setEnabled:YES];
+        [[_saveAccessoryController.exportPopup itemAtIndex:cSNA_SNAPSHOT_TYPE] setEnabled:YES];
         savePanel.allowedFileTypes = @[cZ80_EXTENSION, cSNA_EXTENSION];
     }
     else
     {
-        [[saveAccessoryController.exportPopup itemAtIndex:cSNA_SNAPSHOT_TYPE] setEnabled:NO];
-        [saveAccessoryController.exportPopup selectItemAtIndex:cZ80_SNAPSHOT_TYPE];
+        [[_saveAccessoryController.exportPopup itemAtIndex:cSNA_SNAPSHOT_TYPE] setEnabled:NO];
+        [_saveAccessoryController.exportPopup selectItemAtIndex:cZ80_SNAPSHOT_TYPE];
         savePanel.allowedFileTypes = @[cZ80_EXTENSION];
     }
     
-    savePanel.accessoryView = saveAccessoryController.view;
+    savePanel.accessoryView = _saveAccessoryController.view;
     
     [savePanel beginWithCompletionHandler:^(NSInteger result) {
         if (result == NSModalResponseOK)
@@ -534,16 +553,16 @@ static void tapeStatusCallback(int blockIndex, int bytes)
             ZXSpectrum::Snap snapshot;
             NSURL *url = savePanel.URL;
             
-            if (saveAccessoryController.exportType == cZ80_SNAPSHOT_TYPE)
+            if (_saveAccessoryController.exportType == cZ80_SNAPSHOT_TYPE)
             {
-                snapshot = machine->snapshotCreateZ80();
+                snapshot = _machine->snapshotCreateZ80();
                 url = [[url URLByDeletingPathExtension] URLByAppendingPathExtension:cZ80_EXTENSION];
                 NSData *data = [NSData dataWithBytes:snapshot.data length:snapshot.length];
                 [data writeToURL:url atomically:YES];
             }
-            else if (saveAccessoryController.exportType == cSNA_SNAPSHOT_TYPE)
+            else if (_saveAccessoryController.exportType == cSNA_SNAPSHOT_TYPE)
             {
-                snapshot = machine->snapshotCreateSNA();
+                snapshot = _machine->snapshotCreateSNA();
                 url = [[url URLByDeletingPathExtension] URLByAppendingPathExtension:cSNA_EXTENSION];
                 NSData *data = [NSData dataWithBytes:snapshot.data length:snapshot.length];
                 [data writeToURL:url atomically:YES];
@@ -590,17 +609,17 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     NSMenuItem *menuItem = (NSMenuItem *)sender;
     if (menuItem.tag == 0)
     {
-        machine->resetMachine(false);
+        _machine->resetMachine(false);
     }
     else
     {
-        machine->resetMachine(true);
+        _machine->resetMachine(true);
     }
 }
 
 - (IBAction)resetToSnapLoad:(id)sender
 {
-    machine->resetToSnapLoad();
+    _machine->resetToSnapLoad();
 }
 
 - (IBAction)selectMachine:(id)sender
@@ -650,20 +669,20 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 
 - (IBAction)showDebugger:(id)sender
 {
-    [debugWindowController showWindow:self];
+    [_debugWindowController showWindow:self];
 }
 
 - (IBAction)switchHexDecimal:(id)sender
 {
-    debugViewController.hexFormat = (debugViewController.hexFormat) ? NO : YES;
-    [debugViewController updateViewDetails];
+    _debugViewController.hexFormat = (_debugViewController.hexFormat) ? NO : YES;
+    [_debugViewController updateViewDetails];
 }
 
 - (void)pauseMachine
 {
-    if (machine)
+    if (_machine)
     {
-        machine->emuPaused = true;
+        _machine->emuPaused = true;
         [self.audioCore stop];
         [[NSNotificationCenter defaultCenter] postNotificationName:cCPU_PAUSED_NOTIFICATION object:NULL];
     }
@@ -671,9 +690,9 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 
 - (void)startMachine
 {
-    if (machine)
+    if (_machine)
     {
-        machine->emuPaused = false;
+        _machine->emuPaused = false;
         [self.audioCore start];
         [[NSNotificationCenter defaultCenter] postNotificationName:cCPU_RESUMED_NOTIFICATION object:NULL];
     }
@@ -683,37 +702,37 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 
 - (IBAction)showTapeBrowser:(id)sender
 {
-    [tapeBrowserWindowController showWindow:self.view.window];
+    [_tapeBrowserWindowController showWindow:self.view.window];
 }
 
 - (IBAction)startPlayingTape:(id)sender
 {
-    tape->startPlaying();
+    _tape->startPlaying();
 }
 
 - (IBAction)stopPlayingTape:(id)sender
 {
-    tape->stopPlaying();
+    _tape->stopPlaying();
 }
 
 - (IBAction)rewindTape:(id)sender
 {
-    tape->rewindTape();
+    _tape->rewindTape();
 }
 
 - (IBAction)ejectTape:(id)sender
 {
-    tape->eject();
+    _tape->eject();
 }
 
 - (IBAction)saveTape:(id)sender
 {
     NSSavePanel *savePanel = [NSSavePanel new];
     savePanel.allowedFileTypes = @[ cTAP_EXTENSION ];
-    [savePanel beginSheetModalForWindow:tapeBrowserWindowController.window completionHandler:^(NSInteger result) {
+    [savePanel beginSheetModalForWindow:_tapeBrowserWindowController.window completionHandler:^(NSInteger result) {
         if (result == NSModalResponseOK)
         {
-            vector<unsigned char> tapeData = tape->getTapeData();
+            vector<unsigned char> tapeData = _tape->getTapeData();
             NSMutableData *saveData = [NSMutableData new];
             [saveData appendBytes:tapeData.data() length:tapeData.size()];
             [saveData writeToURL:savePanel.URL atomically:YES];
@@ -725,38 +744,38 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 
 - (void *)getDisplayBuffer
 {
-    return machine->displayBuffer;
+    return _machine->displayBuffer;
 }
 
 - (BOOL)getDisplayReady
 {
-    return machine->displayReady;
+    return _machine->displayReady;
 }
 
 - (void *)getCurrentMachine
 {
-    return machine;
+    return _machine;
 }
 
 - (void *)getDebugger
 {
-    return debugger;
+    return _debugger;
 }
 
 - (BOOL)getCPUState
 {
-    return machine->emuPaused;
+    return _machine->emuPaused;
 }
 
 - (void)pauseCPU
 {
-    machine->emuPaused = true;
+    _machine->emuPaused = true;
     [[NSNotificationCenter defaultCenter] postNotificationName:@"kCPU_PAUSED_NOTIFICATION" object:NULL];
 }
 
 - (void)resumeCPU
 {
-    machine->emuPaused = false;
+    _machine->emuPaused = false;
     [[NSNotificationCenter defaultCenter] postNotificationName:@"kCPU_RESUMED_NOTIFICATION" object:NULL];
 }
 

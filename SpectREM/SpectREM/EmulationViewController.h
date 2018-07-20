@@ -9,6 +9,8 @@
 #import <Cocoa/Cocoa.h>
 #import "Defaults.h"
 
+#import <MetalKit/MetalKit.h>
+
 @class EmulationScene;
 @class OpenGLView;
 @class AudioCore;

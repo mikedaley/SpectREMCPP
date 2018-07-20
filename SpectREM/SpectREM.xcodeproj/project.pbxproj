@@ -18,6 +18,9 @@
 		17C33DFA1F6578E600720A06 /* TapeBrowserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 17C33DF91F6578E600720A06 /* TapeBrowserViewController.m */; };
 		17C33DFE1F6583A400720A06 /* TapeCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 17C33DFD1F6583A400720A06 /* TapeCellView.m */; };
 		17EC89101F5B1FC500B6EFAF /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17EC890F1F5B1FC500B6EFAF /* AudioToolbox.framework */; };
+		276ADE262101C64E00EC7DC9 /* MetalView.m in Sources */ = {isa = PBXBuildFile; fileRef = 276ADE252101C64E00EC7DC9 /* MetalView.m */; };
+		276ADE292101CAA900EC7DC9 /* Display.metal in Sources */ = {isa = PBXBuildFile; fileRef = 276ADE282101CAA900EC7DC9 /* Display.metal */; };
+		276ADE2D2101CE6500EC7DC9 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 276ADE2C2101CE6500EC7DC9 /* MetalKit.framework */; };
 		276E3F9C1F97A06B00020BB3 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17B5DB9C1F5B1CCE003E7EF3 /* AVFoundation.framework */; };
 		276E3F9E1F97AAE800020BB3 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 276E3F9D1F97AAD600020BB3 /* CoreMedia.framework */; };
 		276E3FA01F9FA01100020BB3 /* reflection.png in Resources */ = {isa = PBXBuildFile; fileRef = 276E3F9F1F9FA01000020BB3 /* reflection.png */; };
@@ -82,6 +85,11 @@
 		17C33DFC1F6583A400720A06 /* TapeCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TapeCellView.h; sourceTree = "<group>"; };
 		17C33DFD1F6583A400720A06 /* TapeCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TapeCellView.m; sourceTree = "<group>"; };
 		17EC890F1F5B1FC500B6EFAF /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		276ADE242101C64E00EC7DC9 /* MetalView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MetalView.h; sourceTree = "<group>"; };
+		276ADE252101C64E00EC7DC9 /* MetalView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MetalView.m; sourceTree = "<group>"; };
+		276ADE272101C75B00EC7DC9 /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
+		276ADE282101CAA900EC7DC9 /* Display.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Display.metal; sourceTree = "<group>"; };
+		276ADE2C2101CE6500EC7DC9 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
 		276E3F9D1F97AAD600020BB3 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		276E3F9F1F9FA01000020BB3 /* reflection.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = reflection.png; path = Assets.xcassets/reflection.imageset/reflection.png; sourceTree = "<group>"; };
 		2778A1191F94E5D900385137 /* CLUTVert.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = CLUTVert.vsh; sourceTree = "<group>"; };
@@ -156,6 +164,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				276ADE2D2101CE6500EC7DC9 /* MetalKit.framework in Frameworks */,
 				276E3F9E1F97AAE800020BB3 /* CoreMedia.framework in Frameworks */,
 				276E3F9C1F97A06B00020BB3 /* AVFoundation.framework in Frameworks */,
 				17EC89101F5B1FC500B6EFAF /* AudioToolbox.framework in Frameworks */,
@@ -172,6 +181,7 @@
 				2778A11F1F94E60600385137 /* CLUTFrag.fsh */,
 				2778A11B1F94E5DA00385137 /* DisplayVert.vsh */,
 				2778A11A1F94E5DA00385137 /* DisplayFrag.fsh */,
+				276ADE282101CAA900EC7DC9 /* Display.metal */,
 			);
 			name = Shaders;
 			sourceTree = "<group>";
@@ -190,6 +200,7 @@
 		17B5DB9B1F5B1CCE003E7EF3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				276ADE2C2101CE6500EC7DC9 /* MetalKit.framework */,
 				276E3F9D1F97AAD600020BB3 /* CoreMedia.framework */,
 				17EC890F1F5B1FC500B6EFAF /* AudioToolbox.framework */,
 				17B5DB9C1F5B1CCE003E7EF3 /* AVFoundation.framework */,
@@ -352,6 +363,9 @@
 				ED913FA61F30759300316E1A /* EmulationViewController.mm */,
 				ED4137451F7D24DE008ACB30 /* OpenGLView.h */,
 				ED4137461F7D24DE008ACB30 /* OpenGLView.mm */,
+				276ADE242101C64E00EC7DC9 /* MetalView.h */,
+				276ADE252101C64E00EC7DC9 /* MetalView.m */,
+				276ADE272101C75B00EC7DC9 /* ShaderTypes.h */,
 			);
 			name = Emulation;
 			sourceTree = "<group>";
@@ -603,12 +617,14 @@
 				ED913FCC1F30781000316E1A /* Z80Core_EDOpcodes.cpp in Sources */,
 				ED913FCF1F30781000316E1A /* Z80Core.cpp in Sources */,
 				177E284D1F4DD7E90053756B /* ZXSpectrum48.cpp in Sources */,
+				276ADE292101CAA900EC7DC9 /* Display.metal in Sources */,
 				ED913F9A1F30759300316E1A /* AppDelegate.m in Sources */,
 				EDB7F7FC1F5ED3EF003053E3 /* EmulationWindowController.m in Sources */,
 				17A089531F4F677200CAA178 /* Display.cpp in Sources */,
 				ED504A641F51BBFF00BD289E /* Snapshot.cpp in Sources */,
 				ED2A6D051F6036D3003CD6CE /* ConfigurationViewController.m in Sources */,
 				17C33DFA1F6578E600720A06 /* TapeBrowserViewController.m in Sources */,
+				276ADE262101C64E00EC7DC9 /* MetalView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -675,7 +691,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -725,7 +741,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 			};
