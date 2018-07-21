@@ -21,9 +21,8 @@ typedef enum VertexInputIndex
 // Texture index values shared between shader and C code to ensure Metal shader buffer inputs match Metal API texture set calls
 typedef enum TextureIndex
 {
-    TextureIndexBaseColor = 0,
-    TextureCLUTColor = 1,
-    TextureUniforms = 2,
+    TextureIndexPackedDisplay = 0,
+    TextureIndexCLUT = 1,
 } TextureIndex;
 
 // This structure defines the layout of each vertex in the array of vertices set as an input to the Metal

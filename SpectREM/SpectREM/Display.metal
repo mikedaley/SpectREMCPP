@@ -59,12 +59,12 @@ vector_float3 channelSplit(texture2d<half>image, sampler tex, vector_float2 coor
     return frag;
 }
 
-///////////////////////////// Vertex Function
-vertex RasterizerData
-vertexShader(uint vertexID [[ vertex_id ]],
-             constant Vertex *vertexArray [[ buffer(VertexInputIndexVertices) ]],
-             constant vector_uint2 *viewportSizePointer  [[ buffer(VertexInputIndexViewportSize) ]])
-
+/**
+ Vertex shader used to pass the vertices through to the fragment shader. Not much going on in here :o)
+ **/
+vertex RasterizerData vertexShader(uint vertexID [[ vertex_id ]],
+                                   constant Vertex *vertexArray [[ buffer(VertexInputIndexVertices) ]],
+                                   constant vector_uint2 *viewportSizePointer  [[ buffer(VertexInputIndexViewportSize) ]])
 {
     RasterizerData out;
     float2 pixelSpacePosition = vertexArray[vertexID].position.xy;
@@ -76,49 +76,67 @@ vertexShader(uint vertexID [[ vertex_id ]],
     return out;
 }
 
-///////////////////////////// Fragment function
-
-fragment float4 samplingShader(RasterizerData in [[stage_in]],
-                               texture2d<half> colorTexture [[ texture(TextureIndexBaseColor) ]],
-                               texture1d<float> clutTexture [[ texture(TextureCLUTColor) ]],
-                               constant Uniforms *uniforms [[buffer(TextureUniforms) ]])
+/**
+ COLOUR LOOKUP FRAGMENT SHADER
+ Used to lookup the read colours to use from the packed image data provided by the emaultor. The emulator
+ output provides a single byte per pixel and the value of that byte is used to lookup the actual colour from the colour
+ lookup texture
+ **/
+fragment float4 clutShader( RasterizerData in [[stage_in]],
+                           texture2d<half> colorTexture [[ texture(TextureIndexPackedDisplay) ]],
+                           texture1d<float> clutTexture [[ texture(TextureIndexCLUT) ]])
 {
     constexpr sampler textureSampler (mag_filter::nearest,
                                       min_filter::nearest);
+
+    const float clutUVAdjust = 1.0 / 16.0;
+    const int colorSample = colorTexture.sample(textureSampler, in.textureCoordinate)[0] * 256;
+    return clutTexture.sample(textureSampler, colorSample * clutUVAdjust);
+}
+
+/**
+ EFFECTS FRAGMENT SHADER
+ Used to apply effects to the output from the colour lookup shader. The output from this shader is what is
+ then displayed on screen
+ **/
+fragment float4 effectsShader(RasterizerData in [[stage_in]],
+                              texture2d<float> colorTexture [[ texture(0) ]],
+                              constant Uniforms & uniforms [[buffer(0) ]])
+{
+    constexpr sampler textureSampler (mag_filter::linear,
+                                      min_filter::linear);
     
-//    float max = pow(u_vignetteX, u_vignetteY);
+//    //    float max = pow(u_vignetteX, u_vignetteY);
     const float w = 32 + 256 + 32;
     const float h = 32 + 192 + 32;
-    const float clutUVAdjust = 1.0 / 16.0;
-    float border = 32 - uniforms->displayBorderSize;
+    float border = 32 - uniforms.displayBorderSize;
     float new_w = w - (border * 2);
     float new_h = h - (border * 2);
     float4 color;
-    
-    vector_float2 texCoord = radialDistortion(in.textureCoordinate, uniforms->displayCurvature);
-    
+
+    float2 texCoord = radialDistortion(in.textureCoordinate, uniforms.displayCurvature);
+
     // Anything outside the texture should be black, otherwise sample the texel in the texture
     if (texCoord.x < 0 || texCoord.y < 0 || texCoord.x > 1 || texCoord.y > 1)
     {
-        color = vector_float4(0, 0, 0, 1);
+        color = float4(0, 0, 0, 1);
     }
     else
     {
         // Update the UV coordinates based on the size of the border
-        float u = ((texCoord.x * new_w) + border);
-        float v = ((texCoord.y * new_h) - border);
-        
+        float u = ((texCoord.x * new_w) - border);
+        float v = ((texCoord.y * new_h) + border);
+
         // Apply pixel filtering
-        float2 vUv = vector_float2(u, v);
-        float alpha = float(uniforms->displayPixelFilterValue); // 0.5 = Linear, 0.0 = Nearest
+        float2 vUv = float2(u, v);
+        float alpha = uniforms.displayPixelFilterValue; // 0.5 = Linear, 0.0 = Nearest
         float2 x = fract(vUv);
         float2 x_ = clamp(0.5 / alpha * x, 0.0, 0.5) + clamp(0.5 / alpha * (x - 1.0) + 0.5, 0.0, 0.5);
         texCoord = (floor(vUv) + x_) / float2(w, h);
-        
-        const int colorSample = colorTexture.sample(textureSampler, texCoord)[0] * 256;
-        color = clutTexture.sample(textureSampler, colorSample * clutUVAdjust);
+
+        color = colorTexture.sample(textureSampler, texCoord);
     }
 
     // We return the color of the texture
-    return float4(color);
+    return color;
 }

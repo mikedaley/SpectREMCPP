@@ -61,8 +61,11 @@ static const Vertex quadVertices[] =
     // The device (aka GPU) we're using to render
     id<MTLDevice> _device;
     
-    // Our render pipeline composed of our vertex and fragment shaders in the .metal shader file
-    id<MTLRenderPipelineState> _pipelineState;
+    id<MTLRenderPipelineState> _clutPipelineState;
+    id<MTLRenderPipelineState> _effectsPipelineState;
+
+    MTLRenderPassDescriptor *_clutPassDescriptor;
+    MTLRenderPassDescriptor *_effectsPassDescriptor;
     
     id<MTLBuffer> _vertexBuffers[MaxBuffersInFlight];
     NSUInteger _currentBuffer;
@@ -73,6 +76,7 @@ static const Vertex quadVertices[] =
     // The Metal texture object
     id<MTLTexture> _displayTexture;
     id<MTLTexture> _clutTexture;
+    id<MTLTexture> _effectsTexture;
 
     // The Metal buffer in which we store our vertex data
     id<MTLBuffer> _vertices;
@@ -94,11 +98,14 @@ static const Vertex quadVertices[] =
     if (self)
     {
         _defaults = [Defaults defaults];
-        _view = mtkView;
+        
         mtkView.paused = YES;
         _device = mtkView.device;
         
+        _view = mtkView;
+
         _inFlightSemaphore = dispatch_semaphore_create(3);
+        
         MTLTextureDescriptor *textureDescriptor = [[MTLTextureDescriptor alloc] init];
         
         // Emulator display texture
@@ -106,7 +113,6 @@ static const Vertex quadVertices[] =
         textureDescriptor.textureType = MTLTextureType2D;
         textureDescriptor.width = 320;
         textureDescriptor.height = 256;
-        
         _displayTexture = [_device newTextureWithDescriptor:textureDescriptor];
         
         // Colour lookup texture
@@ -114,15 +120,22 @@ static const Vertex quadVertices[] =
         textureDescriptor.textureType = MTLTextureType1D;
         textureDescriptor.width = 16;
         textureDescriptor.height = 1;
-    
         _clutTexture = [_device newTextureWithDescriptor:textureDescriptor];
-    
+
+        // Load lookup texture with standard ZX Spectrum colour palette
         MTLRegion region = {
             {0, 0, 0}, // Origin
             {16, 1, 1} // Size
         };
-        
         [_clutTexture replaceRegion:region mipmapLevel:0 withBytes:&CLUT bytesPerRow:16 * sizeof(Color)];
+        
+        // Texture used to apply final output effects
+        textureDescriptor.pixelFormat = MTLPixelFormatRGBA32Float;
+        textureDescriptor.textureType = MTLTextureType2D;
+        textureDescriptor.width = 320;
+        textureDescriptor.height = 256;
+        textureDescriptor.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
+        _effectsTexture = [_device newTextureWithDescriptor:textureDescriptor];
     
         // Create a number of vertex buffers so that we can be working on different buffers at the same time
         for(NSUInteger bufferIndex = 0; bufferIndex < MaxBuffersInFlight; bufferIndex++)
@@ -141,25 +154,49 @@ static const Vertex quadVertices[] =
         id<MTLLibrary> defaultLibrary = [_device newDefaultLibrary];
     
         id<MTLFunction> vertexFunction = [defaultLibrary newFunctionWithName:@"vertexShader"];
-        id<MTLFunction> fragmentFunction = [defaultLibrary newFunctionWithName:@"samplingShader"];
-        
+        id<MTLFunction> clutFragmentFunction = [defaultLibrary newFunctionWithName:@"clutShader"];
+        id<MTLFunction> effectsFragmentFunction = [defaultLibrary newFunctionWithName:@"effectsShader"];
+
         // Setup the descriptor for creating a pipeline state object
         MTLRenderPipelineDescriptor *pipelineStateDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
-        pipelineStateDescriptor.label = @"Texture Pipeline";
+        pipelineStateDescriptor.label = @"CLUT Pipeline";
         pipelineStateDescriptor.vertexFunction = vertexFunction;
-        pipelineStateDescriptor.fragmentFunction = fragmentFunction;
-        pipelineStateDescriptor.colorAttachments[0].pixelFormat = mtkView.colorPixelFormat;
+        pipelineStateDescriptor.fragmentFunction = clutFragmentFunction;
+        pipelineStateDescriptor.colorAttachments[0].pixelFormat = MTLPixelFormatRGBA32Float;
         
         NSError *error = NULL;
-        _pipelineState = [_device newRenderPipelineStateWithDescriptor:pipelineStateDescriptor error:&error];
+        _clutPipelineState = [_device newRenderPipelineStateWithDescriptor:pipelineStateDescriptor error:&error];
         
-        if (!_pipelineState)
+        if (!_clutPipelineState)
+        {
+            NSLog(@"Failed to create pipeline state, error %@", error);
+        }
+        
+        // Setup the descriptor for creating a pipeline state object
+        pipelineStateDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
+        pipelineStateDescriptor.label = @"Effects Pipeline";
+        pipelineStateDescriptor.vertexFunction = vertexFunction;
+        pipelineStateDescriptor.fragmentFunction = effectsFragmentFunction;
+        pipelineStateDescriptor.colorAttachments[0].pixelFormat = mtkView.colorPixelFormat;
+        
+        error = NULL;
+        _effectsPipelineState = [_device newRenderPipelineStateWithDescriptor:pipelineStateDescriptor error:&error];
+        
+        if (!_clutPipelineState)
         {
             NSLog(@"Failed to create pipeline state, error %@", error);
         }
         
         // Create the command queue
         _commandQueue = [_device newCommandQueue];
+        
+        _clutPassDescriptor = [MTLRenderPassDescriptor new];
+        _clutPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionDontCare;
+        _clutPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
+        _clutPassDescriptor.colorAttachments[0].texture = _effectsTexture;
+        
+        _effectsPassDescriptor = [MTLRenderPassDescriptor new];
+        _effectsPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
         
     }
     return self;
@@ -173,7 +210,10 @@ static const Vertex quadVertices[] =
     };
     
     [_displayTexture replaceRegion:region mipmapLevel:0 withBytes:displayBuffer bytesPerRow:320];
-    [_view draw];
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_view draw];
+    });
 }
 
 - (void)mtkView:(nonnull MTKView *)view drawableSizeWillChange:(CGSize)size {
@@ -192,7 +232,7 @@ static const Vertex quadVertices[] =
 
     // Create a new command buffer for each render pass to the current drawable
     id<MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
-    commandBuffer.label = @"SpectREM_Command";
+    commandBuffer.label = @"RENDER COMMANDS";
     
     // Add completion handler which signals _inFlightSemaphore when Metal and the GPU has fully
     //   finished processing the commands we're encoding this frame.  This indicates when the
@@ -205,19 +245,52 @@ static const Vertex quadVertices[] =
          dispatch_semaphore_signal(block_sema);
      }];
     
-    // Obtain a renderPassDescriptor generated from the view's drawable textures
-    MTLRenderPassDescriptor *renderPassDescriptor = view.currentRenderPassDescriptor;
+    if (_clutPassDescriptor != nil)
+    {
+        id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:_clutPassDescriptor];
+        renderEncoder.label = @"CLUT RENDERER";
+        
+        [renderEncoder setViewport:(MTLViewport){0.0, 0.0, 320, 256, -1.0, 1.0 }];
+        
+
+        [renderEncoder setRenderPipelineState:_clutPipelineState];
+
+        
+        [renderEncoder setVertexBuffer:_vertexBuffers[_currentBuffer]
+                                offset:0
+                               atIndex:VertexInputIndexVertices];
+        
+        [renderEncoder setVertexBytes:&_viewportSize
+                               length:sizeof(_viewportSize)
+                              atIndex:VertexInputIndexViewportSize];
+        
+        [renderEncoder setFragmentTexture:_displayTexture
+                                  atIndex:TextureIndexPackedDisplay];
+        
+        [renderEncoder setFragmentTexture:_clutTexture
+                                  atIndex:TextureIndexCLUT];
+        
+        // Draw the vertices of our triangles
+        [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle
+                          vertexStart:0
+                          vertexCount:_numVertices];
+        
+        [renderEncoder endEncoding];
+    }
     
-    if(renderPassDescriptor != nil)
+    if(_effectsPassDescriptor != nil)
     {
         // Create a render command encoder so we can render into something
-        id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
-        renderEncoder.label = @"SpectREM_Encoder";
+
+        _effectsPassDescriptor.colorAttachments[0].texture = view.currentDrawable.texture;
+
+        id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:_effectsPassDescriptor];
+        renderEncoder.label = @"EFFECTS RENDERER";
         
         // Set the region of the drawable to which we'll draw.
         [renderEncoder setViewport:(MTLViewport){0.0, 0.0, _viewportSize.x, _viewportSize.y, -1.0, 1.0 }];
         
-        [renderEncoder setRenderPipelineState:_pipelineState];
+        [renderEncoder setRenderPipelineState:_effectsPipelineState];
         
         [renderEncoder setVertexBuffer:_vertexBuffers[_currentBuffer]
                                 offset:0
@@ -228,12 +301,8 @@ static const Vertex quadVertices[] =
                               atIndex:VertexInputIndexViewportSize];
         
         // Setup the texture containing the emulator output
-        [renderEncoder setFragmentTexture:_displayTexture
-                                  atIndex:TextureIndexBaseColor];
-
-        // Setup the texture with the colour lookup
-        [renderEncoder setFragmentTexture:_clutTexture
-                                  atIndex:TextureCLUTColor];
+        [renderEncoder setFragmentTexture:_effectsTexture
+                                  atIndex:0];
         
         _uniforms.displayCurvature = _defaults.displayCurvature;
         _uniforms.displayBorderSize = _defaults.displayBorderSize;
@@ -241,7 +310,7 @@ static const Vertex quadVertices[] =
         
         [renderEncoder setFragmentBytes:&_uniforms
                                  length:sizeof(_uniforms)
-                                atIndex:TextureUniforms];
+                                atIndex:0];
 
         // Draw the vertices of our triangles
         [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle
@@ -256,7 +325,7 @@ static const Vertex quadVertices[] =
     
     // Finalize rendering here & push the command buffer to the GPU
     [commandBuffer commit];
-    
+
 }
 
 @end
