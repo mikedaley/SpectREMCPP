@@ -13,7 +13,9 @@
 #import "ShaderTypes.h"
 #import "Defaults.h"
 
-static const NSUInteger MaxBuffersInFlight = 3;
+static const NSUInteger cMAX_BUFFERS_IN_FLIGHT = 3;
+static const NSUInteger cDISPLAY_WIDTH = 320;
+static const NSUInteger cDISPLAY_HEIGHT = 256;
 
 // Constants for the colour lookup table
 const GLfloat normalColor = 189.0 / 255.0;
@@ -67,7 +69,7 @@ static const Vertex quadVertices[] =
     MTLRenderPassDescriptor *_clutPassDescriptor;
     MTLRenderPassDescriptor *_effectsPassDescriptor;
     
-    id<MTLBuffer> _vertexBuffers[MaxBuffersInFlight];
+    id<MTLBuffer> _vertexBuffers[cMAX_BUFFERS_IN_FLIGHT];
     NSUInteger _currentBuffer;
     
     // The command Queue from which we'll obtain command buffers
@@ -111,8 +113,8 @@ static const Vertex quadVertices[] =
         // Emulator display texture
         textureDescriptor.pixelFormat = MTLPixelFormatR8Unorm;
         textureDescriptor.textureType = MTLTextureType2D;
-        textureDescriptor.width = 320;
-        textureDescriptor.height = 256;
+        textureDescriptor.width = cDISPLAY_WIDTH;
+        textureDescriptor.height = cDISPLAY_HEIGHT;
         _displayTexture = [_device newTextureWithDescriptor:textureDescriptor];
         
         // Colour lookup texture
@@ -132,13 +134,13 @@ static const Vertex quadVertices[] =
         // Texture used to apply final output effects
         textureDescriptor.pixelFormat = MTLPixelFormatRGBA32Float;
         textureDescriptor.textureType = MTLTextureType2D;
-        textureDescriptor.width = 320;
-        textureDescriptor.height = 256;
+        textureDescriptor.width = cDISPLAY_WIDTH;
+        textureDescriptor.height = cDISPLAY_HEIGHT;
         textureDescriptor.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
         _effectsTexture = [_device newTextureWithDescriptor:textureDescriptor];
     
         // Create a number of vertex buffers so that we can be working on different buffers at the same time
-        for(NSUInteger bufferIndex = 0; bufferIndex < MaxBuffersInFlight; bufferIndex++)
+        for(NSUInteger bufferIndex = 0; bufferIndex < cMAX_BUFFERS_IN_FLIGHT; bufferIndex++)
         {
             _vertexBuffers[bufferIndex] = [_device newBufferWithBytes:quadVertices
                                                                length:sizeof(quadVertices)
@@ -190,6 +192,8 @@ static const Vertex quadVertices[] =
         // Create the command queue
         _commandQueue = [_device newCommandQueue];
         
+        // Create two pass descriptors, one for dealing with creating the emulator output usin the CLUT texture
+        // and the other for adding the screen effects on the final pass to the screen
         _clutPassDescriptor = [MTLRenderPassDescriptor new];
         _clutPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionDontCare;
         _clutPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
@@ -206,11 +210,12 @@ static const Vertex quadVertices[] =
 {
     MTLRegion region = {
         {0, 0, 0}, // Origin
-        {320, 256, 1} // Size
+        {cDISPLAY_WIDTH, cDISPLAY_HEIGHT, 1} // Size
     };
     
     [_displayTexture replaceRegion:region mipmapLevel:0 withBytes:displayBuffer bytesPerRow:320];
 
+    // Not placing this draw request on the main queue can cause the drawable area to not keep up with window resizing
     dispatch_async(dispatch_get_main_queue(), ^{
         [_view draw];
     });
@@ -228,7 +233,7 @@ static const Vertex quadVertices[] =
     dispatch_semaphore_wait(_inFlightSemaphore, DISPATCH_TIME_FOREVER);
     
     // Iterate through our Metal buffers, and cycle back to the first when we've written to MaxBuffersInFlight
-    _currentBuffer = (_currentBuffer + 1) % MaxBuffersInFlight;
+    _currentBuffer = (_currentBuffer + 1) % cMAX_BUFFERS_IN_FLIGHT;
 
     // Create a new command buffer for each render pass to the current drawable
     id<MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
@@ -245,74 +250,67 @@ static const Vertex quadVertices[] =
          dispatch_semaphore_signal(block_sema);
      }];
     
+    // CLUT Pass
     if (_clutPassDescriptor != nil)
     {
         id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:_clutPassDescriptor];
         renderEncoder.label = @"CLUT RENDERER";
-        
-        [renderEncoder setViewport:(MTLViewport){0.0, 0.0, 320, 256, -1.0, 1.0 }];
-        
-
+        [renderEncoder setViewport:(MTLViewport){0.0, 0.0, cDISPLAY_WIDTH, cDISPLAY_HEIGHT, -1.0, 1.0 }];
         [renderEncoder setRenderPipelineState:_clutPipelineState];
-
-        
         [renderEncoder setVertexBuffer:_vertexBuffers[_currentBuffer]
                                 offset:0
                                atIndex:VertexInputIndexVertices];
-        
         [renderEncoder setVertexBytes:&_viewportSize
                                length:sizeof(_viewportSize)
                               atIndex:VertexInputIndexViewportSize];
-        
         [renderEncoder setFragmentTexture:_displayTexture
                                   atIndex:TextureIndexPackedDisplay];
-        
         [renderEncoder setFragmentTexture:_clutTexture
                                   atIndex:TextureIndexCLUT];
-        
-        // Draw the vertices of our triangles
         [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle
                           vertexStart:0
                           vertexCount:_numVertices];
-        
         [renderEncoder endEncoding];
     }
     
+    // Effects Pass
     if(_effectsPassDescriptor != nil)
     {
-        // Create a render command encoder so we can render into something
-
+        // When rendering the effects, the output should be to the current drawable texture so that it will appear
+        // on screen
         _effectsPassDescriptor.colorAttachments[0].texture = view.currentDrawable.texture;
 
         id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:_effectsPassDescriptor];
         renderEncoder.label = @"EFFECTS RENDERER";
-        
-        // Set the region of the drawable to which we'll draw.
         [renderEncoder setViewport:(MTLViewport){0.0, 0.0, _viewportSize.x, _viewportSize.y, -1.0, 1.0 }];
-        
         [renderEncoder setRenderPipelineState:_effectsPipelineState];
-        
         [renderEncoder setVertexBuffer:_vertexBuffers[_currentBuffer]
                                 offset:0
                                atIndex:VertexInputIndexVertices];
-        
         [renderEncoder setVertexBytes:&_viewportSize
                                length:sizeof(_viewportSize)
                               atIndex:VertexInputIndexViewportSize];
-        
-        // Setup the texture containing the emulator output
         [renderEncoder setFragmentTexture:_effectsTexture
                                   atIndex:0];
-        
-        _uniforms.displayCurvature = _defaults.displayCurvature;
-        _uniforms.displayBorderSize = _defaults.displayBorderSize;
         _uniforms.displayPixelFilterValue = _defaults.displayPixelFilterValue;
+        _uniforms.displayBorderSize = _defaults.displayBorderSize;
+        _uniforms.displayCurvature = _defaults.displayCurvature;
+        _uniforms.displayContrast = _defaults.displayContrast;
+        _uniforms.displayBrightness = _defaults.displayBrightness;
+        _uniforms.displaySaturation = _defaults.displaySaturation;
+        _uniforms.displayScanlineSize = _defaults.displayScanLineSize;
+        _uniforms.displayScanlines = _defaults.displayScanLines;
+        _uniforms.displayRGBOffset = _defaults.displayRGBOffset;
+        _uniforms.displayHorizontalSync = _defaults.displayHorizontalSync;
+        _uniforms.displayShowReflection = _defaults.displayShowReflection;
+        _uniforms.displayShowVignette = _defaults.displayShowVignette;
+        _uniforms.displayVignetteX = _defaults.displayVignetteX;
+        _uniforms.displayVignetteY = _defaults.displayVignetteY;
         
         [renderEncoder setFragmentBytes:&_uniforms
                                  length:sizeof(_uniforms)
                                 atIndex:0];
 
-        // Draw the vertices of our triangles
         [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle
                           vertexStart:0
                           vertexCount:_numVertices];

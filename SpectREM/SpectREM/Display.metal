@@ -43,23 +43,24 @@ vector_float3 colorCorrection(vector_float3 color, float saturation, float contr
     vector_float3 brightened = color * brightness;
     float intensity = dot(brightened, rgb2greyCoeff);
     vector_float3 saturated = mix(vector_float3(intensity), brightened, saturation);
-    vector_float3 contrasted = mix(meanLuminosity, saturated, contrast);
-    
-    return contrasted;
+
+    return mix(meanLuminosity, saturated, contrast);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Split the red, green and blue channels of the texture passed in
 ///////////////////////////////////////////////////////////////////////////////////////
-vector_float3 channelSplit(texture2d<half>image, sampler tex, vector_float2 coord, float spread){
-    vector_float3 frag;
+vector_float4 channelSplit(texture2d<float>image, sampler tex, vector_float2 coord, float spread){
+    vector_float4 frag;
     frag.r = image.sample(tex, vector_float2(coord.x - spread, coord.y)).r;
     frag.g = image.sample(tex, vector_float2(coord.x, coord.y)).g;
     frag.b = image.sample(tex, vector_float2(coord.x + spread, coord.y)).b;
+    frag.a = 1.0;
     return frag;
 }
 
 /**
+ VERTEX SHADER
  Vertex shader used to pass the vertices through to the fragment shader. Not much going on in here :o)
  **/
 vertex RasterizerData vertexShader(uint vertexID [[ vertex_id ]],
@@ -82,7 +83,7 @@ vertex RasterizerData vertexShader(uint vertexID [[ vertex_id ]],
  output provides a single byte per pixel and the value of that byte is used to lookup the actual colour from the colour
  lookup texture
  **/
-fragment float4 clutShader( RasterizerData in [[stage_in]],
+fragment vector_float4 clutShader( RasterizerData in [[stage_in]],
                            texture2d<half> colorTexture [[ texture(TextureIndexPackedDisplay) ]],
                            texture1d<float> clutTexture [[ texture(TextureIndexCLUT) ]])
 {
@@ -99,44 +100,68 @@ fragment float4 clutShader( RasterizerData in [[stage_in]],
  Used to apply effects to the output from the colour lookup shader. The output from this shader is what is
  then displayed on screen
  **/
-fragment float4 effectsShader(RasterizerData in [[stage_in]],
+fragment vector_float4 effectsShader(RasterizerData in [[stage_in]],
                               texture2d<float> colorTexture [[ texture(0) ]],
                               constant Uniforms & uniforms [[buffer(0) ]])
 {
     constexpr sampler textureSampler (mag_filter::linear,
                                       min_filter::linear);
     
-//    //    float max = pow(u_vignetteX, u_vignetteY);
+    float max = pow(uniforms.displayVignetteX, uniforms.displayVignetteY);
     const float w = 32 + 256 + 32;
     const float h = 32 + 192 + 32;
     float border = 32 - uniforms.displayBorderSize;
     float new_w = w - (border * 2);
     float new_h = h - (border * 2);
-    float4 color;
+    vector_float4 fragColor;
 
-    float2 texCoord = radialDistortion(in.textureCoordinate, uniforms.displayCurvature);
+    vector_float2 texCoord = radialDistortion(in.textureCoordinate, uniforms.displayCurvature);
+    vector_float2 scanTexCoord = texCoord;
 
     // Anything outside the texture should be black, otherwise sample the texel in the texture
     if (texCoord.x < 0 || texCoord.y < 0 || texCoord.x > 1 || texCoord.y > 1)
     {
-        color = float4(0, 0, 0, 1);
+        fragColor = vector_float4(0, 0, 0, 1);
     }
     else
     {
         // Update the UV coordinates based on the size of the border
-        float u = ((texCoord.x * new_w) - border);
+        float u = (texCoord.x * new_w) + border;
         float v = ((texCoord.y * new_h) + border);
 
         // Apply pixel filtering
-        float2 vUv = float2(u, v);
+        vector_float2 vUv = vector_float2(u, v);
         float alpha = uniforms.displayPixelFilterValue; // 0.5 = Linear, 0.0 = Nearest
-        float2 x = fract(vUv);
-        float2 x_ = clamp(0.5 / alpha * x, 0.0, 0.5) + clamp(0.5 / alpha * (x - 1.0) + 0.5, 0.0, 0.5);
-        texCoord = (floor(vUv) + x_) / float2(w, h);
+        vector_float2 x = fract(vUv);
+        vector_float2 x_ = clamp(0.5 / alpha * x, 0.0, 0.5) + clamp(0.5 / alpha * (x - 1.0) + 0.5, 0.0, 0.5);
+        texCoord = (floor(vUv) + x_) / vector_float2(w, h);
 
-        color = colorTexture.sample(textureSampler, texCoord);
+        // Apply RGB shift if necessary, otherwise just take the colour from the texture as is
+        if (uniforms.displayRGBOffset > 0)
+        {
+            fragColor = channelSplit( colorTexture, textureSampler, texCoord, uniforms.displayRGBOffset);
+        }
+        else
+        {
+            // Grab the color from the texture
+            fragColor = colorTexture.sample( textureSampler, texCoord );
+        }
+        
+        fragColor.rgb = colorCorrection(fragColor.rgb, uniforms.displaySaturation, uniforms.displayContrast, uniforms.displayBrightness);
+        
+        // Add scanlines
+        float scanline = sin(scanTexCoord.y * uniforms.displayScanlineSize) * 0.09 * uniforms.displayScanlines;
+        fragColor.rgb -= scanline;
+        
+        // Add the vignette which adds a shadow and curving to the corners of the screen. Do this after applying the scan lines so
+        // they are faded out into the shadow as well
+        if (uniforms.displayShowVignette == 1)
+        {
+            float vignette = scanTexCoord.x * scanTexCoord.y * (1.0 - scanTexCoord.x) * (1.0 - scanTexCoord.y);
+            fragColor.rgb *= smoothstep(0, max, vignette);
+        }
     }
 
     // We return the color of the texture
-    return color;
+    return fragColor;
 }

@@ -13,11 +13,10 @@
 
 @interface OpenGLView : NSOpenGLView <NSDraggingDestination, AVCaptureVideoDataOutputSampleBufferDelegate>
 
-@property (strong, nonatomic) OpenGLRenderer *renderer;
-
 // Called once per emulation frame to update the texture with the emulators screen data
 - (void)updateTextureData:(void *)displayBuffer;
 
+// Reloads the default values into the emulator configuration
 - (void)reloadDefaults;
 
 @end

@@ -66,8 +66,8 @@ NSString * const SPIPort = @"spiPort";
                                DisplayHorizontalSync : @(0),
                                DisplayShowReflection : @NO,
                                DisplayShowVignette : @NO,
-                               DisplayVignetteX : @(1.0),
-                               DisplayVignetteY : @(0.25),
+                               DisplayVignetteX : @(0.31),
+                               DisplayVignetteY : @(6.53),
                                
                                AudioMasterVolume : @(1.5),
                                AudioHighPassFilter : @(0),

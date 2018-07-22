@@ -47,9 +47,20 @@ typedef struct
 
 typedef struct
 {
-    float displayCurvature;
-    float displayBorderSize;
     float displayPixelFilterValue;
+    float displayBorderSize;
+    float displayCurvature;
+    float displayContrast;
+    float displayBrightness;
+    float displaySaturation;
+    float displayScanlineSize;
+    float displayScanlines;
+    float displayRGBOffset;
+    float displayHorizontalSync;
+    float displayShowReflection;
+    float displayShowVignette;
+    float displayVignetteX;
+    float displayVignetteY;
 } Uniforms;
 
 #endif /* ShaderTypes_h */
