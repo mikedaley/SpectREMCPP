@@ -18,30 +18,29 @@
 
 @interface AudioCore ()
 {
-    
 @public
-    int             samplesPerFrame;
-    UInt32          formatBytesPerFrame;
-    UInt32          formatChannelsPerFrame;
-    UInt32          formatBitsPerChannel;
-    UInt32          formatFramesPerPacket;
-    UInt32          formatBytesPerPacket;    
+    int             _samplesPerFrame;
+    UInt32          _formatBytesPerFrame;
+    UInt32          _formatChannelsPerFrame;
+    UInt32          _formatBitsPerChannel;
+    UInt32          _formatFramesPerPacket;
+    UInt32          _formatBytesPerPacket;    
 }
 
 // Reference to the emulation queue that is being used to drive the emulation
 @property (assign) dispatch_queue_t emulationQueue;
 
 // Properties used to store the CoreAudio graph and nodes, including the high and low pass effects nodes
-@property (assign) AUGraph graph;
-@property (assign) AUNode outNode;
-@property (assign) AUNode mixerNode;
-@property (assign) AUNode converterNode;
-@property (assign) AUNode lowPassNode;
-@property (assign) AUNode highPassNode;
-@property (assign) AudioUnit convertUnit;
-@property (assign) AudioUnit mixerUnit;
-@property (assign) AudioUnit lowPassFilterUnit;
-@property (assign) AudioUnit highPassFilterUnit;
+@property (assign) AUGraph      graph;
+@property (assign) AUNode       outNode;
+@property (assign) AUNode       mixerNode;
+@property (assign) AUNode       converterNode;
+@property (assign) AUNode       lowPassNode;
+@property (assign) AUNode       highPassNode;
+@property (assign) AudioUnit    convertUnit;
+@property (assign) AudioUnit    mixerUnit;
+@property (assign) AudioUnit    lowPassFilterUnit;
+@property (assign) AudioUnit    highPassFilterUnit;
 
 @property (strong) Defaults *defaults;
 
@@ -84,7 +83,7 @@ static OSStatus renderAudio(void *inRefCon,
         
         NSLog(@"Initialising AudioCore");
         
-        samplesPerFrame = sampleRate / fps;
+        _samplesPerFrame = sampleRate / fps;
     
         CheckError(NewAUGraph(&_graph), "NewAUGraph");
         
@@ -126,21 +125,21 @@ static OSStatus renderAudio(void *inRefCon,
         CheckError(AUGraphOpen(_graph), "AUGraphOpen");
         
         // Buffer format
-        formatBitsPerChannel = 16;
-        formatChannelsPerFrame = 2;
-        formatBytesPerFrame = 4;
-        formatFramesPerPacket = 1;
-        formatBytesPerPacket = 4;
+        _formatBitsPerChannel = 16;
+        _formatChannelsPerFrame = 2;
+        _formatBytesPerFrame = 4;
+        _formatFramesPerPacket = 1;
+        _formatBytesPerPacket = 4;
 
         AudioStreamBasicDescription bufferFormat;
         bufferFormat.mFormatID = kAudioFormatLinearPCM;
         bufferFormat.mFormatFlags = kAudioFormatFlagIsPacked | kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian;
         bufferFormat.mSampleRate = sampleRate;
-        bufferFormat.mBitsPerChannel = formatBitsPerChannel;
-        bufferFormat.mChannelsPerFrame = formatChannelsPerFrame;
-        bufferFormat.mBytesPerFrame = formatBytesPerFrame;
-        bufferFormat.mFramesPerPacket = formatFramesPerPacket;
-        bufferFormat.mBytesPerPacket = formatBytesPerPacket;
+        bufferFormat.mBitsPerChannel = _formatBitsPerChannel;
+        bufferFormat.mChannelsPerFrame = _formatChannelsPerFrame;
+        bufferFormat.mBytesPerFrame = _formatBytesPerFrame;
+        bufferFormat.mFramesPerPacket = _formatFramesPerPacket;
+        bufferFormat.mBytesPerPacket = _formatBytesPerPacket;
         
         CheckError(AUGraphNodeInfo(_graph, _converterNode, NULL, &_convertUnit), "AUGraphNodeInfo");
         CheckError(AudioUnitSetProperty(_convertUnit, kAudioUnitProperty_StreamFormat,
@@ -148,7 +147,7 @@ static OSStatus renderAudio(void *inRefCon,
                                         sizeof(bufferFormat)), "AudioUnitSetProperty[kAudioUnitProperty_StreamFormat]");
         
         // Set the frames per slice property on the converter node
-        uint32 framesPerSlice = 882;
+        uint32 framesPerSlice = sampleRate / fps;
         CheckError(AudioUnitSetProperty(_convertUnit, kAudioUnitProperty_MaximumFramesPerSlice,
                                         kAudioUnitScope_Input, 0, &framesPerSlice,
                                         sizeof(framesPerSlice)), "AudioUnitSetProperty[kAudioUnitProperty_MaximumFramesPerSlice]");
@@ -240,13 +239,13 @@ static OSStatus renderAudio(void *inRefCon,
                             UInt32 inNumberFrames,
                             AudioBufferList *ioData)
 {
-    EmulationViewController *callback = (__bridge EmulationViewController *)inRefCon;
+    const EmulationViewController *callback = (__bridge EmulationViewController *)inRefCon;
     
     // Grab the buffer that core audio has passed in.
-    int16_t *buffer = (int16_t *)ioData->mBuffers[0].mData;
+    int16_t *buffer = static_cast<int16_t *>(ioData->mBuffers[0].mData);
     
     // Reset the buffer to prevent any odd noises being played when a machine starts up
-    memset(buffer, 0, inNumberFrames << 2);
+    memset(buffer, 0, ioData->mBuffers[0].mDataByteSize);
     
     [callback audioCallback:inNumberFrames buffer:buffer];
     

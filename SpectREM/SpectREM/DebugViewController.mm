@@ -118,8 +118,6 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
 - (void)viewWillDisappear
 {
     [[NSNotificationCenter defaultCenter] removeObserver:NSViewFrameDidChangeNotification];
-    [[NSNotificationCenter defaultCenter] removeObserver:cCPU_PAUSED_NOTIFICATION];
-    [[NSNotificationCenter defaultCenter] removeObserver:cCPU_RESUMED_NOTIFICATION];
     [self.updateTimer invalidate];
 }
 
@@ -127,10 +125,6 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
 {
     [[NSNotificationCenter defaultCenter] addObserverForName:NSViewFrameDidChangeNotification object:self.memoryTableView.enclosingScrollView queue:NULL usingBlock:^(NSNotification * _Nonnull note) {
         [self updateMemoryTableSize];
-    }];
-
-    [[NSNotificationCenter defaultCenter] addObserverForName:cCPU_PAUSED_NOTIFICATION  object:NULL queue:NULL usingBlock:^(NSNotification * _Nonnull note) {
-        [self updateViewDetails];
     }];
 
     [self.emulationViewController pauseMachine];
@@ -936,14 +930,14 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
         
         self.tStates = [NSString stringWithFormat:@"%04i", debugger->machine->z80Core.GetTStates()];
         
-        self.fs = (debugger->machine->z80Core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80Core.FLAG_S) ? @"1" : @"0";
-        self.fz = (debugger->machine->z80Core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80Core.FLAG_Z) ? @"1" : @"0";
-        self.f5 = (debugger->machine->z80Core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80Core.FLAG_5) ? @"1" : @"0";
-        self.fh = (debugger->machine->z80Core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80Core.FLAG_H) ? @"1" : @"0";
-        self.f3 = (debugger->machine->z80Core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80Core.FLAG_3) ? @"1" : @"0";
-        self.fpv = (debugger->machine->z80Core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80Core.FLAG_P) ? @"1" : @"0";
-        self.fn = (debugger->machine->z80Core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80Core.FLAG_N) ? @"1" : @"0";
-        self.fc = (debugger->machine->z80Core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80Core.FLAG_C) ? @"1" : @"0";
+        self.fs = (debugger->machine->z80Core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80Core.FLAG_S) ? @"1" : @"-";
+        self.fz = (debugger->machine->z80Core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80Core.FLAG_Z) ? @"1" : @"-";
+        self.f5 = (debugger->machine->z80Core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80Core.FLAG_5) ? @"1" : @"-";
+        self.fh = (debugger->machine->z80Core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80Core.FLAG_H) ? @"1" : @"-";
+        self.f3 = (debugger->machine->z80Core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80Core.FLAG_3) ? @"1" : @"-";
+        self.fpv = (debugger->machine->z80Core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80Core.FLAG_P) ? @"1" : @"-";
+        self.fn = (debugger->machine->z80Core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80Core.FLAG_N) ? @"1" : @"-";
+        self.fc = (debugger->machine->z80Core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80Core.FLAG_C) ? @"1" : @"-";
     });
     
 

@@ -21,8 +21,8 @@ public:
     AudioQueue();
     ~AudioQueue();
 
-    uint32_t             write(int16_t *buffer, uint32_t count);
-    uint32_t             read(int16_t *buffer, uint32_t count);
+    void                 write(int16_t *buffer, uint32_t count);
+    void                 read(int16_t *buffer, uint32_t count);
     uint32_t             bufferUsed();
 
 private:

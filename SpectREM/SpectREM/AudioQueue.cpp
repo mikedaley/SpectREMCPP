@@ -8,7 +8,7 @@
 
 #include "AudioQueue.hpp"
 
-#define kExponent 18
+#define kExponent 18 // 2^16
 #define kUsed ((audioQueueBufferWritten - audioQueueBufferRead) & (audioQueueBufferCapacity - 1))
 #define kSpace (audioQueueBufferCapacity - 1 - kUsed)
 #define kSize (audioQueueBufferCapacity - 1)
@@ -18,7 +18,8 @@
 AudioQueue::AudioQueue()
 {
     audioQueueBufferCapacity = 1 << kExponent;
-    audioQueueBuffer = new int16_t[ audioQueueBufferCapacity << 2 ]();
+    audioQueueBuffer = new int16_t[ audioQueueBufferCapacity << 1 ]();
+    memset(audioQueueBuffer, 0, audioQueueBufferCapacity << 1);
 	audioQueueBufferWritten = 0;
 	audioQueueBufferRead = 0;
 }
@@ -29,10 +30,10 @@ AudioQueue::~AudioQueue()
 }
 
 // Write the supplied number of bytes into the queues buffer from the supplied buffer pointer
-uint32_t AudioQueue::write(int16_t *buffer, uint32_t count)
+void AudioQueue::write(int16_t *buffer, uint32_t count)
 {
     if (!count) {
-        return 0;
+        return;
     }
     
     uint32_t t;
@@ -60,12 +61,10 @@ uint32_t AudioQueue::write(int16_t *buffer, uint32_t count)
     memcpy(audioQueueBuffer + i, buffer, count << 1);
     audioQueueBufferWritten = i + count;
     
-    return t;
-    
 }
 
 // Read the supplied number of bytes from the queues buffer into the supplied buffer pointer
-uint32_t AudioQueue::read(int16_t *buffer, uint32_t count)
+void AudioQueue::read(int16_t *buffer, uint32_t count)
 {
     uint32_t t;
     uint32_t i;
@@ -91,8 +90,6 @@ uint32_t AudioQueue::read(int16_t *buffer, uint32_t count)
     
     memcpy(buffer, audioQueueBuffer + i, count << 1);
     audioQueueBufferRead = i + count;
-    
-    return t;
 }
 
 // Return the number of used samples in the buffer

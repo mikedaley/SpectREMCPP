@@ -110,7 +110,7 @@ void ZXSpectrum::generateFrame()
             currentFrameTstates -= tStates;
             
             audioUpdateWithTs(tStates);
-            
+
             if (z80Core.GetTStates() >= machineInfo.tsPerFrame)
             {
                 z80Core.ResetTStates( machineInfo.tsPerFrame );
@@ -122,10 +122,9 @@ void ZXSpectrum::generateFrame()
                 
                 displayFrameReset();
                 keyboardCheckCapsLockStatus();
+                audioDecayAYFloatingRegister();
                 
                 currentFrameTstates = 0;
-                
-                audioDecayAYFloatingRegister();
             }
         }
     }

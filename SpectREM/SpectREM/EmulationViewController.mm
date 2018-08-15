@@ -1,4 +1,4 @@
-//
+ //
 //  ViewController.m
 //  SpectREM
 //
@@ -17,7 +17,6 @@
 #import "Debug.hpp"
 
 #import "AudioCore.h"
-#import "OpenGLView.h"
 
 #import "ConfigurationViewController.h"
 #import "ExportAccessoryViewController.h"
@@ -28,8 +27,8 @@
 
 #pragma mark - Constants
 
-uint32_t const cAUDIO_SAMPLE_RATE = 44100;
-uint32_t const cFRAMES_PER_SECOND = 50;
+static uint32_t const cAUDIO_SAMPLE_RATE = 44100;
+static uint32_t const cFRAMES_PER_SECOND = 50;
 
 static NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
@@ -62,8 +61,8 @@ static const int cSCREEN_FILL = 1;
     
     NSTimer                         *_accelerationTimer;
     
-    MTKView                         *_view;
-    MetalRenderer                       *_renderer;
+    MTKView                         *_metalView;
+    MetalRenderer                   *_metalRenderer;
 }
 @end
 
@@ -82,41 +81,37 @@ static const int cSCREEN_FILL = 1;
     [self.defaults removeObserver:self forKeyPath:MachineTapeInstantLoad];
     [self.defaults removeObserver:self forKeyPath:MachineUseAYSound];
     [self.defaults removeObserver:self forKeyPath:SPIPort];
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:cDISPLAY_UPDATE_NOTIFICATION];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
-    _view = (MTKView *)self.view;
-    _view.device = MTLCreateSystemDefaultDevice();
+    _metalView = (MTKView *)self.view;
+    _metalView.device = MTLCreateSystemDefaultDevice();
     
-    if (!_view.device)
+    if (!_metalView.device)
     {
         NSLog(@"Metal is not supported on this device!");
         return;
     }
     
-    _renderer = [[MetalRenderer alloc] initWithMetalKitView:_view];
+    _metalRenderer = [[MetalRenderer alloc] initWithMetalKitView:_metalView];
     
-    if (!_renderer)
+    if (!_metalRenderer)
     {
         NSLog(@"Renderer failed init");
         return;
     }
     
-    [_renderer mtkView:_view drawableSizeWillChange:_view.drawableSize];
-    _view.delegate = _renderer;
-    _view.nextResponder = self;
+    [_metalRenderer mtkView:_metalView drawableSizeWillChange:_metalView.drawableSize];
+    _metalView.delegate = _metalRenderer;
+    _metalView.nextResponder = self;
     
     _defaults = [Defaults defaults];
     
     _mainBundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/Contents/Resources/"];
     _storyBoard = [NSStoryboard storyboardWithName:@"Main" bundle:nil];
-    
-//    self.view.nextResponder = self;
     
     // The AudioCore uses the sound buffer to identify when a new frame should be drawn for accurate timing. The AudioQueue
     // is used to help measure usage of the audio buffer
@@ -157,7 +152,7 @@ static const int cSCREEN_FILL = 1;
             if (_defaults.machineAcceleration == 1)
             {
                 _machine->generateFrame();
-                [_renderer updateTextureData:_machine->displayBuffer];
+                [_metalRenderer updateTextureData:_machine->displayBuffer];
             }
             _audioQueue->write(_machine->audioBuffer, b);
         }
@@ -169,13 +164,13 @@ static const int cSCREEN_FILL = 1;
     if (_defaults.machineAcceleration > 1)
     {
         [_accelerationTimer invalidate];
-        _accelerationTimer = [NSTimer timerWithTimeInterval:1.0 / (50.0 * _defaults.machineAcceleration) repeats:YES block:^(NSTimer * _Nonnull timer) {
+        _accelerationTimer = [NSTimer timerWithTimeInterval:1.0 / (cFRAMES_PER_SECOND * _defaults.machineAcceleration) repeats:YES block:^(NSTimer * _Nonnull timer) {
             
             _machine->generateFrame();
             
             if (!(_machine->emuFrameCounter % static_cast<uint32_t>(_defaults.machineAcceleration)))
             {
-                [_renderer updateTextureData:_machine->displayBuffer];
+                [_metalRenderer updateTextureData:_machine->displayBuffer];
             }
         }];
         
@@ -189,7 +184,7 @@ static const int cSCREEN_FILL = 1;
 
 - (void)updateDisplay
 {
-    [_renderer updateTextureData:_machine->displayBuffer];
+    [_metalRenderer updateTextureData:_machine->displayBuffer];
 }
 
 #pragma mark - View Methods
@@ -203,9 +198,7 @@ static const int cSCREEN_FILL = 1;
 
 - (void)setupNotifications
 {
-    [[NSNotificationCenter defaultCenter] addObserverForName:cDISPLAY_UPDATE_NOTIFICATION object:NULL queue:NULL usingBlock:^(NSNotification * _Nonnull note) {
-        [self updateDisplay];
-    }];
+
 }
 
 #pragma mark - Observers
@@ -684,7 +677,6 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     {
         _machine->emuPaused = true;
         [self.audioCore stop];
-        [[NSNotificationCenter defaultCenter] postNotificationName:cCPU_PAUSED_NOTIFICATION object:NULL];
     }
 }
 
@@ -694,7 +686,6 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     {
         _machine->emuPaused = false;
         [self.audioCore start];
-        [[NSNotificationCenter defaultCenter] postNotificationName:cCPU_RESUMED_NOTIFICATION object:NULL];
     }
 }
 
@@ -760,23 +751,6 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 - (void *)getDebugger
 {
     return _debugger;
-}
-
-- (BOOL)getCPUState
-{
-    return _machine->emuPaused;
-}
-
-- (void)pauseCPU
-{
-    _machine->emuPaused = true;
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"kCPU_PAUSED_NOTIFICATION" object:NULL];
-}
-
-- (void)resumeCPU
-{
-    _machine->emuPaused = false;
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"kCPU_RESUMED_NOTIFICATION" object:NULL];
 }
 
 @end

@@ -168,7 +168,7 @@ public:
     vector<unsigned char>   getTapeData();
     
 private:
-    void                    reset(bool clearBlocks);
+    void                    resetAndClearBlocks(bool clearBlocks);
     bool                    processData(unsigned char *fileBytes, long size);
     void                    generateHeaderPilotWithTs(uint32_t tStates);
     void                    generateSync1WithTs(uint32_t tStates);
@@ -200,7 +200,7 @@ private:
     uint32_t                blockPauseTStates = 0;          // How many tStates have passed since starting the pause between data blocks
     uint32_t                dataBitTStates = 0;             // How many tStates to pause when processing data bit pulses
     uint32_t                dataPulseCount = 0;             // How many pulses have been generated for the current data bit;
-    TapeBlock               *tapeCurrentBlock = nullptr;    // Current tape block
+    TapeBlock               *tapeCurrentBlock = nullptr;    // Current tape block object
     
     // Function called whenever the status of the tape changes e.g. new block, rewind, stop etc
     TapeStatusCallback      updateStatusCallback = nullptr;

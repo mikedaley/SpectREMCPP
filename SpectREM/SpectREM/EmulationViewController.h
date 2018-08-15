@@ -6,7 +6,6 @@
 //  Copyright © 2017 71Squared Ltd. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
 #import "Defaults.h"
 
 #import <MetalKit/MetalKit.h>
@@ -26,10 +25,6 @@ enum
 static NSString *const cSNA_EXTENSION = @"SNA";
 static NSString *const cZ80_EXTENSION = @"Z80";
 static NSString *const cTAP_EXTENSION = @"TAP";
-
-static NSString *const cDISPLAY_UPDATE_NOTIFICATION = @"DisplayUpdateNotification";
-static NSString *const cCPU_PAUSED_NOTIFICATION = @"CPUPausedNotification";
-static NSString *const cCPU_RESUMED_NOTIFICATION = @"CPUResumedNotification";
 
 @interface EmulationViewController : NSViewController
 

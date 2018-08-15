@@ -13,9 +13,17 @@
 #import "ShaderTypes.h"
 #import "Defaults.h"
 
+#pragma mark - Constants
+
 static const NSUInteger cMAX_BUFFERS_IN_FLIGHT = 3;
 static const NSUInteger cDISPLAY_WIDTH = 320;
 static const NSUInteger cDISPLAY_HEIGHT = 256;
+static const NSUInteger cCLUT_WIDTH = 16;
+static const NSUInteger cCLUT_HEIGHT = 1;
+static const MTLRegion  textureRegion = {
+                                    {0, 0, 0}, // Origin
+                                    {cDISPLAY_WIDTH, cDISPLAY_HEIGHT, 1} // Size
+                                };
 
 // Constants for the colour lookup table
 const GLfloat normalColor = 189.0 / 255.0;
@@ -55,8 +63,9 @@ static const Vertex quadVertices[] =
     { {  1.0,   1.0 },  { 1.f, 0.f } },
 };
 
-@implementation MetalRenderer
+#pragma mark - Implementatijon
 
+@implementation MetalRenderer
 {
     dispatch_semaphore_t _inFlightSemaphore;
     
@@ -75,19 +84,20 @@ static const Vertex quadVertices[] =
     // The command Queue from which we'll obtain command buffers
     id<MTLCommandQueue> _commandQueue;
     
-    // The Metal texture object
+    // The Metal texture objects
     id<MTLTexture> _displayTexture;
     id<MTLTexture> _clutTexture;
     id<MTLTexture> _effectsTexture;
 
-    // The Metal buffer in which we store our vertex data
+    // The Metal buffer in which we store the vertex data
     id<MTLBuffer> _vertices;
     
     // The number of vertices in our vertex buffer
     NSUInteger _numVertices;
     
-    // The current size of our view so we can use this in our render pipeline
-    vector_uint2 _viewportSize;
+    // Viewport size for both the window and the emulator output
+    MTLViewport _windowViewport;
+    MTLViewport _emulatorViewport;
     
     MTKView *_view;
     Uniforms _uniforms;
@@ -108,9 +118,9 @@ static const Vertex quadVertices[] =
 
         _inFlightSemaphore = dispatch_semaphore_create(3);
         
-        MTLTextureDescriptor *textureDescriptor = [[MTLTextureDescriptor alloc] init];
+        MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor new];
         
-        // Emulator display texture
+        // Packed texture output by the emualtor core
         textureDescriptor.pixelFormat = MTLPixelFormatR8Unorm;
         textureDescriptor.textureType = MTLTextureType2D;
         textureDescriptor.width = cDISPLAY_WIDTH;
@@ -120,16 +130,16 @@ static const Vertex quadVertices[] =
         // Colour lookup texture
         textureDescriptor.pixelFormat = MTLPixelFormatRGBA32Float;
         textureDescriptor.textureType = MTLTextureType1D;
-        textureDescriptor.width = 16;
-        textureDescriptor.height = 1;
+        textureDescriptor.width = cCLUT_WIDTH;
+        textureDescriptor.height = cCLUT_HEIGHT;
         _clutTexture = [_device newTextureWithDescriptor:textureDescriptor];
 
         // Load lookup texture with standard ZX Spectrum colour palette
         MTLRegion region = {
             {0, 0, 0}, // Origin
-            {16, 1, 1} // Size
+            {cCLUT_WIDTH, cCLUT_HEIGHT, 1} // Size
         };
-        [_clutTexture replaceRegion:region mipmapLevel:0 withBytes:&CLUT bytesPerRow:16 * sizeof(Color)];
+        [_clutTexture replaceRegion:region mipmapLevel:0 withBytes:&CLUT bytesPerRow:cCLUT_WIDTH * sizeof(Color)];
         
         // Texture used to apply final output effects
         textureDescriptor.pixelFormat = MTLPixelFormatRGBA32Float;
@@ -150,7 +160,7 @@ static const Vertex quadVertices[] =
         // Calculate the number of vertices
         _numVertices = sizeof(quadVertices) / sizeof(Vertex);
         
-        // Create the render pipeline
+        // **** Create the render pipeline
         
         // Load all the shaders with a .metal file extension
         id<MTLLibrary> defaultLibrary = [_device newDefaultLibrary];
@@ -168,12 +178,8 @@ static const Vertex quadVertices[] =
         
         NSError *error = NULL;
         _clutPipelineState = [_device newRenderPipelineStateWithDescriptor:pipelineStateDescriptor error:&error];
-        
-        if (!_clutPipelineState)
-        {
-            NSLog(@"Failed to create pipeline state, error %@", error);
-        }
-        
+        NSAssert(_clutPipelineState, @"Failed to create a pipeline state, error %@", error);
+
         // Setup the descriptor for creating a pipeline state object
         pipelineStateDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
         pipelineStateDescriptor.label = @"Effects Pipeline";
@@ -183,11 +189,7 @@ static const Vertex quadVertices[] =
         
         error = NULL;
         _effectsPipelineState = [_device newRenderPipelineStateWithDescriptor:pipelineStateDescriptor error:&error];
-        
-        if (!_clutPipelineState)
-        {
-            NSLog(@"Failed to create pipeline state, error %@", error);
-        }
+        NSAssert(_clutPipelineState, @"Failed to create a pipeline state, error %@", error);
         
         // Create the command queue
         _commandQueue = [_device newCommandQueue];
@@ -202,18 +204,15 @@ static const Vertex quadVertices[] =
         _effectsPassDescriptor = [MTLRenderPassDescriptor new];
         _effectsPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
         
+        _emulatorViewport = (MTLViewport){0.0, 0.0, cDISPLAY_WIDTH, cDISPLAY_HEIGHT, -1.0, 1.0 };
+        
     }
     return self;
 }
 
 - (void)updateTextureData:(void *)displayBuffer
 {
-    MTLRegion region = {
-        {0, 0, 0}, // Origin
-        {cDISPLAY_WIDTH, cDISPLAY_HEIGHT, 1} // Size
-    };
-    
-    [_displayTexture replaceRegion:region mipmapLevel:0 withBytes:displayBuffer bytesPerRow:320];
+    [_displayTexture replaceRegion:textureRegion mipmapLevel:0 withBytes:displayBuffer bytesPerRow:320];
 
     // Not placing this draw request on the main queue can cause the drawable area to not keep up with window resizing
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -222,8 +221,7 @@ static const Vertex quadVertices[] =
 }
 
 - (void)mtkView:(nonnull MTKView *)view drawableSizeWillChange:(CGSize)size {
-    _viewportSize.x = size.width;
-    _viewportSize.y = size.height;
+    _windowViewport = (MTLViewport){0.0, 0.0, size.width, size.height, -1.0, 1.0 };
 }
 
 - (void)drawInMTKView:(nonnull MTKView *)view {
@@ -255,14 +253,11 @@ static const Vertex quadVertices[] =
     {
         id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:_clutPassDescriptor];
         renderEncoder.label = @"CLUT RENDERER";
-        [renderEncoder setViewport:(MTLViewport){0.0, 0.0, cDISPLAY_WIDTH, cDISPLAY_HEIGHT, -1.0, 1.0 }];
+        [renderEncoder setViewport:_emulatorViewport];
         [renderEncoder setRenderPipelineState:_clutPipelineState];
         [renderEncoder setVertexBuffer:_vertexBuffers[_currentBuffer]
                                 offset:0
                                atIndex:VertexInputIndexVertices];
-        [renderEncoder setVertexBytes:&_viewportSize
-                               length:sizeof(_viewportSize)
-                              atIndex:VertexInputIndexViewportSize];
         [renderEncoder setFragmentTexture:_displayTexture
                                   atIndex:TextureIndexPackedDisplay];
         [renderEncoder setFragmentTexture:_clutTexture
@@ -282,16 +277,14 @@ static const Vertex quadVertices[] =
 
         id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:_effectsPassDescriptor];
         renderEncoder.label = @"EFFECTS RENDERER";
-        [renderEncoder setViewport:(MTLViewport){0.0, 0.0, _viewportSize.x, _viewportSize.y, -1.0, 1.0 }];
+        [renderEncoder setViewport:_windowViewport];
         [renderEncoder setRenderPipelineState:_effectsPipelineState];
         [renderEncoder setVertexBuffer:_vertexBuffers[_currentBuffer]
                                 offset:0
                                atIndex:VertexInputIndexVertices];
-        [renderEncoder setVertexBytes:&_viewportSize
-                               length:sizeof(_viewportSize)
-                              atIndex:VertexInputIndexViewportSize];
         [renderEncoder setFragmentTexture:_effectsTexture
                                   atIndex:0];
+        
         _uniforms.displayPixelFilterValue = _defaults.displayPixelFilterValue;
         _uniforms.displayBorderSize = _defaults.displayBorderSize;
         _uniforms.displayCurvature = _defaults.displayCurvature;

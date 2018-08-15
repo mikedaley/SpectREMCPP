@@ -76,8 +76,7 @@ public:
         eDebugExecuteOp = 0x04
     };
     
-private:    
-    
+private:
     // Holds details of the host platforms key codes and how they map to the spectrum keyboard matrix
     typedef struct
     {
@@ -87,7 +86,6 @@ private:
     } KEYBOARD_ENTRY;
     
 public:
-    
     // Holds the data returned when creating a Snapshot or Z80 snapshot
     struct Snap {
         int32_t     length = 0;
@@ -226,8 +224,8 @@ public:
     bool                    displayReady = false;
 
     // Audio
-    int32_t                 audioEarBit = 0;
-    int32_t                 audioMicBit = 0;
+    int8_t                  audioEarBit = 0;
+    int8_t                  audioMicBit = 0;
     uint32_t                audioBufferSize = 0;
     uint32_t                audioBufferIndex = 0;
     float                   audioTsCounter = 0;
@@ -236,7 +234,7 @@ public:
     float                   audioBeeperTsStep = 0;
     float                   audioBeeperLeft = 0;
     float                   audioBeeperRight = 0;
-
+    
     float                   audioAYChannelOutput[3]{0};
     uint32_t                audioAYChannelCount[3]{0};
     uint16_t                audioAYVolumes[16]{0};

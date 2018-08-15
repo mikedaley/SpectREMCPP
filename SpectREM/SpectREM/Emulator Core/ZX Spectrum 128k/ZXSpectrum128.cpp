@@ -147,8 +147,8 @@ void ZXSpectrum128::coreIOWrite(unsigned short address, unsigned char data)
     if (!(address & 0x01))
     {
         displayUpdateWithTs((z80Core.GetTStates() - emuCurrentDisplayTs) + machineInfo.borderDrawingOffset);
-        audioEarBit = (data & 0x10) >> 4;
-        audioMicBit = (data & 0x08) >> 3;
+        audioEarBit = (data & 0x10) ? 1 : 0;
+        audioMicBit = (data & 0x08) ? 1 : 0;
         displayBorderColor = data & 0x07;
     }
     

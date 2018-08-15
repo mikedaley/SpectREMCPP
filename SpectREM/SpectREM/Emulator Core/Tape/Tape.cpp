@@ -207,7 +207,7 @@ Tape::~Tape()
 
 }
 
-void Tape::reset(bool clearBlocks)
+void Tape::resetAndClearBlocks(bool clearBlocks)
 {
     inputBit = 0;
     currentBytePtr = 0;
@@ -256,7 +256,7 @@ bool Tape::loadWithPath(const char *path)
 	{
 		fread(pFileBytes, 1, size, fileHandle);
 
-		reset(true);
+		resetAndClearBlocks(true);
 
 		if (processData(pFileBytes, size))
 		{
@@ -630,6 +630,12 @@ void Tape::loadBlock(void *m)
 {
     ZXSpectrum *machine = static_cast<ZXSpectrum *>(m);
     
+    // Stops us trying to read past the avaiable blocks. This is a hack and should be fixed properly at source
+    if (currentBlockIndex >= blocks.size())
+    {
+        currentBlockIndex = 0;
+    }
+    
     uint32_t expectedBlockType = machine->z80Core.GetRegister(CZ80Core::eREG_ALT_A);
     uint32_t startAddress = machine->z80Core.GetRegister(CZ80Core::eREG_IX);
     
@@ -762,7 +768,7 @@ void Tape::rewindTape()
 {
     if (loaded)
     {
-        reset(false);
+        resetAndClearBlocks(false);
     }
     if (updateStatusCallback)
     {
@@ -786,7 +792,7 @@ void Tape::rewindBlock()
 
 void Tape::eject()
 {
-    reset(true);
+    resetAndClearBlocks(true);
     loaded = false;
 }
 

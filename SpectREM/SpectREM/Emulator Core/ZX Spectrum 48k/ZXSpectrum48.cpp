@@ -118,6 +118,7 @@ unsigned char ZXSpectrum48::coreIORead(unsigned short address)
 
     // Check to see if the keyboard is being read and if so return any keys currently pressed
     unsigned char result = 0xff;
+    
     if (address & 0xfe)
     {
         for (int i = 0; i < 8; i++)
@@ -145,17 +146,21 @@ void ZXSpectrum48::coreIOWrite(unsigned short address, unsigned char data)
     
     ZXSpectrum::ULAApplyIOContention(address, contended);
 
-    // Port: 0xFE
-    //   7   6   5   4   3   2   1   0
-    // +---+---+---+---+---+-----------+
-    // |   |   |   | E | M |  BORDER   |
-    // +---+---+---+---+---+-----------+
+    // ULA owned ports
     if (!(address & 0x01))
     {
         displayUpdateWithTs((z80Core.GetTStates() - emuCurrentDisplayTs) + machineInfo.borderDrawingOffset);
-        audioEarBit = (data & 0x10) >> 4;
-        audioMicBit = (data & 0x08) >> 3;
+
+        // Port: 0xFE
+        //   7   6   5   4   3   2   1   0
+        // +---+---+---+---+---+-----------+
+        // |   |   |   | E | M |  BORDER   |
+        // +---+---+---+---+---+-----------+
+        audioEarBit = (data & 0x10) ? 1 : 0;
+        audioMicBit = (data & 0x08) ? 1 : 0;
         displayBorderColor = data & 0x07;
+
+        //        cout << static_cast<int>(audioEarBit)  << endl;
     }
     
     // AY-3-8912 ports
