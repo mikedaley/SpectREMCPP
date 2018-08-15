@@ -9,7 +9,7 @@
 #include "AudioQueue.hpp"
 
 #define kExponent 18 // 2^16
-#define kUsed ((audioQueueBufferWritten - audioQueueBufferRead) & (audioQueueBufferCapacity - 1))
+#define kUsed ((audioQueueBufferWritten - audioQueueBufferRead) & ((1 << kExponent) - 1))
 #define kSpace (audioQueueBufferCapacity - 1 - kUsed)
 #define kSize (audioQueueBufferCapacity - 1)
 
@@ -32,12 +32,12 @@ AudioQueue::~AudioQueue()
 // Write the supplied number of bytes into the queues buffer from the supplied buffer pointer
 void AudioQueue::write(int16_t *buffer, uint32_t count)
 {
-    if (!count) {
+    if (!buffer) {
         return;
     }
     
-    uint32_t t;
-    uint32_t i;
+    int t;
+    int i;
     
     t = kSpace;
     
@@ -66,8 +66,8 @@ void AudioQueue::write(int16_t *buffer, uint32_t count)
 // Read the supplied number of bytes from the queues buffer into the supplied buffer pointer
 void AudioQueue::read(int16_t *buffer, uint32_t count)
 {
-    uint32_t t;
-    uint32_t i;
+    int t;
+    int i;
     
     t = kUsed;
     
@@ -93,7 +93,7 @@ void AudioQueue::read(int16_t *buffer, uint32_t count)
 }
 
 // Return the number of used samples in the buffer
-uint32_t AudioQueue::bufferUsed()
+int AudioQueue::bufferUsed()
 {
     return kUsed;
 }

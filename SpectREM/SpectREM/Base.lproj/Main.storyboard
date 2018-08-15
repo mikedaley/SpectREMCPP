@@ -675,7 +675,7 @@
                                         <slider verticalHuggingPriority="750" id="V2t-BV-fFC">
                                             <rect key="frame" x="111" y="76" width="92" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" maxValue="3" doubleValue="1" tickMarkPosition="above" numberOfTickMarks="3" sliderType="linear" id="5De-3K-7gz"/>
+                                            <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" maxValue="1" doubleValue="0.5" tickMarkPosition="above" numberOfTickMarks="3" sliderType="linear" id="5De-3K-7gz"/>
                                             <connections>
                                                 <binding destination="AHt-Sz-7wU" name="value" keyPath="defaults.audioMasterVolume" id="P1J-1T-6kE"/>
                                             </connections>

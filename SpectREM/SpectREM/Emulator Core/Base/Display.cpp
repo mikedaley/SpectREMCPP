@@ -85,10 +85,7 @@ void ZXSpectrum::displayFrameReset()
 {
     emuCurrentDisplayTs = 0;
     displayBufferIndex = 0;
-    
     audioBufferIndex = 0;
-    audioTsCounter = 0;
-    audioTsStepCounter = 0;
 }
 
 void ZXSpectrum::displayClear()

@@ -23,13 +23,13 @@ public:
 
     void                 write(int16_t *buffer, uint32_t count);
     void                 read(int16_t *buffer, uint32_t count);
-    uint32_t             bufferUsed();
+    int             bufferUsed();
 
 private:
     int16_t              *audioQueueBuffer;
-    uint32_t             audioQueueBufferRead;
-    uint32_t             audioQueueBufferWritten;
-    uint32_t             audioQueueBufferCapacity;
+    int             audioQueueBufferRead;
+    int             audioQueueBufferWritten;
+    int             audioQueueBufferCapacity;
 
 };
 

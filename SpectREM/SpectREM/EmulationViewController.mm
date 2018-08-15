@@ -147,7 +147,7 @@ static const int cSCREEN_FILL = 1;
         _audioQueue->read(buffer, (inNumberFrames << 1));
         
         // Check if we have used a frames worth of buffer storage and if so then its time to generate another frame.
-        if (_audioQueue->bufferUsed() < b)
+        if (_audioQueue->bufferUsed() <= b)
         {
             if (_defaults.machineAcceleration == 1)
             {
