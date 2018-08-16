@@ -30,7 +30,7 @@ void ZXSpectrum::audioBuildAYVolumesTable()
 {
     for (int i = 0; i < 16; i++)
     {
-        audioAYVolumes[ i ] = (uint16_t)(fAYVolBase[ i ] * 1024);
+        audioAYVolumes[ i ] = (uint16_t)(fAYVolBase[ i ] * 8192);
     }
 }
 
@@ -103,22 +103,20 @@ void ZXSpectrum::audioUpdateWithTs(int32_t tStates)
         // Loop over each tState so that the necessary audio samples can be generated
        if (emuUseAYSound)
        {
-           if (audioAYTs++ >= audioAYTsStep)
+           audioAYTs += 1.0f;
+           if (audioAYTs >= audioAYTsStep)
            {
                audioAYUpdate();
 
-			   audioAYLevelLeft = audioAYChannelOutput[0];
-			   audioAYLevelLeft += audioAYChannelOutput[1];
-			   audioAYLevelLeft += audioAYChannelOutput[2];
-
-			   audioAYLevelRight = audioAYChannelOutput[0];
-			   audioAYLevelRight += audioAYChannelOutput[1];
-			   audioAYLevelRight += audioAYChannelOutput[2];
+			   audioAYLevelLeft = audioAYChannelOutput[0]; // A
+			   audioAYLevelLeft += audioAYChannelOutput[1]; // B
+			   audioAYLevelRight = audioAYChannelOutput[1]; // B
+			   audioAYLevelRight += audioAYChannelOutput[2]; // A
 
                audioAYChannelOutput[0] = 0;
                audioAYChannelOutput[1] = 0;
                audioAYChannelOutput[2] = 0;
-
+               
                audioAYTs -= audioAYTsStep;
            }
        }
