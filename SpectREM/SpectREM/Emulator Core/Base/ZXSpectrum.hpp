@@ -232,8 +232,10 @@ public:
     float                   audioTsStepCounter = 0;
 
     float                   audioBeeperTsStep = 0;
-    float                   audioBeeperLeft = 0;
-    float                   audioBeeperRight = 0;
+	float                   audioOutputLevelLeft = 0;
+	float                   audioOutputLevelRight = 0;
+	float                   audioAYLevelLeft = 0;
+	float                   audioAYLevelRight = 0;
     
     float                   audioAYChannelOutput[3]{0};
     uint32_t                audioAYChannelCount[3]{0};
