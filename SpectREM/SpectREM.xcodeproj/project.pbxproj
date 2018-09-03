@@ -405,7 +405,7 @@
 			isa = PBXGroup;
 			children = (
 				27BAE9A920F64481007A8CFB /* Debugger */,
-				EDEDE7191F75563E00DAC9AE /* Base */,
+				EDEDE7191F75563E00DAC9AE /* ZX Spectrum Core */,
 				EDEDE7181F75563400DAC9AE /* ZX Spectrum 48k */,
 				EDEDE7171F75562C00DAC9AE /* ZX Spectrum 128k */,
 				EDEDE71A1F75564200DAC9AE /* Tape */,
@@ -434,7 +434,7 @@
 			path = "ZX Spectrum 48k";
 			sourceTree = "<group>";
 		};
-		EDEDE7191F75563E00DAC9AE /* Base */ = {
+		EDEDE7191F75563E00DAC9AE /* ZX Spectrum Core */ = {
 			isa = PBXGroup;
 			children = (
 				17A0894F1F4F513300CAA178 /* MachineInfo.h */,
@@ -447,7 +447,7 @@
 				ED504A631F51BBFF00BD289E /* Snapshot.cpp */,
 				17B5DB991F5B14D3003E7EF3 /* Audio.cpp */,
 			);
-			path = Base;
+			path = "ZX Spectrum Core";
 			sourceTree = "<group>";
 		};
 		EDEDE71A1F75564200DAC9AE /* Tape */ = {

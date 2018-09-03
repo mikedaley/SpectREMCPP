@@ -3,7 +3,6 @@
 //
 
 #include <iostream>
-
 #include "Z80Core.h"
 
 //-----------------------------------------------------------------------------------------
@@ -222,7 +221,7 @@ int CZ80Core::Execute(unsigned int num_tstates, unsigned int int_t_states)
                     m_CPURegisters.regPC++;
                 }
                 
-                // Process the int required
+                // Process the interrupt based on its type
                 m_CPURegisters.IFF1 = 0;
                 m_CPURegisters.IFF2 = 0;
                 m_CPURegisters.regR = (m_CPURegisters.regR & 0x80) | ((m_CPURegisters.regR + 1) & 0x7f);
@@ -271,11 +270,7 @@ int CZ80Core::Execute(unsigned int num_tstates, unsigned int int_t_states)
         // Clear the iff2 read flag before the opcode is run. If LD A, I or LD A, R is the next opcode and is followed by
         // an interrupt, then the parity flag needs to be reset. This only effects NMOS chips and not CMOS
         m_Iff2_read = false;
-        
-        // Set flag if the instruction to be executed is LD I,A. This allows us to then catch this outside the core for the
-        // purposes of handling the ULA Snow bug on the ZX Spectrum
-        m_LD_I_A = false;
-        
+                
 		Z80OpcodeTable *table = &Main_Opcodes;
 
         // Read the opcode

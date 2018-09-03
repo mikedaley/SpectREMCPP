@@ -204,8 +204,7 @@ static const Vertex quadVertices[] =
         _effectsPassDescriptor = [MTLRenderPassDescriptor new];
         _effectsPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
         
-        _emulatorViewport = (MTLViewport){0.0, 0.0, cDISPLAY_WIDTH, cDISPLAY_HEIGHT, -1.0, 1.0 };
-        
+        _emulatorViewport = (MTLViewport){ 0.0, 0.0, cDISPLAY_WIDTH, cDISPLAY_HEIGHT, -1.0, 1.0 };
     }
     return self;
 }

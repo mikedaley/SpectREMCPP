@@ -77,7 +77,7 @@ void ZXSpectrum::audioReset()
     }
 }
 
-#pragma mark - Audio Update
+#pragma mark - Generate audio output from Beeper and AY chip
 
 void ZXSpectrum::audioUpdateWithTs(int32_t tStates)
 {
@@ -108,10 +108,10 @@ void ZXSpectrum::audioUpdateWithTs(int32_t tStates)
            {
                audioAYUpdate();
 
-			   audioAYLevelLeft = audioAYChannelOutput[0]; // A
-			   audioAYLevelLeft += audioAYChannelOutput[1]; // B
-			   audioAYLevelRight = audioAYChannelOutput[1]; // B
-			   audioAYLevelRight += audioAYChannelOutput[2]; // A
+			   audioAYLevelLeft = audioAYChannelOutput[0];      // A - Left
+			   audioAYLevelLeft += audioAYChannelOutput[1];     // B - Left
+			   audioAYLevelRight = audioAYChannelOutput[1];     // B - Right
+			   audioAYLevelRight += audioAYChannelOutput[2];    // C - Right
 
                audioAYChannelOutput[0] = 0;
                audioAYChannelOutput[1] = 0;

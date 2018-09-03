@@ -44,8 +44,6 @@ void AudioQueue::write(int16_t *buffer, uint32_t count)
     if (count > t)
     {
         count = t;
-    } else {
-        t = count;
     }
     
     i = audioQueueBufferWritten;
@@ -74,8 +72,6 @@ void AudioQueue::read(int16_t *buffer, uint32_t count)
     if (count > t)
     {
         count = t;
-    } else {
-        t = count;
     }
     
     i = audioQueueBufferRead;

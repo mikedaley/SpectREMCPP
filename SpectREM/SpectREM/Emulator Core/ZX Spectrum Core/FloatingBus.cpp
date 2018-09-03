@@ -35,18 +35,17 @@ uint8_t ZXSpectrum::ULAFloatingBus()
         
         switch(currentTs % 8)
         {
-            case 5:
+            case 5: // Attribute read
             case 3:
                 return coreMemoryRead(cBITMAP_ADDRESS + cBITMAP_SIZE + ((y >> 3) << 5) + x);
                 
-            case 4:
+            case 4: // Bitmap read
             case 2:
                 return coreMemoryRead(cBITMAP_ADDRESS + displayLineAddrTable[ y ] + x);
             
-            case 0: case 1: case 6: case 7:
+            case 0: case 1: case 6: case 7: // Everything else
                 return 0xff;
         }
-        
     }
     
     return 0xff;
