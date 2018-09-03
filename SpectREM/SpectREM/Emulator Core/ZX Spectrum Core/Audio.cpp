@@ -69,6 +69,7 @@ void ZXSpectrum::audioReset()
     audioATaudioAYEnvelopeCount = 0;
     audioAYaudioAYEnvelopeStep = 15;
     audioAYaudioAYaudioAYEnvelopeHolding = false;
+    specdrumDACValue = 0;
     
     for (int32_t i = 0; i < eAY_MAX_REGISTERS; i++)
     {
@@ -88,7 +89,10 @@ void ZXSpectrum::audioUpdateWithTs(int32_t tStates)
     
     // Grab the current state of the audio ear output & the tapeLevel which is used to register input when loading tapes.
     // Only need to do this once per audio update
-    float audioEarLevel = audioEarBit ? cBEEPER_VOLUME_MULTIPLIER : 0;
+    float audioEarLevel = (audioEarBit | tape->inputBit) ? cBEEPER_VOLUME_MULTIPLIER : 0;
+    
+    // Add in any output from SpecDRUM if it's being used
+    audioEarLevel += specdrumDACValue;
     
     // Loop over each tState so that the necessary audio samples can be generated
     for(int32_t i = 0; i < tStates; i++)

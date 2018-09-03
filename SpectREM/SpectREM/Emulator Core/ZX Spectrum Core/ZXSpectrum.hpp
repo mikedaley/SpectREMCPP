@@ -209,6 +209,7 @@ public:
     bool                    emuUseAYSound = 0;
     bool                    emuLoadTrapTriggered = 0;
     bool                    emuSaveTrapTriggered = 0;
+    bool                    emuSpecdrumPresent = 1;
 
     // Display
     uint8_t                 *displayBuffer = nullptr;
@@ -255,7 +256,10 @@ public:
     uint32_t                audioAYAttackEndVol = 0;
     float                   audioAYTsStep = 0;
     float                   audioAYTs = 0;
-        
+    
+    //Specdrum
+    int                     specdrumDACValue = 0;
+    
     // Keyboard
     bool                    keyboardCapsLockPressed = false;
     
