@@ -209,7 +209,7 @@ public:
     bool                    emuUseAYSound = 0;
     bool                    emuLoadTrapTriggered = 0;
     bool                    emuSaveTrapTriggered = 0;
-    bool                    emuSpecdrumPresent = 1;
+    bool                    emuUseSpecDRUM = 0;
 
     // Display
     uint8_t                 *displayBuffer = nullptr;

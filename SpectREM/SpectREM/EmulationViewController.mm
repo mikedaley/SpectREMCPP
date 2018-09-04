@@ -80,6 +80,7 @@ static const int cSCREEN_FILL = 1;
     [self.defaults removeObserver:self forKeyPath:MachineSelectedModel];
     [self.defaults removeObserver:self forKeyPath:MachineTapeInstantLoad];
     [self.defaults removeObserver:self forKeyPath:MachineUseAYSound];
+    [self.defaults removeObserver:self forKeyPath:MachineUseSpecDRUM];
     [self.defaults removeObserver:self forKeyPath:SPIPort];
 }
 
@@ -209,6 +210,7 @@ static const int cSCREEN_FILL = 1;
     [self.defaults addObserver:self forKeyPath:MachineSelectedModel options:NSKeyValueObservingOptionNew context:NULL];
     [self.defaults addObserver:self forKeyPath:MachineTapeInstantLoad options:NSKeyValueObservingOptionNew context:NULL];
     [self.defaults addObserver:self forKeyPath:MachineUseAYSound options:NSKeyValueObservingOptionNew context:NULL];
+    [self.defaults addObserver:self forKeyPath:MachineUseSpecDRUM options:NSKeyValueObservingOptionNew context:NULL];
     [self.defaults addObserver:self forKeyPath:SPIPort options:NSKeyValueObservingOptionNew context:NULL];
 }
 
@@ -230,6 +232,10 @@ static const int cSCREEN_FILL = 1;
     {
         _machine->emuUseAYSound = [change[NSKeyValueChangeNewKey] boolValue];
     }
+    else if ([keyPath isEqualToString:MachineUseSpecDRUM])
+    {
+        _machine->emuUseSpecDRUM = [change[NSKeyValueChangeNewKey] boolValue];
+    }
     else if ([keyPath isEqualToString:SPIPort])
     {
         _machine->spiPort = [change[NSKeyValueChangeNewKey] unsignedIntegerValue];
@@ -242,6 +248,7 @@ static const int cSCREEN_FILL = 1;
 {
     _machine->emuTapeInstantLoad = self.defaults.machineTapeInstantLoad;
     _machine->emuUseAYSound = self.defaults.machineUseAYSound;
+    _machine->emuUseSpecDRUM = self.defaults.machineUseSpecDRUM;
 }
 
 #pragma mark - View/Controller Setup
@@ -263,7 +270,6 @@ static const int cSCREEN_FILL = 1;
     _debugWindowController = [_storyBoard instantiateControllerWithIdentifier:@"DEBUG_WINDOW"];
     _debugViewController = (DebugViewController *)_debugWindowController.contentViewController;
     _debugViewController.emulationViewController = self;
-
 }
 
 #pragma mark - Init/Switch Machine
@@ -315,6 +321,7 @@ static const int cSCREEN_FILL = 1;
     
     _machine->registerDebugOpCallback( _debugBlock );
     
+    // Once a machine instance has been created we need to apply the defaults to that instance
     [self applyDefaults];
     
     [self.audioCore start];

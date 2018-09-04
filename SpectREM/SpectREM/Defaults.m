@@ -14,6 +14,7 @@ NSString * const MachineAcceleration = @"machineAcceleration";
 NSString * const MachineSelectedModel = @"machineSelectedModel";
 NSString * const MachineTapeInstantLoad = @"machineTapeInstantLoad";
 NSString * const MachineUseAYSound = @"machineUseAYSound";
+NSString * const MachineUseSpecDRUM = @"machineUseSpecDRUM";
 
 #pragma mark - Display
 
@@ -53,6 +54,7 @@ NSString * const SPIPort = @"spiPort";
                                MachineSelectedModel : @(0),
                                MachineTapeInstantLoad : @YES,
                                MachineUseAYSound: @YES,
+                               MachineUseSpecDRUM: @NO,
                                
                                DisplayPixelFilterValue : @(0.15),
                                DisplayBorderSize : @(32),
@@ -126,7 +128,8 @@ NSString * const SPIPort = @"spiPort";
     _machineSelectedModel = [[userDefaults valueForKey:MachineSelectedModel] integerValue];
     _machineTapeInstantLoad = [[userDefaults valueForKey:MachineTapeInstantLoad] boolValue];
     _machineUseAYSound = [[userDefaults valueForKey:MachineUseAYSound] boolValue];
-    
+    _machineUseSpecDRUM = [[userDefaults valueForKey:MachineUseSpecDRUM] boolValue];
+
     _displayPixelFilterValue = [[userDefaults valueForKey:DisplayPixelFilterValue] floatValue];
     _displayBorderSize = [[userDefaults valueForKey:DisplayBorderSize] integerValue];
     _displayCurvature = [[userDefaults valueForKey:DisplayCurvature] floatValue];
@@ -173,6 +176,12 @@ NSString * const SPIPort = @"spiPort";
 {
     _machineUseAYSound = machineUseAYSound;
     [[NSUserDefaults standardUserDefaults] setBool:machineUseAYSound forKey:MachineUseAYSound];
+}
+
+- (void)setMachineUseSpecDRUM:(BOOL)machineUseSpecDRUM
+{
+    _machineUseSpecDRUM = machineUseSpecDRUM;
+    [[NSUserDefaults standardUserDefaults] setBool:machineUseSpecDRUM forKey:MachineUseSpecDRUM];
 }
 
 #pragma mark - Display

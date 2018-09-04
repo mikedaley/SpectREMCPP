@@ -92,7 +92,10 @@ void ZXSpectrum::audioUpdateWithTs(int32_t tStates)
     float audioEarLevel = (audioEarBit | tape->inputBit) ? cBEEPER_VOLUME_MULTIPLIER : 0;
     
     // Add in any output from SpecDRUM if it's being used
-    audioEarLevel += specdrumDACValue;
+    if (emuUseSpecDRUM)
+    {
+        audioEarLevel += specdrumDACValue;
+    }
     
     // Loop over each tState so that the necessary audio samples can be generated
     for(int32_t i = 0; i < tStates; i++)

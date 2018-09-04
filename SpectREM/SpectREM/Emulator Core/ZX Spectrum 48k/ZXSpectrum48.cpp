@@ -176,7 +176,7 @@ void ZXSpectrum48::coreIOWrite(unsigned short address, unsigned char data)
     }
 
     // SPECDRUM port, all ports ending in 0xdf
-    if ((address & 0xff) == 0xdf && emuSpecdrumPresent)
+    if ((address & 0xff) == 0xdf && emuUseSpecDRUM)
     {
         // Adjust the output from SpecDrum to get the right volume
         specdrumDACValue = (data * 256) - 32768;
