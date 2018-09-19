@@ -15,7 +15,7 @@
 
 #pragma mark - Constants
 
-static const NSUInteger cMAX_BUFFERS_IN_FLIGHT = 3;
+static const NSUInteger cMAX_BUFFERS_IN_FLIGHT = 6;
 static const NSUInteger cDISPLAY_WIDTH = 320;
 static const NSUInteger cDISPLAY_HEIGHT = 256;
 static const NSUInteger cCLUT_WIDTH = 16;
