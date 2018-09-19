@@ -68,7 +68,7 @@ public:
     void                        stackTableUpdate();
     Stack                       stackAddress(unsigned long index);
     
-    bool                        setRegister(string register, unsigned int value);
+    bool                        setRegister(string reg, unsigned int value);
     
     void                        fillMemory(uint16_t fromAddress, uint16_t toAddress, uint8_t value);
     
