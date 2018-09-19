@@ -191,6 +191,7 @@ void ZXSpectrum::displayBuildCLUT()
     int32_t tableIdx = 0;
     uint8_t *displayCLUT8 = reinterpret_cast<uint8_t *>( displayCLUT );
     
+    // Bitmap LUT
     for (int32_t bright = 0; bright < 2; bright++)
     {
         for (uint32_t paper = 0; paper < 8; paper++)
@@ -209,9 +210,9 @@ void ZXSpectrum::displayBuildCLUT()
     }
     
     // Attribute LUT
-    for (uint32_t alutidx = 0; alutidx < 256; ++alutidx)
+    for (uint32_t alutIdx = 0; alutIdx < 256; ++alutIdx)
     {
-        displayALUT[ alutidx ] = alutidx & 0x80 ? ( ( alutidx & 0xc0 ) | ( ( alutidx & 0x07 ) << 3 ) | ( ( alutidx & 0x38) >> 3 ) ) : alutidx;
+        displayALUT[ alutIdx ] = alutIdx & 0x80 ? ( ( alutIdx & 0xc0 ) | ( ( alutIdx & 0x07 ) << 3 ) | ( ( alutIdx & 0x38) >> 3 ) ) : alutIdx;
     }
 }
 

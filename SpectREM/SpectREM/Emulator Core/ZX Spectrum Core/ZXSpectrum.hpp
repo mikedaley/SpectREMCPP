@@ -110,8 +110,8 @@ public:
     void                    resume();
     virtual void            release();
 
-    // Main function that when called, generates an entire frame, which includes processing interrupts, beeper sound and AY Sound
-    // On completion, the displayBuffer member variable will contain RGBA formatted image data that can then be used to build a display image
+    // Main function that when called generates an entire frame, which includes processing interrupts, beeper sound and AY Sound.
+    // On completion the displayBuffer member variable will contain RGBA formatted image data that can then be used to build a display image
     void                    generateFrame();
     
     void                    keyboardKeyDown(uint16_t key);

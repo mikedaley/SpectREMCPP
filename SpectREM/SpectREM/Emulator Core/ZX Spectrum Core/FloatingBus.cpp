@@ -29,7 +29,6 @@ uint8_t ZXSpectrum::ULAFloatingBus()
         && currentDisplayLine < (machineInfo.pxVertBorder + machineInfo.pxVerticalBlank + machineInfo.pxVerticalDisplay)
         && currentTs < machineInfo.tsHorizontalDisplay)
     {
-        
         int32_t y = currentDisplayLine - (machineInfo.pxVertBorder + machineInfo.pxVerticalBlank);
         int32_t x = currentTs >> 2;
         
