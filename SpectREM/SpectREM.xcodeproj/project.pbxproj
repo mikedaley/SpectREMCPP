@@ -33,6 +33,7 @@
 		27BAE9A520F4CB68007A8CFB /* Commands.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 27BAE9A420F4CB68007A8CFB /* Commands.rtf */; };
 		27BAE9A820F4CE9C007A8CFB /* InstructionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BAE9A720F4CE9C007A8CFB /* InstructionViewController.m */; };
 		27BAE9AC20F64496007A8CFB /* Debug.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27BAE9AA20F64496007A8CFB /* Debug.cpp */; };
+		27C5AE472146F0D3008DBD54 /* InfoPanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C5AE462146F0D3008DBD54 /* InfoPanelViewController.m */; };
 		27C5DBA51FFC000A0064C661 /* DebugViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 27C5DBA41FFC000A0064C661 /* DebugViewController.mm */; };
 		ED2A6D051F6036D3003CD6CE /* ConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D041F6036D3003CD6CE /* ConfigurationViewController.m */; };
 		ED2A6D0A1F603D18003CD6CE /* NSClipView+Flipped.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D091F603D18003CD6CE /* NSClipView+Flipped.m */; };
@@ -104,6 +105,8 @@
 		27BAE9A720F4CE9C007A8CFB /* InstructionViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InstructionViewController.m; sourceTree = "<group>"; };
 		27BAE9AA20F64496007A8CFB /* Debug.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Debug.cpp; sourceTree = "<group>"; };
 		27BAE9AB20F64496007A8CFB /* Debug.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Debug.hpp; sourceTree = "<group>"; };
+		27C5AE452146F0D3008DBD54 /* InfoPanelViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InfoPanelViewController.h; sourceTree = "<group>"; };
+		27C5AE462146F0D3008DBD54 /* InfoPanelViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InfoPanelViewController.m; sourceTree = "<group>"; };
 		27C5DBA31FFC000A0064C661 /* DebugViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DebugViewController.h; sourceTree = "<group>"; };
 		27C5DBA41FFC000A0064C661 /* DebugViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = DebugViewController.mm; sourceTree = "<group>"; };
 		ED2A6D031F6036D3003CD6CE /* ConfigurationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigurationViewController.h; sourceTree = "<group>"; };
@@ -252,6 +255,15 @@
 			path = Debugger;
 			sourceTree = "<group>";
 		};
+		27C5AE442146F0A5008DBD54 /* Info Panel View Controller */ = {
+			isa = PBXGroup;
+			children = (
+				27C5AE452146F0D3008DBD54 /* InfoPanelViewController.h */,
+				27C5AE462146F0D3008DBD54 /* InfoPanelViewController.m */,
+			);
+			name = "Info Panel View Controller";
+			sourceTree = "<group>";
+		};
 		27C5DBA21FFBFFD40064C661 /* Debug View Controller */ = {
 			isa = PBXGroup;
 			children = (
@@ -351,6 +363,7 @@
 			children = (
 				ED913FB81F30767A00316E1A /* Emulation */,
 				ED2A6D061F6036D8003CD6CE /* Configuration */,
+				27C5AE442146F0A5008DBD54 /* Info Panel View Controller */,
 				ED2A6D0D1F616C1A003CD6CE /* Export Accessory View Controller */,
 				27C5DBA21FFBFFD40064C661 /* Debug View Controller */,
 			);
@@ -619,6 +632,7 @@
 				27C5DBA51FFC000A0064C661 /* DebugViewController.mm in Sources */,
 				17C33DFE1F6583A400720A06 /* TapeCellView.m in Sources */,
 				ED913FD41F30787000316E1A /* ZXSpectrum.cpp in Sources */,
+				27C5AE472146F0D3008DBD54 /* InfoPanelViewController.m in Sources */,
 				ED2A6D0A1F603D18003CD6CE /* NSClipView+Flipped.m in Sources */,
 				17A089511F4F5B2700CAA178 /* Keyboard.cpp in Sources */,
 				ED913FCE1F30781000316E1A /* Z80Core_MainOpcodes.cpp in Sources */,
@@ -772,7 +786,7 @@
 				INFOPLIST_FILE = SpectREM/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				PRODUCT_BUNDLE_IDENTIFIER = com.71squared.SpectREM;
+				PRODUCT_BUNDLE_IDENTIFIER = com.daley.SpectREM;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -793,7 +807,7 @@
 				INFOPLIST_FILE = SpectREM/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				PRODUCT_BUNDLE_IDENTIFIER = com.71squared.SpectREM;
+				PRODUCT_BUNDLE_IDENTIFIER = com.daley.SpectREM;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};

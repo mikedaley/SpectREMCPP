@@ -35,6 +35,7 @@ static NSString *const cTAP_EXTENSION = @"TAP";
 @property (strong)              Defaults            *defaults;
 @property (weak)    IBOutlet    OpenGLView          *glView;
 @property (strong)              AudioCore           *audioCore;
+@property (weak)    IBOutlet    NSVisualEffectView  *infoEffectsView;
 
 #pragma mark - Methods
 

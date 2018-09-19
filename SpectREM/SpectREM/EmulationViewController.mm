@@ -22,6 +22,7 @@
 #import "ExportAccessoryViewController.h"
 #import "TapeBrowserViewController.h"
 #import "DebugViewController.h"
+#import "InfoPanelViewController.h"
 
 #import "MetalRenderer.h"
 
@@ -58,6 +59,7 @@ static const int cSCREEN_FILL = 1;
     TapeBrowserViewController       *_tapeBrowserViewController;
     NSWindowController              *_debugWindowController;
     DebugViewController             *_debugViewController;
+    InfoPanelViewController         *_infoPanelViewController;
     
     NSTimer                         *_accelerationTimer;
     
@@ -123,6 +125,7 @@ static const int cSCREEN_FILL = 1;
     _tape = new Tape(tapeStatusCallback);
     
     [self setupConfigView];
+    [self setupInfoView];
     [self setupControllers];
     [self setupObservers];
     [self setupNotifications];
@@ -260,6 +263,13 @@ static const int cSCREEN_FILL = 1;
     self.configScrollView.documentView = _configViewController.view;
 }
 
+- (void)setupInfoView
+{
+    _infoPanelViewController = [_storyBoard instantiateControllerWithIdentifier:@"InfoPanelViewController"];
+    [_infoPanelViewController.view setFrameOrigin:(NSPoint){self.view.frame.size.width - _infoPanelViewController.view.frame.size.width - 4, -_infoPanelViewController.view.frame.size.height}];
+    [self.view addSubview:_infoPanelViewController.view];
+}
+
 - (void)setupControllers
 {
     _saveAccessoryController = [_storyBoard instantiateControllerWithIdentifier:@"SAVE_ACCESSORY_VIEW_CONTROLLER"];
@@ -290,10 +300,12 @@ static const int cSCREEN_FILL = 1;
     if (machineType == eZXSpectrum48)
     {
         _machine = new ZXSpectrum48(_tape);
+        [_infoPanelViewController displayMessage:@"ZX Spectrum 48k" duration:5];
     }
     else if (machineType == eZXSpectrum128)
     {
         _machine = new ZXSpectrum128(_tape);
+        [_infoPanelViewController displayMessage:@"ZX Spectrum 128k" duration:5];
     }
     else
     {
@@ -656,13 +668,12 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     
     [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
         context.duration = 0.3;
-        context.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+        context.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
         [self.configEffectsView.animator setAlphaValue:1];
         [self.configEffectsView.animator setFrame:configFrame];
     }  completionHandler:^{
         
     }];
-
 }
 
 #pragma mark - Debug Menu Items
