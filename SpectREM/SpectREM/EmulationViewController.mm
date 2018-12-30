@@ -156,7 +156,7 @@ static const int cSCREEN_FILL = 1;
             if (_defaults.machineAcceleration == 1)
             {
                 _machine->generateFrame();
-                [_metalRenderer updateTextureData:_machine->displayBuffer];
+                [_metalRenderer updateTextureData:_machine->displayBuffer clutData:_machine->clutBuffer];
             }
             _audioQueue->write(_machine->audioBuffer, b);
         }
@@ -174,7 +174,7 @@ static const int cSCREEN_FILL = 1;
             
             if (!(_machine->emuFrameCounter % static_cast<uint32_t>(_defaults.machineAcceleration)))
             {
-                [_metalRenderer updateTextureData:_machine->displayBuffer];
+                [_metalRenderer updateTextureData:_machine->displayBuffer clutData:_machine->clutBuffer];
             }
         }];
         
@@ -188,7 +188,7 @@ static const int cSCREEN_FILL = 1;
 
 - (void)updateDisplay
 {
-    [_metalRenderer updateTextureData:_machine->displayBuffer];
+    [_metalRenderer updateTextureData:_machine->displayBuffer clutData:_machine->clutBuffer];
 }
 
 #pragma mark - View Methods

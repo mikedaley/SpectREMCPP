@@ -22,6 +22,29 @@ enum
 void ZXSpectrum::displaySetup()
 {
     displayBuffer = new uint8_t[ screenBufferSize ]();
+    const float normalColor = 189.0 / 255.0;
+    const float brightColor = 1.0;
+    clutBuffer[0] = { 0.0,          0.0,            0.0,            1.0 };
+    clutBuffer[1] = { 0.0,          0.0,            normalColor,    1.0 };
+    clutBuffer[2] = { normalColor,  0.0,            0.0,            1.0 };
+    clutBuffer[3] = { normalColor,  0.0,            normalColor,    1.0 };
+    clutBuffer[4] = { 0.0,          normalColor,    0.0,            1.0 };
+    clutBuffer[5] = { 0.0,          normalColor,    normalColor,    1.0 };
+    clutBuffer[6] = { normalColor,  normalColor,    0.0,            1.0 };
+    clutBuffer[7] = { normalColor,  normalColor,    normalColor,    1.0 };
+    
+    clutBuffer[8] = { 0.0,          0.0,            0.0,            1.0 };
+    clutBuffer[9] = { 0.0,          0.0,            brightColor,    1.0 };
+    clutBuffer[10] = { brightColor,  0.0,            0.0,            1.0 };
+    clutBuffer[11] = { brightColor,  0.0,            brightColor,    1.0 };
+    clutBuffer[12] = { 0.0,          brightColor,    0.0,            1.0 };
+    clutBuffer[13] = { 0.0,          brightColor,    brightColor,    1.0 };
+    clutBuffer[14] = { brightColor,  brightColor,    0.0,            1.0 };
+    clutBuffer[15] = { brightColor,  brightColor,    brightColor,    1.0 };
+    
+    for (int i = 16; i < 64; i++) {
+        clutBuffer[i] = {0, 0, 0, 1.0};
+    }
 }
 
 #pragma mark - Generate Screen

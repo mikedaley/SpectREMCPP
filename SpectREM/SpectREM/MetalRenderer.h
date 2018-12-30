@@ -13,6 +13,6 @@
 - (nonnull instancetype)initWithMetalKitView:(nonnull MTKView *)mtkView;
 
 // Called once per emulation frame to update the texture with the emulators screen data
-- (void)updateTextureData:(void *_Nonnull)displayBuffer;
+- (void)updateTextureData:(void *_Nonnull)displayBuffer clutData:(void *_Nonnull)clutBuffer;
 
 @end

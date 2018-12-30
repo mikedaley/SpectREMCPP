@@ -90,7 +90,8 @@ fragment vector_float4 clutShader( RasterizerData in [[stage_in]],
     constexpr sampler textureSampler (mag_filter::nearest,
                                       min_filter::nearest);
 
-    const float clutUVAdjust = 1.0 / 16.0;
+    const float paletteColors = 16.0;
+    const float clutUVAdjust = 1.0 / paletteColors;
     const int colorSample = colorTexture.sample(textureSampler, in.textureCoordinate)[0] * 256;
     return clutTexture.sample(textureSampler, colorSample * clutUVAdjust);
 }
@@ -121,7 +122,7 @@ fragment vector_float4 effectsShader(RasterizerData in [[stage_in]],
     // Anything outside the texture should be black, otherwise sample the texel in the texture
     if (texCoord.x < 0 || texCoord.y < 0 || texCoord.x > 1 || texCoord.y > 1)
     {
-        fragColor = vector_float4(0, 0, 0, 1);
+        fragColor = vector_float4(0.0, 0.0, 0.0, 1);
     }
     else
     {
@@ -158,7 +159,7 @@ fragment vector_float4 effectsShader(RasterizerData in [[stage_in]],
         if (uniforms.displayShowVignette == 1)
         {
             float vignette = scanTexCoord.x * scanTexCoord.y * (1.0 - scanTexCoord.x) * (1.0 - scanTexCoord.y);
-            fragColor.rgb *= smoothstep(0, max, vignette);
+            fragColor.rgb *= smoothstep(0.0, max, vignette);
         }
     }
 

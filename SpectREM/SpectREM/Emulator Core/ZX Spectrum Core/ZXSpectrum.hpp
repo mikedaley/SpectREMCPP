@@ -25,6 +25,14 @@ using namespace std;
 typedef void (*Z80DebugOpCallback)(unsigned short address, uint8_t operation, void *param);
 typedef bool (^DebugOpCallbackBlock)(unsigned short address, uint8_t operation);
 
+typedef struct
+{
+    float r;
+    float g;
+    float b;
+    float a;
+} Color;
+
 class ZXSpectrum
 {
 
@@ -223,6 +231,7 @@ public:
     uint8_t                 *displayALUT = nullptr;
     uint32_t                displayBorderColor = 0;
     bool                    displayReady = false;
+    Color                   clutBuffer[64];
 
     // Audio
     int8_t                  audioEarBit = 0;
@@ -257,7 +266,7 @@ public:
     float                   audioAYTsStep = 0;
     float                   audioAYTs = 0;
     
-    //Specdrum
+    //Specdrum Peripheral
     int                     specdrumDACValue = 0;
     
     // Keyboard

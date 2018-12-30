@@ -15,7 +15,7 @@
 
 #pragma mark - Constants
 
-static const NSUInteger cMAX_BUFFERS_IN_FLIGHT = 6;
+static const NSUInteger cMAX_BUFFERS_IN_FLIGHT = 3;
 static const NSUInteger cDISPLAY_WIDTH = 320;
 static const NSUInteger cDISPLAY_HEIGHT = 256;
 static const NSUInteger cCLUT_WIDTH = 16;
@@ -28,7 +28,7 @@ static const MTLRegion  textureRegion = {
 // Constants for the colour lookup table
 const GLfloat normalColor = 189.0 / 255.0;
 const GLfloat brightColor = 1.0;
-const Color CLUT[] = {
+Color CLUT[] = {
     
     // Non-bright colours
     { 0.0,          0.0,            0.0,            1.0 },
@@ -48,7 +48,7 @@ const Color CLUT[] = {
     { 0.0,          brightColor,    0.0,            1.0 },
     { 0.0,          brightColor,    brightColor,    1.0 },
     { brightColor,  brightColor,    0.0,            1.0 },
-    { brightColor,  brightColor,    brightColor,    1.0 },
+    { brightColor,  brightColor,    brightColor,    1.0 }
 };
 
 static const Vertex quadVertices[] =
@@ -116,7 +116,7 @@ static const Vertex quadVertices[] =
         
         _view = mtkView;
 
-        _inFlightSemaphore = dispatch_semaphore_create(3);
+        _inFlightSemaphore = dispatch_semaphore_create(cMAX_BUFFERS_IN_FLIGHT);
         
         MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor new];
         
@@ -209,9 +209,9 @@ static const Vertex quadVertices[] =
     return self;
 }
 
-- (void)updateTextureData:(void *)displayBuffer
+- (void)updateTextureData:(void *)displayBuffer clutData:(void *)clutBuffer
 {
-    [_displayTexture replaceRegion:textureRegion mipmapLevel:0 withBytes:displayBuffer bytesPerRow:320];
+    [_displayTexture replaceRegion:textureRegion mipmapLevel:0 withBytes:displayBuffer bytesPerRow:cDISPLAY_WIDTH];
 
     // Not placing this draw request on the main queue can cause the drawable area to not keep up with window resizing
     dispatch_async(dispatch_get_main_queue(), ^{
