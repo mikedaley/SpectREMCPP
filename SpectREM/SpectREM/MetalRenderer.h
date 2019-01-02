@@ -7,12 +7,14 @@
 //
 
 #import <MetalKit/MetalKit.h>
+#import "ShaderTypes.h"
 
 @interface MetalRenderer : NSObject <MTKViewDelegate>
 
 - (nonnull instancetype)initWithMetalKitView:(nonnull MTKView *)mtkView;
 
 // Called once per emulation frame to update the texture with the emulators screen data
-- (void)updateTextureData:(void *_Nonnull)displayBuffer clutData:(void *_Nonnull)clutBuffer;
+- (void)updateTextureData:(void *_Nonnull)displayBuffer;
 
 @end
+

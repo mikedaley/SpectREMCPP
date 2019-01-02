@@ -33,7 +33,10 @@ public:
     virtual void            coreDebugWrite(unsigned int address, unsigned char byte, void *data) override;
     
     static bool             opcodeCallback(unsigned char opcode, unsigned short address, void *param);
-        
+    
+    uint8_t                 grbColorFromIndex(uint8_t index);
+
+    
     // SPI
     virtual void            spi_write(uint8_t data);
     virtual uint8_t         spi_read();

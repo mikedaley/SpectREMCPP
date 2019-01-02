@@ -98,6 +98,7 @@ unsigned char ZXSpectrum48::coreIORead(unsigned short address)
         {
             return ZXSpectrum48::spi_read();
         }
+        
 		// Retroleum Smart Card - HexTank
 		else if ((address & 0xfff1) == 0xfaf1)
 		{
@@ -133,6 +134,16 @@ unsigned char ZXSpectrum48::coreIORead(unsigned short address)
     result = (result & 191) | (audioEarBit << 6) | (tape->inputBit << 6);
     
     return result;
+}
+
+uint8_t ZXSpectrum48::grbColorFromIndex(uint8_t)
+{
+    Color c = clutBuffer[ ulaPlusCurrentReg ];
+    uint8_t data = (static_cast<uint8_t>(c.g) & 0x07) << 5;
+    data |= (static_cast<uint8_t>(c.g) & 0x0f) << 2;
+    data |= static_cast<uint8_t>(c.g) & 0x03;
+    
+    return data & 63;
 }
 
 void ZXSpectrum48::coreIOWrite(unsigned short address, unsigned char data)

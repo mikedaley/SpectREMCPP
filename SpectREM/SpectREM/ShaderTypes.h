@@ -62,7 +62,7 @@ typedef struct
     float displayVignetteX;
     float displayVignetteY;
     
-    float displayULAPlusPalletteOn;
+    float displayBorderColor;
 } Uniforms;
 
 #endif /* ShaderTypes_h */

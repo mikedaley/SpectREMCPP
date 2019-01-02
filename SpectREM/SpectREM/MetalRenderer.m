@@ -209,7 +209,7 @@ static const Vertex quadVertices[] =
     return self;
 }
 
-- (void)updateTextureData:(void *)displayBuffer clutData:(void *)clutBuffer
+- (void)updateTextureData:(void *)displayBuffer
 {
     [_displayTexture replaceRegion:textureRegion mipmapLevel:0 withBytes:displayBuffer bytesPerRow:cDISPLAY_WIDTH];
 

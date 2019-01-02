@@ -25,13 +25,18 @@ using namespace std;
 typedef void (*Z80DebugOpCallback)(unsigned short address, uint8_t operation, void *param);
 typedef bool (^DebugOpCallbackBlock)(unsigned short address, uint8_t operation);
 
-typedef struct
-{
-    float r;
-    float g;
-    float b;
-    float a;
-} Color;
+//typedef struct
+//{
+//    float r;
+//    float g;
+//    float b;
+//    float a;
+//} Color;
+
+typedef enum {
+    eULAPlusPaletteGroup = 0,
+    eULAPlusModeGroup
+} ULAPlusMode;
 
 class ZXSpectrum
 {
@@ -105,6 +110,15 @@ public:
         uint16_t    address = 0;
         bool        breakPoint = 0;
     };
+    
+    typedef struct
+    {
+        float r;
+        float g;
+        float b;
+        float a;
+    } Color;
+
     
 public:
     ZXSpectrum();
@@ -232,6 +246,11 @@ public:
     uint32_t                displayBorderColor = 0;
     bool                    displayReady = false;
     Color                   clutBuffer[64];
+    
+    // ULAPlus
+    uint8_t                 ulaPlusMode = 0;
+    uint8_t                 ulaPlusPaletteOn = 0;
+    uint8_t                 ulaPlusCurrentReg = 0;
 
     // Audio
     int8_t                  audioEarBit = 0;
