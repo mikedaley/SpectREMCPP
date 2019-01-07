@@ -6,9 +6,9 @@
 //  Copyright © 2016 71Squared Ltd. All rights reserved.
 //
 
+#import <Cocoa/Cocoa.h>
 #include "ZXSpectrum.hpp"
-
-@class EmulationViewController;
+#include "EmulationProtocol.h"
 
 @interface AudioCore : NSObject
 
@@ -21,7 +21,7 @@
 	@param fps being rendered which is used to calculate the frame capacity for each audio buffer
     @param callback back used by the audio core when its finished processing audio data
  */
-- (instancetype)initWithSampleRate:(int)sampleRate framesPerSecond:(float)fps callback:(EmulationViewController *)callback;
+- (instancetype)initWithSampleRate:(int)sampleRate framesPerSecond:(float)fps callback:(NSViewController <EmulationProtocol> *)callback;
 
 - (void)stop;
 - (void)start;

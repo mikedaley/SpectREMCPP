@@ -298,6 +298,7 @@ static const Vertex quadVertices[] =
         _uniforms.displayShowVignette = _defaults.displayShowVignette;
         _uniforms.displayVignetteX = _defaults.displayVignetteX;
         _uniforms.displayVignetteY = _defaults.displayVignetteY;
+        _uniforms.time += 1;
         
         [renderEncoder setFragmentBytes:&_uniforms
                                  length:sizeof(_uniforms)

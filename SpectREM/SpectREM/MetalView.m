@@ -7,7 +7,8 @@
 //
 
 #import "MetalView.h"
-#import "EmulationViewController.h"
+#import "EmulationProtocol.h"
+#import "SharedConstants.h"
 
 @implementation MetalView
 
@@ -65,7 +66,7 @@
             [[fileURL.pathExtension uppercaseString] isEqualToString:cSNA_EXTENSION] ||
             [[fileURL.pathExtension uppercaseString] isEqualToString:cTAP_EXTENSION])
         {
-            EmulationViewController *emulationViewController = (EmulationViewController *)[self.window contentViewController];
+            NSViewController <EmulationProtocol> *emulationViewController = (NSViewController <EmulationProtocol> *)[self.window contentViewController];
             [emulationViewController loadFileWithURL:fileURL addToRecent:YES];
             return YES;
         }

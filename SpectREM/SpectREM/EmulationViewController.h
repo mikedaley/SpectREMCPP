@@ -11,7 +11,6 @@
 #import <MetalKit/MetalKit.h>
 
 @class EmulationScene;
-@class OpenGLView;
 @class AudioCore;
 
 #pragma mark - Constants
@@ -22,9 +21,7 @@ enum
     cSNA_SNAPSHOT_TYPE
 };
 
-static NSString *const cSNA_EXTENSION = @"SNA";
-static NSString *const cZ80_EXTENSION = @"Z80";
-static NSString *const cTAP_EXTENSION = @"TAP";
+
 
 @interface EmulationViewController : NSViewController
 
@@ -33,7 +30,6 @@ static NSString *const cTAP_EXTENSION = @"TAP";
 @property (weak)    IBOutlet    NSVisualEffectView  *configEffectsView;
 @property (weak)    IBOutlet    NSScrollView        *configScrollView;
 @property (strong)              Defaults            *defaults;
-@property (weak)    IBOutlet    OpenGLView          *glView;
 @property (strong)              AudioCore           *audioCore;
 @property (weak)    IBOutlet    NSVisualEffectView  *infoEffectsView;
 

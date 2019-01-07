@@ -57,12 +57,11 @@ typedef struct
     float displayScanlines;
     float displayRGBOffset;
     float displayHorizontalSync;
-    float displayShowReflection;
-    float displayShowVignette;
+    bool displayShowReflection;
+    bool displayShowVignette;
     float displayVignetteX;
     float displayVignetteY;
-    
-    float displayBorderColor;
+    float time;
 } Uniforms;
 
 #endif /* ShaderTypes_h */

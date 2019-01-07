@@ -85,8 +85,7 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
 
 @synthesize hexFormat = _hexFormat;
 
-- (instancetype)initWithCoder:(NSCoder *)coder
-{
+- (instancetype)initWithCoder:(NSCoder *)coder{ 
     if (self = [super initWithCoder:coder])
     {
         NSLog(@"DEBUG_VIEW_CONTROLLER INIT");
@@ -102,17 +101,15 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    self.disassemblyTableview.enclosingScrollView.wantsLayer = YES;
-    self.disassemblyTableview.enclosingScrollView.layer.cornerRadius = 5;
-    self.stackTable.enclosingScrollView.wantsLayer = YES;
-    self.stackTable.enclosingScrollView.layer.cornerRadius = 6;
-    self.breakpointTableView.enclosingScrollView.wantsLayer = YES;
-    self.breakpointTableView.enclosingScrollView.layer.cornerRadius = 6;
-    self.memoryTableView.enclosingScrollView.wantsLayer = YES;
-    self.memoryTableView.enclosingScrollView.layer.cornerRadius = 6;
-    
     self.effectView.material = NSVisualEffectMaterialUltraDark;
+//    self.disassemblyTableview.enclosingScrollView.wantsLayer = YES;
+//    self.disassemblyTableview.enclosingScrollView.layer.cornerRadius = 6;
+//    self.stackTable.enclosingScrollView.wantsLayer = YES;
+//    self.stackTable.enclosingScrollView.layer.cornerRadius = 6;
+//    self.breakpointTableView.enclosingScrollView.wantsLayer = YES;
+//    self.breakpointTableView.enclosingScrollView.layer.cornerRadius = 6;
+//    self.memoryTableView.enclosingScrollView.wantsLayer = YES;
+//    self.memoryTableView.enclosingScrollView.layer.cornerRadius = 6;
 }
 
 - (void)viewWillDisappear

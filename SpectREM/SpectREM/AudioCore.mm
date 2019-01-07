@@ -10,7 +10,6 @@
 
 #import "AudioCore.h"
 #import "ZXSpectrum.hpp"
-#import "EmulationViewController.h"
 #import "ConfigurationViewController.h"
 #import "Defaults.h"
 
@@ -74,7 +73,7 @@ static OSStatus renderAudio(void *inRefCon,
     
 }
 
-- (instancetype)initWithSampleRate:(int)sampleRate framesPerSecond:(float)fps callback:(EmulationViewController *)callback
+- (instancetype)initWithSampleRate:(int)sampleRate framesPerSecond:(float)fps callback:(NSViewController <EmulationProtocol> *)callback
 {
     self = [super init];
     if (self)
@@ -239,7 +238,7 @@ static OSStatus renderAudio(void *inRefCon,
                             UInt32 inNumberFrames,
                             AudioBufferList *ioData)
 {
-    const EmulationViewController *callback = (__bridge EmulationViewController *)inRefCon;
+    const NSViewController <EmulationProtocol> *callback = (__bridge NSViewController <EmulationProtocol> *)inRefCon;
     
     // Grab the buffer that core audio has passed in.
     int16_t *buffer = static_cast<int16_t *>(ioData->mBuffers[0].mData);

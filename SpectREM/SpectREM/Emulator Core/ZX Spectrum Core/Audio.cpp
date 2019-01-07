@@ -117,8 +117,11 @@ void ZXSpectrum::audioUpdateWithTs(int32_t tStates)
 
 			   audioAYLevelLeft = audioAYChannelOutput[0];      // A - Left
 			   audioAYLevelLeft += audioAYChannelOutput[1];     // B - Left
-			   audioAYLevelRight = audioAYChannelOutput[1];     // B - Right
-			   audioAYLevelRight += audioAYChannelOutput[2];    // C - Right
+               audioAYLevelLeft += audioAYChannelOutput[2];     // C - Left
+
+               audioAYLevelRight = audioAYChannelOutput[0];     // A - Right
+			   audioAYLevelRight += audioAYChannelOutput[1];    // B - Right
+               audioAYLevelRight += audioAYChannelOutput[2];    // C - Right
 
                audioAYChannelOutput[0] = 0;
                audioAYChannelOutput[1] = 0;

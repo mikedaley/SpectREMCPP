@@ -32,13 +32,21 @@ vector_float2 radialDistortion(vector_float2 pos, float distortion)
     return (pos + cc * (0.5 + dist) * dist);
 }
 
+vector_float3 scanline(float2 texCoord, float3 fragColor, float time) {
+    const float scale = .0008;
+    const float amt = 0.07;// intensity of effect
+    const float spd = -0.03;//speed of scrolling rows transposed per second
+    fragColor.rgb += sin( (texCoord.y / scale - (time * spd * 6.28) ) ) * amt;
+    return fragColor;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////
 // colorCorrection used to adjust the saturation, constrast and brightness of the image
 ///////////////////////////////////////////////////////////////////////////////////////
 vector_float3 colorCorrection(vector_float3 color, float saturation, float contrast, float brightness)
 {
     const vector_float3 meanLuminosity = vector_float3(0.5, 0.5, 0.5);
-    const vector_float3 rgb2greyCoeff = vector_float3(0.2126, 0.7152, 0.0722);    // Updated greyscal coefficients for sRGB and modern TVs
+    const vector_float3 rgb2greyCoeff = vector_float3(0.2126, 0.7152, 0.0722);    // Updated greyscale coefficients for sRGB and modern TVs
     
     vector_float3 brightened = color * brightness;
     float intensity = dot(brightened, rgb2greyCoeff);
@@ -151,18 +159,19 @@ fragment vector_float4 effectsShader(RasterizerData in [[stage_in]],
         fragColor.rgb = colorCorrection(fragColor.rgb, uniforms.displaySaturation, uniforms.displayContrast, uniforms.displayBrightness);
         
         // Add scanlines
-        float scanline = sin(scanTexCoord.y * uniforms.displayScanlineSize) * 0.09 * uniforms.displayScanlines;
-        fragColor.rgb -= scanline;
+//        float scanline = sin(scanTexCoord.y * uniforms.displayScanlineSize) * 0.09 * uniforms.displayScanlines;
+//        fragColor.rgb -= scanline;
+        
+        fragColor.rgb = scanline(scanTexCoord.xy, fragColor.rgb, uniforms.time);
         
         // Add the vignette which adds a shadow and curving to the corners of the screen. Do this after applying the scan lines so
         // they are faded out into the shadow as well
-        if (uniforms.displayShowVignette == 1)
+        if (uniforms.displayShowVignette)
         {
             float vignette = scanTexCoord.x * scanTexCoord.y * (1.0 - scanTexCoord.x) * (1.0 - scanTexCoord.y);
             fragColor.rgb *= smoothstep(0.0, max, vignette);
         }
     }
-
     // We return the color of the texture
     return fragColor;
 }

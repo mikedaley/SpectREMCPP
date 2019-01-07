@@ -26,15 +26,17 @@
 
 #import "MetalRenderer.h"
 
+#import "SharedConstants.h"
+
 #pragma mark - Constants
 
-static uint32_t const cAUDIO_SAMPLE_RATE = 44100;
-static uint32_t const cFRAMES_PER_SECOND = 50;
+uint32_t const cAUDIO_SAMPLE_RATE = 44100;
+uint32_t const cFRAMES_PER_SECOND = 50;
 
-static NSString  *const cSESSION_FILE_NAME = @"session.z80";
+NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
-static const int cSCREEN_4_3 = 0;
-static const int cSCREEN_FILL = 1;
+const int cSCREEN_4_3 = 0;
+const int cSCREEN_FILL = 1;
 
 #pragma mark - Private Interface
 
@@ -119,7 +121,7 @@ static const int cSCREEN_FILL = 1;
     // The AudioCore uses the sound buffer to identify when a new frame should be drawn for accurate timing. The AudioQueue
     // is used to help measure usage of the audio buffer
     _audioQueue = new AudioQueue();
-    self.audioCore = [[AudioCore alloc] initWithSampleRate:cAUDIO_SAMPLE_RATE framesPerSecond:cFRAMES_PER_SECOND callback:self];
+    self.audioCore = [[AudioCore alloc] initWithSampleRate:cAUDIO_SAMPLE_RATE framesPerSecond:cFRAMES_PER_SECOND callback:(NSViewController <EmulationProtocol>*)self];
     
     //Create a tape instance
     _tape = new Tape(tapeStatusCallback);
