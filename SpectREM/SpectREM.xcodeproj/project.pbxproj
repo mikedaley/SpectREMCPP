@@ -31,6 +31,38 @@
 		27BAE9AC20F64496007A8CFB /* Debug.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27BAE9AA20F64496007A8CFB /* Debug.cpp */; };
 		27C5AE472146F0D3008DBD54 /* InfoPanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C5AE462146F0D3008DBD54 /* InfoPanelViewController.m */; };
 		27C5DBA51FFC000A0064C661 /* DebugViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 27C5DBA41FFC000A0064C661 /* DebugViewController.mm */; };
+		29555BEF21E3C36D004BC007 /* AudioQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17B27F021F6877C800B811FC /* AudioQueue.cpp */; };
+		29555BF621E3C386004BC007 /* Audio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17B5DB991F5B14D3003E7EF3 /* Audio.cpp */; };
+		29555BF721E3C38B004BC007 /* ZXSpectrum48.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 177E284B1F4DD7E90053756B /* ZXSpectrum48.cpp */; };
+		29555BF921E518C0004BC007 /* Snapshot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED504A631F51BBFF00BD289E /* Snapshot.cpp */; };
+		29555BFA21E518C2004BC007 /* FloatingBus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1745BB641F50AE1E003203FE /* FloatingBus.cpp */; };
+		29555BFB21E518C5004BC007 /* Contention.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1745BB621F50876E003203FE /* Contention.cpp */; };
+		29555BFC21E518C7004BC007 /* Display.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A089521F4F677200CAA178 /* Display.cpp */; };
+		29555BFD21E518CA004BC007 /* Keyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A089501F4F5B2700CAA178 /* Keyboard.cpp */; };
+		29555BFE21E518CC004BC007 /* ZXSpectrum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED913FD21F30787000316E1A /* ZXSpectrum.cpp */; };
+		29555BFF21E518D3004BC007 /* Z80Core.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED913FC61F30781000316E1A /* Z80Core.cpp */; };
+		29555C0021E518D7004BC007 /* Z80Core_MainOpcodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED913FC41F30781000316E1A /* Z80Core_MainOpcodes.cpp */; };
+		29555C0121E518DA004BC007 /* Z80Core_CBOpcodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED913FBA1F30781000316E1A /* Z80Core_CBOpcodes.cpp */; };
+		29555C0221E518DC004BC007 /* Z80Core_DDCB_FDCBOpcodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED913FBC1F30781000316E1A /* Z80Core_DDCB_FDCBOpcodes.cpp */; };
+		29555C0321E518DF004BC007 /* Z80Core_DDOpcodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED913FBE1F30781000316E1A /* Z80Core_DDOpcodes.cpp */; };
+		29555C0421E518E1004BC007 /* Z80Core_EDOpcodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED913FC01F30781000316E1A /* Z80Core_EDOpcodes.cpp */; };
+		29555C0521E518E4004BC007 /* Z80Core_FDOpcodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED913FC21F30781000316E1A /* Z80Core_FDOpcodes.cpp */; };
+		29555C0621E518F9004BC007 /* ZXSpectrum128.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDD9ADEF1F5D6F51004DD728 /* ZXSpectrum128.cpp */; };
+		29555C0721E518FD004BC007 /* Tape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDB7F7FD1F5EE2E4003053E3 /* Tape.cpp */; };
+		29555C0821E51910004BC007 /* SPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDF6604A1FF3E3A500769784 /* SPI.cpp */; };
+		29555C0921E523FA004BC007 /* AudioCore.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17B5DB951F5B14A7003E7EF3 /* AudioCore.mm */; };
+		29555C1421E52701004BC007 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29555C1321E52701004BC007 /* CoreMedia.framework */; };
+		29555C1621E5270A004BC007 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29555C1521E5270A004BC007 /* MetalKit.framework */; };
+		29555C1821E52719004BC007 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29555C1721E52719004BC007 /* AudioToolbox.framework */; };
+		29555C1A21E5271F004BC007 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29555C1921E5271F004BC007 /* AVFoundation.framework */; };
+		2968890321E3B98900BFC3BD /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2968890221E3B98900BFC3BD /* AppDelegate.m */; };
+		2968890621E3B98900BFC3BD /* Renderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2968890521E3B98900BFC3BD /* Renderer.m */; };
+		2968890921E3B98900BFC3BD /* GameViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2968890821E3B98900BFC3BD /* GameViewController.mm */; };
+		2968890B21E3B98900BFC3BD /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2968890A21E3B98900BFC3BD /* Shaders.metal */; };
+		2968890F21E3B98900BFC3BD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2968890D21E3B98900BFC3BD /* Main.storyboard */; };
+		2968891121E3B98B00BFC3BD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2968891021E3B98B00BFC3BD /* Assets.xcassets */; };
+		2968891421E3B98B00BFC3BD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2968891221E3B98B00BFC3BD /* LaunchScreen.storyboard */; };
+		2968891721E3B98B00BFC3BD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2968891621E3B98B00BFC3BD /* main.m */; };
 		ED2A6D051F6036D3003CD6CE /* ConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D041F6036D3003CD6CE /* ConfigurationViewController.m */; };
 		ED2A6D0A1F603D18003CD6CE /* NSClipView+Flipped.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D091F603D18003CD6CE /* NSClipView+Flipped.m */; };
 		ED2A6D101F616C43003CD6CE /* ExportAccessoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D0F1F616C43003CD6CE /* ExportAccessoryViewController.m */; };
@@ -100,8 +132,26 @@
 		27C5AE462146F0D3008DBD54 /* InfoPanelViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InfoPanelViewController.m; sourceTree = "<group>"; };
 		27C5DBA31FFC000A0064C661 /* DebugViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DebugViewController.h; sourceTree = "<group>"; };
 		27C5DBA41FFC000A0064C661 /* DebugViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = DebugViewController.mm; sourceTree = "<group>"; };
+		29555C1321E52701004BC007 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.1.sdk/System/Library/Frameworks/CoreMedia.framework; sourceTree = DEVELOPER_DIR; };
+		29555C1521E5270A004BC007 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.1.sdk/System/Library/Frameworks/MetalKit.framework; sourceTree = DEVELOPER_DIR; };
+		29555C1721E52719004BC007 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.1.sdk/System/Library/Frameworks/AudioToolbox.framework; sourceTree = DEVELOPER_DIR; };
+		29555C1921E5271F004BC007 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.1.sdk/System/Library/Frameworks/AVFoundation.framework; sourceTree = DEVELOPER_DIR; };
 		296888F921E3898F00BFC3BD /* EmulationProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmulationProtocol.h; sourceTree = "<group>"; };
 		296888FA21E3B35300BFC3BD /* SharedConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SharedConstants.h; sourceTree = "<group>"; };
+		296888FF21E3B98800BFC3BD /* SpectREMiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpectREMiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2968890121E3B98900BFC3BD /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		2968890221E3B98900BFC3BD /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		2968890421E3B98900BFC3BD /* Renderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Renderer.h; sourceTree = "<group>"; };
+		2968890521E3B98900BFC3BD /* Renderer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Renderer.m; sourceTree = "<group>"; };
+		2968890721E3B98900BFC3BD /* GameViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameViewController.h; sourceTree = "<group>"; };
+		2968890821E3B98900BFC3BD /* GameViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = GameViewController.mm; sourceTree = "<group>"; };
+		2968890A21E3B98900BFC3BD /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+		2968890C21E3B98900BFC3BD /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
+		2968890E21E3B98900BFC3BD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		2968891021E3B98B00BFC3BD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		2968891321E3B98B00BFC3BD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		2968891521E3B98B00BFC3BD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2968891621E3B98B00BFC3BD /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		ED2A6D031F6036D3003CD6CE /* ConfigurationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigurationViewController.h; sourceTree = "<group>"; };
 		ED2A6D041F6036D3003CD6CE /* ConfigurationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigurationViewController.m; sourceTree = "<group>"; };
 		ED2A6D081F603D18003CD6CE /* NSClipView+Flipped.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSClipView+Flipped.h"; sourceTree = "<group>"; };
@@ -155,6 +205,17 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		296888FC21E3B98800BFC3BD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				29555C1A21E5271F004BC007 /* AVFoundation.framework in Frameworks */,
+				29555C1821E52719004BC007 /* AudioToolbox.framework in Frameworks */,
+				29555C1621E5270A004BC007 /* MetalKit.framework in Frameworks */,
+				29555C1421E52701004BC007 /* CoreMedia.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		ED913F921F30759300316E1A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -183,6 +244,10 @@
 		17B5DB9B1F5B1CCE003E7EF3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				29555C1921E5271F004BC007 /* AVFoundation.framework */,
+				29555C1721E52719004BC007 /* AudioToolbox.framework */,
+				29555C1521E5270A004BC007 /* MetalKit.framework */,
+				29555C1321E52701004BC007 /* CoreMedia.framework */,
 				276ADE2C2101CE6500EC7DC9 /* MetalKit.framework */,
 				276E3F9D1F97AAD600020BB3 /* CoreMedia.framework */,
 				17EC890F1F5B1FC500B6EFAF /* AudioToolbox.framework */,
@@ -253,6 +318,26 @@
 			name = "Debug View Controller";
 			sourceTree = "<group>";
 		};
+		2968890021E3B98900BFC3BD /* SpectREMiOS */ = {
+			isa = PBXGroup;
+			children = (
+				2968890121E3B98900BFC3BD /* AppDelegate.h */,
+				2968890221E3B98900BFC3BD /* AppDelegate.m */,
+				2968890421E3B98900BFC3BD /* Renderer.h */,
+				2968890521E3B98900BFC3BD /* Renderer.m */,
+				2968890721E3B98900BFC3BD /* GameViewController.h */,
+				2968890821E3B98900BFC3BD /* GameViewController.mm */,
+				2968890A21E3B98900BFC3BD /* Shaders.metal */,
+				2968890C21E3B98900BFC3BD /* ShaderTypes.h */,
+				2968890D21E3B98900BFC3BD /* Main.storyboard */,
+				2968891021E3B98B00BFC3BD /* Assets.xcassets */,
+				2968891221E3B98B00BFC3BD /* LaunchScreen.storyboard */,
+				2968891521E3B98B00BFC3BD /* Info.plist */,
+				2968891621E3B98B00BFC3BD /* main.m */,
+			);
+			path = SpectREMiOS;
+			sourceTree = "<group>";
+		};
 		ED2A6D061F6036D8003CD6CE /* Configuration */ = {
 			isa = PBXGroup;
 			children = (
@@ -284,6 +369,7 @@
 			isa = PBXGroup;
 			children = (
 				ED913F971F30759300316E1A /* SpectREM */,
+				2968890021E3B98900BFC3BD /* SpectREMiOS */,
 				ED913F961F30759300316E1A /* Products */,
 				17B5DB9B1F5B1CCE003E7EF3 /* Frameworks */,
 			);
@@ -293,6 +379,7 @@
 			isa = PBXGroup;
 			children = (
 				ED913F951F30759300316E1A /* SpectREM.app */,
+				296888FF21E3B98800BFC3BD /* SpectREMiOS.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -508,6 +595,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		296888FE21E3B98800BFC3BD /* SpectREMiOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2968892E21E3B98B00BFC3BD /* Build configuration list for PBXNativeTarget "SpectREMiOS" */;
+			buildPhases = (
+				296888FB21E3B98800BFC3BD /* Sources */,
+				296888FC21E3B98800BFC3BD /* Frameworks */,
+				296888FD21E3B98800BFC3BD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SpectREMiOS;
+			productName = SpectREMiOS;
+			productReference = 296888FF21E3B98800BFC3BD /* SpectREMiOS.app */;
+			productType = "com.apple.product-type.application";
+		};
 		ED913F941F30759300316E1A /* SpectREM */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = ED913FB01F30759300316E1A /* Build configuration list for PBXNativeTarget "SpectREM" */;
@@ -535,6 +639,10 @@
 				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = "71Squared Ltd";
 				TargetAttributes = {
+					296888FE21E3B98800BFC3BD = {
+						CreatedOnToolsVersion = 10.1;
+						ProvisioningStyle = Automatic;
+					};
 					ED913F941F30759300316E1A = {
 						CreatedOnToolsVersion = 8.3.3;
 						ProvisioningStyle = Automatic;
@@ -555,11 +663,22 @@
 			projectRoot = "";
 			targets = (
 				ED913F941F30759300316E1A /* SpectREM */,
+				296888FE21E3B98800BFC3BD /* SpectREMiOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		296888FD21E3B98800BFC3BD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2968891421E3B98B00BFC3BD /* LaunchScreen.storyboard in Resources */,
+				2968891121E3B98B00BFC3BD /* Assets.xcassets in Resources */,
+				2968890F21E3B98900BFC3BD /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		ED913F931F30759300316E1A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -582,6 +701,38 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		296888FB21E3B98800BFC3BD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				29555C0621E518F9004BC007 /* ZXSpectrum128.cpp in Sources */,
+				29555BF721E3C38B004BC007 /* ZXSpectrum48.cpp in Sources */,
+				29555BF621E3C386004BC007 /* Audio.cpp in Sources */,
+				29555BFC21E518C7004BC007 /* Display.cpp in Sources */,
+				29555C0721E518FD004BC007 /* Tape.cpp in Sources */,
+				29555BFD21E518CA004BC007 /* Keyboard.cpp in Sources */,
+				29555C0021E518D7004BC007 /* Z80Core_MainOpcodes.cpp in Sources */,
+				29555BFF21E518D3004BC007 /* Z80Core.cpp in Sources */,
+				29555C0521E518E4004BC007 /* Z80Core_FDOpcodes.cpp in Sources */,
+				2968891721E3B98B00BFC3BD /* main.m in Sources */,
+				29555C0121E518DA004BC007 /* Z80Core_CBOpcodes.cpp in Sources */,
+				2968890B21E3B98900BFC3BD /* Shaders.metal in Sources */,
+				29555C0821E51910004BC007 /* SPI.cpp in Sources */,
+				2968890621E3B98900BFC3BD /* Renderer.m in Sources */,
+				29555BEF21E3C36D004BC007 /* AudioQueue.cpp in Sources */,
+				29555BFA21E518C2004BC007 /* FloatingBus.cpp in Sources */,
+				2968890921E3B98900BFC3BD /* GameViewController.mm in Sources */,
+				29555C0221E518DC004BC007 /* Z80Core_DDCB_FDCBOpcodes.cpp in Sources */,
+				29555C0421E518E1004BC007 /* Z80Core_EDOpcodes.cpp in Sources */,
+				2968890321E3B98900BFC3BD /* AppDelegate.m in Sources */,
+				29555BF921E518C0004BC007 /* Snapshot.cpp in Sources */,
+				29555BFE21E518CC004BC007 /* ZXSpectrum.cpp in Sources */,
+				29555BFB21E518C5004BC007 /* Contention.cpp in Sources */,
+				29555C0921E523FA004BC007 /* AudioCore.mm in Sources */,
+				29555C0321E518DF004BC007 /* Z80Core_DDOpcodes.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		ED913F911F30759300316E1A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -629,6 +780,22 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
+		2968890D21E3B98900BFC3BD /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2968890E21E3B98900BFC3BD /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		2968891221E3B98B00BFC3BD /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2968891321E3B98B00BFC3BD /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
 		ED913FAA1F30759300316E1A /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -640,6 +807,57 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		2968892F21E3B98B00BFC3BD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PJNBHRUE79;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				INFOPLIST_FILE = SpectREMiOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = "-v";
+				PRODUCT_BUNDLE_IDENTIFIER = com.daley.SpectREMiOS;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		2968893021E3B98B00BFC3BD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = PJNBHRUE79;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				INFOPLIST_FILE = SpectREMiOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.daley.SpectREMiOS;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		ED913FAE1F30759300316E1A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -790,6 +1008,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		2968892E21E3B98B00BFC3BD /* Build configuration list for PBXNativeTarget "SpectREMiOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2968892F21E3B98B00BFC3BD /* Debug */,
+				2968893021E3B98B00BFC3BD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		ED913F901F30759300316E1A /* Build configuration list for PBXProject "SpectREM" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
