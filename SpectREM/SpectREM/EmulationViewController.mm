@@ -32,7 +32,6 @@
 
 uint32_t const cAUDIO_SAMPLE_RATE = 44100;
 uint32_t const cFRAMES_PER_SECOND = 50;
-
 NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
 const int cSCREEN_4_3 = 0;
@@ -46,12 +45,10 @@ const int cSCREEN_FILL = 1;
     ZXSpectrum                      *_machine;
     Debug                           *_debugger;
     Tape                            *_tape;
-    dispatch_source_t               _displayTimer;
     NSString                        *_mainBundlePath;
     bool                            _configViewVisible;
     
     AudioQueue                      *_audioQueue;
-    int16_t                         _audioBuffer;
     DebugOpCallbackBlock            _debugBlock;
     
     NSStoryboard                    *_storyBoard;
@@ -121,7 +118,7 @@ const int cSCREEN_FILL = 1;
     // The AudioCore uses the sound buffer to identify when a new frame should be drawn for accurate timing. The AudioQueue
     // is used to help measure usage of the audio buffer
     _audioQueue = new AudioQueue();
-    self.audioCore = [[AudioCore alloc] initWithSampleRate:cAUDIO_SAMPLE_RATE framesPerSecond:cFRAMES_PER_SECOND callback:(NSViewController <EmulationProtocol>*)self];
+    self.audioCore = [[AudioCore alloc] initWithSampleRate:cAUDIO_SAMPLE_RATE framesPerSecond:cFRAMES_PER_SECOND callback:(id <EmulationProtocol>)self];
     
     //Create a tape instance
     _tape = new Tape(tapeStatusCallback);
@@ -158,7 +155,7 @@ const int cSCREEN_FILL = 1;
             if (_defaults.machineAcceleration == 1)
             {
                 _machine->generateFrame();
-                [_metalRenderer updateTextureData:_machine->displayBuffer];
+                [_metalRenderer updateTextureData:_machine->getScreenBuffer()];
             }
             _audioQueue->write(_machine->audioBuffer, b);
         }
@@ -176,7 +173,7 @@ const int cSCREEN_FILL = 1;
             
             if (!(_machine->emuFrameCounter % static_cast<uint32_t>(_defaults.machineAcceleration)))
             {
-                [_metalRenderer updateTextureData:_machine->displayBuffer];
+                [_metalRenderer updateTextureData:_machine->getScreenBuffer()];
             }
         }];
         

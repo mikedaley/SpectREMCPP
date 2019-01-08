@@ -271,6 +271,13 @@ void ZXSpectrum::loadROM(const char *rom, int page)
     romFile.close();
 }
 
+#pragma mark - Getters
+
+const uint8_t* ZXSpectrum::getScreenBuffer()
+{
+    return displayBuffer;
+}
+
 #pragma mark - Release
 
 void ZXSpectrum::release()

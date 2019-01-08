@@ -150,6 +150,8 @@ public:
     
     void                    registerDebugOpCallback(DebugOpCallbackBlock debugOpCallbackBlock);
     DebugOpCallbackBlock    debugOpCallbackBlock;
+    
+    const uint8_t           *getScreenBuffer();
 
 protected:
     void                    emuReset();

@@ -66,7 +66,7 @@
             [[fileURL.pathExtension uppercaseString] isEqualToString:cSNA_EXTENSION] ||
             [[fileURL.pathExtension uppercaseString] isEqualToString:cTAP_EXTENSION])
         {
-            NSViewController <EmulationProtocol> *emulationViewController = (NSViewController <EmulationProtocol> *)[self.window contentViewController];
+            id <EmulationProtocol> emulationViewController = (id <EmulationProtocol>)[self.window contentViewController];
             [emulationViewController loadFileWithURL:fileURL addToRecent:YES];
             return YES;
         }

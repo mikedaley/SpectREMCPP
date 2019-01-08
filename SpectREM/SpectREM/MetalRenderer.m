@@ -209,7 +209,7 @@ static const Vertex quadVertices[] =
     return self;
 }
 
-- (void)updateTextureData:(void *)displayBuffer
+- (void)updateTextureData:(const void *)displayBuffer
 {
     [_displayTexture replaceRegion:textureRegion mipmapLevel:0 withBytes:displayBuffer bytesPerRow:cDISPLAY_WIDTH];
 
@@ -316,7 +316,6 @@ static const Vertex quadVertices[] =
     
     // Finalize rendering here & push the command buffer to the GPU
     [commandBuffer commit];
-
 }
 
 @end
