@@ -11,7 +11,10 @@
 
 #import "MetalRenderer.h"
 #import "ShaderTypes.h"
+
+#if !TARGET_OS_IPHONE
 #import "Defaults.h"
+#endif
 
 #pragma mark - Constants
 
@@ -101,7 +104,10 @@ static const Vertex quadVertices[] =
     
     MTKView *_view;
     Uniforms _uniforms;
+    
+#if !TARGET_OS_IPHONE
     Defaults *_defaults;
+#endif
 }
 
 - (nonnull instancetype)initWithMetalKitView:(nonnull MTKView *)mtkView
@@ -109,8 +115,9 @@ static const Vertex quadVertices[] =
     self = [super init];
     if (self)
     {
+#if !TARGET_OS_IPHONE
         _defaults = [Defaults defaults];
-        
+#endif
         mtkView.paused = YES;
         _device = mtkView.device;
         
@@ -205,6 +212,7 @@ static const Vertex quadVertices[] =
         _effectsPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
         
         _emulatorViewport = (MTLViewport){ 0.0, 0.0, cDISPLAY_WIDTH, cDISPLAY_HEIGHT, -1.0, 1.0 };
+                
     }
     return self;
 }
@@ -215,12 +223,17 @@ static const Vertex quadVertices[] =
 
     // Not placing this draw request on the main queue can cause the drawable area to not keep up with window resizing
     dispatch_async(dispatch_get_main_queue(), ^{
-        [_view draw];
+        [self->_view draw];
     });
 }
 
 - (void)mtkView:(nonnull MTKView *)view drawableSizeWillChange:(CGSize)size {
+#if TARGET_OS_IPHONE
+    _windowViewport = (MTLViewport){0.0, 0.0, size.width * 2, size.height * 2, -1.0, 1.0 };
+#else
     _windowViewport = (MTLViewport){0.0, 0.0, size.width, size.height, -1.0, 1.0 };
+#endif
+    
 }
 
 - (void)drawInMTKView:(nonnull MTKView *)view {
@@ -284,6 +297,7 @@ static const Vertex quadVertices[] =
         [renderEncoder setFragmentTexture:_effectsTexture
                                   atIndex:0];
         
+#if !TARGET_OS_IPHONE
         _uniforms.displayPixelFilterValue = _defaults.displayPixelFilterValue;
         _uniforms.displayBorderSize = _defaults.displayBorderSize;
         _uniforms.displayCurvature = _defaults.displayCurvature;
@@ -298,8 +312,24 @@ static const Vertex quadVertices[] =
         _uniforms.displayShowVignette = _defaults.displayShowVignette;
         _uniforms.displayVignetteX = _defaults.displayVignetteX;
         _uniforms.displayVignetteY = _defaults.displayVignetteY;
+#else
+        _uniforms.displayPixelFilterValue = 0.5;
+        _uniforms.displayBorderSize = 32;
+        _uniforms.displayCurvature = 0;
+        _uniforms.displayContrast = 0.75;
+        _uniforms.displayBrightness = 1.0;
+        _uniforms.displaySaturation = 1.0;
+        _uniforms.displayScanlineSize = 960;
+        _uniforms.displayScanlines = 0.0;
+        _uniforms.displayRGBOffset = 0.0;
+        _uniforms.displayHorizontalSync = 0;
+        _uniforms.displayShowReflection = NO;
+        _uniforms.displayShowVignette = NO;
+        _uniforms.displayVignetteX = 0.31;
+        _uniforms.displayVignetteY = 6.53;
+#endif
         _uniforms.time += 1;
-        
+
         [renderEncoder setFragmentBytes:&_uniforms
                                  length:sizeof(_uniforms)
                                 atIndex:0];

@@ -55,10 +55,15 @@
 		29555C1621E5270A004BC007 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29555C1521E5270A004BC007 /* MetalKit.framework */; };
 		29555C1821E52719004BC007 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29555C1721E52719004BC007 /* AudioToolbox.framework */; };
 		29555C1A21E5271F004BC007 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29555C1921E5271F004BC007 /* AVFoundation.framework */; };
+		29555C1B21EA30AC004BC007 /* MetalRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 276ADE2E21021A2200EC7DC9 /* MetalRenderer.m */; };
+		29555C1C21EA30B2004BC007 /* Display.metal in Sources */ = {isa = PBXBuildFile; fileRef = 276ADE282101CAA900EC7DC9 /* Display.metal */; };
+		29555C1D21EA34EB004BC007 /* Debug.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27BAE9AA20F64496007A8CFB /* Debug.cpp */; };
+		29555C1E21EA36A8004BC007 /* snapload.v31 in Resources */ = {isa = PBXBuildFile; fileRef = EDF660501FF535E300769784 /* snapload.v31 */; };
+		29555C1F21EA36A8004BC007 /* 48.ROM in Resources */ = {isa = PBXBuildFile; fileRef = ED913FD61F30789300316E1A /* 48.ROM */; };
+		29555C2021EA36A8004BC007 /* 128-0.ROM in Resources */ = {isa = PBXBuildFile; fileRef = EDD9ADF21F5D7E10004DD728 /* 128-0.ROM */; };
+		29555C2121EA36A8004BC007 /* 128-1.ROM in Resources */ = {isa = PBXBuildFile; fileRef = EDD9ADF31F5D7E10004DD728 /* 128-1.ROM */; };
 		2968890321E3B98900BFC3BD /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2968890221E3B98900BFC3BD /* AppDelegate.m */; };
-		2968890621E3B98900BFC3BD /* Renderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2968890521E3B98900BFC3BD /* Renderer.m */; };
-		2968890921E3B98900BFC3BD /* GameViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2968890821E3B98900BFC3BD /* GameViewController.mm */; };
-		2968890B21E3B98900BFC3BD /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2968890A21E3B98900BFC3BD /* Shaders.metal */; };
+		2968890921E3B98900BFC3BD /* EmulationViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2968890821E3B98900BFC3BD /* EmulationViewController.mm */; };
 		2968890F21E3B98900BFC3BD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2968890D21E3B98900BFC3BD /* Main.storyboard */; };
 		2968891121E3B98B00BFC3BD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2968891021E3B98B00BFC3BD /* Assets.xcassets */; };
 		2968891421E3B98B00BFC3BD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2968891221E3B98B00BFC3BD /* LaunchScreen.storyboard */; };
@@ -141,12 +146,9 @@
 		296888FF21E3B98800BFC3BD /* SpectREMiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpectREMiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2968890121E3B98900BFC3BD /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		2968890221E3B98900BFC3BD /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		2968890421E3B98900BFC3BD /* Renderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Renderer.h; sourceTree = "<group>"; };
-		2968890521E3B98900BFC3BD /* Renderer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Renderer.m; sourceTree = "<group>"; };
-		2968890721E3B98900BFC3BD /* GameViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameViewController.h; sourceTree = "<group>"; };
-		2968890821E3B98900BFC3BD /* GameViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = GameViewController.mm; sourceTree = "<group>"; };
-		2968890A21E3B98900BFC3BD /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
-		2968890C21E3B98900BFC3BD /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
+		2968890721E3B98900BFC3BD /* EmulationViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmulationViewController.h; sourceTree = "<group>"; };
+		2968890821E3B98900BFC3BD /* EmulationViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = EmulationViewController.mm; sourceTree = "<group>"; };
+		2968890C21E3B98900BFC3BD /* ShaderTypes_old.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes_old.h; sourceTree = "<group>"; };
 		2968890E21E3B98900BFC3BD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		2968891021E3B98B00BFC3BD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2968891321E3B98B00BFC3BD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -323,12 +325,9 @@
 			children = (
 				2968890121E3B98900BFC3BD /* AppDelegate.h */,
 				2968890221E3B98900BFC3BD /* AppDelegate.m */,
-				2968890421E3B98900BFC3BD /* Renderer.h */,
-				2968890521E3B98900BFC3BD /* Renderer.m */,
-				2968890721E3B98900BFC3BD /* GameViewController.h */,
-				2968890821E3B98900BFC3BD /* GameViewController.mm */,
-				2968890A21E3B98900BFC3BD /* Shaders.metal */,
-				2968890C21E3B98900BFC3BD /* ShaderTypes.h */,
+				2968890721E3B98900BFC3BD /* EmulationViewController.h */,
+				2968890821E3B98900BFC3BD /* EmulationViewController.mm */,
+				2968890C21E3B98900BFC3BD /* ShaderTypes_old.h */,
 				2968890D21E3B98900BFC3BD /* Main.storyboard */,
 				2968891021E3B98B00BFC3BD /* Assets.xcassets */,
 				2968891221E3B98B00BFC3BD /* LaunchScreen.storyboard */,
@@ -673,6 +672,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				29555C1E21EA36A8004BC007 /* snapload.v31 in Resources */,
+				29555C1F21EA36A8004BC007 /* 48.ROM in Resources */,
+				29555C2021EA36A8004BC007 /* 128-0.ROM in Resources */,
+				29555C2121EA36A8004BC007 /* 128-1.ROM in Resources */,
 				2968891421E3B98B00BFC3BD /* LaunchScreen.storyboard in Resources */,
 				2968891121E3B98B00BFC3BD /* Assets.xcassets in Resources */,
 				2968890F21E3B98900BFC3BD /* Main.storyboard in Resources */,
@@ -706,6 +709,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				29555C0621E518F9004BC007 /* ZXSpectrum128.cpp in Sources */,
+				29555C1D21EA34EB004BC007 /* Debug.cpp in Sources */,
 				29555BF721E3C38B004BC007 /* ZXSpectrum48.cpp in Sources */,
 				29555BF621E3C386004BC007 /* Audio.cpp in Sources */,
 				29555BFC21E518C7004BC007 /* Display.cpp in Sources */,
@@ -713,20 +717,20 @@
 				29555BFD21E518CA004BC007 /* Keyboard.cpp in Sources */,
 				29555C0021E518D7004BC007 /* Z80Core_MainOpcodes.cpp in Sources */,
 				29555BFF21E518D3004BC007 /* Z80Core.cpp in Sources */,
+				29555C1C21EA30B2004BC007 /* Display.metal in Sources */,
 				29555C0521E518E4004BC007 /* Z80Core_FDOpcodes.cpp in Sources */,
 				2968891721E3B98B00BFC3BD /* main.m in Sources */,
 				29555C0121E518DA004BC007 /* Z80Core_CBOpcodes.cpp in Sources */,
-				2968890B21E3B98900BFC3BD /* Shaders.metal in Sources */,
 				29555C0821E51910004BC007 /* SPI.cpp in Sources */,
-				2968890621E3B98900BFC3BD /* Renderer.m in Sources */,
 				29555BEF21E3C36D004BC007 /* AudioQueue.cpp in Sources */,
 				29555BFA21E518C2004BC007 /* FloatingBus.cpp in Sources */,
-				2968890921E3B98900BFC3BD /* GameViewController.mm in Sources */,
+				2968890921E3B98900BFC3BD /* EmulationViewController.mm in Sources */,
 				29555C0221E518DC004BC007 /* Z80Core_DDCB_FDCBOpcodes.cpp in Sources */,
 				29555C0421E518E1004BC007 /* Z80Core_EDOpcodes.cpp in Sources */,
 				2968890321E3B98900BFC3BD /* AppDelegate.m in Sources */,
 				29555BF921E518C0004BC007 /* Snapshot.cpp in Sources */,
 				29555BFE21E518CC004BC007 /* ZXSpectrum.cpp in Sources */,
+				29555C1B21EA30AC004BC007 /* MetalRenderer.m in Sources */,
 				29555BFB21E518C5004BC007 /* Contention.cpp in Sources */,
 				29555C0921E523FA004BC007 /* AudioCore.mm in Sources */,
 				29555C0321E518DF004BC007 /* Z80Core_DDOpcodes.cpp in Sources */,
