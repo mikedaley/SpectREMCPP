@@ -85,32 +85,39 @@ static OSStatus renderAudio(void *inRefCon,
     
 #if TARGET_OS_IPHONE
         AVAudioSession *session = [AVAudioSession sharedInstance];
-        [session setCategory:AVAudioSessionCategoryPlayback error:NULL];
+        NSError *error;
+        [session setCategory:AVAudioSessionCategoryPlayback error:&error];
+        [session setPreferredSampleRate:sampleRate error:&error];
+        [session setPreferredIOBufferDuration:0.01 error:&error];
+        [session setActive:YES error:&error];
 #endif
         CheckError(NewAUGraph(&_graph), "NewAUGraph");
         
         // Output Node
         AudioComponentDescription componentDescription;
         componentDescription.componentType = kAudioUnitType_Output;
-        
 #if TARGET_OS_IPHONE
-        componentDescription.componentSubType = kAudioUnitSubType_GenericOutput;
+        componentDescription.componentSubType = kAudioUnitSubType_RemoteIO;
 #else
         componentDescription.componentSubType = kAudioUnitSubType_DefaultOutput;
 #endif
-        
         componentDescription.componentManufacturer = kAudioUnitManufacturer_Apple;
+        
+        AudioComponent comp = AudioComponentFindNext(NULL, &componentDescription);
+        if (comp == NULL)
+        {
+            NSLog(@"NO DEFAULT OUTPUT NODE");
+        }
+        
         CheckError(AUGraphAddNode(_graph, &componentDescription, &_outNode), "AUGraphAddNode[kAudioUnitSubType_DefaultOutput]");
         
         // Mixer node
         componentDescription.componentType = kAudioUnitType_Mixer;
-
 #if TARGET_OS_IPHONE
-        componentDescription.componentSubType = kAudioUnitSubType_MatrixMixer;
+        componentDescription.componentSubType = kAudioUnitSubType_MultiChannelMixer;
 #else
         componentDescription.componentSubType = kAudioUnitSubType_StereoMixer;
 #endif
-
         componentDescription.componentManufacturer = kAudioUnitManufacturer_Apple;
         CheckError(AUGraphAddNode(_graph, &componentDescription, &_mixerNode), "AUGraphAddNode[kAudioUnitSubType_StereoMixer]");
         CheckError(AUGraphConnectNodeInput(_graph, _mixerNode, 0, _outNode, 0), "AUGraphConnectNodeInput[kAudioUnitSubType_StereoMixer]");
@@ -159,11 +166,12 @@ static OSStatus renderAudio(void *inRefCon,
         CheckError(AudioUnitSetProperty(_convertUnit, kAudioUnitProperty_StreamFormat,
                                         kAudioUnitScope_Input, 0, &bufferFormat,
                                         sizeof(bufferFormat)), "AudioUnitSetProperty[kAudioUnitProperty_StreamFormat]");
-        
+
         // Set the frames per slice property on the converter node
         uint framesPerSlice = sampleRate / fps;
+//        framesPerSlice = 1024;
         CheckError(AudioUnitSetProperty(_convertUnit, kAudioUnitProperty_MaximumFramesPerSlice,
-                                        kAudioUnitScope_Input, 0, &framesPerSlice,
+                                        kAudioUnitScope_Global, 0, &framesPerSlice,
                                         sizeof(framesPerSlice)), "AudioUnitSetProperty[kAudioUnitProperty_MaximumFramesPerSlice]");
 
         // define the callback for rendering audio
@@ -181,13 +189,6 @@ static OSStatus renderAudio(void *inRefCon,
         AUGraphNodeInfo(_graph, _lowPassNode, 0, &_lowPassFilterUnit);
         AUGraphNodeInfo(_graph, _highPassNode, 0, &_highPassFilterUnit);
         
-//        AudioUnitSetParameter(_mixerUnit, kMultiChannelMixerParam_Volume, kAudioUnitScope_Output, 0, 1.0, 0);
-//        AudioUnitSetParameter(_lowPassFilterUnit, 0, kAudioUnitScope_Global, 0, 5000, 0);
-//        AudioUnitSetParameter(_highPassFilterUnit, 0, kAudioUnitScope_Global, 0, 0, 0);
-
-#if !TARGET_OS_IPHONE
-        [self setupObservers];
-#endif
     }
     return self;
 }
@@ -222,36 +223,20 @@ static OSStatus renderAudio(void *inRefCon,
     return running;
 }
 
-#pragma mark - Observers
-
-#if !TARGET_OS_IPHONE
-- (void)setupObservers
+- (void)setAudioMasterVolume:(float)audioMasterVolume
 {
-    [self.defaults addObserver:self forKeyPath:AudioMasterVolume options:NSKeyValueObservingOptionNew context:NULL];
-    [self.defaults addObserver:self forKeyPath:AudioHighPassFilter options:NSKeyValueObservingOptionNew context:NULL];
-    [self.defaults addObserver:self forKeyPath:AudioLowPassFilter options:NSKeyValueObservingOptionNew context:NULL];
-
-    AudioUnitSetParameter(_mixerUnit, kMultiChannelMixerParam_Volume, kAudioUnitScope_Output, 0, self.defaults.audioMasterVolume, 0);
-    AudioUnitSetParameter(_lowPassFilterUnit, 0, kAudioUnitScope_Global, 0, self.defaults.audioLowPassFilter, 0);
-    AudioUnitSetParameter(_highPassFilterUnit, 0, kAudioUnitScope_Global, 0, self.defaults.audioHighPassFilter, 0);
+    AudioUnitSetParameter(_mixerUnit, kMultiChannelMixerParam_Volume, kAudioUnitScope_Output, 0, audioMasterVolume, 0);
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
+- (void)setAudioLowPassFilter:(float)audioLowPassFilter
 {
-    if ([keyPath isEqualToString:AudioMasterVolume])
-    {
-        AudioUnitSetParameter(_mixerUnit, kMultiChannelMixerParam_Volume, kAudioUnitScope_Output, 0, [change[NSKeyValueChangeNewKey] doubleValue], 0);
-    }
-    else if ([keyPath isEqualToString:AudioLowPassFilter])
-    {
-        AudioUnitSetParameter(_lowPassFilterUnit, 0, kAudioUnitScope_Global, 0, [change[NSKeyValueChangeNewKey] doubleValue], 0);
-    }
-    else if ([keyPath isEqualToString:AudioHighPassFilter])
-    {
-        AudioUnitSetParameter(_highPassFilterUnit, 0, kAudioUnitScope_Global, 0, [change[NSKeyValueChangeNewKey] doubleValue], 0);
-    }
+    AudioUnitSetParameter(_lowPassFilterUnit, 0, kAudioUnitScope_Global, 0, audioLowPassFilter, 0);
 }
-#endif
+
+- (void)setAudioHighPassFilter:(float)audioHighPassFilter
+{
+    AudioUnitSetParameter(_highPassFilterUnit, 0, kAudioUnitScope_Global, 0, audioHighPassFilter, 0);
+}
 
 #pragma mark - Audio Render
 

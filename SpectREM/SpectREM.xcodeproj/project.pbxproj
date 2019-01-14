@@ -17,6 +17,7 @@
 		17B5DB9A1F5B14D3003E7EF3 /* Audio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17B5DB991F5B14D3003E7EF3 /* Audio.cpp */; };
 		17C33DFA1F6578E600720A06 /* TapeBrowserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 17C33DF91F6578E600720A06 /* TapeBrowserViewController.m */; };
 		17C33DFE1F6583A400720A06 /* TapeCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 17C33DFD1F6583A400720A06 /* TapeCellView.m */; };
+		17E6493321EBAA080038C569 /* session.z80 in Resources */ = {isa = PBXBuildFile; fileRef = 17E6493121EBA5C30038C569 /* session.z80 */; };
 		17EC89101F5B1FC500B6EFAF /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17EC890F1F5B1FC500B6EFAF /* AudioToolbox.framework */; };
 		276ADE292101CAA900EC7DC9 /* Display.metal in Sources */ = {isa = PBXBuildFile; fileRef = 276ADE282101CAA900EC7DC9 /* Display.metal */; };
 		276ADE2D2101CE6500EC7DC9 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 276ADE2C2101CE6500EC7DC9 /* MetalKit.framework */; };
@@ -117,6 +118,7 @@
 		17C33DF91F6578E600720A06 /* TapeBrowserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TapeBrowserViewController.m; sourceTree = "<group>"; };
 		17C33DFC1F6583A400720A06 /* TapeCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TapeCellView.h; sourceTree = "<group>"; };
 		17C33DFD1F6583A400720A06 /* TapeCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TapeCellView.m; sourceTree = "<group>"; };
+		17E6493121EBA5C30038C569 /* session.z80 */ = {isa = PBXFileReference; lastKnownFileType = file; path = session.z80; sourceTree = "<group>"; };
 		17EC890F1F5B1FC500B6EFAF /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		276ADE242101C64E00EC7DC9 /* MetalRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MetalRenderer.h; sourceTree = "<group>"; };
 		276ADE272101C75B00EC7DC9 /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
@@ -148,7 +150,6 @@
 		2968890221E3B98900BFC3BD /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		2968890721E3B98900BFC3BD /* EmulationViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmulationViewController.h; sourceTree = "<group>"; };
 		2968890821E3B98900BFC3BD /* EmulationViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = EmulationViewController.mm; sourceTree = "<group>"; };
-		2968890C21E3B98900BFC3BD /* ShaderTypes_old.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes_old.h; sourceTree = "<group>"; };
 		2968890E21E3B98900BFC3BD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		2968891021E3B98B00BFC3BD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2968891321E3B98B00BFC3BD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -327,7 +328,6 @@
 				2968890221E3B98900BFC3BD /* AppDelegate.m */,
 				2968890721E3B98900BFC3BD /* EmulationViewController.h */,
 				2968890821E3B98900BFC3BD /* EmulationViewController.mm */,
-				2968890C21E3B98900BFC3BD /* ShaderTypes_old.h */,
 				2968890D21E3B98900BFC3BD /* Main.storyboard */,
 				2968891021E3B98B00BFC3BD /* Assets.xcassets */,
 				2968891221E3B98B00BFC3BD /* LaunchScreen.storyboard */,
@@ -566,6 +566,7 @@
 				EDD9ADF21F5D7E10004DD728 /* 128-0.ROM */,
 				EDD9ADF31F5D7E10004DD728 /* 128-1.ROM */,
 				279C6E5720C91CA20053CC07 /* 128.rom */,
+				17E6493121EBA5C30038C569 /* session.z80 */,
 			);
 			path = ROMS;
 			sourceTree = "<group>";
@@ -672,6 +673,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				17E6493321EBAA080038C569 /* session.z80 in Resources */,
 				29555C1E21EA36A8004BC007 /* snapload.v31 in Resources */,
 				29555C1F21EA36A8004BC007 /* 48.ROM in Resources */,
 				29555C2021EA36A8004BC007 /* 128-0.ROM in Resources */,

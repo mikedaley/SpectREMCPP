@@ -25,5 +25,8 @@
 - (void)stop;
 - (void)start;
 - (BOOL)isRunning;
+- (void)setAudioMasterVolume:(float)audioMasterVolume;
+- (void)setAudioLowPassFilter:(float)audioLowPassFilter;
+- (void)setAudioHighPassFilter:(float)audioHighPassFilter;
 
 @end

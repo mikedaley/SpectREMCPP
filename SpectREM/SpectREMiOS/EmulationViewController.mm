@@ -41,7 +41,9 @@ NSString  *const cSESSION_FILE_NAME = @"session.z80";
     NSTimer                         *_accelerationTimer;
     
     MTKView                         *_metalView;
-    MetalRenderer                   *_metalRenderer;}
+    MetalRenderer                   *_metalRenderer;
+    
+}
 
 - (void)viewDidLoad
 {
@@ -77,25 +79,80 @@ NSString  *const cSESSION_FILE_NAME = @"session.z80";
     // is used to help measure usage of the audio buffer
     _audioQueue = new AudioQueue();
     self.audioCore = [[AudioCore alloc] initWithSampleRate:cAUDIO_SAMPLE_RATE framesPerSecond:cFRAMES_PER_SECOND callback:(id <EmulationProtocol>)self];
+
+    [self.audioCore setAudioMasterVolume:1.0];
+    [self.audioCore setAudioLowPassFilter:5000.0];
+    [self.audioCore setAudioHighPassFilter:1];
     
     //Create a tape instance
     _tape = new Tape(tapeStatusCallback);
     
     [self initMachineWithRomPath:_mainBundlePath machineType:eZXSpectrum48];
     
-    [_accelerationTimer invalidate];
-    _accelerationTimer = [NSTimer timerWithTimeInterval:1.0 / (cFRAMES_PER_SECOND * 1) repeats:YES block:^(NSTimer * _Nonnull timer) {
-        
-        self->_machine->generateFrame();
-        
-        if (!(self->_machine->emuFrameCounter % static_cast<uint32_t>(1)))
-        {
-            [self->_metalRenderer updateTextureData:self->_machine->getScreenBuffer()];
-        }
-    }];
+//    [self restoreSession];
     
-    [[NSRunLoop mainRunLoop] addTimer:_accelerationTimer forMode:NSRunLoopCommonModes];
+    _mainBundlePath = [_mainBundlePath stringByAppendingString:@"session.z80"];
+    [self loadFileWithURL:[NSURL URLWithString:_mainBundlePath] addToRecent:NO];
+    [self startMachine];
+    _machine->emuUseAYSound = true;
+}
 
+//- (void)restoreSession
+//{
+//    if (NSURL *supportDirUrl = [self getSupportDirUrl])
+//    {
+//        // Load the last session file it if exists
+//        supportDirUrl = [supportDirUrl URLByAppendingPathComponent:cSESSION_FILE_NAME];
+//        if ([[NSFileManager defaultManager] fileExistsAtPath:supportDirUrl.path])
+//        {
+//            [self loadFileWithURL:supportDirUrl addToRecent:NO];
+//        }
+//    }
+//}
+
+- (void)loadFileWithURL:(NSURL *)url addToRecent:(BOOL)addToRecent
+{
+    BOOL success = NO;
+    
+    NSString *urlPath = [url.pathExtension uppercaseString];
+    if (([urlPath isEqualToString:cZ80_EXTENSION] || [urlPath isEqualToString:cSNA_EXTENSION]))
+    {
+        int snapshotMachineType = _machine->snapshotMachineInSnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+        if (_machine->machineInfo.machineType != snapshotMachineType)
+        {
+//            self.defaults.machineSelectedModel = snapshotMachineType;
+        }
+    }
+    
+    if ([[url.pathExtension uppercaseString] isEqualToString:cZ80_EXTENSION])
+    {
+        success = _machine->snapshotZ80LoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+    }
+    else if ([[url.pathExtension uppercaseString] isEqualToString:cSNA_EXTENSION])
+    {
+        success = _machine->snapshotSNALoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+    }
+    else if ([[url.pathExtension uppercaseString] isEqualToString:cTAP_EXTENSION])
+    {
+        success = _tape->loadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"TAPE_CHANGED_NOTIFICATION" object:NULL];
+    }
+    
+//    if (addToRecent && success)
+//    {
+//        [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:url];
+//    }
+    
+//    if (!success)
+//    {
+//        NSWindow *window = [[NSApplication sharedApplication] mainWindow];
+//        NSAlert *alert = [NSAlert new];
+//        alert.informativeText = [NSString stringWithFormat:@"An error occurred trying to open %@", url.path];
+//        [alert addButtonWithTitle:@"OK"];
+//        [alert beginSheetModalForWindow:window completionHandler:^(NSModalResponse returnCode) {
+//            // No need to do anything
+//        }];
+//    }
 }
 
 #pragma mark - Audio Callback
