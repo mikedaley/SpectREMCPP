@@ -249,17 +249,24 @@ static OSStatus renderAudio(void *inRefCon,
 {
     const id <EmulationProtocol> callback = (__bridge id <EmulationProtocol>)inRefCon;
     
-    // Grab the buffer that core audio has passed in.
-    int16_t *buffer = static_cast<int16_t *>(ioData->mBuffers[0].mData);
-    
-    // Reset the buffer to prevent any odd noises being played when a machine starts up
-    memset(buffer, 0, ioData->mBuffers[0].mDataByteSize);
-    
-    [callback audioCallback:inNumberFrames buffer:buffer];
-    
-    // Set the size of the buffer to be the number of frames requested by the Core Audio callback. This is
-    // multiplied by the number of bytes per frame which is 4.
-    ioData->mBuffers[0].mDataByteSize = (inNumberFrames << 2);
+    if (inBusNumber == 0)
+    {
+        // Grab the buffer that core audio has passed in.
+        int16_t *buffer = static_cast<int16_t *>(ioData->mBuffers[0].mData);
+        
+        // Reset the buffer to prevent any odd noises being played when a machine starts up
+        memset(buffer, 0, ioData->mBuffers[0].mDataByteSize);
+        
+        [callback audioCallback:inNumberFrames buffer:buffer];
+        
+        // Set the size of the buffer to be the number of frames requested by the Core Audio callback. This is
+        // multiplied by the number of bytes per frame which is 4.
+        ioData->mBuffers[0].mDataByteSize = (inNumberFrames << 2);
+    }
+    else if (inBusNumber == 1)
+    {
+        cout << "*** MIC INPUT ***" << endl;
+    }
     
     return noErr;
 }

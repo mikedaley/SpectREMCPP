@@ -28,7 +28,7 @@ ZXSpectrum128::ZXSpectrum128(Tape *t) : ZXSpectrum()
     }
     else
     {
-        tape = NULL;
+        tape = nullptr;
     }
 }
 
@@ -204,12 +204,14 @@ void ZXSpectrum128::coreMemoryWrite(unsigned short address, unsigned char data)
     {
         return;
     }
-    else if (memoryPage == 1)
+    
+    if (memoryPage == 1)
     {
         displayUpdateWithTs((z80Core.GetTStates() - emuCurrentDisplayTs) + machineInfo.paperDrawingOffset);
         memoryRam[(5 * cMEMORY_PAGE_SIZE) + address] = data;
     }
-    else if (memoryPage == 2)
+    
+    if (memoryPage == 2)
     {
         memoryRam[(2 * cMEMORY_PAGE_SIZE) + address] = data;
     }
@@ -228,15 +230,18 @@ unsigned char ZXSpectrum128::coreMemoryRead(unsigned short address)
     {
         return (memoryRom[(emuROMPage * cMEMORY_PAGE_SIZE) + address]);
     }
-    else if (page == 1)
+    
+    if (page == 1)
     {
         return (memoryRam[(5 * cMEMORY_PAGE_SIZE) + address]);
     }
-    else if (page == 2)
+    
+    if (page == 2)
     {
         return (memoryRam[(2 * cMEMORY_PAGE_SIZE) + address]);
     }
-    else if (page == 3)
+    
+    if (page == 3)
     {
         return (memoryRam[(emuRAMPage * cMEMORY_PAGE_SIZE) + address]);
     }

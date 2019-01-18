@@ -63,8 +63,9 @@
 		29555C1F21EA36A8004BC007 /* 48.ROM in Resources */ = {isa = PBXBuildFile; fileRef = ED913FD61F30789300316E1A /* 48.ROM */; };
 		29555C2021EA36A8004BC007 /* 128-0.ROM in Resources */ = {isa = PBXBuildFile; fileRef = EDD9ADF21F5D7E10004DD728 /* 128-0.ROM */; };
 		29555C2121EA36A8004BC007 /* 128-1.ROM in Resources */ = {isa = PBXBuildFile; fileRef = EDD9ADF31F5D7E10004DD728 /* 128-1.ROM */; };
+		29555C2521EC893D004BC007 /* session128.z80 in Resources */ = {isa = PBXBuildFile; fileRef = 29555C2421EC892F004BC007 /* session128.z80 */; };
 		2968890321E3B98900BFC3BD /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2968890221E3B98900BFC3BD /* AppDelegate.m */; };
-		2968890921E3B98900BFC3BD /* EmulationViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2968890821E3B98900BFC3BD /* EmulationViewController.mm */; };
+		2968890921E3B98900BFC3BD /* EmulationViewControlleriOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2968890821E3B98900BFC3BD /* EmulationViewControlleriOS.mm */; };
 		2968890F21E3B98900BFC3BD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2968890D21E3B98900BFC3BD /* Main.storyboard */; };
 		2968891121E3B98B00BFC3BD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2968891021E3B98B00BFC3BD /* Assets.xcassets */; };
 		2968891421E3B98B00BFC3BD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2968891221E3B98B00BFC3BD /* LaunchScreen.storyboard */; };
@@ -143,13 +144,14 @@
 		29555C1521E5270A004BC007 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.1.sdk/System/Library/Frameworks/MetalKit.framework; sourceTree = DEVELOPER_DIR; };
 		29555C1721E52719004BC007 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.1.sdk/System/Library/Frameworks/AudioToolbox.framework; sourceTree = DEVELOPER_DIR; };
 		29555C1921E5271F004BC007 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.1.sdk/System/Library/Frameworks/AVFoundation.framework; sourceTree = DEVELOPER_DIR; };
+		29555C2421EC892F004BC007 /* session128.z80 */ = {isa = PBXFileReference; lastKnownFileType = file; name = session128.z80; path = "../../../../../../Library/Application Support/com.daley.SpectREM/session128.z80"; sourceTree = "<group>"; };
 		296888F921E3898F00BFC3BD /* EmulationProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmulationProtocol.h; sourceTree = "<group>"; };
 		296888FA21E3B35300BFC3BD /* SharedConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SharedConstants.h; sourceTree = "<group>"; };
 		296888FF21E3B98800BFC3BD /* SpectREMiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpectREMiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2968890121E3B98900BFC3BD /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		2968890221E3B98900BFC3BD /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		2968890721E3B98900BFC3BD /* EmulationViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmulationViewController.h; sourceTree = "<group>"; };
-		2968890821E3B98900BFC3BD /* EmulationViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = EmulationViewController.mm; sourceTree = "<group>"; };
+		2968890721E3B98900BFC3BD /* EmulationViewControlleriOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmulationViewControlleriOS.h; sourceTree = "<group>"; };
+		2968890821E3B98900BFC3BD /* EmulationViewControlleriOS.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = EmulationViewControlleriOS.mm; sourceTree = "<group>"; };
 		2968890E21E3B98900BFC3BD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		2968891021E3B98B00BFC3BD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2968891321E3B98B00BFC3BD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -326,8 +328,8 @@
 			children = (
 				2968890121E3B98900BFC3BD /* AppDelegate.h */,
 				2968890221E3B98900BFC3BD /* AppDelegate.m */,
-				2968890721E3B98900BFC3BD /* EmulationViewController.h */,
-				2968890821E3B98900BFC3BD /* EmulationViewController.mm */,
+				2968890721E3B98900BFC3BD /* EmulationViewControlleriOS.h */,
+				2968890821E3B98900BFC3BD /* EmulationViewControlleriOS.mm */,
 				2968890D21E3B98900BFC3BD /* Main.storyboard */,
 				2968891021E3B98B00BFC3BD /* Assets.xcassets */,
 				2968891221E3B98B00BFC3BD /* LaunchScreen.storyboard */,
@@ -567,6 +569,7 @@
 				EDD9ADF31F5D7E10004DD728 /* 128-1.ROM */,
 				279C6E5720C91CA20053CC07 /* 128.rom */,
 				17E6493121EBA5C30038C569 /* session.z80 */,
+				29555C2421EC892F004BC007 /* session128.z80 */,
 			);
 			path = ROMS;
 			sourceTree = "<group>";
@@ -673,6 +676,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				29555C2521EC893D004BC007 /* session128.z80 in Resources */,
 				17E6493321EBAA080038C569 /* session.z80 in Resources */,
 				29555C1E21EA36A8004BC007 /* snapload.v31 in Resources */,
 				29555C1F21EA36A8004BC007 /* 48.ROM in Resources */,
@@ -726,7 +730,7 @@
 				29555C0821E51910004BC007 /* SPI.cpp in Sources */,
 				29555BEF21E3C36D004BC007 /* AudioQueue.cpp in Sources */,
 				29555BFA21E518C2004BC007 /* FloatingBus.cpp in Sources */,
-				2968890921E3B98900BFC3BD /* EmulationViewController.mm in Sources */,
+				2968890921E3B98900BFC3BD /* EmulationViewControlleriOS.mm in Sources */,
 				29555C0221E518DC004BC007 /* Z80Core_DDCB_FDCBOpcodes.cpp in Sources */,
 				29555C0421E518E1004BC007 /* Z80Core_EDOpcodes.cpp in Sources */,
 				2968890321E3B98900BFC3BD /* AppDelegate.m in Sources */,
@@ -973,14 +977,23 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ADDRESS_SANITIZER_CONTAINER_OVERFLOW = YES;
+				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_INTEGER = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CXX0X_EXTENSIONS = YES;
+				CLANG_WARN_IMPLICIT_SIGN_CONVERSION = NO;
 				CLANG_WARN__EXIT_TIME_DESTRUCTORS = YES;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = PJNBHRUE79;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
+				GCC_UNROLL_LOOPS = YES;
 				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
 				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
+				GCC_WARN_PEDANTIC = NO;
+				GCC_WARN_UNUSED_LABEL = YES;
+				GCC_WARN_UNUSED_PARAMETER = NO;
 				INFOPLIST_FILE = SpectREM/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
@@ -994,14 +1007,23 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ADDRESS_SANITIZER_CONTAINER_OVERFLOW = YES;
+				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_INTEGER = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CXX0X_EXTENSIONS = YES;
+				CLANG_WARN_IMPLICIT_SIGN_CONVERSION = NO;
 				CLANG_WARN__EXIT_TIME_DESTRUCTORS = YES;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = PJNBHRUE79;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
+				GCC_UNROLL_LOOPS = YES;
 				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
 				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
+				GCC_WARN_PEDANTIC = NO;
+				GCC_WARN_UNUSED_LABEL = YES;
+				GCC_WARN_UNUSED_PARAMETER = NO;
 				INFOPLIST_FILE = SpectREM/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.13;

@@ -14,7 +14,9 @@
 @class AudioCore;
 
 // Our iOS view controller
-@interface EmulationViewController : UIViewController
+@interface EmulationViewControlleriOS : UIViewController
+
+@property (weak, nonatomic) IBOutlet UIVisualEffectView *configView;
 
 @property (strong)              AudioCore           *audioCore;
 

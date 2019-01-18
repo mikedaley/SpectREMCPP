@@ -7,7 +7,7 @@
 //
 
 #include "ZXSpectrum.hpp"
-#include <math.h>
+#include <cmath>
 #include <iomanip>
 
 const float cBEEPER_VOLUME_MULTIPLIER = 16384;
@@ -44,10 +44,7 @@ void ZXSpectrum::audioSetup(float sampleRate, float fps)
 
 void ZXSpectrum::audioReset()
 {
-    if (audioBuffer)
-    {
-        delete audioBuffer;
-    }
+    delete audioBuffer;
     
     audioBuffer = new int16_t[ audioBufferSize ]();
     audioBufferIndex = 0;

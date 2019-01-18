@@ -36,7 +36,7 @@ ZXSpectrum48::ZXSpectrum48(Tape *t) : ZXSpectrum()
     }
     else
     {
-        tape = NULL;
+        tape = nullptr;
     }
 }
 

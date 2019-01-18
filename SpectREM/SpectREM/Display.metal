@@ -32,11 +32,11 @@ vector_float2 radialDistortion(vector_float2 pos, float distortion)
     return (pos + cc * (0.5 + dist) * dist);
 }
 
-vector_float3 scanline(float2 texCoord, float3 fragColor, float time) {
-    const float scale = .0008;
-    const float amt = 0.07;// intensity of effect
+vector_float3 scanline(float2 texCoord, float3 fragColor, float time, float amount, float size) {
+    const float scale = 0.0007;
+    const float amt = amount;// intensity of effect
     const float spd = -0.03;//speed of scrolling rows transposed per second
-    fragColor.rgb += sin( (texCoord.y / scale - (time * spd * 6.28) ) ) * amt;
+    fragColor.rgb -= sin( (texCoord.y / scale - (time * spd * 6.28) ) ) * amt;
     return fragColor;
 }
 
@@ -162,7 +162,7 @@ fragment vector_float4 effectsShader(RasterizerData in [[stage_in]],
 //        float scanline = sin(scanTexCoord.y * uniforms.displayScanlineSize) * 0.09 * uniforms.displayScanlines;
 //        fragColor.rgb -= scanline;
         
-        fragColor.rgb = scanline(scanTexCoord.xy, fragColor.rgb, uniforms.time);
+        fragColor.rgb = scanline(scanTexCoord.xy, fragColor.rgb, uniforms.time, uniforms.displayScanlines, uniforms.displayScanlineSize);
         
         // Add the vignette which adds a shadow and curving to the corners of the screen. Do this after applying the scan lines so
         // they are faded out into the shadow as well

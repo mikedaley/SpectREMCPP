@@ -335,7 +335,7 @@ const int cSCREEN_FILL = 1;
     _machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
     
     _debugger = new Debug;
-    _debugger->registerMachine(_machine);
+    _debugger->attachMachine(_machine);
     
     __block EmulationViewController *blockSelf = self;
     

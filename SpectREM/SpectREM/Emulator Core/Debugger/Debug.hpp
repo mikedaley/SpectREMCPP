@@ -51,7 +51,7 @@ public:
     Debug();
     ~Debug();
     
-    void                        registerMachine(ZXSpectrum * new_machine);
+    void                        attachMachine(ZXSpectrum * new_machine);
     
     bool                        checkForBreakpoint(uint16_t address, uint8_t type);
     void                        addBreakpoint(uint16_t address, uint8_t type);

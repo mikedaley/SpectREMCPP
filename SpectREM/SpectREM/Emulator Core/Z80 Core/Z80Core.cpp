@@ -13,14 +13,14 @@
 
 CZ80Core::CZ80Core()
 {
-	m_MemRead = NULL;
-	m_MemWrite = NULL;
-	m_IORead = NULL;
-	m_IOWrite = NULL;
-	m_MemContentionHandling = NULL;
-	m_DebugRead = NULL;
-	m_OpcodeCallback = NULL;
-	m_DebugCallback = NULL;
+	m_MemRead = nullptr;
+	m_MemWrite = nullptr;
+	m_IORead = nullptr;
+	m_IOWrite = nullptr;
+	m_MemContentionHandling = nullptr;
+	m_DebugRead = nullptr;
+	m_OpcodeCallback = nullptr;
+	m_DebugCallback = nullptr;
     m_CPUType = eCPUTYPE_Zilog;
 	m_PrevOpcodeFlags = 0;
 
@@ -90,7 +90,7 @@ unsigned char CZ80Core::Z80CoreMemRead(unsigned short address, unsigned int tsta
 	// First handle the contention
 	Z80CoreMemoryContention(address, tstates);
 
-	if (m_MemRead != NULL)
+	if (m_MemRead != nullptr)
 	{
 		return m_MemRead(address, m_Param);
 	}
@@ -106,7 +106,7 @@ void CZ80Core::Z80CoreMemWrite(unsigned short address, unsigned char data, unsig
 	// First handle the contention
 	Z80CoreMemoryContention(address, tstates);
 
-	if (m_MemWrite != NULL)
+	if (m_MemWrite != nullptr)
 	{
 		m_MemWrite(address, data, m_Param);
 	}
@@ -116,7 +116,7 @@ void CZ80Core::Z80CoreMemWrite(unsigned short address, unsigned char data, unsig
 
 unsigned char CZ80Core::Z80CoreIORead(unsigned short address)
 {
-	if (m_IORead != NULL)
+	if (m_IORead != nullptr)
 	{
 		return m_IORead(address, m_Param);
 	}
@@ -128,7 +128,7 @@ unsigned char CZ80Core::Z80CoreIORead(unsigned short address)
 
 void CZ80Core::Z80CoreIOWrite(unsigned short address, unsigned char data)
 {
-	if (m_IOWrite != NULL)
+	if (m_IOWrite != nullptr)
 	{
 		m_IOWrite(address, data, m_Param);
 	}
@@ -138,7 +138,7 @@ void CZ80Core::Z80CoreIOWrite(unsigned short address, unsigned char data)
 
 void CZ80Core::Z80CoreMemoryContention(unsigned short address, unsigned int t_states)
 {
-	if (m_MemContentionHandling != NULL)
+	if (m_MemContentionHandling != nullptr)
 	{
 		m_MemContentionHandling(address, t_states, m_Param);
 	}
@@ -150,7 +150,7 @@ void CZ80Core::Z80CoreMemoryContention(unsigned short address, unsigned int t_st
 
 unsigned char CZ80Core::Z80CoreDebugMemRead(unsigned int address, void *data)
 {
-	if (m_DebugRead != NULL)
+	if (m_DebugRead != nullptr)
 	{
 		return m_DebugRead(address, m_Param, data);
 	}
@@ -161,7 +161,7 @@ unsigned char CZ80Core::Z80CoreDebugMemRead(unsigned int address, void *data)
 //-----------------------------------------------------------------------------------------
 void CZ80Core::Z80CoreDebugMemWrite(unsigned int address, unsigned char byte, void *data)
 {
-	if (m_Debugwrite != NULL)
+	if (m_Debugwrite != nullptr)
 	{
 		m_Debugwrite(address, byte, m_Param, data);
 	}
@@ -357,7 +357,7 @@ int CZ80Core::Execute(unsigned int num_tstates, unsigned int int_t_states)
 		bool skip_instruction = false;
 		
 		// Handle a callback if needed
-		if (m_OpcodeCallback != NULL)
+		if (m_OpcodeCallback != nullptr)
 		{
 			// Callback before doing the opcode
 			skip_instruction = m_OpcodeCallback(opcode, m_CPURegisters.regPC - 1, m_Param);
@@ -366,7 +366,7 @@ int CZ80Core::Execute(unsigned int num_tstates, unsigned int int_t_states)
 		if ( !skip_instruction )
 		{
         	// We can now execute the instruction
-        	if (table->entries[opcode].function != NULL)
+        	if (table->entries[opcode].function != nullptr)
         	{
         	    // Execute the opcode
         	    (this->*table->entries[opcode].function)(opcode);
@@ -543,7 +543,7 @@ void CZ80Core::SetRegister(eZ80WORDREGISTERS reg, unsigned short data)
 unsigned int CZ80Core::Debug_Disassemble(char *pStr, unsigned int StrLen, unsigned int address, bool hexFormat, void *data)
 {
 	// Why would you do this! ;)
-	if (pStr == NULL)
+	if (pStr == nullptr)
 	{
 		return 0;
 	}
@@ -553,7 +553,7 @@ unsigned int CZ80Core::Debug_Disassemble(char *pStr, unsigned int StrLen, unsign
 	const char *pDisassembleString = Debug_GetOpcodeDetails(address, data);
 
 	// If we dont have a valid instruction - skip
-	if ( pDisassembleString != NULL )
+	if ( pDisassembleString != nullptr )
 	{
 		// Now write out the string including the extra bits
 		while (StrLen > 1 && *pDisassembleString != '\0')
@@ -662,13 +662,13 @@ char *CZ80Core::Debug_WriteData(unsigned int variableType, char *pStr, unsigned 
 	}
 	
 	// See if the program wants to alter the display
-	if ( m_DebugCallback != NULL )
+	if ( m_DebugCallback != nullptr )
 	{
 		buffer = m_DebugCallback(buffer, variableType, address, num, m_Param, data);
 	}
 
 	// Now copy it
-	if ( buffer != NULL )
+	if ( buffer != nullptr )
 	{
 		while (StrLen > 1 && *buffer != '\0')
 		{
@@ -697,7 +697,7 @@ unsigned int CZ80Core::Debug_GetOpcodeLength(unsigned int address, void *data)
 
 bool CZ80Core::Debug_HasValidOpcode(unsigned int address, void *data)
 {
-	if (Debug_GetOpcodeDetails(address, data) == NULL)
+	if (Debug_GetOpcodeDetails(address, data) == nullptr)
 	{
 		return false;
 	}
@@ -769,7 +769,7 @@ const char *CZ80Core::Debug_GetOpcodeDetails(unsigned int &address, void *data)
 	}
 
 	// If this is invalid - return 0
-	if (table->entries[opcode].function == NULL)
+	if (table->entries[opcode].function == nullptr)
 	{
 		return NULL;
 	}

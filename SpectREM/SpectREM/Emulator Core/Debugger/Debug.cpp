@@ -55,7 +55,7 @@ Debug::~Debug()
 
 #pragma mark - Register machine
 
-void Debug::registerMachine(ZXSpectrum * new_machine)
+void Debug::attachMachine(ZXSpectrum * new_machine)
 {
     machine = new_machine;
 }

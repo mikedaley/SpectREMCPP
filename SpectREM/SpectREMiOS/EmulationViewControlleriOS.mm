@@ -6,7 +6,7 @@
 //  Copyright © 2019 71Squared Ltd. All rights reserved.
 //
 
-#import "EmulationViewController.h"
+#import "EmulationViewControlleriOS.h"
 
 #import "AudioQueue.hpp"
 #import "AudioCore.h"
@@ -24,7 +24,7 @@ uint32_t const cAUDIO_SAMPLE_RATE = 44100;
 uint32_t const cFRAMES_PER_SECOND = 50;
 NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
-@implementation EmulationViewController
+@implementation EmulationViewControlleriOS
 {
 @public
     ZXSpectrum                      *_machine;
@@ -53,7 +53,7 @@ NSString  *const cSESSION_FILE_NAME = @"session.z80";
     _metalView.contentScaleFactor = 2.0;
     _metalView.device = MTLCreateSystemDefaultDevice();
     _metalView.backgroundColor = UIColor.blackColor;
-
+    
     if(!_metalView.device)
     {
         NSLog(@"Metal is not supported on this device");
@@ -82,19 +82,26 @@ NSString  *const cSESSION_FILE_NAME = @"session.z80";
 
     [self.audioCore setAudioMasterVolume:1.0];
     [self.audioCore setAudioLowPassFilter:5000.0];
-    [self.audioCore setAudioHighPassFilter:1];
+    [self.audioCore setAudioHighPassFilter:0.1];
     
     //Create a tape instance
     _tape = new Tape(tapeStatusCallback);
     
-    [self initMachineWithRomPath:_mainBundlePath machineType:eZXSpectrum48];
+    [self initMachineWithRomPath:_mainBundlePath machineType:eZXSpectrum128];
     
 //    [self restoreSession];
     
-    _mainBundlePath = [_mainBundlePath stringByAppendingString:@"session.z80"];
+    _mainBundlePath = [_mainBundlePath stringByAppendingString:@"session128.z80"];
     [self loadFileWithURL:[NSURL URLWithString:_mainBundlePath] addToRecent:NO];
     [self startMachine];
     _machine->emuUseAYSound = true;
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    CGRect f = _configView.frame;
+    f.origin = (CGPoint){-f.size.width, 0};
+    [_configView setFrame:f];
 }
 
 //- (void)restoreSession
@@ -216,9 +223,9 @@ NSString  *const cSESSION_FILE_NAME = @"session.z80";
     _machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
     
     _debugger = new Debug;
-    _debugger->registerMachine(_machine);
+    _debugger->attachMachine(_machine);
     
-    __block EmulationViewController *blockSelf = self;
+    __block EmulationViewControlleriOS *blockSelf = self;
     
     _debugBlock = (^bool(unsigned short address, uint8_t operation) {
         
@@ -267,4 +274,9 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 - (IBAction)resetMachine:(id)sender {
     _machine->resetMachine(true);
 }
+
+- (IBAction)showHideConfigView:(id)sender {
+    
+}
+
 @end
