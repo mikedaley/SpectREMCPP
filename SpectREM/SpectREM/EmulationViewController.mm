@@ -85,6 +85,63 @@ const int cSCREEN_FILL = 1;
     [self.defaults removeObserver:self forKeyPath:SPIPort];
 }
 
+#pragma mark - Audio Callback
+
+- (void)audioCallback:(int)inNumberFrames buffer:(int16_t *)buffer
+{
+    if (_machine)
+    {
+        const uint32_t b = (cAUDIO_SAMPLE_RATE / (cFRAMES_PER_SECOND * _defaults.machineAcceleration)) * 2;
+
+        _audioQueue->read(buffer, (inNumberFrames << 1));
+
+        // Check if we have used a frames worth of buffer storage and if so then its time to generate another frame.
+        if (_audioQueue->bufferUsed() <= b)
+        {
+            if (_defaults.machineAcceleration == 1)
+            {
+                _machine->generateFrame();
+                
+                if ([NSApp occlusionState] & NSApplicationOcclusionStateVisible)
+                {
+                    [_metalRenderer updateTextureData:_machine->getScreenBuffer()];
+                }
+            }
+            _audioQueue->write(_machine->audioBuffer, b);
+        }
+    }
+}
+
+- (void)setupAccelerationTimer
+{
+    if (_defaults.machineAcceleration > 1)
+    {
+        [_accelerationTimer invalidate];
+        _accelerationTimer = [NSTimer timerWithTimeInterval:1.0 / (cFRAMES_PER_SECOND * _defaults.machineAcceleration) repeats:YES block:^(NSTimer * _Nonnull timer) {
+            
+            _machine->generateFrame();
+            
+            if (!(_machine->emuFrameCounter % static_cast<uint32_t>(_defaults.machineAcceleration)))
+            {
+                [_metalRenderer updateTextureData:_machine->getScreenBuffer()];
+            }
+        }];
+        
+        [[NSRunLoop mainRunLoop] addTimer:_accelerationTimer forMode:NSRunLoopCommonModes];
+    }
+    else
+    {
+        [_accelerationTimer invalidate];
+    }
+}
+
+- (void)updateDisplay
+{
+    [_metalRenderer updateTextureData:_machine->displayBuffer];
+}
+
+#pragma mark - View Methods
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -130,8 +187,10 @@ const int cSCREEN_FILL = 1;
     [self setupNotifications];
     
     [self initMachineWithRomPath:_mainBundlePath machineType:(int)_defaults.machineSelectedModel];
-
+    
     [self restoreSession];
+    
+    //    _machine->snapshotSNALoadWithPath("/Users/michaeldaley/manic.sna");
     
     if (_defaults.machineAcceleration > 1)
     {
@@ -139,62 +198,30 @@ const int cSCREEN_FILL = 1;
     }
 }
 
-#pragma mark - Audio Callback
-
-- (void)audioCallback:(int)inNumberFrames buffer:(int16_t *)buffer
-{
-    if (_machine)
-    {
-        const uint32_t b = (cAUDIO_SAMPLE_RATE / (cFRAMES_PER_SECOND * _defaults.machineAcceleration)) * 2;
-        
-        _audioQueue->read(buffer, (inNumberFrames << 1));
-        
-        // Check if we have used a frames worth of buffer storage and if so then its time to generate another frame.
-        if (_audioQueue->bufferUsed() <= b)
-        {
-            if (_defaults.machineAcceleration == 1)
-            {
-                _machine->generateFrame();
-                [_metalRenderer updateTextureData:_machine->getScreenBuffer()];
-            }
-            _audioQueue->write(_machine->audioBuffer, b);
-        }
-    }
-}
-
-- (void)setupAccelerationTimer
-{
-    if (_defaults.machineAcceleration > 1)
-    {
-        [_accelerationTimer invalidate];
-        _accelerationTimer = [NSTimer timerWithTimeInterval:1.0 / (cFRAMES_PER_SECOND * _defaults.machineAcceleration) repeats:YES block:^(NSTimer * _Nonnull timer) {
-            
-            _machine->generateFrame();
-            
-            if (!(_machine->emuFrameCounter % static_cast<uint32_t>(_defaults.machineAcceleration)))
-            {
-                [_metalRenderer updateTextureData:_machine->getScreenBuffer()];
-            }
-        }];
-        
-        [[NSRunLoop mainRunLoop] addTimer:_accelerationTimer forMode:NSRunLoopCommonModes];
-    }
-    else
-    {
-        [_accelerationTimer invalidate];
-    }
-}
-
-- (void)updateDisplay
-{
-    [_metalRenderer updateTextureData:_machine->displayBuffer];
-}
-
-#pragma mark - View Methods
-
 - (void)viewWillAppear
 {
+    [super viewWillAppear];
     [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@", [NSString stringWithCString:_machine->machineInfo.machineName encoding:NSUTF8StringEncoding]]];
+}
+
+- (void)viewWillDisappear
+{
+    [super viewWillDisappear];
+    
+    if (NSURL *supportDirUrl = [self getSupportDirUrl])
+    {
+        NSError *error = nil;
+        if (![[NSFileManager defaultManager] createDirectoryAtURL:supportDirUrl withIntermediateDirectories:YES attributes:nil error:&error])
+        {
+            NSLog(@"ERROR: creating support directory.");
+            return;
+        }
+        
+        supportDirUrl = [supportDirUrl URLByAppendingPathComponent:cSESSION_FILE_NAME];
+        ZXSpectrum::Snap sessionSnapshot = _machine->snapshotCreateZ80();
+        NSData *data = [NSData dataWithBytes:sessionSnapshot.data length:sessionSnapshot.length];
+        [data writeToURL:supportDirUrl atomically:YES];
+    }
 }
 
 #pragma mark - Notifications
@@ -433,26 +460,6 @@ const int cSCREEN_FILL = 1;
         [alert beginSheetModalForWindow:window completionHandler:^(NSModalResponse returnCode) {
             // No need to do anything
         }];
-    }
-}
-
-#pragma mark - View Methods
-
-- (void)viewWillDisappear
-{
-    if (NSURL *supportDirUrl = [self getSupportDirUrl])
-    {
-        NSError *error = nil;
-        if (![[NSFileManager defaultManager] createDirectoryAtURL:supportDirUrl withIntermediateDirectories:YES attributes:nil error:&error])
-        {
-            NSLog(@"ERROR: creating support directory.");
-            return;
-        }
-        
-        supportDirUrl = [supportDirUrl URLByAppendingPathComponent:cSESSION_FILE_NAME];
-        ZXSpectrum::Snap sessionSnapshot = _machine->snapshotCreateZ80();
-        NSData *data = [NSData dataWithBytes:sessionSnapshot.data length:sessionSnapshot.length];
-        [data writeToURL:supportDirUrl atomically:YES];
     }
 }
 
