@@ -102,10 +102,14 @@ const int cSCREEN_FILL = 1;
             {
                 _machine->generateFrame();
                 
-                if ([NSApp occlusionState] & NSApplicationOcclusionStateVisible)
-                {
-                    [_metalRenderer updateTextureData:_machine->getScreenBuffer()];
-                }
+                // No point in updating the screen if the screen isn't visible. Also needed to stop the app from stalling when
+                // brought to the front
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (self.view.window.occlusionState & NSApplicationOcclusionStateVisible)
+                    {
+                        [_metalRenderer updateTextureData:_machine->getScreenBuffer()];
+                    }
+                });
             }
             _audioQueue->write(_machine->audioBuffer, b);
         }
