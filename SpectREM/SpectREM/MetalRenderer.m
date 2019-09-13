@@ -119,8 +119,8 @@ static const Vertex quadVertices[] =
         _defaults = [Defaults defaults];
 #endif
         mtkView.paused = YES;
+        mtkView.enableSetNeedsDisplay = NO;
         _device = mtkView.device;
-        
         _view = mtkView;
 
         _inFlightSemaphore = dispatch_semaphore_create(cMAX_BUFFERS_IN_FLIGHT);
@@ -219,12 +219,9 @@ static const Vertex quadVertices[] =
 
 - (void)updateTextureData:(const void *)displayBuffer
 {
+    
     [_displayTexture replaceRegion:textureRegion mipmapLevel:0 withBytes:displayBuffer bytesPerRow:cDISPLAY_WIDTH];
-
-    // Not placing this draw request on the main queue can cause the drawable area to not keep up with window resizing
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self->_view draw];
-    });
+    [self->_view draw];
 }
 
 - (void)mtkView:(nonnull MTKView *)view drawableSizeWillChange:(CGSize)size {
@@ -238,114 +235,117 @@ static const Vertex quadVertices[] =
 
 - (void)drawInMTKView:(nonnull MTKView *)view {
     
-    // Wait to ensure only MaxBuffersInFlight number of frames are getting proccessed
-    //   by any stage in the Metal pipeline (App, Metal, Drivers, GPU, etc)
-    dispatch_semaphore_wait(_inFlightSemaphore, DISPATCH_TIME_FOREVER);
-    
-    // Iterate through our Metal buffers, and cycle back to the first when we've written to MaxBuffersInFlight
-    _currentBuffer = (_currentBuffer + 1) % cMAX_BUFFERS_IN_FLIGHT;
+    @autoreleasepool {
+        
+        // Wait to ensure only MaxBuffersInFlight number of frames are getting proccessed
+        //   by any stage in the Metal pipeline (App, Metal, Drivers, GPU, etc)
+        dispatch_semaphore_wait(_inFlightSemaphore, DISPATCH_TIME_FOREVER);
+        
+        // Iterate through our Metal buffers, and cycle back to the first when we've written to MaxBuffersInFlight
+        _currentBuffer = (_currentBuffer + 1) % cMAX_BUFFERS_IN_FLIGHT;
 
-    // Create a new command buffer for each render pass to the current drawable
-    id<MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
-    commandBuffer.label = @"RENDER COMMANDS";
-    
-    // Add completion handler which signals _inFlightSemaphore when Metal and the GPU has fully
-    //   finished processing the commands we're encoding this frame.  This indicates when the
-    //   dynamic buffers filled with our vertices, that we're writing to this frame, will no longer
-    //   be needed by Metal and the GPU, meaning we can overwrite the buffer contents without
-    //   corrupting the rendering.
-    __block dispatch_semaphore_t block_sema = _inFlightSemaphore;
-    [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> buffer)
-     {
-         dispatch_semaphore_signal(block_sema);
-     }];
-    
-    // CLUT Pass
-    if (_clutPassDescriptor != nil)
-    {
-        id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:_clutPassDescriptor];
-        renderEncoder.label = @"CLUT RENDERER";
-        [renderEncoder setViewport:_emulatorViewport];
-        [renderEncoder setRenderPipelineState:_clutPipelineState];
-        [renderEncoder setVertexBuffer:_vertexBuffers[_currentBuffer]
-                                offset:0
-                               atIndex:VertexInputIndexVertices];
-        [renderEncoder setFragmentTexture:_displayTexture
-                                  atIndex:TextureIndexPackedDisplay];
-        [renderEncoder setFragmentTexture:_clutTexture
-                                  atIndex:TextureIndexCLUT];
-        [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle
-                          vertexStart:0
-                          vertexCount:_numVertices];
-        [renderEncoder endEncoding];
+        // Create a new command buffer for each render pass to the current drawable
+        id<MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
+        commandBuffer.label = @"RENDER COMMANDS";
+        
+        // Add completion handler which signals _inFlightSemaphore when Metal and the GPU has fully
+        //   finished processing the commands we're encoding this frame.  This indicates when the
+        //   dynamic buffers filled with our vertices, that we're writing to this frame, will no longer
+        //   be needed by Metal and the GPU, meaning we can overwrite the buffer contents without
+        //   corrupting the rendering.
+        __block dispatch_semaphore_t block_sema = _inFlightSemaphore;
+        [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> buffer)
+         {
+             dispatch_semaphore_signal(block_sema);
+         }];
+        
+        // CLUT Pass
+        if (_clutPassDescriptor != nil)
+        {
+            id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:_clutPassDescriptor];
+            renderEncoder.label = @"CLUT RENDERER";
+            [renderEncoder setViewport:_emulatorViewport];
+            [renderEncoder setRenderPipelineState:_clutPipelineState];
+            [renderEncoder setVertexBuffer:_vertexBuffers[_currentBuffer]
+                                    offset:0
+                                   atIndex:VertexInputIndexVertices];
+            [renderEncoder setFragmentTexture:_displayTexture
+                                      atIndex:TextureIndexPackedDisplay];
+            [renderEncoder setFragmentTexture:_clutTexture
+                                      atIndex:TextureIndexCLUT];
+            [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle
+                              vertexStart:0
+                              vertexCount:_numVertices];
+            [renderEncoder endEncoding];
+        }
+        
+        // Effects Pass
+        if(_effectsPassDescriptor != nil)
+        {
+            // When rendering the effects, the output should be to the current drawable texture so that it will appear
+            // on screen
+            _effectsPassDescriptor.colorAttachments[0].texture = view.currentDrawable.texture;
+
+            id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:_effectsPassDescriptor];
+            renderEncoder.label = @"EFFECTS RENDERER";
+            [renderEncoder setViewport:_windowViewport];
+            [renderEncoder setRenderPipelineState:_effectsPipelineState];
+            [renderEncoder setVertexBuffer:_vertexBuffers[_currentBuffer]
+                                    offset:0
+                                   atIndex:VertexInputIndexVertices];
+            [renderEncoder setFragmentTexture:_effectsTexture
+                                      atIndex:0];
+            
+    #if !TARGET_OS_IPHONE
+            _uniforms.displayPixelFilterValue = _defaults.displayPixelFilterValue;
+            _uniforms.displayBorderSize = _defaults.displayBorderSize;
+            _uniforms.displayCurvature = _defaults.displayCurvature;
+            _uniforms.displayContrast = _defaults.displayContrast;
+            _uniforms.displayBrightness = _defaults.displayBrightness;
+            _uniforms.displaySaturation = _defaults.displaySaturation;
+            _uniforms.displayScanlineSize = _defaults.displayScanLineSize;
+            _uniforms.displayScanlines = _defaults.displayScanLines;
+            _uniforms.displayRGBOffset = _defaults.displayRGBOffset;
+            _uniforms.displayHorizontalSync = _defaults.displayHorizontalSync;
+            _uniforms.displayShowReflection = _defaults.displayShowReflection;
+            _uniforms.displayShowVignette = _defaults.displayShowVignette;
+            _uniforms.displayVignetteX = _defaults.displayVignetteX;
+            _uniforms.displayVignetteY = _defaults.displayVignetteY;
+    #else
+            _uniforms.displayPixelFilterValue = 0.5;
+            _uniforms.displayBorderSize = 32;
+            _uniforms.displayCurvature = 0;
+            _uniforms.displayContrast = 0.75;
+            _uniforms.displayBrightness = 1.0;
+            _uniforms.displaySaturation = 1.0;
+            _uniforms.displayScanlineSize = 960;
+            _uniforms.displayScanlines = 0.0;
+            _uniforms.displayRGBOffset = 0.0;
+            _uniforms.displayHorizontalSync = 0;
+            _uniforms.displayShowReflection = NO;
+            _uniforms.displayShowVignette = NO;
+            _uniforms.displayVignetteX = 0.31;
+            _uniforms.displayVignetteY = 6.53;
+    #endif
+            _uniforms.time += 1;
+
+            [renderEncoder setFragmentBytes:&_uniforms
+                                     length:sizeof(_uniforms)
+                                    atIndex:0];
+
+            [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle
+                              vertexStart:0
+                              vertexCount:_numVertices];
+            
+            [renderEncoder endEncoding];
+            
+            // Schedule a present once the framebuffer is complete using the current drawable
+            [commandBuffer presentDrawable:view.currentDrawable];
+        }
+        
+        // Finalize rendering here & push the command buffer to the GPU
+        [commandBuffer commit];
     }
-    
-    // Effects Pass
-    if(_effectsPassDescriptor != nil)
-    {
-        // When rendering the effects, the output should be to the current drawable texture so that it will appear
-        // on screen
-        _effectsPassDescriptor.colorAttachments[0].texture = view.currentDrawable.texture;
-
-        id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:_effectsPassDescriptor];
-        renderEncoder.label = @"EFFECTS RENDERER";
-        [renderEncoder setViewport:_windowViewport];
-        [renderEncoder setRenderPipelineState:_effectsPipelineState];
-        [renderEncoder setVertexBuffer:_vertexBuffers[_currentBuffer]
-                                offset:0
-                               atIndex:VertexInputIndexVertices];
-        [renderEncoder setFragmentTexture:_effectsTexture
-                                  atIndex:0];
-        
-#if !TARGET_OS_IPHONE
-        _uniforms.displayPixelFilterValue = _defaults.displayPixelFilterValue;
-        _uniforms.displayBorderSize = _defaults.displayBorderSize;
-        _uniforms.displayCurvature = _defaults.displayCurvature;
-        _uniforms.displayContrast = _defaults.displayContrast;
-        _uniforms.displayBrightness = _defaults.displayBrightness;
-        _uniforms.displaySaturation = _defaults.displaySaturation;
-        _uniforms.displayScanlineSize = _defaults.displayScanLineSize;
-        _uniforms.displayScanlines = _defaults.displayScanLines;
-        _uniforms.displayRGBOffset = _defaults.displayRGBOffset;
-        _uniforms.displayHorizontalSync = _defaults.displayHorizontalSync;
-        _uniforms.displayShowReflection = _defaults.displayShowReflection;
-        _uniforms.displayShowVignette = _defaults.displayShowVignette;
-        _uniforms.displayVignetteX = _defaults.displayVignetteX;
-        _uniforms.displayVignetteY = _defaults.displayVignetteY;
-#else
-        _uniforms.displayPixelFilterValue = 0.5;
-        _uniforms.displayBorderSize = 32;
-        _uniforms.displayCurvature = 0;
-        _uniforms.displayContrast = 0.75;
-        _uniforms.displayBrightness = 1.0;
-        _uniforms.displaySaturation = 1.0;
-        _uniforms.displayScanlineSize = 960;
-        _uniforms.displayScanlines = 0.0;
-        _uniforms.displayRGBOffset = 0.0;
-        _uniforms.displayHorizontalSync = 0;
-        _uniforms.displayShowReflection = NO;
-        _uniforms.displayShowVignette = NO;
-        _uniforms.displayVignetteX = 0.31;
-        _uniforms.displayVignetteY = 6.53;
-#endif
-        _uniforms.time += 1;
-
-        [renderEncoder setFragmentBytes:&_uniforms
-                                 length:sizeof(_uniforms)
-                                atIndex:0];
-
-        [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle
-                          vertexStart:0
-                          vertexCount:_numVertices];
-        
-        [renderEncoder endEncoding];
-        
-        // Schedule a present once the framebuffer is complete using the current drawable
-        [commandBuffer presentDrawable:view.currentDrawable];
-    }
-    
-    // Finalize rendering here & push the command buffer to the GPU
-    [commandBuffer commit];
 }
 
 @end
