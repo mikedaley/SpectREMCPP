@@ -133,6 +133,8 @@ const int cSCREEN_FILL = 1;
 
     [self restoreSession];
     
+//    _machine->snapshotSNALoadWithPath("/Users/michaeldaley/manic.sna");
+    
     if (_defaults.machineAcceleration > 1)
     {
         [self setupAccelerationTimer];
