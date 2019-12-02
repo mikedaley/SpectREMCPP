@@ -1,0 +1,3 @@
+[submodule "SpectREM/Frameworks/ORSSerialPort"]
+	path = SpectREM/Frameworks/ORSSerialPort
+	url = https://github.com/armadsen/ORSSerialPort.git
