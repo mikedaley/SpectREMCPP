@@ -29,6 +29,7 @@
 // Sends the supplied snapshot data to the current serial port
 - (void)sendSnapshot:(unsigned char *)snapshot;
 
+- (void)sendSmartlinkAction:(uint16_t) action;
 @end
 
 

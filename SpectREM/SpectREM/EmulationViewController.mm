@@ -314,7 +314,7 @@ const int cSCREEN_FILL = 1;
 
 - (IBAction)smartlinkSend:(id)sender
 {
-    cout << _smartLink.serialPort.path.UTF8String << endl;
+    [_smartLink sendSmartlinkAction:0x01];
 }
 
 #pragma mark - Apply defaults

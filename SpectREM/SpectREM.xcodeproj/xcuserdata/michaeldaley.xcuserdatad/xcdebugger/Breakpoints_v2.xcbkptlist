@@ -14,8 +14,8 @@
             filePath = "SpectREM/EmulationViewController.mm"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "317"
-            endingLineNumber = "317"
+            startingLineNumber = "318"
+            endingLineNumber = "318"
             landmarkName = "-smartlinkSend:"
             landmarkType = "7">
          </BreakpointContent>
