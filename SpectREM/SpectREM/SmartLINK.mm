@@ -62,8 +62,8 @@ constexpr uint8_t crc7_table[256] =
 
 
 int const cSERIAL_BAUD_RATE = 115200;
-int const cSERIAL_TIMEOUT = 3;
-int const cSERIAL_BLOCK_SIZE = 8000;
+int const cSERIAL_TIMEOUT = 5;
+int const cSERIAL_BLOCK_SIZE = 9000;
 
 //int const cSNAPSHOT_HEADER_LENGTH = 27;
 //int const cSNAPSHOT_DATA_SIZE = 49152;
@@ -224,7 +224,7 @@ static char snapshotBuffer[cSERIAL_BLOCK_SIZE + cCOMMAND_HEADER_SIZE];
     
 }
 
-- (uint8_t)crc7:(const char *)packet length:(size_t)packet_len
+- (uint8_t)crc7:(const uint8_t *)packet length:(size_t)packet_len
 {
     uint8_t crc = 0;
     for (size_t i=0;  i < packet_len; i++)
@@ -237,12 +237,13 @@ static char snapshotBuffer[cSERIAL_BLOCK_SIZE + cCOMMAND_HEADER_SIZE];
 
 - (void)sendSmartlinkAction:(uint16_t) action
 {
-    snapshotBuffer[0] = 'S';
-    snapshotBuffer[1] = 'L';
-    snapshotBuffer[2] = action;
-    snapshotBuffer[3] = ((action >> 8) | 0x80);
-    snapshotBuffer[4] = [self crc7:snapshotBuffer length:5];
-    [self sendData:[NSData dataWithBytes:snapshotBuffer length:5] expectedResponse:nil responseLength:1];
+    uint8_t buffer[4];
+    buffer[0] = 0x9f;
+    buffer[1] = action;
+    buffer[2] = ((action >> 8) | 0x80);
+    buffer[3] = [self crc7:buffer length:3];
+    [self sendData:[NSData dataWithBytes:buffer length:4] expectedResponse:nil responseLength:0];
+//    [self.serialPort sendData:[NSData dataWithBytes:buffer length:4]];
 }
 
 - (void)sendBlockWithCommand:(uint8_t)command location:(uint16_t)location length:(uint16_t)length data:(unsigned char *)data expectedResponse:(ORSSerialPacketDescriptor *)expectedResponse

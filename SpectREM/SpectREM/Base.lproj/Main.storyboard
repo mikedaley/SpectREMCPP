@@ -863,9 +863,9 @@
                                                 </menu>
                                             </popUpButtonCell>
                                             <connections>
+                                                <binding destination="AHt-Sz-7wU" name="selectedObject" keyPath="serialPort" previousBinding="6zT-lR-wfm" id="RVw-9B-AEe"/>
                                                 <binding destination="AHt-Sz-7wU" name="content" keyPath="serialPortManager.availablePorts" id="XhT-Cr-2Va"/>
                                                 <binding destination="AHt-Sz-7wU" name="contentValues" keyPath="serialPortManager.availablePorts.name" previousBinding="XhT-Cr-2Va" id="6zT-lR-wfm"/>
-                                                <binding destination="AHt-Sz-7wU" name="selectedObject" keyPath="serialPort" previousBinding="6zT-lR-wfm" id="RVw-9B-AEe"/>
                                             </connections>
                                         </popUpButton>
                                     </subviews>
