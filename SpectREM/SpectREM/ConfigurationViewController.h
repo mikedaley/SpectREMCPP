@@ -9,6 +9,10 @@
 #import <Cocoa/Cocoa.h>
 #import "Defaults.h"
 
+@class ORSSerialPortManager;
+@class ORSSerialPort;
+
+
 #pragma mark - Key Path Constants
 
 #pragma mark - Interface
@@ -16,5 +20,8 @@
 @interface ConfigurationViewController : NSViewController
 
 @property (strong) Defaults *defaults;
+@property (nonatomic, readonly) ORSSerialPortManager *serialPortManager;
+@property (nonatomic, strong) ORSSerialPort *serialPort;
+@property (nonatomic, weak) IBOutlet NSButton *sendSnapshot;
 
 @end

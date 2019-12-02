@@ -7,6 +7,8 @@
 //
 
 #import "ConfigurationViewController.h"
+#import "ORSSerial/ORSSerial.h"
+
 
 #pragma mark - Key Path Constants
 
@@ -58,6 +60,16 @@
     NSScanner *scanner = [NSScanner scannerWithString:hexString];
     [scanner scanHexInt:&result];
     _defaults.spiPort = result;
+}
+
+- (ORSSerialPortManager *)serialPortManager
+{
+    return [ORSSerialPortManager sharedSerialPortManager];
+}
+
+- (void)setSendSnapshot:(NSButton *)sendSnapshot
+{
+    
 }
 
 @end

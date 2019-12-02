@@ -17,6 +17,8 @@
 #import "Debug.hpp"
 
 #import "AudioCore.h"
+#import "SmartLINK.h"
+#import "ORSSerial/ORSSerial.h"
 
 #import "ConfigurationViewController.h"
 #import "ExportAccessoryViewController.h"
@@ -47,6 +49,7 @@ const int cSCREEN_FILL = 1;
     Tape                            *_tape;
     NSString                        *_mainBundlePath;
     bool                            _configViewVisible;
+    NSURL                           *_lastOpenedURL;
     
     AudioQueue                      *_audioQueue;
     DebugOpCallbackBlock            _debugBlock;
@@ -64,6 +67,8 @@ const int cSCREEN_FILL = 1;
     
     MTKView                         *_metalView;
     MetalRenderer                   *_metalRenderer;
+    
+    SmartLINK                       *_smartLink;
 }
 @end
 
@@ -142,6 +147,13 @@ const int cSCREEN_FILL = 1;
 - (void)updateDisplay
 {
     [_metalRenderer updateTextureData:_machine->displayBuffer];
+//    if (_debugger && _debugViewController) {
+//        if (!_debugViewController.view.isHidden) {
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                [_debugViewController updateViewDetails];
+//            });
+//        }
+//    }
 }
 
 #pragma mark - View Methods
@@ -176,6 +188,9 @@ const int cSCREEN_FILL = 1;
     _mainBundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/Contents/Resources/"];
     _storyBoard = [NSStoryboard storyboardWithName:@"Main" bundle:nil];
     
+    _smartLink = [[SmartLINK alloc] init];
+
+    
     // The AudioCore uses the sound buffer to identify when a new frame should be drawn for accurate timing. The AudioQueue
     // is used to help measure usage of the audio buffer
     _audioQueue = new AudioQueue();
@@ -189,13 +204,12 @@ const int cSCREEN_FILL = 1;
     [self setupControllers];
     [self setupObservers];
     [self setupNotifications];
+    [self setupBindings];
     
     [self initMachineWithRomPath:_mainBundlePath machineType:(int)_defaults.machineSelectedModel];
     
     [self restoreSession];
-    
-//    _machine->snapshotSNALoadWithPath("/Users/michaeldaley/manic.sna");
-    
+        
     if (_defaults.machineAcceleration > 1)
     {
         [self setupAccelerationTimer];
@@ -232,6 +246,7 @@ const int cSCREEN_FILL = 1;
 
 - (void)setupNotifications
 {
+    [_smartLink bind:@"serialPort" toObject:_configViewController withKeyPath:@"serialPort" options:nil];
 
 }
 
@@ -295,6 +310,13 @@ const int cSCREEN_FILL = 1;
     }
 }
 
+#pragma mark - SmartLINK
+
+- (IBAction)smartlinkSend:(id)sender
+{
+    cout << _smartLink.serialPort.path.UTF8String << endl;
+}
+
 #pragma mark - Apply defaults
 
 - (void)applyDefaults
@@ -330,6 +352,11 @@ const int cSCREEN_FILL = 1;
     _debugWindowController = [_storyBoard instantiateControllerWithIdentifier:@"DEBUG_WINDOW"];
     _debugViewController = (DebugViewController *)_debugWindowController.contentViewController;
     _debugViewController.emulationViewController = self;
+}
+
+- (void)setupBindings
+{
+    [_smartLink bind:@"serialPort" toObject:_configViewController withKeyPath:@"serialPort" options:nil];
 }
 
 #pragma mark - Init/Switch Machine
@@ -398,7 +425,7 @@ const int cSCREEN_FILL = 1;
 
 - (void)keyDown:(NSEvent *)event
 {
-    if (!event.isARepeat && !(event.modifierFlags & NSEventModifierFlagCommand))
+    if (!event.isARepeat && !(event.modifierFlags & NSEventModifierFlagCommand) && event.keyCode != 96)
     {
         _machine->keyboardKeyDown(event.keyCode);
     }
@@ -406,6 +433,12 @@ const int cSCREEN_FILL = 1;
 
 - (void)keyUp:(NSEvent *)event
 {
+    if (event.keyCode == 96)
+    {
+        [self loadFileWithURL:_lastOpenedURL addToRecent:NO];
+        return;
+    }
+        
     if (!event.isARepeat && !(event.modifierFlags & NSEventModifierFlagCommand))
     {
         _machine->keyboardKeyUp(event.keyCode);
@@ -450,9 +483,13 @@ const int cSCREEN_FILL = 1;
         [[NSNotificationCenter defaultCenter] postNotificationName:@"TAPE_CHANGED_NOTIFICATION" object:NULL];
     }
     
-    if (addToRecent && success)
+    if (success)
     {
-        [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:url];
+        _lastOpenedURL = url;
+        if (addToRecent)
+        {
+            [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:url];
+        }
     }
     
     if (!success)
@@ -473,7 +510,7 @@ const int cSCREEN_FILL = 1;
 {
     if (NSURL *supportDirUrl = [self getSupportDirUrl])
     {
-        // Load the last session file it if exists
+        // Load the last session file if it exists
         supportDirUrl = [supportDirUrl URLByAppendingPathComponent:cSESSION_FILE_NAME];
         if ([[NSFileManager defaultManager] fileExistsAtPath:supportDirUrl.path])
         {
@@ -799,6 +836,11 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 - (void *)getDebugger
 {
     return _debugger;
+}
+
+- (BOOL)isEmulatorPaused
+{
+    return _machine->emuPaused;
 }
 
 @end

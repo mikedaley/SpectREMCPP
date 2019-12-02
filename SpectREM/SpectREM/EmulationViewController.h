@@ -39,11 +39,11 @@ enum
 - (BOOL)getDisplayReady;
 - (void *)getCurrentMachine;
 - (void *)getDebugger;
+- (BOOL)isEmulatorPaused;
 
 - (void)loadFileWithURL:(NSURL *)url addToRecent:(BOOL)addToRecent;
 - (void)audioCallback:(int)inNumberFrames buffer:(int16_t *)buffer;
 
-// Methods used to get informaiton from the current machine for the tape browser
 - (NSInteger)tapeNumberOfblocks;
 - (NSString *)tapeBlockTypeForIndex:(NSInteger)blockIndex;
 - (NSString *)tapeFilenameForIndex:(NSInteger)blockIndex;
@@ -53,6 +53,7 @@ enum
 - (NSInteger)tapeCurrentBlock;
 - (BOOL)tapeIsplaying;
 - (void)tapeSetCurrentBlock:(NSInteger)blockIndex;
+
 - (void)pauseMachine;
 - (void)startMachine;
 - (void)updateDisplay;
