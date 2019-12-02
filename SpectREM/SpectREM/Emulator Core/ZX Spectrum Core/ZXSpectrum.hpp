@@ -161,7 +161,6 @@ protected:
     void                    displayUpdateWithTs(int32_t tStates);
 
     void                    ULAApplyIOContention(uint16_t address, bool contended);
-    void                    ULABuildFloatingBusTable();
     uint8_t                 ULAFloatingBus();
 
     void                    audioAYSetRegister(uint8_t reg);
@@ -176,7 +175,7 @@ private:
     void                    displayBuildTsTable();
     void                    displayBuildLineAddressTable();
     void                    displayBuildCLUT();
-    void                    ULABuildContentionTable();
+    void                    ulaBuildContentionTable();
     void                    audioBuildAYVolumesTable();
     void                    keyboardCheckCapsLockStatus();
     void                    keyboardMapReset();

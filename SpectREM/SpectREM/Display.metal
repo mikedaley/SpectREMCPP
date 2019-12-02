@@ -33,7 +33,7 @@ vector_float2 radialDistortion(vector_float2 pos, float distortion)
 }
 
 vector_float3 scanline(float2 texCoord, float3 fragColor, float time, float amount, float size) {
-    const float scale = 0.0007;
+    const float scale = 0.0008;
     const float amt = amount;// intensity of effect
     const float spd = -0.03;//speed of scrolling rows transposed per second
     fragColor.rgb -= sin( (texCoord.y / scale - (time * spd * 6.28) ) ) * amt;
@@ -73,7 +73,7 @@ vector_float4 channelSplit(texture2d<float>image, sampler tex, vector_float2 coo
  **/
 vertex RasterizerData vertexShader(uint vertexID [[ vertex_id ]],
                                    constant Vertex *vertexArray [[ buffer(VertexInputIndexVertices) ]],
-                                   constant vector_uint2 *viewportSizePointer  [[ buffer(VertexInputIndexViewportSize) ]])
+                                   constant vector_uint2 *viewportSizePointer [[ buffer(VertexInputIndexViewportSize) ]])
 {
     RasterizerData out;
     float2 pixelSpacePosition = vertexArray[vertexID].position.xy;
@@ -92,8 +92,8 @@ vertex RasterizerData vertexShader(uint vertexID [[ vertex_id ]],
  lookup texture
  **/
 fragment vector_float4 clutShader( RasterizerData in [[stage_in]],
-                           texture2d<half> colorTexture [[ texture(TextureIndexPackedDisplay) ]],
-                           texture1d<float> clutTexture [[ texture(TextureIndexCLUT) ]])
+                                  texture2d<half> colorTexture [[ texture(TextureIndexPackedDisplay) ]],
+                                  texture1d<float> clutTexture [[ texture(TextureIndexCLUT) ]])
 {
     constexpr sampler textureSampler (mag_filter::nearest,
                                       min_filter::nearest);
@@ -110,8 +110,8 @@ fragment vector_float4 clutShader( RasterizerData in [[stage_in]],
  then displayed on screen
  **/
 fragment vector_float4 effectsShader(RasterizerData in [[stage_in]],
-                              texture2d<float> colorTexture [[ texture(0) ]],
-                              constant Uniforms & uniforms [[buffer(0) ]])
+                                     texture2d<float> colorTexture [[ texture(0) ]],
+                                     constant Uniforms & uniforms [[buffer(0) ]])
 {
     constexpr sampler textureSampler (mag_filter::linear,
                                       min_filter::linear);
@@ -162,8 +162,9 @@ fragment vector_float4 effectsShader(RasterizerData in [[stage_in]],
 //        float scanline = sin(scanTexCoord.y * uniforms.displayScanlineSize) * 0.09 * uniforms.displayScanlines;
 //        fragColor.rgb -= scanline;
         
-        fragColor.rgb = scanline(scanTexCoord.xy, fragColor.rgb, uniforms.time, uniforms.displayScanlines, uniforms.displayScanlineSize);
-        
+//        fragColor.rgb = scanline(scanTexCoord.xy, fragColor.rgb, uniforms.time, uniforms.displayScanlines, uniforms.displayScanlineSize);
+        fragColor.rgb = scanline(scanTexCoord.xy, fragColor.rgb, 0, uniforms.displayScanlines, uniforms.displayScanlineSize);
+
         // Add the vignette which adds a shadow and curving to the corners of the screen. Do this after applying the scan lines so
         // they are faded out into the shadow as well
         if (uniforms.displayShowVignette)

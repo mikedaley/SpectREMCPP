@@ -101,7 +101,7 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.effectView.material = NSVisualEffectMaterialUltraDark;
+//    self.effectView.material = NSVisualEffectMaterialUltraDark;
 //    self.disassemblyTableview.enclosingScrollView.wantsLayer = YES;
 //    self.disassemblyTableview.enclosingScrollView.layer.cornerRadius = 6;
 //    self.stackTable.enclosingScrollView.wantsLayer = YES;
@@ -120,7 +120,10 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
 
 - (void)viewWillAppear
 {
-    [[NSNotificationCenter defaultCenter] addObserverForName:NSViewFrameDidChangeNotification object:self.memoryTableView.enclosingScrollView queue:NULL usingBlock:^(NSNotification * _Nonnull note) {
+    [[NSNotificationCenter defaultCenter] addObserverForName:NSViewFrameDidChangeNotification
+                                                      object:self.memoryTableView.enclosingScrollView
+                                                       queue:NULL
+                                                  usingBlock:^(NSNotification * _Nonnull note) {
         [self updateMemoryTableSize];
     }];
 
@@ -138,6 +141,7 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
     [self updateMemoryTable];
     [self.emulationViewController updateDisplay];
     [self updateMemoryTableSize];
+    [self updateButtonStates];
 }
 
 #pragma mark - Table View Methods
@@ -542,6 +546,7 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
 - (IBAction)startMachine:(id)sender
 {
     [self.emulationViewController startMachine];
+    [self updateButtonStates];
 }
 
 - (IBAction)pauseMachine:(id)sender
@@ -549,8 +554,23 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
     [self.emulationViewController pauseMachine];
     [self updateViewDetails];
     [self updateDisassemblyTable];
+    [self updateButtonStates];
 }
 
+- (void)updateButtonStates
+{
+    self.buttonStep.enabled = NO;
+    if (self.emulationViewController.isEmulatorPaused)
+    {
+        self.buttonStep.enabled = YES;
+    }
+    
+    self.buttonBreak.enabled = NO;
+    if (!self.emulationViewController.isEmulatorPaused)
+    {
+        self.buttonBreak.enabled = YES;
+    }
+}
 #pragma mark - Parse Commands
 
 - (void)controlTextDidEndEditing:(NSNotification *)obj

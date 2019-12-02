@@ -49,27 +49,3 @@ uint8_t ZXSpectrum::ULAFloatingBus()
     
     return 0xff;
 }
-
-#pragma mark - Build Float bus state table
-
-void ZXSpectrum::ULABuildFloatingBusTable()
-{
-    for (uint32_t i = 0; i < machineInfo.tsPerFrame; i++)
-    {
-        ULAFloatingBusTable[ i ] = 0;
-        
-        if (i >= machineInfo.tsToOrigin)
-        {
-            uint32_t line = (i - machineInfo.tsToOrigin) / machineInfo.tsPerLine;
-            uint32_t ts = (i - machineInfo.tsToOrigin) % machineInfo.tsPerLine;
-            
-            if (line < machineInfo.pxVerticalDisplay && ts < 128)
-            {
-                ULAMemoryContentionTable[i] = ULAConentionValues[ ts & 0x07 ];
-                ULAIOContentionTable[i] = ULAConentionValues[ ts & 0x07 ];
-            }
-        }
-    }
-    
-    
-}

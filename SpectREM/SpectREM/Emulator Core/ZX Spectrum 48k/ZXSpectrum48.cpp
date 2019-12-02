@@ -382,6 +382,3 @@ bool ZXSpectrum48::opcodeCallback(unsigned char opcode, unsigned short address, 
 
     return false;
 }
-
-
-

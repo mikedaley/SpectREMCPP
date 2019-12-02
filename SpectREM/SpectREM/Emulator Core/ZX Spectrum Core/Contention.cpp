@@ -20,10 +20,10 @@ const uint32_t ZXSpectrum::ULAConentionValues[] = { 6, 5, 4, 3, 2, 1, 0, 0 };
  
   in 40 - 7F?| Low bit | Contention pattern
  ------------+---------+-------------------
- No    |  Reset  | N:1, C:3
- No    |   Set   | N:4
- Yes   |  Reset  | C:1, C:3
- Yes   |   Set   | C:1, C:1, C:1, C:1
+ No             |  Reset   | N:1, C:3
+ No             |   Set      | N:4
+ Yes            |  Reset   | C:1, C:3
+ Yes            |   Set      | C:1, C:1, C:1, C:1
  **/
 void ZXSpectrum::ULAApplyIOContention(unsigned short address, bool contended)
 {
@@ -63,7 +63,7 @@ void ZXSpectrum::ULAApplyIOContention(unsigned short address, bool contended)
 
 #pragma mark - Build Contention Table
 
-void ZXSpectrum::ULABuildContentionTable()
+void ZXSpectrum::ulaBuildContentionTable()
 {
     for (uint32_t i = 0; i < machineInfo.tsPerFrame; i++)
     {

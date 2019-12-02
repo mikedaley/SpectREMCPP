@@ -58,6 +58,8 @@
 @property (weak) IBOutlet NSTableView *stackTable;
 @property (weak) IBOutlet NSTableView *breakpointTableView;
 @property (strong) IBOutlet NSVisualEffectView *effectView;
+@property (weak) IBOutlet NSButton *buttonStep;
+@property (weak) IBOutlet NSButton *buttonBreak;
 
 #pragma mark - Methods
 

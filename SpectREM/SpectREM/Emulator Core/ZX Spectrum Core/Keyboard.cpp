@@ -19,9 +19,12 @@ typedef enum {
     NSEventModifierFlagHelp               = 1 << 22, // Set if the Help key is pressed.
     NSEventModifierFlagFunction           = 1 << 23, // Set if any function key is pressed.
     
-    // Used to retrieve only the device-independent modifier flags, allowing applications to mask off the device-dependent modifier flags, including event coalescing information.
+    // Used to retrieve only the device-independent modifier flags, allowing applications to mask off the
+    // device-dependent modifier flags, including event coalescing information.
     NSEventModifierFlagDeviceIndependentFlagsMask    = 0xffff0000UL
 } eKeyboardConstants;
+
+const int cMINIMUM_FRAMES_FOR_CAPSLOCK_SET = 2;
 
 #pragma mark - Keyboard
 
@@ -330,7 +333,7 @@ void ZXSpectrum::keyboardCheckCapsLockStatus()
 {
     // The Caps Lock combination needs to be set for minimum 2 frames for it to be registered by the ROM.
     // Once two frames have passed the key combination can be removed from the keyboard map.
-    if (keyboardCapsLockPressed && keyboardCapsLockFrames > 2)
+    if (keyboardCapsLockPressed && keyboardCapsLockFrames > cMINIMUM_FRAMES_FOR_CAPSLOCK_SET)
     {
         keyboardMap[0] |= 0x01;
         keyboardMap[3] |= 0x02;

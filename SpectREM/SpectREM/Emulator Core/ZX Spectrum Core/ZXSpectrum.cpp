@@ -60,9 +60,7 @@ void ZXSpectrum::initialise(string romPath)
     displayBuildLineAddressTable();
     displayBuildTsTable();
     displayBuildCLUT();
-    
-    ULABuildContentionTable();
-
+    ulaBuildContentionTable();
     audioSetup(cSAMPLE_RATE, cFPS);
     audioBuildAYVolumesTable();
     
@@ -90,7 +88,7 @@ void ZXSpectrum::generateFrame()
             }
         }
         
-        int tStates = z80Core.Execute(1, machineInfo.intLength);
+        int tStates = z80Core.Execute(0, machineInfo.intLength);
                 
         if (tape && tape->playing)
         {
@@ -134,7 +132,7 @@ void ZXSpectrum::generateFrame()
 
 void ZXSpectrum::step()
 {
-    int tStates = z80Core.Execute(1, machineInfo.intLength);
+    int tStates = z80Core.Execute(0, machineInfo.intLength);
     
     if (tape && tape->playing)
     {
