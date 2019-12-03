@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
-#import "SmartLINK.h"
+#import "SmartLink.h"
 
 #import "ORSSerial/ORSSerial.h"
 
@@ -50,7 +50,7 @@ constexpr uint8_t crc7_table[256] =
     0x46, 0x4f, 0x54, 0x5d, 0x62, 0x6b, 0x70, 0x79
 };
 
-@interface SmartLINK() <ORSSerialPortDelegate, NSUserNotificationCenterDelegate>
+@interface SmartLink() <ORSSerialPortDelegate, NSUserNotificationCenterDelegate>
 
 @property (strong) ORSSerialPacketDescriptor *sendOkResponse;
 @property (strong) ORSSerialPacketDescriptor *verifyResponse;
@@ -65,42 +65,44 @@ int const cSERIAL_BAUD_RATE = 115200;
 int const cSERIAL_TIMEOUT = 5;
 int const cSERIAL_BLOCK_SIZE = 9000;
 
-//int const cSNAPSHOT_HEADER_LENGTH = 27;
-//int const cSNAPSHOT_DATA_SIZE = 49152;
-//int const cSNAPSHOT_START_ADDRESS = 16384;
+int const cSNAPSHOT_HEADER_LENGTH = 27;
+int const cSNAPSHOT_DATA_SIZE = 49152;
+int const cSNAPSHOT_START_ADDRESS = 16384;
 
-int const cCOMMAND_HEADER_SIZE = 5;
+int const cCOMMAND_HEADER_SIZE = 10;
 
 
 #pragma mark - Static
 
+static uint8_t snapshotBuffer[cSERIAL_BLOCK_SIZE + cCOMMAND_HEADER_SIZE];
 
-static char snapshotBuffer[cSERIAL_BLOCK_SIZE + cCOMMAND_HEADER_SIZE];
+// SL Actions
+static const uint8_t cSMARTLINK_RESET = 0x01;
 
+// SL Target Commands
+static const uint8_t cSEND_SNAPSHOT_REGISTERS = 0xa0;
+static const uint8_t cSEND_SNAPSHOT_DATA = 0xaa;
+static const uint8_t cRUN_SNAPSHOT = 0x80;
+
+// SL Response codes
+static const uint8_t cSendOK = 0xaa;
 
 #pragma mark - Implementation
 
-
-@implementation SmartLINK
+@implementation SmartLink
 
 - (instancetype)init
 {
     self = [super init];
     if (self)
     {
-//        char responseCode[1] = {eSEND_OK};
-//        _sendOkResponse = [[ORSSerialPacketDescriptor alloc] initWithPacketData:[NSData dataWithBytes:responseCode
-//                                                                                                          length:1]
-//                                                                       userInfo:NULL];
-//        responseCode[0] = eVERIFY_RESPONSE;
-//        _verifyResponse = [[ORSSerialPacketDescriptor alloc] initWithPacketData:[NSData dataWithBytes:responseCode
-//                                                                                               length:1]
-//                                                                       userInfo:NULL];
+        uint8_t responseCode[1] = {cSendOK};
+        _sendOkResponse = [[ORSSerialPacketDescriptor alloc] initWithPacketData:[NSData                  dataWithBytes:responseCode length:1]
+                                                                       userInfo:NULL];
 
-
-//        NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-//        [nc addObserver:self selector:@selector(serialPortsWereConnected:) name:ORSSerialPortsWereConnectedNotification object:nil];
-//        [nc addObserver:self selector:@selector(serialPortsWereDisconnected:) name:ORSSerialPortsWereDisconnectedNotification object:nil];
+        NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+        [nc addObserver:self selector:@selector(serialPortsWereConnected:) name:ORSSerialPortsWereConnectedNotification object:nil];
+        [nc addObserver:self selector:@selector(serialPortsWereDisconnected:) name:ORSSerialPortsWereDisconnectedNotification object:nil];
         
         #if (MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_7)
             [[NSUserNotificationCenter defaultUserNotificationCenter] setDelegate:self];
@@ -169,90 +171,94 @@ static char snapshotBuffer[cSERIAL_BLOCK_SIZE + cCOMMAND_HEADER_SIZE];
 
 #pragma mark - SmartLINK
 
+//shared_ptr<vector<uint8_t>> payload(new vector<uint8_t>);
+//payload->push_back('S' + 'L');
+//payload->push_back(length+6);
+//payload->push_back((length+6)>>8);
+//payload->push_back(crc7(payload->data(), payload->size()));
+//payload->push_back(0xfe);
+//payload->push_back(code);
+//payload->push_back(location);
+//payload->push_back(location>>8);
+//payload->push_back(length);
+//payload->push_back(length>>8);
+//return payload;
 
 - (void)sendSnapshot:(unsigned char *)snapshot
 {
-//    int snapshotIndex = 0;
-//    unsigned short spectrumAddress = cSNAPSHOT_START_ADDRESS;
-//
-//    // Reset Retroleum card
-//    [self sendBlockWithCommand:eRETROLEUM_RESET
-//                      location:0
-//                        length:0
-//                          data:snapshot
-//              expectedResponse:self.sendOkResponse];
-//
-//
-//    // Send register data
-//    [self sendBlockWithCommand:eSEND_SNAPSHOT_REGISTERS
-//                      location:snapshotIndex
-//                        length:cSNAPSHOT_HEADER_LENGTH
-//                          data:snapshot
-//              expectedResponse:self.sendOkResponse];
-//
-//    snapshotIndex += cSNAPSHOT_HEADER_LENGTH;
-//
-//    // Send memory data
-//    for (int block = 0; block < (cSNAPSHOT_DATA_SIZE / cSERIAL_BLOCK_SIZE); block++)
-//    {
-//        [self sendBlockWithCommand:eSEND_SNAPSHOT_DATA
-//                          location:spectrumAddress
-//                            length:cSERIAL_BLOCK_SIZE
-//                              data:snapshot + snapshotIndex
-//                  expectedResponse:self.self.sendOkResponse];
-//
-//        snapshotIndex += cSERIAL_BLOCK_SIZE;
-//        spectrumAddress += cSERIAL_BLOCK_SIZE;
-//    }
-//
-//    // Deal with any partial block data left over
-//    if (cSNAPSHOT_DATA_SIZE % cSERIAL_BLOCK_SIZE)
-//    {
-//        [self sendBlockWithCommand:eSEND_SNAPSHOT_DATA
-//                          location:spectrumAddress
-//                            length:cSNAPSHOT_DATA_SIZE % cSERIAL_BLOCK_SIZE
-//                              data:snapshot + snapshotIndex
-//                  expectedResponse:self.sendOkResponse];
-//    }
-//
-//    // Send start game
-//    [self sendBlockWithCommand:eRUN_SNAPSHOT
-//                      location:0
-//                        length:0
-//                          data:snapshot
-//              expectedResponse:self.sendOkResponse];
+    int snapshotIndex = 0;
+    unsigned short spectrumAddress = cSNAPSHOT_START_ADDRESS;
+
+    // Reset Retroleum card
+    [self sendSmartlinkAction:cSMARTLINK_RESET];
+    
+    // Send register data
+    [self sendBlockWithCommand:cSEND_SNAPSHOT_REGISTERS
+                      location:snapshotIndex
+                        length:cSNAPSHOT_HEADER_LENGTH
+                          data:snapshot
+              expectedResponse:self.sendOkResponse];
+
+    snapshotIndex += cSNAPSHOT_HEADER_LENGTH;
+    // Send memory data
+    for (int block = 0; block < (cSNAPSHOT_DATA_SIZE / cSERIAL_BLOCK_SIZE); block++)
+    {
+        [self sendBlockWithCommand:cSEND_SNAPSHOT_DATA
+                          location:spectrumAddress
+                            length:cSERIAL_BLOCK_SIZE
+                              data:snapshot + snapshotIndex
+                  expectedResponse:self.sendOkResponse];
+
+        snapshotIndex += cSERIAL_BLOCK_SIZE;
+        spectrumAddress += cSERIAL_BLOCK_SIZE;
+    }
+
+    // Deal with any partial block data left over
+    if (cSNAPSHOT_DATA_SIZE % cSERIAL_BLOCK_SIZE)
+    {
+        [self sendBlockWithCommand:cSEND_SNAPSHOT_DATA
+                          location:spectrumAddress
+                            length:cSNAPSHOT_DATA_SIZE % cSERIAL_BLOCK_SIZE
+                              data:snapshot + snapshotIndex
+                  expectedResponse:self.sendOkResponse];
+    }
+
+    // Send start game
+    [self sendBlockWithCommand:cRUN_SNAPSHOT
+                      location:0
+                        length:0
+                          data:snapshot
+              expectedResponse:self.sendOkResponse];
     
 }
 
-- (uint8_t)crc7:(const uint8_t *)packet length:(size_t)packet_len
+- (void)sendSmartlinkAction:(uint16_t)action
 {
-    uint8_t crc = 0;
-    for (size_t i=0;  i < packet_len; i++)
-    {
-        crc = crc7_table[(crc << 1) ^ packet[i]];
-    }
-    return ((crc << 1) | 1);
+    snapshotBuffer[0] = 0x9f;
+    snapshotBuffer[1] = action;
+    snapshotBuffer[2] = ((action >> 8) | 0x80);
+    snapshotBuffer[3] = [self crc7:snapshotBuffer length:3];
+    [self sendData:[NSData dataWithBytes:snapshotBuffer length:4] expectedResponse:_sendOkResponse responseLength:1];
 }
 
-
-- (void)sendSmartlinkAction:(uint16_t) action
+- (void)sendBlockWithCommand:(uint8_t)command location:(uint16_t)location length:(uint16_t)length data:(uint8_t *)data expectedResponse:(ORSSerialPacketDescriptor *)expectedResponse
 {
-    uint8_t buffer[4];
-    buffer[0] = 0x9f;
-    buffer[1] = action;
-    buffer[2] = ((action >> 8) | 0x80);
-    buffer[3] = [self crc7:buffer length:3];
-    [self sendData:[NSData dataWithBytes:buffer length:4] expectedResponse:nil responseLength:0];
-//    [self.serialPort sendData:[NSData dataWithBytes:buffer length:4]];
-}
-
-- (void)sendBlockWithCommand:(uint8_t)command location:(uint16_t)location length:(uint16_t)length data:(unsigned char *)data expectedResponse:(ORSSerialPacketDescriptor *)expectedResponse
-{
-    snapshotBuffer[0] = command;
-    snapshotBuffer[1] = location & 255;
-    snapshotBuffer[2] = location >> 8;
-    snapshotBuffer[3] = length & 255;
-    snapshotBuffer[4] = length >> 8;
+    snapshotBuffer[0] = 0x9f;
+    snapshotBuffer[1] = length + 6;
+    snapshotBuffer[2] = ((length + 6) >> 8);
+    snapshotBuffer[3] = [self crc7:snapshotBuffer length:3];
+    snapshotBuffer[4] = 0xfe;
+    snapshotBuffer[5] = command;
+    snapshotBuffer[6] = location;
+    snapshotBuffer[7] = (location >> 8);
+    snapshotBuffer[8] = length;
+    snapshotBuffer[9] = (length >> 8);
+    
+//    snapshotBuffer[0] = command;
+//    snapshotBuffer[1] = location & 255;
+//    snapshotBuffer[2] = location >> 8;
+//    snapshotBuffer[3] = length & 255;
+//    snapshotBuffer[4] = length >> 8;
     
     memcpy(snapshotBuffer + cCOMMAND_HEADER_SIZE, data, length);
     
@@ -361,6 +367,18 @@ static char snapshotBuffer[cSERIAL_BLOCK_SIZE + cCOMMAND_HEADER_SIZE];
             [unc deliverNotification:userNote];
         }
     #endif
+}
+
+#pragma mark - CRC
+
+- (uint8_t)crc7:(const uint8_t *)packet length:(size_t)packet_len
+{
+    uint8_t crc = 0;
+    for (size_t i=0;  i < packet_len; i++)
+    {
+        crc = crc7_table[(crc << 1) ^ packet[i]];
+    }
+    return ((crc << 1) | 1);
 }
 
 @end

@@ -17,7 +17,7 @@
 #import "Debug.hpp"
 
 #import "AudioCore.h"
-#import "SmartLINK.h"
+#import "SmartLink.h"
 #import "ORSSerial/ORSSerial.h"
 
 #import "ConfigurationViewController.h"
@@ -68,7 +68,7 @@ const int cSCREEN_FILL = 1;
     MTKView                         *_metalView;
     MetalRenderer                   *_metalRenderer;
     
-    SmartLINK                       *_smartLink;
+    SmartLink                       *_smartLink;
 }
 @end
 
@@ -188,7 +188,7 @@ const int cSCREEN_FILL = 1;
     _mainBundlePath = [[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/Contents/Resources/"];
     _storyBoard = [NSStoryboard storyboardWithName:@"Main" bundle:nil];
     
-    _smartLink = [[SmartLINK alloc] init];
+    _smartLink = [[SmartLink alloc] init];
 
     
     // The AudioCore uses the sound buffer to identify when a new frame should be drawn for accurate timing. The AudioQueue
@@ -312,9 +312,15 @@ const int cSCREEN_FILL = 1;
 
 #pragma mark - SmartLINK
 
-- (IBAction)smartlinkSend:(id)sender
+- (IBAction)smartlinkReset:(id)sender
 {
     [_smartLink sendSmartlinkAction:0x01];
+}
+
+- (IBAction)smartlinkSendSnapshot:(id)sender
+{
+     ZXSpectrum::Snap snapshot = _machine->snapshotCreateSNA();
+    [_smartLink sendSnapshot:snapshot.data];
 }
 
 #pragma mark - Apply defaults

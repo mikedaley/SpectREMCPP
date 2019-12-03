@@ -339,7 +339,7 @@
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <popUpButtonCell key="cell" type="push" title="ZX Spectrum 48k" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="vpd-lf-n9b" id="Tsh-4m-IW0">
                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="message" size="11"/>
+                                                <font key="font" metaFont="label" size="11"/>
                                                 <menu key="menu" id="27R-No-c7F">
                                                     <items>
                                                         <menuItem title="ZX Spectrum 48k" state="on" id="vpd-lf-n9b" userLabel="ZX Spectrum 48k"/>
@@ -364,7 +364,7 @@
                                             <rect key="frame" x="18" y="43" width="85" height="14"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Acceleration" id="6Sh-PJ-rA1">
-                                                <font key="font" metaFont="message" size="11"/>
+                                                <font key="font" metaFont="label" size="11"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -373,7 +373,7 @@
                                             <rect key="frame" x="109" y="58" width="16" height="14"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="1x" id="6mF-Q9-0JX">
-                                                <font key="font" metaFont="message" size="11"/>
+                                                <font key="font" metaFont="label" size="11"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -382,7 +382,7 @@
                                             <rect key="frame" x="20" y="21" width="83" height="14"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Insta TAP Load" id="Csh-sC-Nb0">
-                                                <font key="font" metaFont="message" size="11"/>
+                                                <font key="font" metaFont="label" size="11"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -391,7 +391,7 @@
                                             <rect key="frame" x="188" y="58" width="17" height="14"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="5x" id="kIL-58-wLN">
-                                                <font key="font" metaFont="message" size="11"/>
+                                                <font key="font" metaFont="label" size="11"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -401,7 +401,7 @@
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="overlaps" controlSize="small" state="on" inset="2" id="jBN-z7-1as">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                <font key="font" metaFont="message" size="11"/>
+                                                <font key="font" metaFont="label" size="11"/>
                                             </buttonCell>
                                             <connections>
                                                 <binding destination="AHt-Sz-7wU" name="value" keyPath="defaults.machineTapeInstantLoad" id="jGd-bv-w2z"/>
@@ -797,14 +797,14 @@
                                 </view>
                             </box>
                             <box fixedFrame="YES" title="SmartLINK" translatesAutoresizingMaskIntoConstraints="NO" id="e1B-CN-DfJ">
-                                <rect key="frame" x="17" y="40" width="221" height="149"/>
+                                <rect key="frame" x="17" y="16" width="221" height="173"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <view key="contentView" id="bti-KQ-XE6">
-                                    <rect key="frame" x="3" y="3" width="215" height="131"/>
+                                    <rect key="frame" x="3" y="3" width="215" height="155"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JnZ-AC-jUD">
-                                            <rect key="frame" x="108" y="94" width="18" height="20"/>
+                                            <rect key="frame" x="108" y="118" width="18" height="20"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="overlaps" controlSize="small" state="on" inset="2" id="cBU-Xk-dvX">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -812,7 +812,7 @@
                                             </buttonCell>
                                         </button>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mhz-Dt-SYG">
-                                            <rect key="frame" x="25" y="97" width="77" height="14"/>
+                                            <rect key="frame" x="25" y="121" width="77" height="14"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Smartcard On" id="C4t-cw-Ieq">
                                                 <font key="font" metaFont="message" size="11"/>
@@ -821,7 +821,7 @@
                                             </textFieldCell>
                                         </textField>
                                         <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4nz-PN-dbg">
-                                            <rect key="frame" x="108" y="72" width="18" height="20"/>
+                                            <rect key="frame" x="108" y="96" width="18" height="20"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="overlaps" controlSize="small" state="on" inset="2" id="oj1-hd-kuQ">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -829,7 +829,7 @@
                                             </buttonCell>
                                         </button>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4kK-59-Btd">
-                                            <rect key="frame" x="25" y="75" width="77" height="14"/>
+                                            <rect key="frame" x="25" y="99" width="77" height="14"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Input Enabled" id="acr-0h-qYY">
                                                 <font key="font" metaFont="message" size="11"/>
@@ -838,9 +838,9 @@
                                             </textFieldCell>
                                         </textField>
                                         <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3fH-2y-2TW">
-                                            <rect key="frame" x="20" y="13" width="180" height="27"/>
+                                            <rect key="frame" x="20" y="37" width="180" height="27"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <buttonCell key="cell" type="push" title="Send memory snapshot" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="vUo-je-z3t">
+                                            <buttonCell key="cell" type="push" title="Reset Smartcard" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="vUo-je-z3t">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="message" size="11"/>
                                             </buttonCell>
@@ -849,7 +849,7 @@
                                             </connections>
                                         </button>
                                         <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZPL-HB-Djx">
-                                            <rect key="frame" x="22" y="44" width="176" height="22"/>
+                                            <rect key="frame" x="22" y="68" width="176" height="22"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="eim-tR-xS2" id="LnJ-VW-XBC">
                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -868,6 +868,17 @@
                                                 <binding destination="AHt-Sz-7wU" name="contentValues" keyPath="serialPortManager.availablePorts.name" previousBinding="XhT-Cr-2Va" id="6zT-lR-wfm"/>
                                             </connections>
                                         </popUpButton>
+                                        <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iQM-tt-bgc">
+                                            <rect key="frame" x="20" y="9" width="180" height="27"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <buttonCell key="cell" type="push" title="Send Snapshot" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="crV-4o-hsb">
+                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="message" size="11"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="smartlinkSendSnapshot:" target="8WS-NX-rkm" id="m7S-YC-CzO"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                 </view>
                             </box>

@@ -18,7 +18,7 @@
 
 #pragma mark - Interface
 
-@interface SmartLINK : NSObject_Bindings
+@interface SmartLink : NSObject_Bindings
 
 @property (nonatomic, strong) ORSSerialPortManager *serialPortManager;
 @property (nonatomic, strong) ORSSerialPort *serialPort;
@@ -30,6 +30,9 @@
 - (void)sendSnapshot:(unsigned char *)snapshot;
 
 - (void)sendSmartlinkAction:(uint16_t) action;
+- (void)serialPortsWereConnected:(NSNotification *)notification;
+- (void)serialPortsWereDisconnected:(NSNotification *)notification;
+
 @end
 
 
