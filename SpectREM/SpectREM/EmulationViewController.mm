@@ -190,7 +190,6 @@ const int cSCREEN_FILL = 1;
     
     _smartLink = [[SmartLink alloc] init];
 
-    
     // The AudioCore uses the sound buffer to identify when a new frame should be drawn for accurate timing. The AudioQueue
     // is used to help measure usage of the audio buffer
     _audioQueue = new AudioQueue();
@@ -314,13 +313,13 @@ const int cSCREEN_FILL = 1;
 
 - (IBAction)smartlinkReset:(id)sender
 {
-    [_smartLink sendSmartlinkAction:0x01];
+    [_smartLink sendSmartlinkAction:cSMARTLINK_RESET];
 }
 
 - (IBAction)smartlinkSendSnapshot:(id)sender
 {
      ZXSpectrum::Snap snapshot = _machine->snapshotCreateSNA();
-    [_smartLink sendSnapshot:snapshot.data];
+    [_smartLink sendSnapshot:snapshot.data ofType:SnapshotTypeSNA];
 }
 
 #pragma mark - Apply defaults

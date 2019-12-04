@@ -67,9 +67,4 @@
     return [ORSSerialPortManager sharedSerialPortManager];
 }
 
-- (void)sendSnapshot:(NSButton *)sendSnapshot
-{
-    
-}
-
 @end
