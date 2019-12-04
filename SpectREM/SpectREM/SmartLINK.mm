@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
+
 #import "SmartLink.h"
 
 #import "ORSSerial/ORSSerial.h"
@@ -74,20 +75,15 @@ int const cCOMMAND_HEADER_SIZE = 10;
 
 #pragma mark - Static
 
+
 static uint8_t snapshotBuffer[cSERIAL_BLOCK_SIZE + cCOMMAND_HEADER_SIZE];
-
-// SL Actions
-static const uint8_t cSMARTLINK_RESET = 0x01;
-
-// SL Target Commands
-static const uint8_t cSEND_SNAPSHOT_REGISTERS = 0xa0;
-static const uint8_t cSEND_SNAPSHOT_DATA = 0xaa;
-static const uint8_t cRUN_SNAPSHOT = 0x80;
 
 // SL Response codes
 static const uint8_t cSendOK = 0xaa;
 
+
 #pragma mark - Implementation
+
 
 @implementation SmartLink
 
@@ -112,6 +108,7 @@ static const uint8_t cSendOK = 0xaa;
     return self;
 }
 
+
 #pragma mark - Actions
 
 
@@ -134,9 +131,12 @@ static const uint8_t cSendOK = 0xaa;
 - (void)serialPort:(ORSSerialPort *)serialPort didEncounterError:(NSError *)error
 {
     NSLog(@"Serial port %@ encountered an error: %@", self.serialPort, error);
+    self.serialPort = nil;
+    
 }
 
-- (void)serialPort:(ORSSerialPort *)serialPort didReceiveResponse:(NSData *)responseData toRequest:(ORSSerialRequest *)request
+- (void)serialPort:(ORSSerialPort *)serialPort didReceiveResponse:(NSData *)responseData
+         toRequest:(ORSSerialRequest *)request
 {
     NSLog(@"Serial port didReceiveResponse: %@", responseData.description);
 }
@@ -171,21 +171,52 @@ static const uint8_t cSendOK = 0xaa;
 
 #pragma mark - SmartLINK
 
-//shared_ptr<vector<uint8_t>> payload(new vector<uint8_t>);
-//payload->push_back('S' + 'L');
-//payload->push_back(length+6);
-//payload->push_back((length+6)>>8);
-//payload->push_back(crc7(payload->data(), payload->size()));
-//payload->push_back(0xfe);
-//payload->push_back(code);
-//payload->push_back(location);
-//payload->push_back(location>>8);
-//payload->push_back(length);
-//payload->push_back(length>>8);
-//return payload;
 
-- (void)sendSnapshot:(unsigned char *)snapshot
+- (void)sendSnapshot:(unsigned char *)snapshot ofType:(SnapshotType)snapshotType
 {
+    switch (snapshotType) {
+        case SnapshotTypeSNA:
+            [self sendSNASnapshot:snapshot];
+            break;
+            
+        case SnapshotTypeZ80:
+            [self sendZ80Snapshot:snapshot];
+            
+        default:
+            break;
+    }
+}
+
+- (void)sendSmartlinkAction:(uint16_t)action
+{
+    if (!self.serialPort)
+    {
+        return;
+    }
+
+    snapshotBuffer[0] = 0x9f;
+    snapshotBuffer[1] = action;
+    snapshotBuffer[2] = ((action >> 8) | 0x80);
+    snapshotBuffer[3] = [self crc7:snapshotBuffer length:3];
+    [self sendData:[NSData dataWithBytes:snapshotBuffer length:4] expectedResponse:_sendOkResponse responseLength:1];
+}
+
+- (void)sendZ80Snapshot:(unsigned char *)snapshot
+{
+    if (!self.serialPort)
+    {
+        return;
+    }
+
+}
+
+- (void)sendSNASnapshot:(unsigned char *)snapshot
+{
+    if (!self.serialPort)
+    {
+        return;
+    }
+
     int snapshotIndex = 0;
     unsigned short spectrumAddress = cSNAPSHOT_START_ADDRESS;
 
@@ -193,7 +224,7 @@ static const uint8_t cSendOK = 0xaa;
     [self sendSmartlinkAction:cSMARTLINK_RESET];
     
     // Send register data
-    [self sendBlockWithCommand:cSEND_SNAPSHOT_REGISTERS
+    [self sendBlockWithCommand:cCMD_LOAD_REGS
                       location:snapshotIndex
                         length:cSNAPSHOT_HEADER_LENGTH
                           data:snapshot
@@ -203,7 +234,7 @@ static const uint8_t cSendOK = 0xaa;
     // Send memory data
     for (int block = 0; block < (cSNAPSHOT_DATA_SIZE / cSERIAL_BLOCK_SIZE); block++)
     {
-        [self sendBlockWithCommand:cSEND_SNAPSHOT_DATA
+        [self sendBlockWithCommand:cCMD_LOAD_DATA
                           location:spectrumAddress
                             length:cSERIAL_BLOCK_SIZE
                               data:snapshot + snapshotIndex
@@ -216,7 +247,7 @@ static const uint8_t cSendOK = 0xaa;
     // Deal with any partial block data left over
     if (cSNAPSHOT_DATA_SIZE % cSERIAL_BLOCK_SIZE)
     {
-        [self sendBlockWithCommand:cSEND_SNAPSHOT_DATA
+        [self sendBlockWithCommand:cCMD_LOAD_DATA
                           location:spectrumAddress
                             length:cSNAPSHOT_DATA_SIZE % cSERIAL_BLOCK_SIZE
                               data:snapshot + snapshotIndex
@@ -224,42 +255,30 @@ static const uint8_t cSendOK = 0xaa;
     }
 
     // Send start game
-    [self sendBlockWithCommand:cRUN_SNAPSHOT
+    [self sendBlockWithCommand:cCMD_RESTART
                       location:0
                         length:0
                           data:snapshot
               expectedResponse:self.sendOkResponse];
-    
 }
 
-- (void)sendSmartlinkAction:(uint16_t)action
-{
-    snapshotBuffer[0] = 0x9f;
-    snapshotBuffer[1] = action;
-    snapshotBuffer[2] = ((action >> 8) | 0x80);
-    snapshotBuffer[3] = [self crc7:snapshotBuffer length:3];
-    [self sendData:[NSData dataWithBytes:snapshotBuffer length:4] expectedResponse:_sendOkResponse responseLength:1];
-}
-
-- (void)sendBlockWithCommand:(uint8_t)command location:(uint16_t)location length:(uint16_t)length data:(uint8_t *)data expectedResponse:(ORSSerialPacketDescriptor *)expectedResponse
+- (void)sendBlockWithCommand:(uint8_t)command
+                    location:(uint16_t)location
+                      length:(uint16_t)length
+                        data:(uint8_t *)data
+            expectedResponse:(ORSSerialPacketDescriptor *)expectedResponse
 {
     snapshotBuffer[0] = 0x9f;
     snapshotBuffer[1] = length + 6;
     snapshotBuffer[2] = ((length + 6) >> 8);
     snapshotBuffer[3] = [self crc7:snapshotBuffer length:3];
-    snapshotBuffer[4] = 0xfe;
+    snapshotBuffer[4] = cPKT_CMD_START;
     snapshotBuffer[5] = command;
     snapshotBuffer[6] = location;
     snapshotBuffer[7] = (location >> 8);
     snapshotBuffer[8] = length;
     snapshotBuffer[9] = (length >> 8);
-    
-//    snapshotBuffer[0] = command;
-//    snapshotBuffer[1] = location & 255;
-//    snapshotBuffer[2] = location >> 8;
-//    snapshotBuffer[3] = length & 255;
-//    snapshotBuffer[4] = length >> 8;
-    
+        
     memcpy(snapshotBuffer + cCOMMAND_HEADER_SIZE, data, length);
     
     [self sendData:[NSData dataWithBytes:snapshotBuffer length:length + cCOMMAND_HEADER_SIZE]
@@ -267,9 +286,7 @@ static const uint8_t cSendOK = 0xaa;
     responseLength:1];
 }
 
-
 #pragma mark - Properties
-
 
 - (ORSSerialPortManager *)serialPortManager
 {
@@ -369,7 +386,9 @@ static const uint8_t cSendOK = 0xaa;
     #endif
 }
 
+
 #pragma mark - CRC
+
 
 - (uint8_t)crc7:(const uint8_t *)packet length:(size_t)packet_len
 {
@@ -381,4 +400,12 @@ static const uint8_t cSendOK = 0xaa;
     return ((crc << 1) | 1);
 }
 
+
+#pragma mark - Getters
+
+
+- (BOOL)serialPortIsSet
+{
+    return (self.serialPort) ? YES : NO;
+}
 @end
