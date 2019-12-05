@@ -220,11 +220,11 @@ static const uint8_t cSendOK = 0xaa;
     // Reset Retroleum card
     [self sendSmartlinkAction:cSMARTLINK_RESET];
 
-    uint8_t buffer[1] = {0};
+    uint8_t buffer[3] = {0xfe, 0x0, 0x02};
     
     [self sendBlockWithCommand:cCMD_SET_PORTS
-                      location:0x00fe
-                        length:0x0001
+                      location:0
+                        length:3
                           data:buffer
               expectedResponse:self.sendOkResponse];
 
