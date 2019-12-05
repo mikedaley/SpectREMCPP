@@ -66,9 +66,9 @@ int const cSERIAL_BAUD_RATE = 115200;
 int const cSERIAL_TIMEOUT = 5;
 int const cSERIAL_BLOCK_SIZE = 9000;
 
-int const cSNAPSHOT_HEADER_LENGTH = 27;
-int const cSNAPSHOT_DATA_SIZE = 49152;
-int const cSNAPSHOT_START_ADDRESS = 16384;
+//int const cSNAPSHOT_HEADER_LENGTH = 27;
+//int const cSNAPSHOT_DATA_SIZE = 49152;
+//int const cSNAPSHOT_START_ADDRESS = 16384;
 
 int const cCOMMAND_HEADER_SIZE = 10;
 
@@ -217,49 +217,62 @@ static const uint8_t cSendOK = 0xaa;
         return;
     }
 
-    int snapshotIndex = 0;
-    unsigned short spectrumAddress = cSNAPSHOT_START_ADDRESS;
-
     // Reset Retroleum card
     [self sendSmartlinkAction:cSMARTLINK_RESET];
+
+    uint8_t buffer[1] = {0};
     
-    // Send register data
-    [self sendBlockWithCommand:cCMD_LOAD_REGS
-                      location:snapshotIndex
-                        length:cSNAPSHOT_HEADER_LENGTH
-                          data:snapshot
+    [self sendBlockWithCommand:cCMD_SET_PORTS
+                      location:0x00fe
+                        length:0x0001
+                          data:buffer
               expectedResponse:self.sendOkResponse];
 
-    snapshotIndex += cSNAPSHOT_HEADER_LENGTH;
-    // Send memory data
-    for (int block = 0; block < (cSNAPSHOT_DATA_SIZE / cSERIAL_BLOCK_SIZE); block++)
-    {
-        [self sendBlockWithCommand:cCMD_LOAD_DATA
-                          location:spectrumAddress
-                            length:cSERIAL_BLOCK_SIZE
-                              data:snapshot + snapshotIndex
-                  expectedResponse:self.sendOkResponse];
-
-        snapshotIndex += cSERIAL_BLOCK_SIZE;
-        spectrumAddress += cSERIAL_BLOCK_SIZE;
-    }
-
-    // Deal with any partial block data left over
-    if (cSNAPSHOT_DATA_SIZE % cSERIAL_BLOCK_SIZE)
-    {
-        [self sendBlockWithCommand:cCMD_LOAD_DATA
-                          location:spectrumAddress
-                            length:cSNAPSHOT_DATA_SIZE % cSERIAL_BLOCK_SIZE
-                              data:snapshot + snapshotIndex
-                  expectedResponse:self.sendOkResponse];
-    }
-
-    // Send start game
-    [self sendBlockWithCommand:cCMD_RESTART
-                      location:0
-                        length:0
-                          data:snapshot
-              expectedResponse:self.sendOkResponse];
+    return;
+    
+//    int snapshotIndex = 0;
+//    unsigned short spectrumAddress = cSNAPSHOT_START_ADDRESS;
+//
+//    // Reset Retroleum card
+//    [self sendSmartlinkAction:cSMARTLINK_RESET];
+//    
+//    // Send register data
+//    [self sendBlockWithCommand:cCMD_LOAD_REGS
+//                      location:snapshotIndex
+//                        length:cSNAPSHOT_HEADER_LENGTH
+//                          data:snapshot
+//              expectedResponse:self.sendOkResponse];
+//
+//    snapshotIndex += cSNAPSHOT_HEADER_LENGTH;
+//    // Send memory data
+//    for (int block = 0; block < (cSNAPSHOT_DATA_SIZE / cSERIAL_BLOCK_SIZE); block++)
+//    {
+//        [self sendBlockWithCommand:cCMD_LOAD_DATA
+//                          location:spectrumAddress
+//                            length:cSERIAL_BLOCK_SIZE
+//                              data:snapshot + snapshotIndex
+//                  expectedResponse:self.sendOkResponse];
+//
+//        snapshotIndex += cSERIAL_BLOCK_SIZE;
+//        spectrumAddress += cSERIAL_BLOCK_SIZE;
+//    }
+//
+//    // Deal with any partial block data left over
+//    if (cSNAPSHOT_DATA_SIZE % cSERIAL_BLOCK_SIZE)
+//    {
+//        [self sendBlockWithCommand:cCMD_LOAD_DATA
+//                          location:spectrumAddress
+//                            length:cSNAPSHOT_DATA_SIZE % cSERIAL_BLOCK_SIZE
+//                              data:snapshot + snapshotIndex
+//                  expectedResponse:self.sendOkResponse];
+//    }
+//
+//    // Send start game
+//    [self sendBlockWithCommand:cCMD_RESTART
+//                      location:0
+//                        length:0
+//                          data:snapshot
+//              expectedResponse:self.sendOkResponse];
 }
 
 - (void)sendBlockWithCommand:(uint8_t)command
