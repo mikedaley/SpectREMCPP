@@ -19,6 +19,7 @@
 		17C33DFE1F6583A400720A06 /* TapeCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 17C33DFD1F6583A400720A06 /* TapeCellView.m */; };
 		17E6493321EBAA080038C569 /* session.z80 in Resources */ = {isa = PBXBuildFile; fileRef = 17E6493121EBA5C30038C569 /* session.z80 */; };
 		17EC89101F5B1FC500B6EFAF /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17EC890F1F5B1FC500B6EFAF /* AudioToolbox.framework */; };
+		271CB8F02399655400A63D0B /* ORSSerial.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 271CB8EB2399653C00A63D0B /* ORSSerial.framework */; };
 		276ADE292101CAA900EC7DC9 /* Display.metal in Sources */ = {isa = PBXBuildFile; fileRef = 276ADE282101CAA900EC7DC9 /* Display.metal */; };
 		276ADE2D2101CE6500EC7DC9 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 276ADE2C2101CE6500EC7DC9 /* MetalKit.framework */; };
 		276ADE2F21021A2200EC7DC9 /* MetalRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 276ADE2E21021A2200EC7DC9 /* MetalRenderer.m */; };
@@ -72,7 +73,6 @@
 		2968891721E3B98B00BFC3BD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2968891621E3B98B00BFC3BD /* main.m */; };
 		29E984512395314A0033E63C /* SmartLink.mm in Sources */ = {isa = PBXBuildFile; fileRef = 29E984502395314A0033E63C /* SmartLink.mm */; };
 		29E98454239531C00033E63C /* NSObject+Bindings.mm in Sources */ = {isa = PBXBuildFile; fileRef = 29E98453239531C00033E63C /* NSObject+Bindings.mm */; };
-		29E9845E2395341B0033E63C /* ORSSerial.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29E9845B239533AD0033E63C /* ORSSerial.framework */; };
 		ED2A6D051F6036D3003CD6CE /* ConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D041F6036D3003CD6CE /* ConfigurationViewController.m */; };
 		ED2A6D0A1F603D18003CD6CE /* NSClipView+Flipped.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D091F603D18003CD6CE /* NSClipView+Flipped.m */; };
 		ED2A6D101F616C43003CD6CE /* ExportAccessoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D0F1F616C43003CD6CE /* ExportAccessoryViewController.m */; };
@@ -105,23 +105,23 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		29E9845A239533AD0033E63C /* PBXContainerItemProxy */ = {
+		271CB8EA2399653C00A63D0B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 29E98455239533AD0033E63C /* ORSSerialPort.xcodeproj */;
+			containerPortal = 271CB8E52399653C00A63D0B /* ORSSerialPort.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 9DCA89121A2BB106009285EB;
 			remoteInfo = ORSSerial;
 		};
-		29E9845C239533AD0033E63C /* PBXContainerItemProxy */ = {
+		271CB8EC2399653C00A63D0B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 29E98455239533AD0033E63C /* ORSSerialPort.xcodeproj */;
+			containerPortal = 271CB8E52399653C00A63D0B /* ORSSerialPort.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 9D7472131B6D7767002D8B10;
 			remoteInfo = "ORSSerialPort Tests";
 		};
-		29E9845F2395349E0033E63C /* PBXContainerItemProxy */ = {
+		271CB8EE2399654D00A63D0B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 29E98455239533AD0033E63C /* ORSSerialPort.xcodeproj */;
+			containerPortal = 271CB8E52399653C00A63D0B /* ORSSerialPort.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 9DCA89111A2BB106009285EB;
 			remoteInfo = ORSSerial;
@@ -148,6 +148,7 @@
 		17C33DFD1F6583A400720A06 /* TapeCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TapeCellView.m; sourceTree = "<group>"; };
 		17E6493121EBA5C30038C569 /* session.z80 */ = {isa = PBXFileReference; lastKnownFileType = file; path = session.z80; sourceTree = "<group>"; };
 		17EC890F1F5B1FC500B6EFAF /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		271CB8E52399653C00A63D0B /* ORSSerialPort.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ORSSerialPort.xcodeproj; path = "../Frameworks/ORSSerialPort/Framework Project/ORSSerialPort.xcodeproj"; sourceTree = "<group>"; };
 		276ADE242101C64E00EC7DC9 /* MetalRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MetalRenderer.h; sourceTree = "<group>"; };
 		276ADE272101C75B00EC7DC9 /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
 		276ADE282101CAA900EC7DC9 /* Display.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Display.metal; sourceTree = "<group>"; };
@@ -188,7 +189,6 @@
 		29E984502395314A0033E63C /* SmartLink.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SmartLink.mm; sourceTree = "<group>"; };
 		29E98452239531C00033E63C /* NSObject+Bindings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSObject+Bindings.h"; sourceTree = "<group>"; };
 		29E98453239531C00033E63C /* NSObject+Bindings.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSObject+Bindings.mm"; sourceTree = "<group>"; };
-		29E98455239533AD0033E63C /* ORSSerialPort.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ORSSerialPort.xcodeproj; path = "Frameworks/ORSSerialPort/Framework Project/ORSSerialPort.xcodeproj"; sourceTree = "<group>"; };
 		29E984612395350C0033E63C /* SmartLink.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SmartLink.h; sourceTree = "<group>"; };
 		ED2A6D031F6036D3003CD6CE /* ConfigurationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigurationViewController.h; sourceTree = "<group>"; };
 		ED2A6D041F6036D3003CD6CE /* ConfigurationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigurationViewController.m; sourceTree = "<group>"; };
@@ -258,7 +258,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				29E9845E2395341B0033E63C /* ORSSerial.framework in Frameworks */,
+				271CB8F02399655400A63D0B /* ORSSerial.framework in Frameworks */,
 				276ADE2D2101CE6500EC7DC9 /* MetalKit.framework in Frameworks */,
 				276E3F9E1F97AAE800020BB3 /* CoreMedia.framework in Frameworks */,
 				276E3F9C1F97A06B00020BB3 /* AVFoundation.framework in Frameworks */,
@@ -313,6 +313,15 @@
 				EDB7F7FB1F5ED3EF003053E3 /* EmulationWindowController.m */,
 			);
 			name = "Main Window";
+			sourceTree = "<group>";
+		};
+		271CB8E62399653C00A63D0B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				271CB8EB2399653C00A63D0B /* ORSSerial.framework */,
+				271CB8ED2399653C00A63D0B /* ORSSerialPort Tests.xctest */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		276ADE3121021B1700EC7DC9 /* Metal */ = {
@@ -373,15 +382,6 @@
 			path = SpectREMiOS;
 			sourceTree = "<group>";
 		};
-		29E98456239533AD0033E63C /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				29E9845B239533AD0033E63C /* ORSSerial.framework */,
-				29E9845D239533AD0033E63C /* ORSSerialPort Tests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		29E98462239535F60033E63C /* SmartLINK */ = {
 			isa = PBXGroup;
 			children = (
@@ -423,7 +423,7 @@
 		ED913F8C1F30759300316E1A = {
 			isa = PBXGroup;
 			children = (
-				29E98455239533AD0033E63C /* ORSSerialPort.xcodeproj */,
+				271CB8E52399653C00A63D0B /* ORSSerialPort.xcodeproj */,
 				ED913F971F30759300316E1A /* SpectREM */,
 				2968890021E3B98900BFC3BD /* SpectREMiOS */,
 				ED913F961F30759300316E1A /* Products */,
@@ -683,7 +683,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				29E984602395349E0033E63C /* PBXTargetDependency */,
+				271CB8EF2399654D00A63D0B /* PBXTargetDependency */,
 			);
 			name = SpectREM;
 			productName = SpectREM;
@@ -728,8 +728,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 29E98456239533AD0033E63C /* Products */;
-					ProjectRef = 29E98455239533AD0033E63C /* ORSSerialPort.xcodeproj */;
+					ProductGroup = 271CB8E62399653C00A63D0B /* Products */;
+					ProjectRef = 271CB8E52399653C00A63D0B /* ORSSerialPort.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -741,18 +741,18 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		29E9845B239533AD0033E63C /* ORSSerial.framework */ = {
+		271CB8EB2399653C00A63D0B /* ORSSerial.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = ORSSerial.framework;
-			remoteRef = 29E9845A239533AD0033E63C /* PBXContainerItemProxy */;
+			remoteRef = 271CB8EA2399653C00A63D0B /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		29E9845D239533AD0033E63C /* ORSSerialPort Tests.xctest */ = {
+		271CB8ED2399653C00A63D0B /* ORSSerialPort Tests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = "ORSSerialPort Tests.xctest";
-			remoteRef = 29E9845C239533AD0033E63C /* PBXContainerItemProxy */;
+			remoteRef = 271CB8EC2399653C00A63D0B /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -878,10 +878,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		29E984602395349E0033E63C /* PBXTargetDependency */ = {
+		271CB8EF2399654D00A63D0B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = ORSSerial;
-			targetProxy = 29E9845F2395349E0033E63C /* PBXContainerItemProxy */;
+			targetProxy = 271CB8EE2399654D00A63D0B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
