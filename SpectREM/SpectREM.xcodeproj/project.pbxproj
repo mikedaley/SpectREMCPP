@@ -71,7 +71,7 @@
 		2968891121E3B98B00BFC3BD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2968891021E3B98B00BFC3BD /* Assets.xcassets */; };
 		2968891421E3B98B00BFC3BD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2968891221E3B98B00BFC3BD /* LaunchScreen.storyboard */; };
 		2968891721E3B98B00BFC3BD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2968891621E3B98B00BFC3BD /* main.m */; };
-		29E984512395314A0033E63C /* SmartLink.mm in Sources */ = {isa = PBXBuildFile; fileRef = 29E984502395314A0033E63C /* SmartLink.mm */; };
+		299F0824239D5135008C2A70 /* SmartLink.mm in Sources */ = {isa = PBXBuildFile; fileRef = 299F0822239D5135008C2A70 /* SmartLink.mm */; };
 		29E98454239531C00033E63C /* NSObject+Bindings.mm in Sources */ = {isa = PBXBuildFile; fileRef = 29E98453239531C00033E63C /* NSObject+Bindings.mm */; };
 		ED2A6D051F6036D3003CD6CE /* ConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D041F6036D3003CD6CE /* ConfigurationViewController.m */; };
 		ED2A6D0A1F603D18003CD6CE /* NSClipView+Flipped.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D091F603D18003CD6CE /* NSClipView+Flipped.m */; };
@@ -185,11 +185,11 @@
 		2968891321E3B98B00BFC3BD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2968891521E3B98B00BFC3BD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2968891621E3B98B00BFC3BD /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		299F0822239D5135008C2A70 /* SmartLink.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SmartLink.mm; sourceTree = "<group>"; };
+		299F0823239D5135008C2A70 /* SmartLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmartLink.h; sourceTree = "<group>"; };
 		29CE03BD22A7BD64007A1549 /* SpectREM.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SpectREM.entitlements; sourceTree = "<group>"; };
-		29E984502395314A0033E63C /* SmartLink.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SmartLink.mm; sourceTree = "<group>"; };
 		29E98452239531C00033E63C /* NSObject+Bindings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSObject+Bindings.h"; sourceTree = "<group>"; };
 		29E98453239531C00033E63C /* NSObject+Bindings.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSObject+Bindings.mm"; sourceTree = "<group>"; };
-		29E984612395350C0033E63C /* SmartLink.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SmartLink.h; sourceTree = "<group>"; };
 		ED2A6D031F6036D3003CD6CE /* ConfigurationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigurationViewController.h; sourceTree = "<group>"; };
 		ED2A6D041F6036D3003CD6CE /* ConfigurationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigurationViewController.m; sourceTree = "<group>"; };
 		ED2A6D081F603D18003CD6CE /* NSClipView+Flipped.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSClipView+Flipped.h"; sourceTree = "<group>"; };
@@ -382,13 +382,13 @@
 			path = SpectREMiOS;
 			sourceTree = "<group>";
 		};
-		29E98462239535F60033E63C /* SmartLINK */ = {
+		29E98462239535F60033E63C /* SmartLink */ = {
 			isa = PBXGroup;
 			children = (
-				29E984612395350C0033E63C /* SmartLink.h */,
-				29E984502395314A0033E63C /* SmartLink.mm */,
+				299F0823239D5135008C2A70 /* SmartLink.h */,
+				299F0822239D5135008C2A70 /* SmartLink.mm */,
 			);
-			name = SmartLINK;
+			name = SmartLink;
 			sourceTree = "<group>";
 		};
 		ED2A6D061F6036D8003CD6CE /* Configuration */ = {
@@ -448,7 +448,7 @@
 				EDC56FD71F6C226E00162739 /* Defaults */,
 				EDEDE71D1F7556BD00DAC9AE /* User Interface */,
 				17B5DB921F5B146C003E7EF3 /* Audio Core */,
-				29E98462239535F60033E63C /* SmartLINK */,
+				29E98462239535F60033E63C /* SmartLink */,
 				EDEDE7151F75561100DAC9AE /* Emulator Core */,
 				ED2A6D071F603D0F003CD6CE /* Class Extensions */,
 				ED913FB61F30764800316E1A /* Resources */,
@@ -841,12 +841,12 @@
 				17B5DB971F5B14A7003E7EF3 /* AudioCore.mm in Sources */,
 				EDB7F7FE1F5EE2E4003053E3 /* Tape.cpp in Sources */,
 				ED2A6D101F616C43003CD6CE /* ExportAccessoryViewController.m in Sources */,
-				29E984512395314A0033E63C /* SmartLink.mm in Sources */,
 				17B5DB9A1F5B14D3003E7EF3 /* Audio.cpp in Sources */,
 				1745BB631F50876E003203FE /* Contention.cpp in Sources */,
 				ED913FCB1F30781000316E1A /* Z80Core_DDOpcodes.cpp in Sources */,
 				ED913F9D1F30759300316E1A /* main.m in Sources */,
 				ED913FCA1F30781000316E1A /* Z80Core_DDCB_FDCBOpcodes.cpp in Sources */,
+				299F0824239D5135008C2A70 /* SmartLink.mm in Sources */,
 				ED913FCD1F30781000316E1A /* Z80Core_FDOpcodes.cpp in Sources */,
 				EDC56FDA1F6C228700162739 /* Defaults.m in Sources */,
 				ED913FC91F30781000316E1A /* Z80Core_CBOpcodes.cpp in Sources */,
