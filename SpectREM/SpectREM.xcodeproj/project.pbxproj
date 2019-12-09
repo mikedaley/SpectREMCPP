@@ -31,6 +31,7 @@
 		27BAE9A520F4CB68007A8CFB /* Commands.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 27BAE9A420F4CB68007A8CFB /* Commands.rtf */; };
 		27BAE9A820F4CE9C007A8CFB /* InstructionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BAE9A720F4CE9C007A8CFB /* InstructionViewController.m */; };
 		27BAE9AC20F64496007A8CFB /* Debug.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27BAE9AA20F64496007A8CFB /* Debug.cpp */; };
+		27BE4031239E60A7006204BA /* SmartLink.mm in Sources */ = {isa = PBXBuildFile; fileRef = 27BE402F239E60A7006204BA /* SmartLink.mm */; };
 		27C5AE472146F0D3008DBD54 /* InfoPanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C5AE462146F0D3008DBD54 /* InfoPanelViewController.m */; };
 		27C5DBA51FFC000A0064C661 /* DebugViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 27C5DBA41FFC000A0064C661 /* DebugViewController.mm */; };
 		29555BEF21E3C36D004BC007 /* AudioQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17B27F021F6877C800B811FC /* AudioQueue.cpp */; };
@@ -71,7 +72,6 @@
 		2968891121E3B98B00BFC3BD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2968891021E3B98B00BFC3BD /* Assets.xcassets */; };
 		2968891421E3B98B00BFC3BD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2968891221E3B98B00BFC3BD /* LaunchScreen.storyboard */; };
 		2968891721E3B98B00BFC3BD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2968891621E3B98B00BFC3BD /* main.m */; };
-		299F0824239D5135008C2A70 /* SmartLink.mm in Sources */ = {isa = PBXBuildFile; fileRef = 299F0822239D5135008C2A70 /* SmartLink.mm */; };
 		29E98454239531C00033E63C /* NSObject+Bindings.mm in Sources */ = {isa = PBXBuildFile; fileRef = 29E98453239531C00033E63C /* NSObject+Bindings.mm */; };
 		ED2A6D051F6036D3003CD6CE /* ConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D041F6036D3003CD6CE /* ConfigurationViewController.m */; };
 		ED2A6D0A1F603D18003CD6CE /* NSClipView+Flipped.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D091F603D18003CD6CE /* NSClipView+Flipped.m */; };
@@ -164,6 +164,8 @@
 		27BAE9A720F4CE9C007A8CFB /* InstructionViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InstructionViewController.m; sourceTree = "<group>"; };
 		27BAE9AA20F64496007A8CFB /* Debug.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Debug.cpp; sourceTree = "<group>"; };
 		27BAE9AB20F64496007A8CFB /* Debug.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Debug.hpp; sourceTree = "<group>"; };
+		27BE402F239E60A7006204BA /* SmartLink.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SmartLink.mm; sourceTree = "<group>"; };
+		27BE4030239E60A7006204BA /* SmartLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmartLink.h; sourceTree = "<group>"; };
 		27C5AE452146F0D3008DBD54 /* InfoPanelViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InfoPanelViewController.h; sourceTree = "<group>"; };
 		27C5AE462146F0D3008DBD54 /* InfoPanelViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InfoPanelViewController.m; sourceTree = "<group>"; };
 		27C5DBA31FFC000A0064C661 /* DebugViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DebugViewController.h; sourceTree = "<group>"; };
@@ -185,8 +187,6 @@
 		2968891321E3B98B00BFC3BD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2968891521E3B98B00BFC3BD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2968891621E3B98B00BFC3BD /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		299F0822239D5135008C2A70 /* SmartLink.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SmartLink.mm; sourceTree = "<group>"; };
-		299F0823239D5135008C2A70 /* SmartLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmartLink.h; sourceTree = "<group>"; };
 		29CE03BD22A7BD64007A1549 /* SpectREM.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SpectREM.entitlements; sourceTree = "<group>"; };
 		29E98452239531C00033E63C /* NSObject+Bindings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSObject+Bindings.h"; sourceTree = "<group>"; };
 		29E98453239531C00033E63C /* NSObject+Bindings.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSObject+Bindings.mm"; sourceTree = "<group>"; };
@@ -385,8 +385,8 @@
 		29E98462239535F60033E63C /* SmartLink */ = {
 			isa = PBXGroup;
 			children = (
-				299F0823239D5135008C2A70 /* SmartLink.h */,
-				299F0822239D5135008C2A70 /* SmartLink.mm */,
+				27BE4030239E60A7006204BA /* SmartLink.h */,
+				27BE402F239E60A7006204BA /* SmartLink.mm */,
 			);
 			name = SmartLink;
 			sourceTree = "<group>";
@@ -846,9 +846,9 @@
 				ED913FCB1F30781000316E1A /* Z80Core_DDOpcodes.cpp in Sources */,
 				ED913F9D1F30759300316E1A /* main.m in Sources */,
 				ED913FCA1F30781000316E1A /* Z80Core_DDCB_FDCBOpcodes.cpp in Sources */,
-				299F0824239D5135008C2A70 /* SmartLink.mm in Sources */,
 				ED913FCD1F30781000316E1A /* Z80Core_FDOpcodes.cpp in Sources */,
 				EDC56FDA1F6C228700162739 /* Defaults.m in Sources */,
+				27BE4031239E60A7006204BA /* SmartLink.mm in Sources */,
 				ED913FC91F30781000316E1A /* Z80Core_CBOpcodes.cpp in Sources */,
 				276ADE2F21021A2200EC7DC9 /* MetalRenderer.m in Sources */,
 				27C5DBA51FFC000A0064C661 /* DebugViewController.mm in Sources */,

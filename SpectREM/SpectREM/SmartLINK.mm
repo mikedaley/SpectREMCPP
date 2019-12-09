@@ -66,7 +66,8 @@ int const cSERIAL_BAUD_RATE = 115200;
 int const cSERIAL_TIMEOUT = 5;
 int const cSERIAL_BLOCK_SIZE = 9000;
 
-int const cSNAPSHOT_HEADER_LENGTH = 29;
+int const cSNAPSHOT_HEADER_LENGTH = 27;
+int const cSMARTLINK_SNAPSHOT_HEADER_LENGTH = 29;
 int const cSNAPSHOT_DATA_SIZE = 49152;
 int const cSNAPSHOT_START_ADDRESS = 16384;
 
@@ -244,20 +245,29 @@ static const uint8_t cSendOK = 0xaa;
     // Reset Retroleum card
     [self sendSmartlinkAction:cSMARTLINK_RESET];
     
-    uint16_t *pStackPointer =  reinterpret_cast<uint16_t*>(snapshot[23]);
-    uint16_t programCounter = *reinterpret_cast<uint16_t*>(snapshot[27] + *pStackPointer - 0x4000);
-    *pStackPointer += 2;
-    snapshot[27] = programCounter & 0xff;
-    snapshot[28] = programCounter >> 8;
+    // Copy the header from the SNA Snapshot to a new buffer as we will be extending it by two bytes
+    uint8_t snapRegBuffer[29];
+    memcpy(snapRegBuffer, snapshot, cSMARTLINK_SNAPSHOT_HEADER_LENGTH);
     
-    // Send register data
+    // Get the value at (SP) and decrement SP twice, this is so we can send SP as register data to the spectrum and have a
+    // uniform executor (.SNA files store the PC at the current SP)
+    uint16_t *pStackPointer =  reinterpret_cast<uint16_t*>(snapRegBuffer + 23);
+    uint16_t programCounter = *reinterpret_cast<uint16_t*>(snapshot + cSNAPSHOT_HEADER_LENGTH + *pStackPointer - 0x4000);
+    *pStackPointer += 2;
+    
+    // Add the PC to the end of the SNA header
+    snapRegBuffer[27] = programCounter & 0xff;
+    snapRegBuffer[28] = programCounter >> 8;
+    
+    // Send register data using the new snapBuffer
     [self sendBlockWithCommand:cCMD_LOAD_REGS
                       location:snapshotIndex
-                        length:cSNAPSHOT_HEADER_LENGTH
-                          data:snapshot
+                        length:cSMARTLINK_SNAPSHOT_HEADER_LENGTH
+                          data:snapRegBuffer
               expectedResponse:self.sendOkResponse];
 
     snapshotIndex += cSNAPSHOT_HEADER_LENGTH;
+    
     // Send memory data
     for (int block = 0; block < (cSNAPSHOT_DATA_SIZE / cSERIAL_BLOCK_SIZE); block++)
     {
