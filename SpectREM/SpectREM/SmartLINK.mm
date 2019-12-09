@@ -66,7 +66,7 @@ int const cSERIAL_BAUD_RATE = 115200;
 int const cSERIAL_TIMEOUT = 5;
 int const cSERIAL_BLOCK_SIZE = 9000;
 
-int const cSNAPSHOT_HEADER_LENGTH = 27;
+int const cSNAPSHOT_HEADER_LENGTH = 29;
 int const cSNAPSHOT_DATA_SIZE = 49152;
 int const cSNAPSHOT_START_ADDRESS = 16384;
 
@@ -243,6 +243,12 @@ static const uint8_t cSendOK = 0xaa;
 
     // Reset Retroleum card
     [self sendSmartlinkAction:cSMARTLINK_RESET];
+    
+    uint16_t *pStackPointer =  reinterpret_cast<uint16_t*>(snapshot[23]);
+    uint16_t programCounter = *reinterpret_cast<uint16_t*>(snapshot[27] + *pStackPointer - 0x4000);
+    *pStackPointer += 2;
+    snapshot[27] = programCounter & 0xff;
+    snapshot[28] = programCounter >> 8;
     
     // Send register data
     [self sendBlockWithCommand:cCMD_LOAD_REGS
