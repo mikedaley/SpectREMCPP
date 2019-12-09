@@ -333,7 +333,7 @@
                                             <rect key="frame" x="17" y="77" width="189" height="22"/>
                                             <popUpButtonCell key="cell" type="push" title="ZX Spectrum 48k" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="vpd-lf-n9b" id="Tsh-4m-IW0">
                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="message" size="11"/>
+                                                <font key="font" metaFont="controlContent" size="11"/>
                                                 <menu key="menu" id="27R-No-c7F">
                                                     <items>
                                                         <menuItem title="ZX Spectrum 48k" state="on" id="vpd-lf-n9b" userLabel="ZX Spectrum 48k"/>
@@ -359,7 +359,7 @@
                                                 <constraint firstAttribute="width" constant="81" id="Wdy-rH-l8l"/>
                                             </constraints>
                                             <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Acceleration" id="6Sh-PJ-rA1">
-                                                <font key="font" metaFont="message" size="11"/>
+                                                <font key="font" metaFont="controlContent" size="11"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -368,7 +368,7 @@
                                             <rect key="frame" x="109" y="58" width="16" height="14"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="1x" id="6mF-Q9-0JX">
-                                                <font key="font" metaFont="message" size="11"/>
+                                                <font key="font" metaFont="controlContent" size="11"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -379,7 +379,7 @@
                                                 <constraint firstAttribute="width" constant="79" id="r8n-gC-kHn"/>
                                             </constraints>
                                             <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Insta TAP Load" id="Csh-sC-Nb0">
-                                                <font key="font" metaFont="message" size="11"/>
+                                                <font key="font" metaFont="controlContent" size="11"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -388,7 +388,7 @@
                                             <rect key="frame" x="188" y="58" width="17" height="14"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="5x" id="kIL-58-wLN">
-                                                <font key="font" metaFont="message" size="11"/>
+                                                <font key="font" metaFont="controlContent" size="11"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -397,7 +397,7 @@
                                             <rect key="frame" x="108" y="20" width="18" height="18"/>
                                             <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="overlaps" controlSize="small" state="on" inset="2" id="jBN-z7-1as">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                <font key="font" metaFont="message" size="11"/>
+                                                <font key="font" metaFont="controlContent" size="11"/>
                                             </buttonCell>
                                             <connections>
                                                 <binding destination="AHt-Sz-7wU" name="value" keyPath="defaults.machineTapeInstantLoad" id="jGd-bv-w2z"/>

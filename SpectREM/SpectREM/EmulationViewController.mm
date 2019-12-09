@@ -17,7 +17,7 @@
 #import "Debug.hpp"
 
 #import "AudioCore.h"
-#import "SmartLINK.h"
+#import "SmartLink.h"
 #import "ORSSerial/ORSSerial.h"
 
 #import "ConfigurationViewController.h"
@@ -318,8 +318,8 @@ const int cSCREEN_FILL = 1;
 
 - (IBAction)smartlinkSendSnapshot:(id)sender
 {
-     ZXSpectrum::Snap snapshot = _machine->snapshotCreateSNA();
-    [_smartLink sendSnapshot:snapshot.data ofType:SnapshotTypeSNA];
+     ZXSpectrum::Snap snapshot = _machine->snapshotCreateZ80();
+    [_smartLink sendSnapshot:snapshot.data ofType:SnapshotTypeZ80];
 }
 
 #pragma mark - Apply defaults

@@ -11,22 +11,6 @@
 
 #pragma mark - Constants
 
-const uint8_t               cSNA_HEADER_SIZE = 27;
-const uint16_t              cZ80_V3_HEADER_SIZE = 86;
-const uint16_t              cZ80_V3_ADD_HEADER_SIZE = 54;
-const uint8_t               cZ80_V3_PAGE_HEADER_SIZE = 3;
-
-const uint8_t               cZ80_V2_MACHINE_TYPE_48 = 0;
-const uint8_t               cZ80_V3_MACHINE_TYPE_48 = 0;
-const uint8_t               cZ80_V2_MACHINE_TYPE_48_IF1 = 1;
-const uint8_t               cZ80_V3_MACHINE_TYPE_48_IF1 = 1;
-const uint8_t               cZ80_V2_MACHINE_TYPE_128 = 3;
-const uint8_t               cZ80_V3_MACHINE_TYPE_48_MGT = 3;
-const uint8_t               cZ80_V2_MACHINE_TYPE_128_IF1 = 4;
-const uint8_t               cZ80_V3_MACHINE_TYPE_128 = 4;
-const uint8_t               cZ80_V3_MACHINE_TYPE_128_IF1 = 5;
-const uint8_t               cz80_V3_MACHINE_TYPE_128_MGT = 6;
-const uint8_t               cZ80_V3_MACHINE_TYPE_128_2 = 12;
 
 
 #pragma mark - SNA

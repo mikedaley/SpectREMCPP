@@ -10,6 +10,7 @@
 #import <Cocoa/Cocoa.h>
 
 #import "SmartLink.h"
+#import "ZXSpectrum.hpp"
 
 #import "ORSSerial/ORSSerial.h"
 
@@ -208,7 +209,133 @@ static const uint8_t cSendOK = 0xaa;
     {
         return;
     }
+    
+    uint8_t snapRegBuffer[29];
+    snapRegBuffer[0] = snapshot[10]; // I
+    snapRegBuffer[1] = snapshot[19]; // _HL
+    snapRegBuffer[2] = snapshot[20];
+    snapRegBuffer[3] = snapshot[17]; // _DE
+    snapRegBuffer[4] = snapshot[18];
+    snapRegBuffer[5] = snapshot[15]; // _BC
+    snapRegBuffer[6] = snapshot[16];
+    snapRegBuffer[7] = snapshot[22]; // _AF
+    snapRegBuffer[8] = snapshot[21];
+    snapRegBuffer[9] = snapshot[4]; // HL
+    snapRegBuffer[10] = snapshot[5];
+    snapRegBuffer[11] = snapshot[13]; // DE
+    snapRegBuffer[12] = snapshot[14];
+    snapRegBuffer[13] = snapshot[2]; // BC
+    snapRegBuffer[14] = snapshot[3];
+    snapRegBuffer[15] = snapshot[23]; // IY
+    snapRegBuffer[16] = snapshot[24];
+    snapRegBuffer[17] = snapshot[25]; //IX
+    snapRegBuffer[18] = snapshot[26];
+    snapRegBuffer[19] = snapshot[27]; // EI
+    snapRegBuffer[20] = snapshot[11]; // R
+    snapRegBuffer[21] = snapshot[1]; // AF
+    snapRegBuffer[22] = snapshot[0];
+    snapRegBuffer[23] = snapshot[8]; // SP
+    snapRegBuffer[24] = snapshot[9];
+    snapRegBuffer[25] = snapshot[29]; // IM
+    snapRegBuffer[26] = snapshot[32]; // PC
+    snapRegBuffer[27] = snapshot[33];
+    snapRegBuffer[28] = snapshot[12]; // Border
 
+    int snapshotIndex = 0;
+
+    // Reset Retroleum card
+    [self sendSmartlinkAction:cSMARTLINK_RESET];
+
+    // Send register data using the new snapBuffer
+    [self sendBlockWithCommand:cCMD_LOAD_REGS
+                      location:snapshotIndex
+                        length:cSMARTLINK_SNAPSHOT_HEADER_LENGTH
+                          data:snapRegBuffer
+              expectedResponse:self.sendOkResponse];
+
+    snapshotIndex += cSNAPSHOT_HEADER_LENGTH;
+
+    uint8_t hardwareType = snapshot[34];
+    int16_t additionHeaderBlockLength = 0;
+    additionHeaderBlockLength = ((uint16_t *)&snapshot[30])[0];
+    uint32_t offset = 32 + additionHeaderBlockLength;
+    
+    int size = 0;
+    if (hardwareType == cZ80_V3_MACHINE_TYPE_48)
+    {
+        size = 32768;
+    } else {
+        size = 114688;
+    }
+        
+    while (offset < size)
+    {
+        uint32_t compressedLength = ((uint16_t *)&snapshot[offset])[0];
+        bool isCompressed = true;
+        if (compressedLength == 0xffff)
+        {
+            compressedLength = 0x4000;
+            isCompressed = false;
+        }
+
+        uint32_t pageId = snapshot[offset + 2];
+
+        uint8_t pagingPort[3] = {0x7f, 0xfd, 0x0};
+        
+        if (hardwareType == cZ80_V3_MACHINE_TYPE_48)
+        {
+            // 48k
+            switch (pageId) {
+            case 4:
+                [self sendBlockWithCommand:cCMD_LOAD_DATA
+                                  location:0x8000
+                                    length:0x4000
+                                      data:snapshot + offset + 3
+                          expectedResponse:self.sendOkResponse];
+//                snapshotExtractMemoryBlock(snapshot, 0x8000, offset + 3, isCompressed, 0x4000);
+                break;
+            case 5:
+                [self sendBlockWithCommand:cCMD_LOAD_DATA
+                                  location:0xc000
+                                    length:0x4000
+                                      data:snapshot + offset + 3
+                          expectedResponse:self.sendOkResponse];
+//                snapshotExtractMemoryBlock(snapshot, 0xc000, offset + 3, isCompressed, 0x4000);
+                break;
+            case 8:
+                [self sendBlockWithCommand:cCMD_LOAD_DATA
+                                  location:0x4000
+                                    length:0x4000
+                                      data:snapshot + offset + 3
+                          expectedResponse:self.sendOkResponse];
+//                snapshotExtractMemoryBlock(snapshot, 0x4000, offset + 3, isCompressed, 0x4000);
+                break;
+            default:
+                break;
+            }
+        }
+        else
+        {
+            // 128k
+            pagingPort[2] = 0x04;
+            [self sendBlockWithCommand:cCMD_SET_PORTS
+                              location:0
+                                length:3
+                                  data:snapshot
+                      expectedResponse:self.sendOkResponse];
+
+//            snapshotExtractMemoryBlock(snapshot, (pageId - 3) * 0x4000, offset + 3, isCompressed, 0x4000);
+        }
+
+        offset += compressedLength + 3;
+    }
+    
+    // Send start game
+    [self sendBlockWithCommand:cCMD_RESTART
+                      location:0
+                        length:0
+                          data:0
+              expectedResponse:self.sendOkResponse];
 }
 
 - (void)sendSNASnapshot:(unsigned char *)snapshot
@@ -242,8 +369,6 @@ static const uint8_t cSendOK = 0xaa;
     int snapshotIndex = 0;
     unsigned short spectrumAddress = cSNAPSHOT_START_ADDRESS;
 
-    // Reset Retroleum card
-    [self sendSmartlinkAction:cSMARTLINK_RESET];
     
     // Copy the header from the SNA Snapshot to a new buffer as we will be extending it by two bytes
     uint8_t snapRegBuffer[29];
