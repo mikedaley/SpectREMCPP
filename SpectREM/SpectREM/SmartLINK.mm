@@ -210,7 +210,7 @@ static const uint8_t cSendOK = 0xaa;
         return;
     }
     
-    uint8_t snapRegBuffer[29];
+    uint8_t snapRegBuffer[cSMARTLINK_SNAPSHOT_HEADER_LENGTH];
     snapRegBuffer[0] = snapshot[10]; // I
     snapRegBuffer[1] = snapshot[19]; // _HL
     snapRegBuffer[2] = snapshot[20];
@@ -241,19 +241,16 @@ static const uint8_t cSendOK = 0xaa;
     snapRegBuffer[27] = snapshot[33];
     snapRegBuffer[28] = snapshot[12]; // Border
 
-    int snapshotIndex = 0;
-
     // Reset Retroleum card
     [self sendSmartlinkAction:cSMARTLINK_RESET];
 
     // Send register data using the new snapBuffer
+    cout << "Send Regs" << endl;
     [self sendBlockWithCommand:cCMD_LOAD_REGS
-                      location:snapshotIndex
+                      location:0
                         length:cSMARTLINK_SNAPSHOT_HEADER_LENGTH
                           data:snapRegBuffer
               expectedResponse:self.sendOkResponse];
-
-    snapshotIndex += cSNAPSHOT_HEADER_LENGTH;
 
     uint8_t hardwareType = snapshot[34];
     int16_t additionHeaderBlockLength = 0;
@@ -263,9 +260,9 @@ static const uint8_t cSendOK = 0xaa;
     int size = 0;
     if (hardwareType == cZ80_V3_MACHINE_TYPE_48)
     {
-        size = 32768;
+        size = 49247;
     } else {
-        size = 114688;
+        size = 1024 * 128;
     }
         
     while (offset < size)
@@ -282,33 +279,99 @@ static const uint8_t cSendOK = 0xaa;
 
         uint8_t pagingPort[3] = {0x7f, 0xfd, 0x0};
         
+        uint16_t spectrumAddress;
+        int snapshotIndex;
+
         if (hardwareType == cZ80_V3_MACHINE_TYPE_48)
         {
             // 48k
             switch (pageId) {
             case 4:
-                [self sendBlockWithCommand:cCMD_LOAD_DATA
-                                  location:0x8000
-                                    length:0x4000
-                                      data:snapshot + offset + 3
-                          expectedResponse:self.sendOkResponse];
+                cout << "Send page 4" << endl;
+
+                spectrumAddress = 0x8000;
+                snapshotIndex = offset + 3;
+                    
+                // Send memory data
+                for (int block = 0; block < (0x4000 / cSERIAL_BLOCK_SIZE); block++)
+                {
+                    [self sendBlockWithCommand:cCMD_LOAD_DATA
+                                      location:spectrumAddress
+                                        length:cSERIAL_BLOCK_SIZE
+                                          data:snapshot + snapshotIndex
+                              expectedResponse:self.sendOkResponse];
+
+                    snapshotIndex += cSERIAL_BLOCK_SIZE;
+                    spectrumAddress += cSERIAL_BLOCK_SIZE;
+                }
+
+                // Deal with any partial block data left over
+                if (cSNAPSHOT_DATA_SIZE % cSERIAL_BLOCK_SIZE)
+                {
+                    [self sendBlockWithCommand:cCMD_LOAD_DATA
+                                      location:spectrumAddress
+                                        length:cSNAPSHOT_DATA_SIZE % cSERIAL_BLOCK_SIZE
+                                          data:snapshot + snapshotIndex
+                              expectedResponse:self.sendOkResponse];
+                }
 //                snapshotExtractMemoryBlock(snapshot, 0x8000, offset + 3, isCompressed, 0x4000);
                 break;
             case 5:
-                [self sendBlockWithCommand:cCMD_LOAD_DATA
-                                  location:0xc000
-                                    length:0x4000
-                                      data:snapshot + offset + 3
-                          expectedResponse:self.sendOkResponse];
+                cout << "Send page 5" << endl;
+                spectrumAddress = 0xc000;
+                snapshotIndex = offset + 3;
+                    
+                // Send memory data
+                for (int block = 0; block < (0x4000 / cSERIAL_BLOCK_SIZE); block++)
+                {
+                    [self sendBlockWithCommand:cCMD_LOAD_DATA
+                                      location:spectrumAddress
+                                        length:cSERIAL_BLOCK_SIZE
+                                          data:snapshot + snapshotIndex
+                              expectedResponse:self.sendOkResponse];
+
+                    snapshotIndex += cSERIAL_BLOCK_SIZE;
+                    spectrumAddress += cSERIAL_BLOCK_SIZE;
+                }
+
+                // Deal with any partial block data left over
+                if (cSNAPSHOT_DATA_SIZE % cSERIAL_BLOCK_SIZE)
+                {
+                    [self sendBlockWithCommand:cCMD_LOAD_DATA
+                                      location:spectrumAddress
+                                        length:cSNAPSHOT_DATA_SIZE % cSERIAL_BLOCK_SIZE
+                                          data:snapshot + snapshotIndex
+                              expectedResponse:self.sendOkResponse];
+                }
 //                snapshotExtractMemoryBlock(snapshot, 0xc000, offset + 3, isCompressed, 0x4000);
                 break;
             case 8:
-                [self sendBlockWithCommand:cCMD_LOAD_DATA
-                                  location:0x4000
-                                    length:0x4000
-                                      data:snapshot + offset + 3
-                          expectedResponse:self.sendOkResponse];
-//                snapshotExtractMemoryBlock(snapshot, 0x4000, offset + 3, isCompressed, 0x4000);
+                cout << "Send page 8" << endl;
+                spectrumAddress = 0x4000;
+                snapshotIndex = offset + 3;
+                    
+                // Send memory data
+                for (int block = 0; block < (0x4000 / cSERIAL_BLOCK_SIZE); block++)
+                {
+                    [self sendBlockWithCommand:cCMD_LOAD_DATA
+                                      location:spectrumAddress
+                                        length:cSERIAL_BLOCK_SIZE
+                                          data:snapshot + snapshotIndex
+                              expectedResponse:self.sendOkResponse];
+
+                    snapshotIndex += cSERIAL_BLOCK_SIZE;
+                    spectrumAddress += cSERIAL_BLOCK_SIZE;
+                }
+
+                // Deal with any partial block data left over
+                if (cSNAPSHOT_DATA_SIZE % cSERIAL_BLOCK_SIZE)
+                {
+                    [self sendBlockWithCommand:cCMD_LOAD_DATA
+                                      location:spectrumAddress
+                                        length:cSNAPSHOT_DATA_SIZE % cSERIAL_BLOCK_SIZE
+                                          data:snapshot + snapshotIndex
+                              expectedResponse:self.sendOkResponse];
+                }
                 break;
             default:
                 break;
@@ -334,7 +397,7 @@ static const uint8_t cSendOK = 0xaa;
     [self sendBlockWithCommand:cCMD_RESTART
                       location:0
                         length:0
-                          data:0
+                          data:snapshot
               expectedResponse:self.sendOkResponse];
 }
 
