@@ -322,6 +322,8 @@ ZXSpectrum::Snap ZXSpectrum::snapshotCreateZ80()
             snapData.data[snapPtr++] = 0xff;
             snapData.data[snapPtr++] = page + 3;
             
+            cout << page << " " << page + 3 << " " << (page * 0x4000) << endl;
+            
             for (uint32_t memAddr = page * 0x4000; memAddr < (page * 0x4000) + 0x4000; memAddr++)
             {
                 snapData.data[snapPtr++] = memoryRam[memAddr];
@@ -415,7 +417,7 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
 
 		displayBorderColor = (byte12 & 14) >> 1;
 		bool compressed = (byte12 & 32) != 0 ? true : false;
-
+        
 		z80Core.SetRegister(CZ80Core::eREG_DE, ((uint16_t *)&pFileBytes[13])[0]);
 		z80Core.SetRegister(CZ80Core::eREG_ALT_BC, ((uint16_t *)&pFileBytes[13])[1]);
 		z80Core.SetRegister(CZ80Core::eREG_ALT_DE, ((uint16_t *)&pFileBytes[13])[2]);
@@ -428,15 +430,15 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
 		z80Core.SetIFF2((uint8_t)pFileBytes[28] & 1);
 		z80Core.SetIMMode((uint8_t)pFileBytes[29] & 3);
 
-		// Load AY register values
-	//    int fileBytesIndex = 39;
-	//    for (int i = 0; i < 16; i++)
-	//    {
-	//        audioAYSetRegister(i);
-	//        audioAYWriteData(pFileBytes[ fileBytesIndex++ ]);
-	//    }
+		// Load AY register values. Some games like Taipan check AY registers for security
+	    int fileBytesIndex = 39;
+	    for (int i = 0; i < 16; i++)
+	    {
+	        audioAYSetRegister(i);
+	        audioAYWriteData(pFileBytes[ fileBytesIndex++ ]);
+	    }
 
-	//    audioAYSetRegister(pFileBytes[38]);
+	    audioAYSetRegister(pFileBytes[38]);
 
     // Based on the version number of the snapshot, decode the memory contents
 		switch (version) {
@@ -480,6 +482,8 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
 					compressedLength = 0x4000;
 					isCompressed = false;
 				}
+
+//                cout << "Compressed: " << isCompressed << endl;
 
 				uint32_t pageId = pFileBytes[offset + 2];
 

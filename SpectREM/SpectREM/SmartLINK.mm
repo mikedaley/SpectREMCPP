@@ -229,7 +229,7 @@ static const uint8_t cSendOK = 0xaa;
     snapRegBuffer[15] = snapshot[23]; // IY
     snapRegBuffer[16] = snapshot[24];
     snapRegBuffer[17] = snapshot[25]; //IX
-    snapRegBuffer[18] = snapshot[26];
+    snapRegBuffer[18] = snapshot[27]; // IFF2
     snapRegBuffer[19] = snapshot[27]; // EI
     snapRegBuffer[20] = snapshot[11]; // R
     snapRegBuffer[21] = snapshot[1]; // AF
@@ -237,9 +237,9 @@ static const uint8_t cSendOK = 0xaa;
     snapRegBuffer[23] = snapshot[8]; // SP
     snapRegBuffer[24] = snapshot[9];
     snapRegBuffer[25] = snapshot[29]; // IM
-    snapRegBuffer[26] = snapshot[32]; // PC
-    snapRegBuffer[27] = snapshot[33];
-    snapRegBuffer[28] = snapshot[12]; // Border
+    snapRegBuffer[26] = snapshot[12]; // Border
+    snapRegBuffer[27] = snapshot[32]; // PC
+    snapRegBuffer[28] = snapshot[33];
 
     // Reset Retroleum card
     [self sendSmartlinkAction:cSMARTLINK_RESET];
@@ -258,13 +258,18 @@ static const uint8_t cSendOK = 0xaa;
     uint32_t offset = 32 + additionHeaderBlockLength;
     
     int snapshotSize = 0;
-    if (hardwareType == eZXSpectrum48)
+    switch (hardwareType)
     {
-        snapshotSize = (48 * 1024) + cZ80_V3_HEADER_SIZE + (cZ80_V3_PAGE_HEADER_SIZE * 3);
-    }
-    else if (hardwareType == eZXSpectrum128)
-    {
-        snapshotSize = (128 * 1024) + cZ80_V3_HEADER_SIZE + (cZ80_V3_PAGE_HEADER_SIZE * 8);
+        case cZ80_V3_MACHINE_TYPE_48:
+        case cZ80_V2_MACHINE_TYPE_48_IF1:
+                snapshotSize = (48 * 1024) + cZ80_V3_HEADER_SIZE + (cZ80_V3_PAGE_HEADER_SIZE * 3);
+            break;
+        case cZ80_V2_MACHINE_TYPE_128:
+        case cZ80_V3_MACHINE_TYPE_128:
+        case cZ80_V3_MACHINE_TYPE_128_2:
+        case cz80_V3_MACHINE_TYPE_128_MGT:
+                snapshotSize = (128 * 1024) + cZ80_V3_HEADER_SIZE + (cZ80_V3_PAGE_HEADER_SIZE * 8);
+            break;
     }
         
     while (offset < snapshotSize)
@@ -278,25 +283,22 @@ static const uint8_t cSendOK = 0xaa;
         }
 
         uint32_t pageId = snapshot[offset + 2];
-
-        // Setup memory paging port for the 128
-        uint8_t pagingPort[3] = {0x7f, 0xfd, 0x0};
         
         if (hardwareType == cZ80_V3_MACHINE_TYPE_48)
         {
-            // 48k
+            // 48k - Uses the Z80 snapshot format page numbers
             switch (pageId) {
             case 4:
                     cout << "Send 48k page 4" << endl;
-                    [self bulkSendWithSpectrumMemoryAddress:0x8000 length:0x4000 snapshotOffset:offset + 3 snapshot:snapshot];
+                    [self bulkSendWithSpectrumMemoryAddress:0x8000 length:compressedLength snapshotOffset:offset + 3 snapshot:snapshot];
                 break;
             case 5:
                     cout << "Send 48k page 5" << endl;
-                    [self bulkSendWithSpectrumMemoryAddress:0xc000 length:0x4000 snapshotOffset:offset + 3 snapshot:snapshot];
+                    [self bulkSendWithSpectrumMemoryAddress:0xc000 length:compressedLength snapshotOffset:offset + 3 snapshot:snapshot];
                 break;
             case 8:
                     cout << "Send 48k page 8" << endl;
-                    [self bulkSendWithSpectrumMemoryAddress:0x4000 length:0x4000 snapshotOffset:offset + 3 snapshot:snapshot];
+                    [self bulkSendWithSpectrumMemoryAddress:0x4000 length:compressedLength snapshotOffset:offset + 3 snapshot:snapshot];
                 break;
             default:
                 break;
@@ -304,30 +306,62 @@ static const uint8_t cSendOK = 0xaa;
         }
         else
         {
-            // 128k
-            pagingPort[2] = 0x04;
+            uint8_t page = pageId - 3;
+            uint8_t bankSwitch[3] = {0xfd, 0x7f, page};
             [self sendBlockWithCommand:cCMD_SET_PORTS
                               location:0
                                 length:3
-                                  data:snapshot
+                                  data:bankSwitch
                       expectedResponse:self.sendOkResponse];
-            cout << "Send 128k page " << pageId << endl;
-            [self bulkSendWithSpectrumMemoryAddress:(pageId - 3) * 0x4000 length:0x4000 snapshotOffset:offset + 3 snapshot:snapshot];
-//            snapshotExtractMemoryBlock(snapshot, (pageId - 3) * 0x4000, offset + 3, isCompressed, 0x4000);
+            cout << "Send 128k page " << pageId - 3 << endl;
+            [self bulkSendWithSpectrumMemoryAddress:0xc000 length:compressedLength snapshotOffset:offset + 3 snapshot:snapshot];
         }
 
         offset += compressedLength + 3;
     }
     
+    uint8_t portValues[3] = {0xfd, 0x7f, static_cast<uint8_t>(snapshot[35])};
+
+    switch (hardwareType)
+    {
+        case cZ80_V2_MACHINE_TYPE_128:
+        case cZ80_V3_MACHINE_TYPE_128:
+        case cZ80_V3_MACHINE_TYPE_128_2:
+        case cz80_V3_MACHINE_TYPE_128_MGT:
+            NSLog(@"Set port 0x7ffd to %i", snapshot[35]);
+
+            [self sendBlockWithCommand:cCMD_SET_PORTS
+                              location:0
+                                length:3
+                                  data:portValues
+                      expectedResponse:self.sendOkResponse];
+
+            break;
+        default:
+            break;
+    }
+
+    uint8_t byte12 = snapshot[12];
+    byte12 = (byte12 == 255) ? 1 : byte12;
+    portValues[0] = 0xfe;
+    portValues[1] = 0x0;
+    portValues[2] = (byte12 >> 1) & 0x07;
+    [self sendBlockWithCommand:cCMD_SET_PORTS
+                      location:0
+                        length:3
+                          data:portValues
+              expectedResponse:self.sendOkResponse];
+
     // Send start game
     [self sendBlockWithCommand:cCMD_RESTART
                       location:0
                         length:0
                           data:snapshot
               expectedResponse:self.sendOkResponse];
+
 }
 
-- (void)bulkSendWithSpectrumMemoryAddress:(uint16_t)spectrumAddress length:(uint16_t)length snapshotOffset:(uint16_t)snapshotIndex snapshot:(unsigned char *)snapshot
+- (void)bulkSendWithSpectrumMemoryAddress:(uint16_t)spectrumAddress length:(uint16_t)length snapshotOffset:(uint32_t)snapshotIndex snapshot:(unsigned char *)snapshot
 {
     // Send memory data
     for (int block = 0; block < (length / cSERIAL_BLOCK_SIZE); block++)
@@ -343,11 +377,11 @@ static const uint8_t cSendOK = 0xaa;
     }
 
     // Deal with any partial block data left over
-    if (cSNAPSHOT_DATA_SIZE % cSERIAL_BLOCK_SIZE)
+    if (length % cSERIAL_BLOCK_SIZE)
     {
         [self sendBlockWithCommand:cCMD_LOAD_DATA
                           location:spectrumAddress
-                            length:cSNAPSHOT_DATA_SIZE % cSERIAL_BLOCK_SIZE
+                            length:length % cSERIAL_BLOCK_SIZE
                               data:snapshot + snapshotIndex
                   expectedResponse:self.sendOkResponse];
     }
