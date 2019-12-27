@@ -1,0 +1,12 @@
+[submodule "SpectREM/Frameworks/ORSSerialPort"]
+	path = SpectREM/Frameworks/ORSSerialPort
+	url = https://github.com/armadsen/ORSSerialPort.git
+[submodule "Frameworks/ORSSerialPort"]
+	path = Frameworks/ORSSerialPort
+	url = https://github.com/armadsen/ORSSerialPort.git
+[submodule "ORSSerialPort"]
+	path = ORSSerialPort
+	url = https://github.com/armadsen/ORSSerialPort.git
+[submodule "ZXEmuCore"]
+	path = ZXEmuCore
+	url = https://github.com/mikedaley/ZXEmuCore.git

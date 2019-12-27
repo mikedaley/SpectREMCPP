@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BV1-FR-VrT">
+    <device id="ipad9_7" orientation="landscape">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Emulation View ControlleriOS-->
+        <scene sceneID="tXr-a1-R10">
+            <objects>
+                <viewController id="BV1-FR-VrT" customClass="EmulationViewControlleriOS" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="3se-qz-xqx" customClass="MTKView">
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SwJ-ml-3gY">
+                                <rect key="frame" x="966" y="718" width="39" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="39" id="74m-JL-hm5"/>
+                                </constraints>
+                                <state key="normal" title="Reset"/>
+                                <connections>
+                                    <action selector="resetMachine:" destination="BV1-FR-VrT" eventType="touchUpInside" id="73H-5D-NMr"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rdq-qt-lSC">
+                                <rect key="frame" x="890" y="718" width="68" height="30"/>
+                                <state key="normal" title="Configure"/>
+                                <connections>
+                                    <action selector="showHideConfigView:" destination="BV1-FR-VrT" eventType="touchUpInside" id="phg-m8-c8u"/>
+                                </connections>
+                            </button>
+                            <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="osI-do-dZ1">
+                                <rect key="frame" x="0.0" y="0.0" width="316" height="768"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="xOE-13-FSK">
+                                    <rect key="frame" x="0.0" y="0.0" width="316" height="768"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <visualEffectView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jgG-5d-qL3">
+                                            <rect key="frame" x="0.0" y="0.0" width="316" height="768"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" insetsLayoutMarginsFromSafeArea="NO" id="QGL-cJ-PCK">
+                                                <rect key="frame" x="0.0" y="0.0" width="316" height="768"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            </view>
+                                            <vibrancyEffect>
+                                                <blurEffect style="light"/>
+                                            </vibrancyEffect>
+                                        </visualEffectView>
+                                    </subviews>
+                                </view>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="316" id="hrC-55-tbp"/>
+                                </constraints>
+                                <blurEffect style="light"/>
+                            </visualEffectView>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="rZh-zQ-HcR" firstAttribute="trailing" secondItem="SwJ-ml-3gY" secondAttribute="trailing" constant="19" id="3Hp-IG-xKg"/>
+                            <constraint firstItem="osI-do-dZ1" firstAttribute="top" secondItem="3se-qz-xqx" secondAttribute="top" id="Bba-IX-VyL"/>
+                            <constraint firstItem="rZh-zQ-HcR" firstAttribute="bottom" secondItem="rdq-qt-lSC" secondAttribute="bottom" constant="20" id="EW3-as-l9F"/>
+                            <constraint firstItem="osI-do-dZ1" firstAttribute="leading" secondItem="rZh-zQ-HcR" secondAttribute="leading" id="L2A-4r-ysY"/>
+                            <constraint firstItem="rdq-qt-lSC" firstAttribute="leading" secondItem="osI-do-dZ1" secondAttribute="trailing" constant="574" id="S1U-3m-SMu"/>
+                            <constraint firstItem="rZh-zQ-HcR" firstAttribute="bottom" secondItem="SwJ-ml-3gY" secondAttribute="bottom" constant="20" id="dbC-1w-YIW"/>
+                            <constraint firstItem="SwJ-ml-3gY" firstAttribute="leading" secondItem="rdq-qt-lSC" secondAttribute="trailing" constant="8" id="gMY-Im-JO5"/>
+                            <constraint firstItem="osI-do-dZ1" firstAttribute="bottom" secondItem="rZh-zQ-HcR" secondAttribute="bottom" id="oRe-Qi-pjb"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="rZh-zQ-HcR"/>
+                    </view>
+                    <connections>
+                        <outlet property="ConfigView" destination="osI-do-dZ1" id="Mye-cV-SJd"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="SZV-WD-TEh" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="138.8671875" y="92.96875"/>
+        </scene>
+    </scenes>
+</document>

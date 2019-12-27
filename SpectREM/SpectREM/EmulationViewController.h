@@ -6,11 +6,12 @@
 //  Copyright © 2017 71Squared Ltd. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
 #import "Defaults.h"
 
+#import <MetalKit/MetalKit.h>
+
 @class EmulationScene;
-@class OpenGLView;
+@class AudioCore;
 
 #pragma mark - Constants
 
@@ -20,28 +21,29 @@ enum
     cSNA_SNAPSHOT_TYPE
 };
 
-static NSString *const cSNA_EXTENSION = @"SNA";
-static NSString *const cZ80_EXTENSION = @"Z80";
-static NSString *const cTAP_EXTENSION = @"TAP";
 
-@interface EmulationViewController : NSViewController 
+
+@interface EmulationViewController : NSViewController
 
 #pragma mark - Properties
 
 @property (weak)    IBOutlet    NSVisualEffectView  *configEffectsView;
 @property (weak)    IBOutlet    NSScrollView        *configScrollView;
 @property (strong)              Defaults            *defaults;
-@property (weak)    IBOutlet    OpenGLView          *glView;
+@property (strong)              AudioCore           *audioCore;
+@property (weak)    IBOutlet    NSVisualEffectView  *infoEffectsView;
 
 #pragma mark - Methods
 
 - (void *)getDisplayBuffer;
 - (BOOL)getDisplayReady;
+- (void *)getCurrentMachine;
+- (void *)getDebugger;
+- (BOOL)isEmulatorPaused;
 
 - (void)loadFileWithURL:(NSURL *)url addToRecent:(BOOL)addToRecent;
 - (void)audioCallback:(int)inNumberFrames buffer:(int16_t *)buffer;
 
-// Methods used to get informaiton from the current machine for the tape browser
 - (NSInteger)tapeNumberOfblocks;
 - (NSString *)tapeBlockTypeForIndex:(NSInteger)blockIndex;
 - (NSString *)tapeFilenameForIndex:(NSInteger)blockIndex;
@@ -51,6 +53,10 @@ static NSString *const cTAP_EXTENSION = @"TAP";
 - (NSInteger)tapeCurrentBlock;
 - (BOOL)tapeIsplaying;
 - (void)tapeSetCurrentBlock:(NSInteger)blockIndex;
+
+- (void)pauseMachine;
+- (void)startMachine;
+- (void)updateDisplay;
 
 - (IBAction)showTapeBrowser:(id)sender;
 - (IBAction)startPlayingTape:(id)sender;
