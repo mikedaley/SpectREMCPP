@@ -65,5 +65,6 @@
 
 - (void)updateMemoryTableSize;
 - (void)updateViewDetails;
+- (IBAction)pauseMachine:(id)sender;
 
 @end

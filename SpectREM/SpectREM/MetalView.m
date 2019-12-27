@@ -17,7 +17,7 @@
     self = [super initWithCoder:coder];
     if (self)
     {
-        [self registerForDraggedTypes:@[NSURLPboardType]];
+        [self registerForDraggedTypes:@[NSPasteboardTypeURL]];
     }
     return self;
 }
@@ -36,7 +36,7 @@
     sourceDragMask = [sender draggingSourceOperationMask];
     pBoard = [sender draggingPasteboard];
     
-    if ([[pBoard types] containsObject:NSFilenamesPboardType])
+    if ([[pBoard types] containsObject:NSPasteboardTypeFileURL])
     {
         if (sourceDragMask * NSDragOperationCopy)
         {
@@ -59,7 +59,7 @@
 - (BOOL)performDragOperation:(id<NSDraggingInfo>)sender
 {
     NSPasteboard *pBoard = [sender draggingPasteboard];
-    if ([[pBoard types] containsObject:NSURLPboardType])
+    if ([[pBoard types] containsObject:NSPasteboardTypeURL])
     {
         NSURL *fileURL = [NSURL URLFromPasteboard:pBoard];
         if ([[fileURL.pathExtension uppercaseString] isEqualToString:cZ80_EXTENSION] ||

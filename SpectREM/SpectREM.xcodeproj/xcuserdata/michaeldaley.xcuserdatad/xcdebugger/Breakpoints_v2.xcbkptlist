@@ -7,16 +7,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "18898E28-9072-427B-BD9B-EADBB79C9D44"
+            uuid = "569EF502-76E2-4675-89B9-267B246557AE"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "SpectREM/EmulationViewController.mm"
+            filePath = "../../ZXEmuCore/Emulator_Core/Debugger/Debug.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "317"
-            endingLineNumber = "317"
-            landmarkName = "-smartlinkReset:"
+            startingLineNumber = "210"
+            endingLineNumber = "210"
+            landmarkName = "Debug::stackTableUpdate()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

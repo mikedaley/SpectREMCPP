@@ -215,7 +215,7 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
     view = [tableView makeViewWithIdentifier:tableColumn.identifier owner:self];
     if (view)
     {
-        Debug::DisassembledOpcode dop = debugger->disassembly(row);
+        Debug::DisassembledOpcode dop = debugger->disassembly(static_cast<unsigned int>(row));
         
         if ([tableColumn.identifier isEqualToString:cDISASSEMBLY_ADDRESS_COL])
         {
@@ -263,7 +263,7 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
     view = [tableView makeViewWithIdentifier:tableColumn.identifier owner:self];
     if (view)
     {
-        Debug::Breakpoint bp = debugger->breakpoint(row);
+        Debug::Breakpoint bp = debugger->breakpoint(static_cast<unsigned int>(row));
         if (bp.type == 0xff) { return nil; }
         if ([tableColumn.identifier isEqualToString:cBREAKPOINT_ADDRESS_COL])
         {
@@ -421,22 +421,22 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
         {
             if (self.hexFormat)
             {
-                view.textField.stringValue = [NSString stringWithFormat:@"$%04X", debugger->stackAddress(row).address];
+                view.textField.stringValue = [NSString stringWithFormat:@"$%04X", debugger->stackAddress(static_cast<unsigned int>(row)).address];
             }
             else
             {
-                view.textField.stringValue = [NSString stringWithFormat:@"%05i", debugger->stackAddress(row).address];
+                view.textField.stringValue = [NSString stringWithFormat:@"%05i", debugger->stackAddress(static_cast<unsigned int>(row)).address];
             }
         }
         else if ([tableColumn.identifier isEqualToString:cSTACK_VALUE_COL])
         {
             if (self.hexFormat)
             {
-                view.textField.stringValue = [NSString stringWithFormat:@"$%04X", debugger->stackAddress(row).value];
+                view.textField.stringValue = [NSString stringWithFormat:@"$%04X", debugger->stackAddress(static_cast<unsigned int>(row)).value];
             }
             else
             {
-                view.textField.stringValue = [NSString stringWithFormat:@"%05i", debugger->stackAddress(row).value];
+                view.textField.stringValue = [NSString stringWithFormat:@"%05i", debugger->stackAddress(static_cast<unsigned int>(row)).value];
             }
         }
     }
@@ -452,7 +452,7 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
     {
         NSColor *rowColor = [NSColor clearColor];
         
-        Debug::DisassembledOpcode dop = debugger->disassembly(row);
+        Debug::DisassembledOpcode dop = debugger->disassembly(static_cast<unsigned int>(row));
 
         for (int i = 0; i < debugger->numberOfBreakpoints(); i++)
         {
@@ -488,7 +488,7 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
     
     Debug *debugger = (Debug *)[self.emulationViewController getDebugger];
 
-    uint16_t address = debugger->disassembly(self.disassemblyTableview.clickedRow).address;
+    uint16_t address = debugger->disassembly(static_cast<unsigned int>(self.disassemblyTableview.clickedRow)).address;
     
     bool breakpointRemoved = false;
     for (int i = 0; i < debugger->numberOfBreakpoints(); i++)
@@ -863,7 +863,7 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
         {
             for (NSUInteger i = range.location; i < range.location + range.length - 1; i++)
             {
-                Debug::DisassembledOpcode dop = debugger->disassembly(i);
+                Debug::DisassembledOpcode dop = debugger->disassembly(static_cast<unsigned int>(i));
 
                 if (dop.address == debugger->machine->z80Core.GetRegister(CZ80Core::eREG_PC))
                 {

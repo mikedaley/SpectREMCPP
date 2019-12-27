@@ -8,6 +8,7 @@
 
 #import <QuartzCore/QuartzCore.h>
 #import <AVFoundation/AVFoundation.h>
+#import <UserNotifications/UserNotifications.h>
 #import "EmulationViewController.h"
 #import "ZXSpectrum.hpp"
 #import "ZXSpectrum48.hpp"
@@ -402,13 +403,21 @@ const int cSCREEN_FILL = 1;
     
     __block EmulationViewController *blockSelf = self;
     
-    _debugBlock = (^bool(unsigned short address, uint8_t operation) {
+    _debugBlock = (^bool(uint16_t address, uint8_t operation) {
         
         if (blockSelf->_debugger->checkForBreakpoint(address, operation))
         {
-            [blockSelf pauseMachine];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [blockSelf sendNotificationsWithTitle:@"EXEC BREAK"
+                                        subtitle:nil
+                                            body:[NSString stringWithFormat:@"EXEC BREAK at 0x%04x", address]
+                                           sound:[UNNotificationSound defaultCriticalSound]];
+                [blockSelf->_debugViewController pauseMachine:nil];
+            });
             return true;
         }
+        
+        
         return false;
         
     });
@@ -426,6 +435,19 @@ const int cSCREEN_FILL = 1;
                                                    encoding:NSUTF8StringEncoding]]];
 }
 
+#pragma mark - Local Notifications
+
+- (void)sendNotificationsWithTitle:(NSString *)title subtitle:(NSString *)subtitle body:(NSString *)body sound:(UNNotificationSound *)sound
+{
+    UNMutableNotificationContent *userNote = [UNMutableNotificationContent new];
+    userNote.title = title;
+    userNote.subtitle = subtitle;
+    userNote.body = body;
+    userNote.sound = sound;
+    UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[[NSUUID UUID] UUIDString] content:userNote trigger:nil];
+    [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
+}
+
 #pragma mark - Keyboard
 
 - (void)keyDown:(NSEvent *)event
@@ -438,7 +460,7 @@ const int cSCREEN_FILL = 1;
 
 - (void)keyUp:(NSEvent *)event
 {
-    if (event.keyCode == 96)
+    if (event.keyCode == 96) // F5 key
     {
         [self loadFileWithURL:_lastOpenedURL addToRecent:NO];
         return;
@@ -454,7 +476,7 @@ const int cSCREEN_FILL = 1;
 {
     if (!(event.modifierFlags & NSEventModifierFlagCommand))
     {
-        _machine->keyboardFlagsChanged(event.modifierFlags, event.keyCode);
+//        _machine->keyboardFlagsChanged(event.modifierFlags, event.keyCode);
     }
 }
 
