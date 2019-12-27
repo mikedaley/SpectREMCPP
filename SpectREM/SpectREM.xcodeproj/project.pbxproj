@@ -72,6 +72,7 @@
 		2934D9EA23B648D900A9BAA6 /* Tape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934D9B923B648D900A9BAA6 /* Tape.cpp */; };
 		2934D9EB23B648D900A9BAA6 /* ZXSpectrum128.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934D9BC23B648D900A9BAA6 /* ZXSpectrum128.cpp */; };
 		2934D9EC23B648D900A9BAA6 /* ZXSpectrum128.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934D9BC23B648D900A9BAA6 /* ZXSpectrum128.cpp */; };
+		2934D9F923B6888300A9BAA6 /* ORSSerial.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2934D9F423B6887100A9BAA6 /* ORSSerial.framework */; };
 		29555BEF21E3C36D004BC007 /* AudioQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17B27F021F6877C800B811FC /* AudioQueue.cpp */; };
 		29555C0921E523FA004BC007 /* AudioCore.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17B5DB951F5B14A7003E7EF3 /* AudioCore.mm */; };
 		29555C1421E52701004BC007 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29555C1321E52701004BC007 /* CoreMedia.framework */; };
@@ -100,6 +101,30 @@
 		EDC56FDA1F6C228700162739 /* Defaults.m in Sources */ = {isa = PBXBuildFile; fileRef = EDC56FD91F6C228700162739 /* Defaults.m */; };
 		EDD9ADED1F59C111004DD728 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = EDD9ADEC1F59C111004DD728 /* Credits.rtf */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		2934D9F323B6887100A9BAA6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2934D9EE23B6887100A9BAA6 /* ORSSerialPort.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9DCA89121A2BB106009285EB;
+			remoteInfo = ORSSerial;
+		};
+		2934D9F523B6887100A9BAA6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2934D9EE23B6887100A9BAA6 /* ORSSerialPort.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9D7472131B6D7767002D8B10;
+			remoteInfo = "ORSSerialPort Tests";
+		};
+		2934D9F723B6887E00A9BAA6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2934D9EE23B6887100A9BAA6 /* ORSSerialPort.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9DCA89111A2BB106009285EB;
+			remoteInfo = ORSSerial;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		17B27F021F6877C800B811FC /* AudioQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioQueue.cpp; sourceTree = "<group>"; };
@@ -168,6 +193,7 @@
 		2934D9B923B648D900A9BAA6 /* Tape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Tape.cpp; sourceTree = "<group>"; };
 		2934D9BB23B648D900A9BAA6 /* ZXSpectrum128.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ZXSpectrum128.hpp; sourceTree = "<group>"; };
 		2934D9BC23B648D900A9BAA6 /* ZXSpectrum128.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZXSpectrum128.cpp; sourceTree = "<group>"; };
+		2934D9EE23B6887100A9BAA6 /* ORSSerialPort.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ORSSerialPort.xcodeproj; path = "../ORSSerialPort/Framework Project/ORSSerialPort.xcodeproj"; sourceTree = "<group>"; };
 		29555C1321E52701004BC007 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.1.sdk/System/Library/Frameworks/CoreMedia.framework; sourceTree = DEVELOPER_DIR; };
 		29555C1521E5270A004BC007 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.1.sdk/System/Library/Frameworks/MetalKit.framework; sourceTree = DEVELOPER_DIR; };
 		29555C1721E52719004BC007 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.1.sdk/System/Library/Frameworks/AudioToolbox.framework; sourceTree = DEVELOPER_DIR; };
@@ -226,6 +252,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2934D9F923B6888300A9BAA6 /* ORSSerial.framework in Frameworks */,
 				276ADE2D2101CE6500EC7DC9 /* MetalKit.framework in Frameworks */,
 				29D0D61B23AE418C00BA8A30 /* UserNotifications.framework in Frameworks */,
 				276E3F9E1F97AAE800020BB3 /* CoreMedia.framework in Frameworks */,
@@ -427,6 +454,15 @@
 			path = ZX_Spectrum_128k;
 			sourceTree = "<group>";
 		};
+		2934D9EF23B6887100A9BAA6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2934D9F423B6887100A9BAA6 /* ORSSerial.framework */,
+				2934D9F623B6887100A9BAA6 /* ORSSerialPort Tests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		2968890021E3B98900BFC3BD /* SpectREMiOS */ = {
 			isa = PBXGroup;
 			children = (
@@ -484,6 +520,7 @@
 		ED913F8C1F30759300316E1A = {
 			isa = PBXGroup;
 			children = (
+				2934D9EE23B6887100A9BAA6 /* ORSSerialPort.xcodeproj */,
 				ED913F971F30759300316E1A /* SpectREM */,
 				2968890021E3B98900BFC3BD /* SpectREMiOS */,
 				ED913F961F30759300316E1A /* Products */,
@@ -638,6 +675,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				2934D9F823B6887E00A9BAA6 /* PBXTargetDependency */,
 			);
 			name = SpectREM;
 			productName = SpectREM;
@@ -680,6 +718,12 @@
 			mainGroup = ED913F8C1F30759300316E1A;
 			productRefGroup = ED913F961F30759300316E1A /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 2934D9EF23B6887100A9BAA6 /* Products */;
+					ProjectRef = 2934D9EE23B6887100A9BAA6 /* ORSSerialPort.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				ED913F941F30759300316E1A /* SpectREM */,
@@ -687,6 +731,23 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		2934D9F423B6887100A9BAA6 /* ORSSerial.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = ORSSerial.framework;
+			remoteRef = 2934D9F323B6887100A9BAA6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		2934D9F623B6887100A9BAA6 /* ORSSerialPort Tests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "ORSSerialPort Tests.xctest";
+			remoteRef = 2934D9F523B6887100A9BAA6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		296888FD21E3B98800BFC3BD /* Resources */ = {
@@ -804,6 +865,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2934D9F823B6887E00A9BAA6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ORSSerial;
+			targetProxy = 2934D9F723B6887E00A9BAA6 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		2968890D21E3B98900BFC3BD /* Main.storyboard */ = {

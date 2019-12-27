@@ -1,3 +1,6 @@
 [submodule "ZXEmuCore"]
 	path = ZXEmuCore
 	url = https://github.com/mikedaley/ZXEmuCore.git
+[submodule "ORSSerialPort"]
+	path = ORSSerialPort
+	url = https://github.com/armadsen/ORSSerialPort.git
