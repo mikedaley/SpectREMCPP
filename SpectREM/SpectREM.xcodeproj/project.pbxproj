@@ -65,6 +65,18 @@
 		2934DA5123B68AF400A9BAA6 /* Tape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA2823B68AF400A9BAA6 /* Tape.cpp */; };
 		2934DA5223B68AF400A9BAA6 /* ZXSpectrum128.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA2B23B68AF400A9BAA6 /* ZXSpectrum128.cpp */; };
 		2934DA5323B68AF400A9BAA6 /* ZXSpectrum128.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA2B23B68AF400A9BAA6 /* ZXSpectrum128.cpp */; };
+		2934DA5B23B68DC700A9BAA6 /* 128-1.ROM in Resources */ = {isa = PBXBuildFile; fileRef = 2934DA5523B68DC700A9BAA6 /* 128-1.ROM */; };
+		2934DA5C23B68DC700A9BAA6 /* 128-1.ROM in Resources */ = {isa = PBXBuildFile; fileRef = 2934DA5523B68DC700A9BAA6 /* 128-1.ROM */; };
+		2934DA5D23B68DC700A9BAA6 /* 128-0.ROM in Resources */ = {isa = PBXBuildFile; fileRef = 2934DA5623B68DC700A9BAA6 /* 128-0.ROM */; };
+		2934DA5E23B68DC700A9BAA6 /* 128-0.ROM in Resources */ = {isa = PBXBuildFile; fileRef = 2934DA5623B68DC700A9BAA6 /* 128-0.ROM */; };
+		2934DA5F23B68DC700A9BAA6 /* plus2-0.ROM in Resources */ = {isa = PBXBuildFile; fileRef = 2934DA5723B68DC700A9BAA6 /* plus2-0.ROM */; };
+		2934DA6023B68DC700A9BAA6 /* plus2-0.ROM in Resources */ = {isa = PBXBuildFile; fileRef = 2934DA5723B68DC700A9BAA6 /* plus2-0.ROM */; };
+		2934DA6123B68DC700A9BAA6 /* plus2-1.ROM in Resources */ = {isa = PBXBuildFile; fileRef = 2934DA5823B68DC700A9BAA6 /* plus2-1.ROM */; };
+		2934DA6223B68DC700A9BAA6 /* plus2-1.ROM in Resources */ = {isa = PBXBuildFile; fileRef = 2934DA5823B68DC700A9BAA6 /* plus2-1.ROM */; };
+		2934DA6323B68DC700A9BAA6 /* 128.rom in Resources */ = {isa = PBXBuildFile; fileRef = 2934DA5923B68DC700A9BAA6 /* 128.rom */; };
+		2934DA6423B68DC700A9BAA6 /* 128.rom in Resources */ = {isa = PBXBuildFile; fileRef = 2934DA5923B68DC700A9BAA6 /* 128.rom */; };
+		2934DA6523B68DC700A9BAA6 /* 48.ROM in Resources */ = {isa = PBXBuildFile; fileRef = 2934DA5A23B68DC700A9BAA6 /* 48.ROM */; };
+		2934DA6623B68DC700A9BAA6 /* 48.ROM in Resources */ = {isa = PBXBuildFile; fileRef = 2934DA5A23B68DC700A9BAA6 /* 48.ROM */; };
 		29555BEF21E3C36D004BC007 /* AudioQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17B27F021F6877C800B811FC /* AudioQueue.cpp */; };
 		29555C0921E523FA004BC007 /* AudioCore.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17B5DB951F5B14A7003E7EF3 /* AudioCore.mm */; };
 		29555C1421E52701004BC007 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29555C1321E52701004BC007 /* CoreMedia.framework */; };
@@ -182,6 +194,12 @@
 		2934DA2823B68AF400A9BAA6 /* Tape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Tape.cpp; sourceTree = "<group>"; };
 		2934DA2A23B68AF400A9BAA6 /* ZXSpectrum128.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ZXSpectrum128.hpp; sourceTree = "<group>"; };
 		2934DA2B23B68AF400A9BAA6 /* ZXSpectrum128.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZXSpectrum128.cpp; sourceTree = "<group>"; };
+		2934DA5523B68DC700A9BAA6 /* 128-1.ROM */ = {isa = PBXFileReference; lastKnownFileType = file; path = "128-1.ROM"; sourceTree = "<group>"; };
+		2934DA5623B68DC700A9BAA6 /* 128-0.ROM */ = {isa = PBXFileReference; lastKnownFileType = file; path = "128-0.ROM"; sourceTree = "<group>"; };
+		2934DA5723B68DC700A9BAA6 /* plus2-0.ROM */ = {isa = PBXFileReference; lastKnownFileType = file; path = "plus2-0.ROM"; sourceTree = "<group>"; };
+		2934DA5823B68DC700A9BAA6 /* plus2-1.ROM */ = {isa = PBXFileReference; lastKnownFileType = file; path = "plus2-1.ROM"; sourceTree = "<group>"; };
+		2934DA5923B68DC700A9BAA6 /* 128.rom */ = {isa = PBXFileReference; lastKnownFileType = file; path = 128.rom; sourceTree = "<group>"; };
+		2934DA5A23B68DC700A9BAA6 /* 48.ROM */ = {isa = PBXFileReference; lastKnownFileType = file; path = 48.ROM; sourceTree = "<group>"; };
 		29555C1321E52701004BC007 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.1.sdk/System/Library/Frameworks/CoreMedia.framework; sourceTree = DEVELOPER_DIR; };
 		29555C1521E5270A004BC007 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.1.sdk/System/Library/Frameworks/MetalKit.framework; sourceTree = DEVELOPER_DIR; };
 		29555C1721E52719004BC007 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.1.sdk/System/Library/Frameworks/AudioToolbox.framework; sourceTree = DEVELOPER_DIR; };
@@ -358,6 +376,7 @@
 				2934DA2923B68AF400A9BAA6 /* ZX_Spectrum_128k */,
 				2934DA2623B68AF400A9BAA6 /* Tape */,
 				2934DA2323B68AF400A9BAA6 /* Debugger */,
+				2934DA5423B68DC700A9BAA6 /* ROMS */,
 				2934DA0423B68AF400A9BAA6 /* LICENSE */,
 				2934DA1523B68AF400A9BAA6 /* README.md */,
 			);
@@ -436,6 +455,19 @@
 				2934DA2B23B68AF400A9BAA6 /* ZXSpectrum128.cpp */,
 			);
 			path = ZX_Spectrum_128k;
+			sourceTree = "<group>";
+		};
+		2934DA5423B68DC700A9BAA6 /* ROMS */ = {
+			isa = PBXGroup;
+			children = (
+				2934DA5523B68DC700A9BAA6 /* 128-1.ROM */,
+				2934DA5623B68DC700A9BAA6 /* 128-0.ROM */,
+				2934DA5723B68DC700A9BAA6 /* plus2-0.ROM */,
+				2934DA5823B68DC700A9BAA6 /* plus2-1.ROM */,
+				2934DA5923B68DC700A9BAA6 /* 128.rom */,
+				2934DA5A23B68DC700A9BAA6 /* 48.ROM */,
+			);
+			path = ROMS;
 			sourceTree = "<group>";
 		};
 		2968890021E3B98900BFC3BD /* SpectREMiOS */ = {
@@ -730,9 +762,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				2968891421E3B98B00BFC3BD /* LaunchScreen.storyboard in Resources */,
+				2934DA6623B68DC700A9BAA6 /* 48.ROM in Resources */,
 				2968891121E3B98B00BFC3BD /* Assets.xcassets in Resources */,
+				2934DA6023B68DC700A9BAA6 /* plus2-0.ROM in Resources */,
+				2934DA6223B68DC700A9BAA6 /* plus2-1.ROM in Resources */,
 				2934DA3D23B68AF400A9BAA6 /* README.md in Resources */,
 				2934DA2D23B68AF400A9BAA6 /* LICENSE in Resources */,
+				2934DA5C23B68DC700A9BAA6 /* 128-1.ROM in Resources */,
+				2934DA5E23B68DC700A9BAA6 /* 128-0.ROM in Resources */,
+				2934DA6423B68DC700A9BAA6 /* 128.rom in Resources */,
 				2968890F21E3B98900BFC3BD /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -741,12 +779,18 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2934DA6523B68DC700A9BAA6 /* 48.ROM in Resources */,
 				2934DA2C23B68AF400A9BAA6 /* LICENSE in Resources */,
 				27BAE9A520F4CB68007A8CFB /* Commands.rtf in Resources */,
 				EDD9ADED1F59C111004DD728 /* Credits.rtf in Resources */,
 				2934DA3C23B68AF400A9BAA6 /* README.md in Resources */,
+				2934DA5D23B68DC700A9BAA6 /* 128-0.ROM in Resources */,
 				276E3FA01F9FA01100020BB3 /* reflection.png in Resources */,
+				2934DA6323B68DC700A9BAA6 /* 128.rom in Resources */,
 				ED913FA91F30759300316E1A /* Assets.xcassets in Resources */,
+				2934DA5B23B68DC700A9BAA6 /* 128-1.ROM in Resources */,
+				2934DA6123B68DC700A9BAA6 /* plus2-1.ROM in Resources */,
+				2934DA5F23B68DC700A9BAA6 /* plus2-0.ROM in Resources */,
 				ED913FAC1F30759300316E1A /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
