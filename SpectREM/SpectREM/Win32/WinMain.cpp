@@ -11,12 +11,11 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "AudioCore.hpp"
-#include "ZXSpectrum.hpp"
-#include "ZXSpectrum48.hpp"
-#include "ZXSpectrum128.hpp"
-#include "ZXSpectrum128_2.hpp"
-#include "Tape.hpp"
-#include "AudioQueue.hpp"
+#include "..\ZXEmuCore\ZX_Spectrum_Core\ZXSpectrum.hpp"
+#include "..\ZXEmuCore\ZX_Spectrum_48k\ZXSpectrum48.hpp"
+#include "..\ZXEmuCore\ZX_Spectrum_128k\ZXSpectrum128.hpp"
+#include "..\ZXEmuCore\Tape\Tape.hpp"
+#include "..\AudioQueue.hpp"
 #include "OpenGLView.hpp"
 
 ZXSpectrum					*	m_pMachine;
@@ -40,7 +39,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		{
 			if (wparam == VK_F1)
 			{
-				OPENFILENAME ofn;
+				OPENFILENAMEA ofn;
 				char szFile[_MAX_PATH];
 
 				// Setup the ofn structure
@@ -57,7 +56,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				ofn.lpstrInitialDir = NULL;
 				ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
-				if (GetOpenFileName(&ofn))
+				if (GetOpenFileNameA(&ofn))
 				{
 					m_pMachine->snapshotZ80LoadWithPath(szFile);
 				}
@@ -68,7 +67,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			}
 			else
 			{
-				m_pMachine->keyboardKeyDown(wparam);
+				m_pMachine->keyboardKeyDown(static_cast<uint16_t>(wparam));
 			}
 		}
 		break;
@@ -76,7 +75,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	case WM_KEYUP:
 		if (m_pMachine != NULL)
 		{
-			m_pMachine->keyboardKeyUp(wparam);
+			m_pMachine->keyboardKeyUp(static_cast<uint16_t>(wparam));
 		}
 
 		break;
@@ -156,14 +155,14 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
 	wcex.hInstance = inst;
 	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wcex.hbrBackground = NULL;
-	wcex.lpszClassName = "SpectREM";
+	wcex.lpszClassName = TEXT("SpectREM");
 	RegisterClassEx(&wcex);
 
 	// Make sure the client size is correct
 	RECT wr = { 0, 0, 256 * 3, 192 * 3 };
-	AdjustWindowRect(&wr, WS_OVERLAPPED, FALSE);
+	AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE);
 
-	HWND window = CreateWindowEx(WS_EX_APPWINDOW, "SpectREM", "SpectREM", WS_OVERLAPPED, 0, 0, wr.right - wr.left, wr.bottom - wr.top, 0, 0, inst, 0);
+	HWND window = CreateWindowEx(WS_EX_APPWINDOW, TEXT("SpectREM"), TEXT("SpectREM"), WS_OVERLAPPEDWINDOW, 0, 0, wr.right - wr.left, wr.bottom - wr.top, 0, 0, inst, 0);
 	ShowWindow(window, ncmd);
 	UpdateWindow(window);
 
@@ -171,14 +170,14 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
 	QueryPerformanceCounter(&last_time);
 
 	m_pOpenGLView = new OpenGLView();
-	m_pOpenGLView->Init(window);
+	m_pOpenGLView->Init(window, 256 * 3, 192 * 3);
 	m_pAudioQueue = new AudioQueue();
 	m_pAudioCore = new AudioCore();
 	m_pAudioCore->Init(44100, 50, audio_callback);
 	m_pTape = new Tape(tapeStatusCallback);
 	m_pMachine = new ZXSpectrum128(m_pTape);
 	m_pMachine->emuUseAYSound = true;
-	m_pMachine->initialise("SpectREM\\Emulator Core\\ROMS\\");
+	m_pMachine->initialise("SpectREM\\ZXEmuCore\\ROMS\\");
 	m_pAudioCore->Start();
 	m_pMachine->resume();
 
@@ -223,7 +222,7 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
 				// Set the time
 				char buff[64];
 				sprintf_s(buff, 64, "SpectREM - %4.1f fps", 1.0f / delta_time);
-				SetWindowText(window, buff);
+				SetWindowTextA(window, buff);
 			}
 
 			//g_pMachine->RunFrame();
