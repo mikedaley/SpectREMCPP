@@ -15,6 +15,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <functional>
 
 #ifdef QT_SPECTRUM
 #include <QFile>
@@ -22,7 +23,7 @@
 
 #include "../Z80_Core/Z80Core.h"
 #include "MachineInfo.h"
-#include "Tape.hpp"
+#include "../Tape/Tape.hpp"
 
 using namespace std;
 

@@ -11,10 +11,10 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "AudioCore.hpp"
-#include "..\ZXEmuCore\ZX_Spectrum_Core\ZXSpectrum.hpp"
-#include "..\ZXEmuCore\ZX_Spectrum_48k\ZXSpectrum48.hpp"
-#include "..\ZXEmuCore\ZX_Spectrum_128k\ZXSpectrum128.hpp"
-#include "..\ZXEmuCore\Tape\Tape.hpp"
+#include "..\Emulation Core\ZX_Spectrum_Core\ZXSpectrum.hpp"
+#include "..\Emulation Core\ZX_Spectrum_48k\ZXSpectrum48.hpp"
+#include "..\Emulation Core\ZX_Spectrum_128k\ZXSpectrum128.hpp"
+#include "..\Emulation Core\Tape\Tape.hpp"
 #include "..\AudioQueue.hpp"
 #include "OpenGLView.hpp"
 
@@ -177,7 +177,7 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
 	m_pTape = new Tape(tapeStatusCallback);
 	m_pMachine = new ZXSpectrum128(m_pTape);
 	m_pMachine->emuUseAYSound = true;
-	m_pMachine->initialise("SpectREM\\ZXEmuCore\\ROMS\\");
+	m_pMachine->initialise("SpectREM\\Emulation Core\\ROMS\\");
 	m_pAudioCore->Start();
 	m_pMachine->resume();
 
