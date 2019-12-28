@@ -150,7 +150,7 @@
 		27BAE9A620F4CE9C007A8CFB /* InstructionViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InstructionViewController.h; sourceTree = "<group>"; };
 		27BAE9A720F4CE9C007A8CFB /* InstructionViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InstructionViewController.m; sourceTree = "<group>"; };
 		27BE402F239E60A7006204BA /* SmartLink.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SmartLink.mm; sourceTree = "<group>"; };
-		27BE4030239E60A7006204BA /* SmartLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmartLink.h; sourceTree = "<group>"; };
+		27BE4030239E60A7006204BA /* SmartLINK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmartLINK.h; sourceTree = "<group>"; };
 		27C5AE452146F0D3008DBD54 /* InfoPanelViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InfoPanelViewController.h; sourceTree = "<group>"; };
 		27C5AE462146F0D3008DBD54 /* InfoPanelViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InfoPanelViewController.m; sourceTree = "<group>"; };
 		27C5DBA31FFC000A0064C661 /* DebugViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DebugViewController.h; sourceTree = "<group>"; };
@@ -356,13 +356,13 @@
 		2963B3B923B7977D00CAE4CD /* Emulation Core */ = {
 			isa = PBXGroup;
 			children = (
-				2963B3BA23B7977D00CAE4CD /* ROMS */,
 				2963B3C123B7977D00CAE4CD /* Z80_Core */,
 				2963B3D123B7977D00CAE4CD /* ZX_Spectrum_Core */,
 				2963B3DB23B7977D00CAE4CD /* ZX_Spectrum_48k */,
 				2963B3E223B7977D00CAE4CD /* ZX_Spectrum_128k */,
 				2963B3DE23B7977D00CAE4CD /* Debugger */,
 				2963B3E123B7977D00CAE4CD /* Tape */,
+				2963B3BA23B7977D00CAE4CD /* ROMS */,
 			);
 			path = "Emulation Core";
 			sourceTree = "<group>";
@@ -473,7 +473,7 @@
 		29E98462239535F60033E63C /* SmartLink */ = {
 			isa = PBXGroup;
 			children = (
-				27BE4030239E60A7006204BA /* SmartLink.h */,
+				27BE4030239E60A7006204BA /* SmartLINK.h */,
 				27BE402F239E60A7006204BA /* SmartLink.mm */,
 			);
 			name = SmartLink;

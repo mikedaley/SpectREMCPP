@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
 
-#import "SmartLink.h"
+#import "SmartLINK.h"
 #import "ZXSpectrum.hpp"
 
 #import "ORSSerial/ORSSerial.h"
