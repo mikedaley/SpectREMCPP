@@ -360,9 +360,9 @@
 				2963B3C123B7977D00CAE4CD /* Z80_Core */,
 				2963B3D123B7977D00CAE4CD /* ZX_Spectrum_Core */,
 				2963B3DB23B7977D00CAE4CD /* ZX_Spectrum_48k */,
+				2963B3E223B7977D00CAE4CD /* ZX_Spectrum_128k */,
 				2963B3DE23B7977D00CAE4CD /* Debugger */,
 				2963B3E123B7977D00CAE4CD /* Tape */,
-				2963B3E223B7977D00CAE4CD /* ZX_Spectrum_128k */,
 			);
 			path = "Emulation Core";
 			sourceTree = "<group>";
