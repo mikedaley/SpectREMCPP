@@ -18,7 +18,7 @@
 #import "Debug.hpp"
 
 #import "AudioCore.h"
-#import "SmartLink.h"
+#import "SmartLINK.h"
 #import "ORSSerial/ORSSerial.h"
 
 #import "ConfigurationViewController.h"
