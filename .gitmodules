@@ -1,6 +1,3 @@
 [submodule "ORSSerialPort"]
 	path = ORSSerialPort
 	url = https://github.com/armadsen/ORSSerialPort.git
-[submodule "SpectREM/SpectREM/ZXEmuCore"]
-	path = SpectREM/SpectREM/ZXEmuCore
-	url = https://github.com/mikedaley/ZXEmuCore.git

@@ -25,58 +25,6 @@
 		27C5AE472146F0D3008DBD54 /* InfoPanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C5AE462146F0D3008DBD54 /* InfoPanelViewController.m */; };
 		27C5DBA51FFC000A0064C661 /* DebugViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 27C5DBA41FFC000A0064C661 /* DebugViewController.mm */; };
 		2934D9F923B6888300A9BAA6 /* ORSSerial.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2934D9F423B6887100A9BAA6 /* ORSSerial.framework */; };
-		2934DA2C23B68AF400A9BAA6 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 2934DA0423B68AF400A9BAA6 /* LICENSE */; };
-		2934DA2D23B68AF400A9BAA6 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 2934DA0423B68AF400A9BAA6 /* LICENSE */; };
-		2934DA2E23B68AF400A9BAA6 /* Z80Core_EDOpcodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA0723B68AF400A9BAA6 /* Z80Core_EDOpcodes.cpp */; };
-		2934DA2F23B68AF400A9BAA6 /* Z80Core_EDOpcodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA0723B68AF400A9BAA6 /* Z80Core_EDOpcodes.cpp */; };
-		2934DA3023B68AF400A9BAA6 /* Z80Core.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA0923B68AF400A9BAA6 /* Z80Core.cpp */; };
-		2934DA3123B68AF400A9BAA6 /* Z80Core.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA0923B68AF400A9BAA6 /* Z80Core.cpp */; };
-		2934DA3223B68AF400A9BAA6 /* Z80Core_FDOpcodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA0D23B68AF400A9BAA6 /* Z80Core_FDOpcodes.cpp */; };
-		2934DA3323B68AF400A9BAA6 /* Z80Core_FDOpcodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA0D23B68AF400A9BAA6 /* Z80Core_FDOpcodes.cpp */; };
-		2934DA3423B68AF400A9BAA6 /* Z80Core_CBOpcodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA0E23B68AF400A9BAA6 /* Z80Core_CBOpcodes.cpp */; };
-		2934DA3523B68AF400A9BAA6 /* Z80Core_CBOpcodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA0E23B68AF400A9BAA6 /* Z80Core_CBOpcodes.cpp */; };
-		2934DA3623B68AF400A9BAA6 /* Z80Core_DDOpcodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA1123B68AF400A9BAA6 /* Z80Core_DDOpcodes.cpp */; };
-		2934DA3723B68AF400A9BAA6 /* Z80Core_DDOpcodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA1123B68AF400A9BAA6 /* Z80Core_DDOpcodes.cpp */; };
-		2934DA3823B68AF400A9BAA6 /* Z80Core_MainOpcodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA1223B68AF400A9BAA6 /* Z80Core_MainOpcodes.cpp */; };
-		2934DA3923B68AF400A9BAA6 /* Z80Core_MainOpcodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA1223B68AF400A9BAA6 /* Z80Core_MainOpcodes.cpp */; };
-		2934DA3A23B68AF400A9BAA6 /* Z80Core_DDCB_FDCBOpcodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA1323B68AF400A9BAA6 /* Z80Core_DDCB_FDCBOpcodes.cpp */; };
-		2934DA3B23B68AF400A9BAA6 /* Z80Core_DDCB_FDCBOpcodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA1323B68AF400A9BAA6 /* Z80Core_DDCB_FDCBOpcodes.cpp */; };
-		2934DA3C23B68AF400A9BAA6 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 2934DA1523B68AF400A9BAA6 /* README.md */; };
-		2934DA3D23B68AF400A9BAA6 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 2934DA1523B68AF400A9BAA6 /* README.md */; };
-		2934DA3E23B68AF400A9BAA6 /* FloatingBus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA1723B68AF400A9BAA6 /* FloatingBus.cpp */; };
-		2934DA3F23B68AF400A9BAA6 /* FloatingBus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA1723B68AF400A9BAA6 /* FloatingBus.cpp */; };
-		2934DA4023B68AF400A9BAA6 /* Audio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA1823B68AF400A9BAA6 /* Audio.cpp */; };
-		2934DA4123B68AF400A9BAA6 /* Audio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA1823B68AF400A9BAA6 /* Audio.cpp */; };
-		2934DA4223B68AF400A9BAA6 /* ZXSpectrum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA1923B68AF400A9BAA6 /* ZXSpectrum.cpp */; };
-		2934DA4323B68AF400A9BAA6 /* ZXSpectrum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA1923B68AF400A9BAA6 /* ZXSpectrum.cpp */; };
-		2934DA4423B68AF400A9BAA6 /* Display.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA1A23B68AF400A9BAA6 /* Display.cpp */; };
-		2934DA4523B68AF400A9BAA6 /* Display.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA1A23B68AF400A9BAA6 /* Display.cpp */; };
-		2934DA4623B68AF400A9BAA6 /* Snapshot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA1B23B68AF400A9BAA6 /* Snapshot.cpp */; };
-		2934DA4723B68AF400A9BAA6 /* Snapshot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA1B23B68AF400A9BAA6 /* Snapshot.cpp */; };
-		2934DA4823B68AF400A9BAA6 /* Contention.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA1C23B68AF400A9BAA6 /* Contention.cpp */; };
-		2934DA4923B68AF400A9BAA6 /* Contention.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA1C23B68AF400A9BAA6 /* Contention.cpp */; };
-		2934DA4A23B68AF400A9BAA6 /* Keyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA1F23B68AF400A9BAA6 /* Keyboard.cpp */; };
-		2934DA4B23B68AF400A9BAA6 /* Keyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA1F23B68AF400A9BAA6 /* Keyboard.cpp */; };
-		2934DA4C23B68AF400A9BAA6 /* ZXSpectrum48.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA2123B68AF400A9BAA6 /* ZXSpectrum48.cpp */; };
-		2934DA4D23B68AF400A9BAA6 /* ZXSpectrum48.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA2123B68AF400A9BAA6 /* ZXSpectrum48.cpp */; };
-		2934DA4E23B68AF400A9BAA6 /* Debug.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA2523B68AF400A9BAA6 /* Debug.cpp */; };
-		2934DA4F23B68AF400A9BAA6 /* Debug.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA2523B68AF400A9BAA6 /* Debug.cpp */; };
-		2934DA5023B68AF400A9BAA6 /* Tape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA2823B68AF400A9BAA6 /* Tape.cpp */; };
-		2934DA5123B68AF400A9BAA6 /* Tape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA2823B68AF400A9BAA6 /* Tape.cpp */; };
-		2934DA5223B68AF400A9BAA6 /* ZXSpectrum128.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA2B23B68AF400A9BAA6 /* ZXSpectrum128.cpp */; };
-		2934DA5323B68AF400A9BAA6 /* ZXSpectrum128.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2934DA2B23B68AF400A9BAA6 /* ZXSpectrum128.cpp */; };
-		2934DA5B23B68DC700A9BAA6 /* 128-1.ROM in Resources */ = {isa = PBXBuildFile; fileRef = 2934DA5523B68DC700A9BAA6 /* 128-1.ROM */; };
-		2934DA5C23B68DC700A9BAA6 /* 128-1.ROM in Resources */ = {isa = PBXBuildFile; fileRef = 2934DA5523B68DC700A9BAA6 /* 128-1.ROM */; };
-		2934DA5D23B68DC700A9BAA6 /* 128-0.ROM in Resources */ = {isa = PBXBuildFile; fileRef = 2934DA5623B68DC700A9BAA6 /* 128-0.ROM */; };
-		2934DA5E23B68DC700A9BAA6 /* 128-0.ROM in Resources */ = {isa = PBXBuildFile; fileRef = 2934DA5623B68DC700A9BAA6 /* 128-0.ROM */; };
-		2934DA5F23B68DC700A9BAA6 /* plus2-0.ROM in Resources */ = {isa = PBXBuildFile; fileRef = 2934DA5723B68DC700A9BAA6 /* plus2-0.ROM */; };
-		2934DA6023B68DC700A9BAA6 /* plus2-0.ROM in Resources */ = {isa = PBXBuildFile; fileRef = 2934DA5723B68DC700A9BAA6 /* plus2-0.ROM */; };
-		2934DA6123B68DC700A9BAA6 /* plus2-1.ROM in Resources */ = {isa = PBXBuildFile; fileRef = 2934DA5823B68DC700A9BAA6 /* plus2-1.ROM */; };
-		2934DA6223B68DC700A9BAA6 /* plus2-1.ROM in Resources */ = {isa = PBXBuildFile; fileRef = 2934DA5823B68DC700A9BAA6 /* plus2-1.ROM */; };
-		2934DA6323B68DC700A9BAA6 /* 128.rom in Resources */ = {isa = PBXBuildFile; fileRef = 2934DA5923B68DC700A9BAA6 /* 128.rom */; };
-		2934DA6423B68DC700A9BAA6 /* 128.rom in Resources */ = {isa = PBXBuildFile; fileRef = 2934DA5923B68DC700A9BAA6 /* 128.rom */; };
-		2934DA6523B68DC700A9BAA6 /* 48.ROM in Resources */ = {isa = PBXBuildFile; fileRef = 2934DA5A23B68DC700A9BAA6 /* 48.ROM */; };
-		2934DA6623B68DC700A9BAA6 /* 48.ROM in Resources */ = {isa = PBXBuildFile; fileRef = 2934DA5A23B68DC700A9BAA6 /* 48.ROM */; };
 		29555BEF21E3C36D004BC007 /* AudioQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17B27F021F6877C800B811FC /* AudioQueue.cpp */; };
 		29555C0921E523FA004BC007 /* AudioCore.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17B5DB951F5B14A7003E7EF3 /* AudioCore.mm */; };
 		29555C1421E52701004BC007 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29555C1321E52701004BC007 /* CoreMedia.framework */; };
@@ -160,46 +108,6 @@
 		27C5DBA31FFC000A0064C661 /* DebugViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DebugViewController.h; sourceTree = "<group>"; };
 		27C5DBA41FFC000A0064C661 /* DebugViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = DebugViewController.mm; sourceTree = "<group>"; };
 		2934D9EE23B6887100A9BAA6 /* ORSSerialPort.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ORSSerialPort.xcodeproj; path = "../ORSSerialPort/Framework Project/ORSSerialPort.xcodeproj"; sourceTree = "<group>"; };
-		2934DA0423B68AF400A9BAA6 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		2934DA0623B68AF400A9BAA6 /* Z80Core_MainOpcodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Z80Core_MainOpcodes.h; sourceTree = "<group>"; };
-		2934DA0723B68AF400A9BAA6 /* Z80Core_EDOpcodes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Z80Core_EDOpcodes.cpp; sourceTree = "<group>"; };
-		2934DA0823B68AF400A9BAA6 /* Z80Core_FDOpcodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Z80Core_FDOpcodes.h; sourceTree = "<group>"; };
-		2934DA0923B68AF400A9BAA6 /* Z80Core.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Z80Core.cpp; sourceTree = "<group>"; };
-		2934DA0A23B68AF400A9BAA6 /* Z80Core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Z80Core.h; sourceTree = "<group>"; };
-		2934DA0B23B68AF400A9BAA6 /* Z80CoreOpcodeTables.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Z80CoreOpcodeTables.h; sourceTree = "<group>"; };
-		2934DA0C23B68AF400A9BAA6 /* Z80Core_DDCB_FDCBOpcodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Z80Core_DDCB_FDCBOpcodes.h; sourceTree = "<group>"; };
-		2934DA0D23B68AF400A9BAA6 /* Z80Core_FDOpcodes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Z80Core_FDOpcodes.cpp; sourceTree = "<group>"; };
-		2934DA0E23B68AF400A9BAA6 /* Z80Core_CBOpcodes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Z80Core_CBOpcodes.cpp; sourceTree = "<group>"; };
-		2934DA0F23B68AF400A9BAA6 /* Z80Core_CBOpcodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Z80Core_CBOpcodes.h; sourceTree = "<group>"; };
-		2934DA1023B68AF400A9BAA6 /* Z80Core_DDOpcodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Z80Core_DDOpcodes.h; sourceTree = "<group>"; };
-		2934DA1123B68AF400A9BAA6 /* Z80Core_DDOpcodes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Z80Core_DDOpcodes.cpp; sourceTree = "<group>"; };
-		2934DA1223B68AF400A9BAA6 /* Z80Core_MainOpcodes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Z80Core_MainOpcodes.cpp; sourceTree = "<group>"; };
-		2934DA1323B68AF400A9BAA6 /* Z80Core_DDCB_FDCBOpcodes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Z80Core_DDCB_FDCBOpcodes.cpp; sourceTree = "<group>"; };
-		2934DA1423B68AF400A9BAA6 /* Z80Core_EDOpcodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Z80Core_EDOpcodes.h; sourceTree = "<group>"; };
-		2934DA1523B68AF400A9BAA6 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		2934DA1723B68AF400A9BAA6 /* FloatingBus.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FloatingBus.cpp; sourceTree = "<group>"; };
-		2934DA1823B68AF400A9BAA6 /* Audio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Audio.cpp; sourceTree = "<group>"; };
-		2934DA1923B68AF400A9BAA6 /* ZXSpectrum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZXSpectrum.cpp; sourceTree = "<group>"; };
-		2934DA1A23B68AF400A9BAA6 /* Display.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Display.cpp; sourceTree = "<group>"; };
-		2934DA1B23B68AF400A9BAA6 /* Snapshot.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Snapshot.cpp; sourceTree = "<group>"; };
-		2934DA1C23B68AF400A9BAA6 /* Contention.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Contention.cpp; sourceTree = "<group>"; };
-		2934DA1D23B68AF400A9BAA6 /* ZXSpectrum.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ZXSpectrum.hpp; sourceTree = "<group>"; };
-		2934DA1E23B68AF400A9BAA6 /* MachineInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MachineInfo.h; sourceTree = "<group>"; };
-		2934DA1F23B68AF400A9BAA6 /* Keyboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Keyboard.cpp; sourceTree = "<group>"; };
-		2934DA2123B68AF400A9BAA6 /* ZXSpectrum48.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZXSpectrum48.cpp; sourceTree = "<group>"; };
-		2934DA2223B68AF400A9BAA6 /* ZXSpectrum48.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ZXSpectrum48.hpp; sourceTree = "<group>"; };
-		2934DA2423B68AF400A9BAA6 /* Debug.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Debug.hpp; sourceTree = "<group>"; };
-		2934DA2523B68AF400A9BAA6 /* Debug.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Debug.cpp; sourceTree = "<group>"; };
-		2934DA2723B68AF400A9BAA6 /* Tape.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Tape.hpp; sourceTree = "<group>"; };
-		2934DA2823B68AF400A9BAA6 /* Tape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Tape.cpp; sourceTree = "<group>"; };
-		2934DA2A23B68AF400A9BAA6 /* ZXSpectrum128.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ZXSpectrum128.hpp; sourceTree = "<group>"; };
-		2934DA2B23B68AF400A9BAA6 /* ZXSpectrum128.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZXSpectrum128.cpp; sourceTree = "<group>"; };
-		2934DA5523B68DC700A9BAA6 /* 128-1.ROM */ = {isa = PBXFileReference; lastKnownFileType = file; path = "128-1.ROM"; sourceTree = "<group>"; };
-		2934DA5623B68DC700A9BAA6 /* 128-0.ROM */ = {isa = PBXFileReference; lastKnownFileType = file; path = "128-0.ROM"; sourceTree = "<group>"; };
-		2934DA5723B68DC700A9BAA6 /* plus2-0.ROM */ = {isa = PBXFileReference; lastKnownFileType = file; path = "plus2-0.ROM"; sourceTree = "<group>"; };
-		2934DA5823B68DC700A9BAA6 /* plus2-1.ROM */ = {isa = PBXFileReference; lastKnownFileType = file; path = "plus2-1.ROM"; sourceTree = "<group>"; };
-		2934DA5923B68DC700A9BAA6 /* 128.rom */ = {isa = PBXFileReference; lastKnownFileType = file; path = 128.rom; sourceTree = "<group>"; };
-		2934DA5A23B68DC700A9BAA6 /* 48.ROM */ = {isa = PBXFileReference; lastKnownFileType = file; path = 48.ROM; sourceTree = "<group>"; };
 		29555C1321E52701004BC007 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.1.sdk/System/Library/Frameworks/CoreMedia.framework; sourceTree = DEVELOPER_DIR; };
 		29555C1521E5270A004BC007 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.1.sdk/System/Library/Frameworks/MetalKit.framework; sourceTree = DEVELOPER_DIR; };
 		29555C1721E52719004BC007 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.1.sdk/System/Library/Frameworks/AudioToolbox.framework; sourceTree = DEVELOPER_DIR; };
@@ -350,14 +258,6 @@
 			name = "Debug View Controller";
 			sourceTree = "<group>";
 		};
-		2934D92523B6346600A9BAA6 /* Externals */ = {
-			isa = PBXGroup;
-			children = (
-				2934DA0323B68AF400A9BAA6 /* ZXEmuCore */,
-			);
-			name = Externals;
-			sourceTree = "<group>";
-		};
 		2934D9EF23B6887100A9BAA6 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -365,109 +265,6 @@
 				2934D9F623B6887100A9BAA6 /* ORSSerialPort Tests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		2934DA0323B68AF400A9BAA6 /* ZXEmuCore */ = {
-			isa = PBXGroup;
-			children = (
-				2934DA0523B68AF400A9BAA6 /* Z80_Core */,
-				2934DA1623B68AF400A9BAA6 /* ZX_Spectrum_Core */,
-				2934DA2023B68AF400A9BAA6 /* ZX_Spectrum_48k */,
-				2934DA2923B68AF400A9BAA6 /* ZX_Spectrum_128k */,
-				2934DA2623B68AF400A9BAA6 /* Tape */,
-				2934DA2323B68AF400A9BAA6 /* Debugger */,
-				2934DA5423B68DC700A9BAA6 /* ROMS */,
-				2934DA0423B68AF400A9BAA6 /* LICENSE */,
-				2934DA1523B68AF400A9BAA6 /* README.md */,
-			);
-			path = ZXEmuCore;
-			sourceTree = "<group>";
-		};
-		2934DA0523B68AF400A9BAA6 /* Z80_Core */ = {
-			isa = PBXGroup;
-			children = (
-				2934DA0623B68AF400A9BAA6 /* Z80Core_MainOpcodes.h */,
-				2934DA0723B68AF400A9BAA6 /* Z80Core_EDOpcodes.cpp */,
-				2934DA0823B68AF400A9BAA6 /* Z80Core_FDOpcodes.h */,
-				2934DA0923B68AF400A9BAA6 /* Z80Core.cpp */,
-				2934DA0A23B68AF400A9BAA6 /* Z80Core.h */,
-				2934DA0B23B68AF400A9BAA6 /* Z80CoreOpcodeTables.h */,
-				2934DA0C23B68AF400A9BAA6 /* Z80Core_DDCB_FDCBOpcodes.h */,
-				2934DA0D23B68AF400A9BAA6 /* Z80Core_FDOpcodes.cpp */,
-				2934DA0E23B68AF400A9BAA6 /* Z80Core_CBOpcodes.cpp */,
-				2934DA0F23B68AF400A9BAA6 /* Z80Core_CBOpcodes.h */,
-				2934DA1023B68AF400A9BAA6 /* Z80Core_DDOpcodes.h */,
-				2934DA1123B68AF400A9BAA6 /* Z80Core_DDOpcodes.cpp */,
-				2934DA1223B68AF400A9BAA6 /* Z80Core_MainOpcodes.cpp */,
-				2934DA1323B68AF400A9BAA6 /* Z80Core_DDCB_FDCBOpcodes.cpp */,
-				2934DA1423B68AF400A9BAA6 /* Z80Core_EDOpcodes.h */,
-			);
-			path = Z80_Core;
-			sourceTree = "<group>";
-		};
-		2934DA1623B68AF400A9BAA6 /* ZX_Spectrum_Core */ = {
-			isa = PBXGroup;
-			children = (
-				2934DA1723B68AF400A9BAA6 /* FloatingBus.cpp */,
-				2934DA1823B68AF400A9BAA6 /* Audio.cpp */,
-				2934DA1D23B68AF400A9BAA6 /* ZXSpectrum.hpp */,
-				2934DA1923B68AF400A9BAA6 /* ZXSpectrum.cpp */,
-				2934DA1A23B68AF400A9BAA6 /* Display.cpp */,
-				2934DA1B23B68AF400A9BAA6 /* Snapshot.cpp */,
-				2934DA1C23B68AF400A9BAA6 /* Contention.cpp */,
-				2934DA1E23B68AF400A9BAA6 /* MachineInfo.h */,
-				2934DA1F23B68AF400A9BAA6 /* Keyboard.cpp */,
-			);
-			path = ZX_Spectrum_Core;
-			sourceTree = "<group>";
-		};
-		2934DA2023B68AF400A9BAA6 /* ZX_Spectrum_48k */ = {
-			isa = PBXGroup;
-			children = (
-				2934DA2123B68AF400A9BAA6 /* ZXSpectrum48.cpp */,
-				2934DA2223B68AF400A9BAA6 /* ZXSpectrum48.hpp */,
-			);
-			path = ZX_Spectrum_48k;
-			sourceTree = "<group>";
-		};
-		2934DA2323B68AF400A9BAA6 /* Debugger */ = {
-			isa = PBXGroup;
-			children = (
-				2934DA2423B68AF400A9BAA6 /* Debug.hpp */,
-				2934DA2523B68AF400A9BAA6 /* Debug.cpp */,
-			);
-			path = Debugger;
-			sourceTree = "<group>";
-		};
-		2934DA2623B68AF400A9BAA6 /* Tape */ = {
-			isa = PBXGroup;
-			children = (
-				2934DA2723B68AF400A9BAA6 /* Tape.hpp */,
-				2934DA2823B68AF400A9BAA6 /* Tape.cpp */,
-			);
-			path = Tape;
-			sourceTree = "<group>";
-		};
-		2934DA2923B68AF400A9BAA6 /* ZX_Spectrum_128k */ = {
-			isa = PBXGroup;
-			children = (
-				2934DA2A23B68AF400A9BAA6 /* ZXSpectrum128.hpp */,
-				2934DA2B23B68AF400A9BAA6 /* ZXSpectrum128.cpp */,
-			);
-			path = ZX_Spectrum_128k;
-			sourceTree = "<group>";
-		};
-		2934DA5423B68DC700A9BAA6 /* ROMS */ = {
-			isa = PBXGroup;
-			children = (
-				2934DA5523B68DC700A9BAA6 /* 128-1.ROM */,
-				2934DA5623B68DC700A9BAA6 /* 128-0.ROM */,
-				2934DA5723B68DC700A9BAA6 /* plus2-0.ROM */,
-				2934DA5823B68DC700A9BAA6 /* plus2-1.ROM */,
-				2934DA5923B68DC700A9BAA6 /* 128.rom */,
-				2934DA5A23B68DC700A9BAA6 /* 48.ROM */,
-			);
-			path = ROMS;
 			sourceTree = "<group>";
 		};
 		2968890021E3B98900BFC3BD /* SpectREMiOS */ = {
@@ -547,7 +344,6 @@
 		ED913F971F30759300316E1A /* SpectREM */ = {
 			isa = PBXGroup;
 			children = (
-				2934D92523B6346600A9BAA6 /* Externals */,
 				ED913FB41F30762600316E1A /* App Delegate */,
 				EDC56FD71F6C226E00162739 /* Defaults */,
 				EDEDE71D1F7556BD00DAC9AE /* User Interface */,
@@ -762,15 +558,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2968891421E3B98B00BFC3BD /* LaunchScreen.storyboard in Resources */,
-				2934DA6623B68DC700A9BAA6 /* 48.ROM in Resources */,
 				2968891121E3B98B00BFC3BD /* Assets.xcassets in Resources */,
-				2934DA6023B68DC700A9BAA6 /* plus2-0.ROM in Resources */,
-				2934DA6223B68DC700A9BAA6 /* plus2-1.ROM in Resources */,
-				2934DA3D23B68AF400A9BAA6 /* README.md in Resources */,
-				2934DA2D23B68AF400A9BAA6 /* LICENSE in Resources */,
-				2934DA5C23B68DC700A9BAA6 /* 128-1.ROM in Resources */,
-				2934DA5E23B68DC700A9BAA6 /* 128-0.ROM in Resources */,
-				2934DA6423B68DC700A9BAA6 /* 128.rom in Resources */,
 				2968890F21E3B98900BFC3BD /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -779,18 +567,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2934DA6523B68DC700A9BAA6 /* 48.ROM in Resources */,
-				2934DA2C23B68AF400A9BAA6 /* LICENSE in Resources */,
 				27BAE9A520F4CB68007A8CFB /* Commands.rtf in Resources */,
 				EDD9ADED1F59C111004DD728 /* Credits.rtf in Resources */,
-				2934DA3C23B68AF400A9BAA6 /* README.md in Resources */,
-				2934DA5D23B68DC700A9BAA6 /* 128-0.ROM in Resources */,
 				276E3FA01F9FA01100020BB3 /* reflection.png in Resources */,
-				2934DA6323B68DC700A9BAA6 /* 128.rom in Resources */,
 				ED913FA91F30759300316E1A /* Assets.xcassets in Resources */,
-				2934DA5B23B68DC700A9BAA6 /* 128-1.ROM in Resources */,
-				2934DA6123B68DC700A9BAA6 /* plus2-1.ROM in Resources */,
-				2934DA5F23B68DC700A9BAA6 /* plus2-0.ROM in Resources */,
 				ED913FAC1F30759300316E1A /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -803,30 +583,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				29555C1C21EA30B2004BC007 /* Display.metal in Sources */,
-				2934DA3F23B68AF400A9BAA6 /* FloatingBus.cpp in Sources */,
-				2934DA4D23B68AF400A9BAA6 /* ZXSpectrum48.cpp in Sources */,
-				2934DA5123B68AF400A9BAA6 /* Tape.cpp in Sources */,
-				2934DA4F23B68AF400A9BAA6 /* Debug.cpp in Sources */,
-				2934DA3B23B68AF400A9BAA6 /* Z80Core_DDCB_FDCBOpcodes.cpp in Sources */,
-				2934DA3323B68AF400A9BAA6 /* Z80Core_FDOpcodes.cpp in Sources */,
-				2934DA3523B68AF400A9BAA6 /* Z80Core_CBOpcodes.cpp in Sources */,
 				2968891721E3B98B00BFC3BD /* main.m in Sources */,
 				29555BEF21E3C36D004BC007 /* AudioQueue.cpp in Sources */,
-				2934DA3723B68AF400A9BAA6 /* Z80Core_DDOpcodes.cpp in Sources */,
-				2934DA4523B68AF400A9BAA6 /* Display.cpp in Sources */,
 				2968890921E3B98900BFC3BD /* EmulationViewControlleriOS.mm in Sources */,
 				2968890321E3B98900BFC3BD /* AppDelegate.m in Sources */,
 				29555C1B21EA30AC004BC007 /* MetalRenderer.m in Sources */,
-				2934DA4323B68AF400A9BAA6 /* ZXSpectrum.cpp in Sources */,
-				2934DA2F23B68AF400A9BAA6 /* Z80Core_EDOpcodes.cpp in Sources */,
-				2934DA5323B68AF400A9BAA6 /* ZXSpectrum128.cpp in Sources */,
-				2934DA4B23B68AF400A9BAA6 /* Keyboard.cpp in Sources */,
-				2934DA4123B68AF400A9BAA6 /* Audio.cpp in Sources */,
-				2934DA3123B68AF400A9BAA6 /* Z80Core.cpp in Sources */,
-				2934DA4923B68AF400A9BAA6 /* Contention.cpp in Sources */,
-				2934DA4723B68AF400A9BAA6 /* Snapshot.cpp in Sources */,
 				29555C0921E523FA004BC007 /* AudioCore.mm in Sources */,
-				2934DA3923B68AF400A9BAA6 /* Z80Core_MainOpcodes.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -836,42 +598,24 @@
 			files = (
 				276ADE3421021B5100EC7DC9 /* MetalView.m in Sources */,
 				17B27F041F6877C800B811FC /* AudioQueue.cpp in Sources */,
-				2934DA4223B68AF400A9BAA6 /* ZXSpectrum.cpp in Sources */,
-				2934DA3423B68AF400A9BAA6 /* Z80Core_CBOpcodes.cpp in Sources */,
 				17B5DB971F5B14A7003E7EF3 /* AudioCore.mm in Sources */,
-				2934DA4E23B68AF400A9BAA6 /* Debug.cpp in Sources */,
 				ED2A6D101F616C43003CD6CE /* ExportAccessoryViewController.m in Sources */,
-				2934DA5023B68AF400A9BAA6 /* Tape.cpp in Sources */,
-				2934DA5223B68AF400A9BAA6 /* ZXSpectrum128.cpp in Sources */,
-				2934DA4A23B68AF400A9BAA6 /* Keyboard.cpp in Sources */,
 				ED913F9D1F30759300316E1A /* main.m in Sources */,
 				EDC56FDA1F6C228700162739 /* Defaults.m in Sources */,
 				27BE4031239E60A7006204BA /* SmartLink.mm in Sources */,
 				276ADE2F21021A2200EC7DC9 /* MetalRenderer.m in Sources */,
 				27C5DBA51FFC000A0064C661 /* DebugViewController.mm in Sources */,
-				2934DA3023B68AF400A9BAA6 /* Z80Core.cpp in Sources */,
 				17C33DFE1F6583A400720A06 /* TapeCellView.m in Sources */,
-				2934DA4623B68AF400A9BAA6 /* Snapshot.cpp in Sources */,
-				2934DA3823B68AF400A9BAA6 /* Z80Core_MainOpcodes.cpp in Sources */,
-				2934DA3A23B68AF400A9BAA6 /* Z80Core_DDCB_FDCBOpcodes.cpp in Sources */,
-				2934DA2E23B68AF400A9BAA6 /* Z80Core_EDOpcodes.cpp in Sources */,
 				27C5AE472146F0D3008DBD54 /* InfoPanelViewController.m in Sources */,
 				29E98454239531C00033E63C /* NSObject+Bindings.mm in Sources */,
 				ED2A6D0A1F603D18003CD6CE /* NSClipView+Flipped.m in Sources */,
 				27BAE9A820F4CE9C007A8CFB /* InstructionViewController.m in Sources */,
-				2934DA4823B68AF400A9BAA6 /* Contention.cpp in Sources */,
 				ED913FA71F30759300316E1A /* EmulationViewController.mm in Sources */,
-				2934DA4023B68AF400A9BAA6 /* Audio.cpp in Sources */,
 				276ADE292101CAA900EC7DC9 /* Display.metal in Sources */,
-				2934DA4423B68AF400A9BAA6 /* Display.cpp in Sources */,
 				ED913F9A1F30759300316E1A /* AppDelegate.m in Sources */,
 				EDB7F7FC1F5ED3EF003053E3 /* EmulationWindowController.m in Sources */,
 				ED2A6D051F6036D3003CD6CE /* ConfigurationViewController.m in Sources */,
-				2934DA4C23B68AF400A9BAA6 /* ZXSpectrum48.cpp in Sources */,
-				2934DA3623B68AF400A9BAA6 /* Z80Core_DDOpcodes.cpp in Sources */,
 				17C33DFA1F6578E600720A06 /* TapeBrowserViewController.m in Sources */,
-				2934DA3E23B68AF400A9BAA6 /* FloatingBus.cpp in Sources */,
-				2934DA3223B68AF400A9BAA6 /* Z80Core_FDOpcodes.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
