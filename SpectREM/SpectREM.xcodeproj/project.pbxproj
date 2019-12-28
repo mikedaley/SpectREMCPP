@@ -410,11 +410,11 @@
 			children = (
 				2934DA1723B68AF400A9BAA6 /* FloatingBus.cpp */,
 				2934DA1823B68AF400A9BAA6 /* Audio.cpp */,
+				2934DA1D23B68AF400A9BAA6 /* ZXSpectrum.hpp */,
 				2934DA1923B68AF400A9BAA6 /* ZXSpectrum.cpp */,
 				2934DA1A23B68AF400A9BAA6 /* Display.cpp */,
 				2934DA1B23B68AF400A9BAA6 /* Snapshot.cpp */,
 				2934DA1C23B68AF400A9BAA6 /* Contention.cpp */,
-				2934DA1D23B68AF400A9BAA6 /* ZXSpectrum.hpp */,
 				2934DA1E23B68AF400A9BAA6 /* MachineInfo.h */,
 				2934DA1F23B68AF400A9BAA6 /* Keyboard.cpp */,
 			);

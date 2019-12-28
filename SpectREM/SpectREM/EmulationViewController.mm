@@ -53,7 +53,6 @@ const int cSCREEN_FILL = 1;
     NSURL                           *_lastOpenedURL;
     
     AudioQueue                      *_audioQueue;
-    DebugOpCallbackBlock            _debugBlock;
     
     NSStoryboard                    *_storyBoard;
     ConfigurationViewController     *_configViewController;
@@ -401,9 +400,10 @@ const int cSCREEN_FILL = 1;
     _debugger = new Debug;
     _debugger->attachMachine(_machine);
     
-    __block EmulationViewController *blockSelf = self;
+    std::function<bool(uint16_t, uint8_t)> debugBlock;
+    EmulationViewController *blockSelf = self;
     
-    _debugBlock = (^bool(uint16_t address, uint8_t operation) {
+    debugBlock = ([blockSelf](uint16_t address, uint8_t operation) {
         
         if (blockSelf->_debugger->checkForBreakpoint(address, operation))
         {
@@ -417,12 +417,11 @@ const int cSCREEN_FILL = 1;
             return true;
         }
         
-        
         return false;
         
     });
     
-    _machine->registerDebugOpCallback( _debugBlock );
+    _machine->registerDebugOpCallback( debugBlock );
     
     // Once a machine instance has been created we need to apply the defaults to that instance
     [self applyDefaults];
