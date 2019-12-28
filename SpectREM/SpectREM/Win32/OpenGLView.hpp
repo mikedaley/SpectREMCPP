@@ -42,6 +42,10 @@
 #define GL_TEXTURE1							0x84C1
 #define GL_BGRA								0x80E1
 #define GL_ELEMENT_ARRAY_BUFFER				0x8893
+#define GL_FRAMEBUFFER_COMPLETE             0x8CD5
+#define GL_COLOR_ATTACHMENT0                0x8CE0
+#define GL_FRAMEBUFFER                      0x8D40
+
 
 //-----------------------------------------------------------------------------------------
 
@@ -82,6 +86,14 @@ typedef void (APIENTRY * PFNGLGENERATEMIPMAPPROC) (GLenum target);
 typedef void (APIENTRY * PFNGLDISABLEVERTEXATTRIBARRAYPROC) (GLuint index);
 typedef void (APIENTRY * PFNGLUNIFORM3FVPROC) (GLint location, GLsizei count, const GLfloat *value);
 typedef void (APIENTRY * PFNGLUNIFORM4FVPROC) (GLint location, GLsizei count, const GLfloat *value);
+typedef void (APIENTRY * PFNGLGENFRAMEBUFFERSPROC) (GLsizei n, GLuint *framebuffers);
+typedef void (APIENTRY * PFNGLBINDFRAMEBUFFERPROC) (GLenum target, GLuint framebuffer);
+typedef void (APIENTRY * PFNGLFRAMEBUFFERTEXTUREPROC) (GLenum target, GLenum attachment, GLuint texture, GLint level);
+typedef void (APIENTRY * PFNGLDRAWBUFFERSPROC) (GLsizei n, const GLenum *bufs);
+typedef GLenum(APIENTRY * PFNGLCHECKFRAMEBUFFERSTATUSPROC) (GLenum target);
+typedef void (APIENTRY * PFNGLPROGRAMUNIFORM1IPROC) (GLuint program, GLint location, GLint v0);
+typedef void (APIENTRY * PFNGLPROGRAMUNIFORM2FPROC) (GLuint program, GLint location, GLfloat v0, GLfloat v1);
+
 
 //-----------------------------------------------------------------------------------------
 
@@ -93,7 +105,7 @@ public:
 
 public:
 	void								Deinit();
-	bool								Init(HWND hWnd);
+	bool								Init(HWND hWnd, int width, int height);
 
 	void								UpdateTextureData(unsigned char *pData);
 
@@ -103,6 +115,9 @@ private:
 	void								LoadShaders();
 	void								SetupTexture();
 	void								SetupQuad();
+    void                                paintGL();
+    GLuint                              prepareShaderProgram(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
+    void                                CheckOpenGLError(const char* stmt, const char* fname, int line);
 
 
 public:
@@ -143,13 +158,20 @@ public:
 	PFNWGLCREATECONTEXTATTRIBSARBPROC	wglCreateContextAttribsARB;
 	PFNWGLSWAPINTERVALEXTPROC			wglSwapIntervalEXT;
 	PFNGLPROGRAMUNIFORM1FPROC			glProgramUniform1f;
+    PFNGLGENFRAMEBUFFERSPROC            glGenFramebuffers;
+    PFNGLBINDFRAMEBUFFERPROC            glBindFramebuffer;
+    PFNGLFRAMEBUFFERTEXTUREPROC         glFramebufferTexture;
+    PFNGLDRAWBUFFERSPROC                glDrawBuffers;
+    PFNGLCHECKFRAMEBUFFERSTATUSPROC     glCheckFramebufferStatus;
+    PFNGLPROGRAMUNIFORM1IPROC           glProgramUniform1i;
+    PFNGLPROGRAMUNIFORM2FPROC           glProgramUniform2f;
 
 private:
 	HWND								m_hWnd;
 	HDC									m_HDC;
 	HGLRC								m_GLRC;
 	PIXELFORMATDESCRIPTOR				m_PFD;
-
+/*
 	GLuint								vertexBuffer;
 	GLuint								vertexArray;
 	GLuint								shaderProgName;
@@ -165,6 +187,50 @@ private:
 	GLuint								u_scanlineSize;
 	GLuint								u_scanlines;
 	GLuint								u_screenCurve;
+*/
+
+    GLuint          _viewWidth = 320;
+    GLuint          _viewHeight = 256;
+
+    GLuint          _vertexBuffer;
+    GLuint          _vertexArray;
+
+    GLuint          _clutShaderProg;
+    GLuint          _displayShaderProg;
+
+    GLuint          _clutFrameBuffer;
+    GLuint          _clutInputTexture;
+    GLuint          _clutTexture;
+    GLuint          _clutOutputTexture;
+
+    // Display shader uniforms/samplers
+    GLuint          displayDepthBuffer;
+    GLuint          reflectionTexture;
+    GLint           s_displayTexture;
+    GLint           s_texture;
+    GLint           s_reflectionTexture;
+    GLint           s_clutTexture;
+    GLint           u_borderSize;
+    GLint           u_contrast;
+    GLint           u_saturation;
+    GLint           u_brightness;
+    GLint           u_scanlineSize;
+    GLint           u_scanlines;
+    GLint           u_screenCurve;
+    GLint           u_pixelFilterValue;
+    GLint           u_rgbOffset;
+    GLint           u_showVignette;
+    GLint           u_vignetteX;
+    GLint           u_vignetteY;
+    GLint           u_showReflection;
+    GLint           u_time;
+    GLint           u_screenSize;
+
+
+
+
+
+
 };
 
 //-----------------------------------------------------------------------------------------
