@@ -462,7 +462,7 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
             hardwareType = reinterpret_cast<uint8_t *>(&pFileBytes[34])[0];
             uint16_t additionHeaderBlockLength = 0;
             additionHeaderBlockLength = reinterpret_cast<uint16_t *>(&pFileBytes[30])[0];
-            uint16_t offset = 32 + additionHeaderBlockLength;
+            uint32_t offset = 32 + additionHeaderBlockLength;
 
             if ((version == 2 && (hardwareType == cZ80_V2_MACHINE_TYPE_128 || hardwareType == cZ80_V2_MACHINE_TYPE_128_IF1)) ||
                 (version == 3 && (hardwareType == cZ80_V3_MACHINE_TYPE_128 || hardwareType == cZ80_V3_MACHINE_TYPE_128_IF1 || hardwareType == cz80_V3_MACHINE_TYPE_128_MGT ||
@@ -494,6 +494,7 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
                 }
 
                 uint32_t pageId = pFileBytes[offset + 2];
+                cout << "Page:" << pageId << " Compressed Length:" << compressedLength << " IsCompressed:" << isCompressed << endl;
 
                 if (version == 1 || ((version == 2 || version == 3) && (hardwareType == cZ80_V2_MACHINE_TYPE_48 || hardwareType == cZ80_V3_MACHINE_TYPE_48 ||
                     hardwareType == cZ80_V2_MACHINE_TYPE_48_IF1 || hardwareType == cZ80_V3_MACHINE_TYPE_48_IF1)
@@ -556,7 +557,7 @@ void ZXSpectrum::snapshotExtractMemoryBlock(uint8_t *fileBytes, uint32_t memAddr
             {
                 uint8_t count = fileBytes[filePtr + 2];
                 uint8_t value = fileBytes[filePtr + 3];
-                for (int i = 0; i < count; i++)
+                for (uint32_t i = 0; i < count; i++)
                 {
                     memoryRam[memoryPtr++] = static_cast<int8_t>(value);
                 }
