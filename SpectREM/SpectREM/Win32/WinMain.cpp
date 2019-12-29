@@ -63,7 +63,16 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			}
 			else if (wparam == VK_F3)
 			{
-/*				g_pMachine->Reset();*/
+				m_pMachine->resetMachine(true);
+			}
+			else if (wparam == VK_F4)
+			{
+				m_pMachine->resetMachine(false);
+			}
+			// See if we asked to stop
+			else if (wparam == VK_ESCAPE)
+			{
+				PostQuitMessage(0);
 			}
 			else
 			{
@@ -198,11 +207,6 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
 		}
 		else
 		{
-			// See if we asked to stop
-			if (GetAsyncKeyState(VK_ESCAPE))
-			{
-				PostQuitMessage(0);
-			}
 
 			// Get the current time counter
 			LARGE_INTEGER old_time = last_time;
