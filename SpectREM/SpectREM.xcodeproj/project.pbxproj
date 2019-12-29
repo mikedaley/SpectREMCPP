@@ -21,7 +21,7 @@
 		276E3FA01F9FA01100020BB3 /* reflection.png in Resources */ = {isa = PBXBuildFile; fileRef = 276E3F9F1F9FA01000020BB3 /* reflection.png */; };
 		27BAE9A520F4CB68007A8CFB /* Commands.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 27BAE9A420F4CB68007A8CFB /* Commands.rtf */; };
 		27BAE9A820F4CE9C007A8CFB /* InstructionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BAE9A720F4CE9C007A8CFB /* InstructionViewController.m */; };
-		27BE4031239E60A7006204BA /* SmartLink.mm in Sources */ = {isa = PBXBuildFile; fileRef = 27BE402F239E60A7006204BA /* SmartLink.mm */; };
+		27BE4031239E60A7006204BA /* SmartLINK.mm in Sources */ = {isa = PBXBuildFile; fileRef = 27BE402F239E60A7006204BA /* SmartLINK.mm */; };
 		27C5AE472146F0D3008DBD54 /* InfoPanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C5AE462146F0D3008DBD54 /* InfoPanelViewController.m */; };
 		27C5DBA51FFC000A0064C661 /* DebugViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 27C5DBA41FFC000A0064C661 /* DebugViewController.mm */; };
 		2934D9F923B6888300A9BAA6 /* ORSSerial.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2934D9F423B6887100A9BAA6 /* ORSSerial.framework */; };
@@ -149,7 +149,7 @@
 		27BAE9A420F4CB68007A8CFB /* Commands.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Commands.rtf; sourceTree = "<group>"; };
 		27BAE9A620F4CE9C007A8CFB /* InstructionViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InstructionViewController.h; sourceTree = "<group>"; };
 		27BAE9A720F4CE9C007A8CFB /* InstructionViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InstructionViewController.m; sourceTree = "<group>"; };
-		27BE402F239E60A7006204BA /* SmartLink.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SmartLink.mm; sourceTree = "<group>"; };
+		27BE402F239E60A7006204BA /* SmartLINK.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SmartLINK.mm; sourceTree = "<group>"; };
 		27BE4030239E60A7006204BA /* SmartLINK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmartLINK.h; sourceTree = "<group>"; };
 		27C5AE452146F0D3008DBD54 /* InfoPanelViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InfoPanelViewController.h; sourceTree = "<group>"; };
 		27C5AE462146F0D3008DBD54 /* InfoPanelViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InfoPanelViewController.m; sourceTree = "<group>"; };
@@ -474,7 +474,7 @@
 			isa = PBXGroup;
 			children = (
 				27BE4030239E60A7006204BA /* SmartLINK.h */,
-				27BE402F239E60A7006204BA /* SmartLink.mm */,
+				27BE402F239E60A7006204BA /* SmartLINK.mm */,
 			);
 			name = SmartLink;
 			sourceTree = "<group>";
@@ -826,7 +826,7 @@
 				ED913F9D1F30759300316E1A /* main.m in Sources */,
 				EDC56FDA1F6C228700162739 /* Defaults.m in Sources */,
 				2963B41523B7982900CAE4CD /* Tape.cpp in Sources */,
-				27BE4031239E60A7006204BA /* SmartLink.mm in Sources */,
+				27BE4031239E60A7006204BA /* SmartLINK.mm in Sources */,
 				276ADE2F21021A2200EC7DC9 /* MetalRenderer.m in Sources */,
 				27C5DBA51FFC000A0064C661 /* DebugViewController.mm in Sources */,
 				2963B3F323B7977D00CAE4CD /* Z80Core.cpp in Sources */,
