@@ -232,7 +232,7 @@ protected:
     uint8_t                 audioAYReadData();
     void                    audioAYUpdate();
     void                    audioReset();
-    void                    audioUpdateWithTs(uint32_t tStates);
+    void                    audioUpdateWithTs(int32_t tStates);
     void                    audioDecayAYFloatingRegister();
     
 private:
@@ -326,9 +326,9 @@ public:
     float                   audioTsStepCounter = 0;
     uint32_t                audioLastIndex = 0;
 
-    double                  audioBeeperTsStep = 0;
-    double                  audioOutputLevelLeft = 0;
-    double                  audioOutputLevelRight = 0;
+    float                   audioBeeperTsStep = 0;
+    float                   audioOutputLevelLeft = 0;
+    float                   audioOutputLevelRight = 0;
 	float                   audioAYLevelLeft = 0;
 	float                   audioAYLevelRight = 0;
     
@@ -338,7 +338,7 @@ public:
     uint32_t                audioAYrandom = 0;
     uint32_t                audioAYOutput = 0;
     uint32_t                audioAYNoiseCount = 0;
-    uint32_t                audioATaudioAYEnvelopeCount = 0;
+    uint32_t                audioAYaudioAYEnvelopeCount = 0;
     int32_t                 audioAYaudioAYEnvelopeStep = 0;
     uint8_t                 audioAYRegisters[ eAY_MAX_REGISTERS ]{0};
     uint8_t                 audioAYCurrentRegister = 0;
