@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <unordered_map>
+#include <Shlwapi.h>
 #include "AudioCore.hpp"
 #include "..\Emulation Core\ZX_Spectrum_Core\ZXSpectrum.hpp"
 #include "..\Emulation Core\ZX_Spectrum_48k\ZXSpectrum48.hpp"
@@ -23,6 +24,8 @@ static void audio_callback(uint32_t nNumSamples, uint8_t* pBuffer);
 static void tapeStatusCallback(int blockIndex, int bytes);
 static void ResetMachineForSnapshot(uint8_t mc);
 static void Log(std::string text);
+static std::string GetApplicationBasePath();
+static std::string GetCurrentDirectoryAsString();
 
 ZXSpectrum* m_pMachine;
 Tape* m_pTape;
@@ -48,11 +51,11 @@ bool isResetting = false;
 
 std::unordered_map<WPARAM, ZXSpectrum::ZXSpectrumKey> KeyMappings
 {
-    { VK_UP, ZXSpectrum::ZXSpectrumKey::Key_ArrowUp },
-    { VK_DOWN, ZXSpectrum::ZXSpectrumKey::Key_ArrowDown },
-    { VK_LEFT, ZXSpectrum::ZXSpectrumKey::Key_ArrowLeft },
-    { VK_RIGHT, ZXSpectrum::ZXSpectrumKey::Key_ArrowRight },
-    { VK_RETURN, ZXSpectrum::ZXSpectrumKey::Key_Enter },
+	{ VK_UP, ZXSpectrum::ZXSpectrumKey::Key_ArrowUp },
+	{ VK_DOWN, ZXSpectrum::ZXSpectrumKey::Key_ArrowDown },
+	{ VK_LEFT, ZXSpectrum::ZXSpectrumKey::Key_ArrowLeft },
+	{ VK_RIGHT, ZXSpectrum::ZXSpectrumKey::Key_ArrowRight },
+	{ VK_RETURN, ZXSpectrum::ZXSpectrumKey::Key_Enter },
 };
 
 //-----------------------------------------------------------------------------------------
@@ -97,23 +100,21 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 					if (mType <= ZX48)
 					{
 						// 48 based
-						OutputDebugString(TEXT("Snapshot changed SpectREM to 48K mode"));
 						ResetMachineForSnapshot(ZX48);
 						Sleep(500);
 					}
 					else
 					{
 						// 128 based
-						OutputDebugString(TEXT("Snapshot changed SpectREM to 128K Mode"));
 						ResetMachineForSnapshot(ZX128);
 						Sleep(500);
 					}
 
-					if (stricmp(extension.c_str(), EXT_Z80.c_str()) == 0)
+					if (_stricmp(extension.c_str(), EXT_Z80.c_str()) == 0)
 					{
 						m_pMachine->snapshotZ80LoadWithPath(szFile);
 					}
-					else if (stricmp(extension.c_str(), EXT_SNA.c_str()) == 0)
+					else if (_stricmp(extension.c_str(), EXT_SNA.c_str()) == 0)
 					{
 						m_pMachine->snapshotSNALoadWithPath(szFile);
 					}
@@ -122,11 +123,37 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 			else if (wparam == VK_F3)
 			{
-				m_pMachine->resetMachine(true);
+				// Hard reset
+				if (isResetting != true)
+				{
+					ResetMachineForSnapshot(m_pMachine->machineInfo.machineType);
+				}
 			}
 			else if (wparam == VK_F4)
 			{
-				m_pMachine->resetMachine(false);
+				// Soft reset
+				if (isResetting != true)
+				{
+					ResetMachineForSnapshot(m_pMachine->machineInfo.machineType);
+				}
+			}
+			else if (wparam == VK_F5)
+			{
+				// Switch machine (128<>48)
+				if (m_pMachine->machineInfo.machineType == 1) // is it 128?
+				{
+					if (isResetting != true)
+					{
+						ResetMachineForSnapshot(ZX48);
+					}
+				}
+				else
+				{
+					if (isResetting != true)
+					{
+						ResetMachineForSnapshot(ZX128);
+					}
+				}
 			}
 
 			// See if we asked to stop
@@ -136,22 +163,22 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			}
 			else
 			{
-                auto iter = KeyMappings.find(wparam);
-                if (iter != KeyMappings.end())
-                {
-                    m_pMachine->keyboardKeyDown((*iter).second);
-                }
+				auto iter = KeyMappings.find(wparam);
+				if (iter != KeyMappings.end())
+				{
+					m_pMachine->keyboardKeyDown((*iter).second);
+				}
 			}
 		}
 
 	case WM_KEYUP:
 		if (m_pMachine != nullptr)
 		{
-            auto iter = KeyMappings.find(wparam);
-            if (iter != KeyMappings.end())
-            {
-                m_pMachine->keyboardKeyUp((*iter).second);
-            }
+			auto iter = KeyMappings.find(wparam);
+			if (iter != KeyMappings.end())
+			{
+				m_pMachine->keyboardKeyUp((*iter).second);
+			}
 		}
 
 		break;
@@ -195,19 +222,21 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 
 static void audio_callback(uint32_t nNumSamples, uint8_t* pBuffer)
 {
-	if (isResetting == true) return;
-	if (m_pMachine)
+	if (isResetting != true)
 	{
-		m_pAudioQueue->read((int16_t*)pBuffer, nNumSamples);
-
-		// Check if we have used a frames worth of buffer storage and if so then its time to generate another frame.
-		if (m_pAudioQueue->bufferUsed() < ((44100 * 2) / 50))
+		if (m_pMachine)
 		{
-			m_pMachine->generateFrame();
+			m_pAudioQueue->read((int16_t*)pBuffer, nNumSamples);
 
-			//			m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer);
+			// Check if we have used a frames worth of buffer storage and if so then its time to generate another frame.
+			if (m_pAudioQueue->bufferUsed() < ((44100 * 2) / 50))
+			{
+				m_pMachine->generateFrame();
 
-			m_pAudioQueue->write(m_pMachine->audioBuffer, ((44100 * 2) / 50));
+				//			m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer);
+
+				m_pAudioQueue->write(m_pMachine->audioBuffer, ((44100 * 2) / 50));
+			}
 		}
 	}
 }
@@ -219,19 +248,18 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
 	// check if under VS/Debugger and set up ROM paths accordingly
 	if (IsDebuggerPresent() != 0)
 	{
-		romPath = "SpectREM\\Emulation Core\\ROMS\\";
+		romPath = "\\ROMS\\";
 	}
 	else
 	{
-		romPath = "ROMS\\";
+		romPath = "\\ROMS\\";
 	}
-
 
 	bool exit_emulator = false;
 	LARGE_INTEGER  perf_freq, time, last_time;
 	MSG	msg;
 
-	OutputDebugString(TEXT("SpectREM startup"));
+	OutputDebugString(TEXT("SpectREM startup\r\n"));
 	// Create our window
 	WNDCLASSEX wcex;
 
@@ -266,6 +294,7 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
 	m_pTape = new Tape(tapeStatusCallback);
 	m_pMachine = new ZXSpectrum128(m_pTape);
 	m_pMachine->emuUseAYSound = true;
+	m_pMachine->emuBasePath = GetApplicationBasePath();
 	m_pMachine->initialise(romPath);
 	m_pAudioCore->Start();
 	m_pMachine->resume();
@@ -287,7 +316,6 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
 		}
 		else
 		{
-			//Sleep(10);
 			if (isResetting == true) break;
 			// Get the current time counter
 			LARGE_INTEGER old_time = last_time;
@@ -309,7 +337,6 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
 				sprintf_s(buff, 64, "SpectREM - %4.1f fps", 1.0f / delta_time);
 				SetWindowTextA(window, buff);
 			}
-			//g_pMachine->RunFrame();
 		}
 	}
 	return 0;
@@ -319,36 +346,59 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
 static void ResetMachineForSnapshot(uint8_t mc)
 {
 	isResetting = true;
-	delete m_pAudioQueue;
-	m_pAudioQueue = nullptr;
-	m_pAudioQueue = new AudioQueue();
 
-	m_pAudioCore->Deinit();
-	delete m_pAudioCore;
-	m_pAudioCore = nullptr;
-	m_pAudioCore = new AudioCore();
-	m_pAudioCore->Init(44100, 50, audio_callback);
-
+	m_pMachine->pause();
+	m_pAudioCore->Stop();
 	delete m_pMachine;
 	m_pMachine = nullptr;
 
 	switch (mc)
 	{
 	case ZX48:
+		OutputDebugString(TEXT("SpectREM changed to 48K Mode\r\n"));
 		m_pMachine = new ZXSpectrum48(m_pTape);
 		m_pMachine->emuUseAYSound = false;
 		break;
 	case ZX128:
+		OutputDebugString(TEXT("SpectREM changed to 128K Mode\r\n"));
+		m_pMachine = new ZXSpectrum128(m_pTape);
+		m_pMachine->emuUseAYSound = true;
+		break;
+	default:
+		// default to 128K
+		OutputDebugString(TEXT("UNKNOWN MACHINE TYPE, Defaulting to 128K Mode\r\n"));
 		m_pMachine = new ZXSpectrum128(m_pTape);
 		m_pMachine->emuUseAYSound = true;
 		break;
 	}
 
+	m_pMachine->emuBasePath = GetApplicationBasePath();
 	m_pMachine->initialise(romPath);
-	//m_pMachine->resetMachine(true);
 	m_pAudioCore->Start();
-	//m_pMachine->resume();
+	m_pMachine->resume();
+
 	isResetting = false;
 }
 
+static std::string GetCurrentDirectoryAsString()
+{
+	TCHAR basePT[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH, basePT);
+	OutputDebugString(TEXT("Start path = "));
+	OutputDebugString(basePT);
+	OutputDebugString(TEXT("\r\n"));
+	wstring test(&basePT[0]); // first convert it to WSTR
+	std::string baseP(test.begin(), test.end()); // then finally get into a std::string
+	return baseP;
+}
+
+static std::string GetApplicationBasePath()
+{
+	TCHAR appDirT[MAX_PATH];
+	GetModuleFileName(NULL, appDirT, MAX_PATH);
+	PathRemoveFileSpec(appDirT);
+	wstring test(&appDirT[0]); // first convert it to WSTR
+	std::string appDir(test.begin(), test.end()); // then finally get into a std::string
+	return appDir;
+}
 //-----------------------------------------------------------------------------------------

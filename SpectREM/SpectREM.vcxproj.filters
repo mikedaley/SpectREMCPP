@@ -149,4 +149,9 @@
     <None Include="SpectREM\display.frag" />
     <None Include="SpectREM\display.vert" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Info.txt">
+      <Filter>Win32</Filter>
+    </Text>
+  </ItemGroup>
 </Project>

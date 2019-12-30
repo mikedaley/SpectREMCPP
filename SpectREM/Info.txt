@@ -1,0 +1,28 @@
+SPECTREM
+===========
+
+
+Current key assignments
+-------------------------
+F1 - Open file selector (currently supports .sna/.z80)
+F2 - Full speed ahead ! (No frame limiter)
+F3 - Hard reset
+F4 - Soft reset
+F5 - Switch machine - 48K <> 128K
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
