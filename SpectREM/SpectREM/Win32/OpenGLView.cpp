@@ -52,15 +52,10 @@ static char const * cU_SHOW_REFLECTION = "u_showReflection";
 static char const * cU_TIME = "u_time";
 static char const * cU_SCREEN_SIZE = "u_screenSize";
 
-//static char const * cDISPLAY_VERT_SHADER = "SpectREM\\display.vert";
-//static char const * cDISPLAY_FRAG_SHADER = "SpectREM\\display.frag";
-//static char const * cCLUT_VERT_SHADER = "SpectREM\\clut.vert";
-//static char const * cCLUT_FRAG_SHADER = "SpectREM\\clut.frag";
-
-static char const* cDISPLAY_VERT_SHADER = "display.vert";
-static char const* cDISPLAY_FRAG_SHADER = "display.frag";
-static char const* cCLUT_VERT_SHADER = "clut.vert";
-static char const* cCLUT_FRAG_SHADER = "clut.frag";
+static char * cDISPLAY_VERT_SHADER = "SpectREM\\display.vert";
+static char * cDISPLAY_FRAG_SHADER = "SpectREM\\display.frag";
+static char * cCLUT_VERT_SHADER = "SpectREM\\clut.vert";
+static char * cCLUT_FRAG_SHADER = "SpectREM\\clut.frag";
 
 /**
      3-----2 <--  1
@@ -117,6 +112,21 @@ const Color CLUT[] = {
 
 OpenGLView::OpenGLView()
 {
+	// check if under VS/Debugger and set up ROM paths accordingly
+	if (IsDebuggerPresent() != 0)
+	{
+		cDISPLAY_VERT_SHADER = "SpectREM\\display.vert";
+		cDISPLAY_FRAG_SHADER = "SpectREM\\display.frag";
+		cCLUT_VERT_SHADER = "SpectREM\\clut.vert";
+		cCLUT_FRAG_SHADER = "SpectREM\\clut.frag";
+	}
+	else
+	{
+		cDISPLAY_VERT_SHADER = "display.vert";
+		cDISPLAY_FRAG_SHADER = "display.frag";
+		cCLUT_VERT_SHADER = "clut.vert";
+		cCLUT_FRAG_SHADER = "clut.frag";
+	}
 }
 
 //-----------------------------------------------------------------------------------------

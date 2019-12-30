@@ -41,6 +41,7 @@ enum SnapType
 
 const std::string EXT_Z80 = "z80";
 const std::string EXT_SNA = "sna";
+std::string romPath;
 
 bool isResetting = false;
 
@@ -197,6 +198,17 @@ static void audio_callback(uint32_t nNumSamples, uint8_t* pBuffer)
 
 int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
 {
+	// check if under VS/Debugger and set up ROM paths accordingly
+	if (IsDebuggerPresent() != 0)
+	{
+		romPath = "SpectREM\\Emulation Core\\ROMS\\";
+	}
+	else
+	{
+		romPath = "ROMS\\";
+	}
+
+
 	bool exit_emulator = false;
 	LARGE_INTEGER  perf_freq, time, last_time;
 	MSG	msg;
@@ -236,7 +248,7 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
 	m_pTape = new Tape(tapeStatusCallback);
 	m_pMachine = new ZXSpectrum128(m_pTape);
 	m_pMachine->emuUseAYSound = true;
-	m_pMachine->initialise("SpectREM\\Emulation Core\\ROMS\\");
+	m_pMachine->initialise(romPath);
 	m_pAudioCore->Start();
 	m_pMachine->resume();
 
@@ -314,7 +326,7 @@ static void ResetMachineForSnapshot(uint8_t mc)
 		break;
 	}
 
-	m_pMachine->initialise("SpectREM\\Emulation Core\\ROMS\\");
+	m_pMachine->initialise(romPath);
 	//m_pMachine->resetMachine(true);
 	m_pAudioCore->Start();
 	//m_pMachine->resume();
