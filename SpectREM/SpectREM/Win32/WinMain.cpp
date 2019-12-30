@@ -10,6 +10,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <unordered_map>
 #include "AudioCore.hpp"
 #include "..\Emulation Core\ZX_Spectrum_Core\ZXSpectrum.hpp"
 #include "..\Emulation Core\ZX_Spectrum_48k\ZXSpectrum48.hpp"
@@ -24,6 +25,15 @@ AudioCore					*	m_pAudioCore;
 AudioQueue					*	m_pAudioQueue;
 OpenGLView					*	m_pOpenGLView;
 
+std::unordered_map<WPARAM, ZXSpectrum::ZXSpectrumKey> KeyMappings
+{
+    { VK_UP, ZXSpectrum::ZXSpectrumKey::Key_ArrowUp },
+    { VK_DOWN, ZXSpectrum::ZXSpectrumKey::Key_ArrowDown },
+    { VK_LEFT, ZXSpectrum::ZXSpectrumKey::Key_ArrowLeft },
+    { VK_RIGHT, ZXSpectrum::ZXSpectrumKey::Key_ArrowRight },
+    { VK_RETURN, ZXSpectrum::ZXSpectrumKey::Key_Enter },
+};
+
 //-----------------------------------------------------------------------------------------
 
 static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -35,7 +45,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		return 0;
 
 	case WM_KEYDOWN:
-		if (m_pMachine != NULL)
+		if (m_pMachine != nullptr)
 		{
 			if (wparam == VK_F1)
 			{
@@ -76,15 +86,23 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			}
 			else
 			{
-				m_pMachine->keyboardKeyDown(static_cast<uint16_t>(wparam));
+                auto iter = KeyMappings.find(wparam);
+                if (iter != KeyMappings.end())
+                {
+                    m_pMachine->keyboardKeyDown((*iter).second);
+                }
 			}
 		}
 		break;
 
 	case WM_KEYUP:
-		if (m_pMachine != NULL)
+		if (m_pMachine != nullptr)
 		{
-			m_pMachine->keyboardKeyUp(static_cast<uint16_t>(wparam));
+            auto iter = KeyMappings.find(wparam);
+            if (iter != KeyMappings.end())
+            {
+                m_pMachine->keyboardKeyUp((*iter).second);
+            }
 		}
 
 		break;
