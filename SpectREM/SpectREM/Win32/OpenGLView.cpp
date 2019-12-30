@@ -196,7 +196,7 @@ bool OpenGLView::Init(HWND hWnd, int width, int height)
 	int contextAL[] = 
 	{
 		WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
-		WGL_CONTEXT_MINOR_VERSION_ARB, 3,
+		WGL_CONTEXT_MINOR_VERSION_ARB, 2,
 		0
 	};
 
