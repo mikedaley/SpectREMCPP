@@ -99,11 +99,11 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 						Sleep(500);
 					}
 
-					if (extension.compare(0, 3, EXT_Z80) == 0)
+					if (stricmp(extension.c_str(), EXT_Z80.c_str()) == 0)
 					{
 						m_pMachine->snapshotZ80LoadWithPath(szFile);
 					}
-					else if (extension.compare(0, 3, EXT_SNA) == 0)
+					else if (stricmp(extension.c_str(), EXT_SNA.c_str()) == 0)
 					{
 						m_pMachine->snapshotSNALoadWithPath(szFile);
 					}
