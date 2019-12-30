@@ -59,7 +59,7 @@
 - (BOOL)performDragOperation:(id<NSDraggingInfo>)sender
 {
     NSPasteboard *pBoard = [sender draggingPasteboard];
-    if ([[pBoard types] containsObject:NSPasteboardTypeURL])
+    if ([[pBoard types] containsObject:NSPasteboardTypeFileURL])
     {
         NSURL *fileURL = [NSURL URLFromPasteboard:pBoard];
         if ([[fileURL.pathExtension uppercaseString] isEqualToString:cZ80_EXTENSION] ||
