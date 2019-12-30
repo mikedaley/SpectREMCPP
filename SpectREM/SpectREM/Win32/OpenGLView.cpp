@@ -195,8 +195,8 @@ bool OpenGLView::Init(HWND hWnd, int width, int height)
 	// Set the 4.0 version of OpenGL in the attribute list.
 	int contextAL[] = 
 	{
-		WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
-		WGL_CONTEXT_MINOR_VERSION_ARB, 0,
+		WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+		WGL_CONTEXT_MINOR_VERSION_ARB, 3,
 		0
 	};
 
