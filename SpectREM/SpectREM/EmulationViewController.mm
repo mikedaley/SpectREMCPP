@@ -394,7 +394,9 @@ const int cSCREEN_FILL = 1;
     }
     else
     {
-        NSLog(@"Unknown machine type!");
+        NSLog(@"initMachineWithRomPath: Unknown machine type, defaulting to 48K");
+        _machine = new ZXSpectrum48(_tape);
+        [_infoPanelViewController displayMessage:@"ZX Spectrum 48k" duration:5];
         return;
     }
     
