@@ -85,13 +85,79 @@ public:
         eDebugExecuteOp = 0x04
     };
     
+    enum class ZXSpectrumKey
+    {
+        __NoKey,
+        Key_0,
+        Key_1,
+        Key_2,
+        Key_3,
+        Key_4,
+        Key_5,
+        Key_6,
+        Key_7,
+        Key_8,
+        Key_9,
+        Key_A,
+        Key_B,
+        Key_C,
+        Key_D,
+        Key_E,
+        Key_F,
+        Key_G,
+        Key_H,
+        Key_I,
+        Key_J,
+        Key_K,
+        Key_L,
+        Key_M,
+        Key_N,
+        Key_O,
+        Key_P,
+        Key_Q,
+        Key_R,
+        Key_S,
+        Key_T,
+        Key_U,
+        Key_V,
+        Key_W,
+        Key_X,
+        Key_Y,
+        Key_Z,
+        Key_Shift,
+        Key_Enter,
+        Key_Space,
+        Key_SymbolShift,
+        Key_InvVideo,
+        Key_TrueVideo,
+        Key_Quote,
+        Key_SemiColon,
+        Key_Comma,
+        Key_Minus,
+        Key_Plus,
+        Key_Period,
+        Key_Edit,
+        Key_Graph,
+        Key_Break,
+        Key_Backspace,
+        Key_ArrowUp,
+        Key_ArrowDown,
+        Key_ArrowLeft,
+        Key_ArrowRight,
+        Key_ExtendMode,
+        Key_CapsLock,
+    };
+
+
 private:
     // Holds details of the host platforms key codes and how they map to the spectrum keyboard matrix
     typedef struct
     {
-        int     key;
-        int     mapEntry;
-        int     mapBit;
+        ZXSpectrumKey   key;
+        int             mapEntry1;
+        int             mapBit1;
+        int             mapEntry2;
+        int             mapBit2;
     } KEYBOARD_ENTRY;
     
 public:
@@ -132,9 +198,9 @@ public:
     // On completion the displayBuffer member variable will contain RGBA formatted image data that can then be used to build a display image
     void                    generateFrame();
     
-    void                    keyboardKeyDown(int key);
-    void                    keyboardKeyUp(int key);
-    void                    keyboardFlagsChanged(uint64_t flags, int key);
+    void                    keyboardKeyDown(ZXSpectrumKey key);
+    void                    keyboardKeyUp(ZXSpectrumKey key);
+    void                    keyboardFlagsChanged(uint64_t flags, ZXSpectrumKey key);
     
     bool                    snapshotZ80LoadWithPath(const char *path);
     bool                    snapshotSNALoadWithPath(const char *path);

@@ -21,8 +21,6 @@ enum
     cSNA_SNAPSHOT_TYPE
 };
 
-
-
 @interface EmulationViewController : NSViewController
 
 #pragma mark - Properties
