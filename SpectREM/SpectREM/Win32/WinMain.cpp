@@ -19,9 +19,16 @@
 #include "..\Emulation Core\Tape\Tape.hpp"
 #include "..\AudioQueue.hpp"
 #include "OpenGLView.hpp"
+#include "../../resource.h"
+
+#define WIN32API_GUI
 
 static void audio_callback(uint32_t nNumSamples, uint8_t* pBuffer);
 static void tapeStatusCallback(int blockIndex, int bytes);
+static void LoadSnapshot();
+static void HardReset();
+static void SoftReset();
+static void SwitchMachines();
 static void ResetMachineForSnapshot(uint8_t mc);
 static void Log(std::string text);
 static std::string GetApplicationBasePath();
@@ -46,6 +53,7 @@ enum SnapType
 const std::string EXT_Z80 = "z80";
 const std::string EXT_SNA = "sna";
 std::string romPath;
+HACCEL hAcc;
 
 bool isResetting = false;
 
@@ -64,6 +72,43 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 {
 	switch (msg)
 	{
+
+#ifdef WIN32API_GUI
+	case WM_COMMAND:
+		switch (LOWORD(wparam))
+		{
+		case ID_FILE_EXIT:
+			PostQuitMessage(0);
+			break;
+		case ID_FILE_OPENSNAPSHOT:
+			LoadSnapshot();
+			break;
+		case ID_EMULATION_FULLSPEED:
+			
+			break;
+		case ID_RESET_HARD:
+			HardReset();
+			break;
+		case ID_RESET_SOFT:
+			SoftReset();
+			break;
+		case ID_SWITCH_TO48K:
+			ResetMachineForSnapshot(ZX48);
+			break;
+		case ID_SWITCH_TO128K:
+			ResetMachineForSnapshot(ZX128);
+			break;
+		case ID_SWITCH_FLIP:
+			SwitchMachines();
+			return 0;
+			break;
+
+		default:
+			break;
+		}
+		break;
+#endif
+
 	case WM_CLOSE:
 		PostQuitMessage(0);
 		return 0;
@@ -73,87 +118,19 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		{
 			if (wparam == VK_F1)
 			{
-				OPENFILENAMEA ofn;
-				char szFile[_MAX_PATH];
-
-				// Setup the ofn structure
-				ZeroMemory(&ofn, sizeof(ofn));
-				ofn.lStructSize = sizeof(ofn);
-				ofn.hwndOwner = NULL;
-				ofn.lpstrFile = szFile;
-				ofn.lpstrFile[0] = '\0';
-				ofn.nMaxFile = sizeof(szFile);
-				ofn.lpstrFilter = "All\0*.*\0Snapshot\0*.SNA\0Z80\0*.Z80\0\0";
-				ofn.nFilterIndex = 1;
-				ofn.lpstrFileTitle = NULL;
-				ofn.nMaxFileTitle = 0;
-				ofn.lpstrInitialDir = NULL;
-				ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
-
-				if (GetOpenFileNameA(&ofn))
-				{
-					int32_t mType = m_pMachine->snapshotMachineInSnapshotWithPath(szFile);
-					std::string s(szFile, sizeof(szFile));
-					std::string extension = s.substr(s.find_last_of(".") + 1, s.find_last_of(".") + 4);
-
-					// Check the machine type returned from the user supplied snapshot
-					if (mType <= ZX48)
-					{
-						// 48 based
-						ResetMachineForSnapshot(ZX48);
-						Sleep(500);
-					}
-					else
-					{
-						// 128 based
-						ResetMachineForSnapshot(ZX128);
-						Sleep(500);
-					}
-
-					if (_stricmp(extension.c_str(), EXT_Z80.c_str()) == 0)
-					{
-						m_pMachine->snapshotZ80LoadWithPath(szFile);
-					}
-					else if (_stricmp(extension.c_str(), EXT_SNA.c_str()) == 0)
-					{
-						m_pMachine->snapshotSNALoadWithPath(szFile);
-					}
-				}
+				LoadSnapshot();
 			}
-
 			else if (wparam == VK_F3)
 			{
-				// Hard reset
-				if (isResetting != true)
-				{
-					ResetMachineForSnapshot(m_pMachine->machineInfo.machineType);
-				}
+				HardReset();
 			}
 			else if (wparam == VK_F4)
 			{
-				// Soft reset
-				if (isResetting != true)
-				{
-					ResetMachineForSnapshot(m_pMachine->machineInfo.machineType);
-				}
+				SoftReset();
 			}
 			else if (wparam == VK_F5)
 			{
-				// Switch machine (128<>48)
-				if (m_pMachine->machineInfo.machineType == 1) // is it 128?
-				{
-					if (isResetting != true)
-					{
-						ResetMachineForSnapshot(ZX48);
-					}
-				}
-				else
-				{
-					if (isResetting != true)
-					{
-						ResetMachineForSnapshot(ZX128);
-					}
-				}
+				SwitchMachines();
 			}
 
 			// See if we asked to stop
@@ -183,24 +160,6 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		break;
 
-		// 	case WM_PAINT:
-		// 	{
-		// 		PAINTSTRUCT ps;
-		// 
-		// 		HDC hdc = BeginPaint(hwnd, &ps);
-		// 
-		// 		// Draw the display
-		// 
-		// 		if (m_pMachine != NULL)
-		// 		{
-		// 
-		// 		}
-		// 
-		// 
-		// 		EndPaint(hwnd, &ps);
-		// 	}
-		// 	return 0L;
-
 	case WM_SIZE:
 		glViewport(0, 0, LOWORD(lparam), HIWORD(lparam));
 		break;
@@ -210,6 +169,93 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	}
 
 	return 0;
+}
+
+void SwitchMachines()
+{
+	// Switch machine (128<>48)
+	if (m_pMachine->machineInfo.machineType == 1) // is it 128?
+	{
+		if (isResetting != true)
+		{
+			ResetMachineForSnapshot(ZX48);
+		}
+	}
+	else
+	{
+		if (isResetting != true)
+		{
+			ResetMachineForSnapshot(ZX128);
+		}
+	}
+}
+
+void SoftReset()
+{
+	// Soft reset
+	if (isResetting != true)
+	{
+		ResetMachineForSnapshot(m_pMachine->machineInfo.machineType);
+	}
+}
+
+void HardReset()
+{
+	// Hard reset
+	if (isResetting != true)
+	{
+		ResetMachineForSnapshot(m_pMachine->machineInfo.machineType);
+	}
+}
+
+void LoadSnapshot()
+{
+	OPENFILENAMEA ofn;
+	char szFile[_MAX_PATH];
+
+	// Setup the ofn structure
+	ZeroMemory(&ofn, sizeof(ofn));
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = NULL;
+	ofn.lpstrFile = szFile;
+	ofn.lpstrFile[0] = '\0';
+	ofn.nMaxFile = sizeof(szFile);
+	ofn.lpstrFilter = "All\0*.*\0Snapshot\0*.SNA\0Z80\0*.Z80\0\0";
+	ofn.nFilterIndex = 1;
+	ofn.lpstrFileTitle = NULL;
+	ofn.nMaxFileTitle = 0;
+	ofn.lpstrInitialDir = NULL;
+	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+	if (GetOpenFileNameA(&ofn))
+	{
+		int32_t mType = m_pMachine->snapshotMachineInSnapshotWithPath(szFile);
+		std::string s(szFile, sizeof(szFile));
+		std::string extension = s.substr(s.find_last_of(".") + 1, s.find_last_of(".") + 4);
+
+		// Check the machine type returned from the user supplied snapshot
+		if (mType <= ZX48)
+		{
+			// 48 based
+			ResetMachineForSnapshot(ZX48);
+			Sleep(500);
+		}
+		else
+		{
+			// 128 based
+			ResetMachineForSnapshot(ZX128);
+			Sleep(500);
+		}
+
+		if (_stricmp(extension.c_str(), EXT_Z80.c_str()) == 0)
+		{
+			m_pMachine->snapshotZ80LoadWithPath(szFile);
+		}
+		else if (_stricmp(extension.c_str(), EXT_SNA.c_str()) == 0)
+		{
+			m_pMachine->snapshotSNALoadWithPath(szFile);
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------------------
@@ -273,6 +319,14 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
 	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wcex.hbrBackground = NULL;
 	wcex.lpszClassName = TEXT("SpectREM");
+	wcex.hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_TEMPICON));
+	wcex.hIconSm = (HICON)LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_TEMPICON), IMAGE_ICON, 16, 16, 0);
+	hAcc = nullptr;
+#ifdef WIN32API_GUI
+	wcex.lpszMenuName = MAKEINTRESOURCE(IDR_MENU1);
+	hAcc = LoadAccelerators(inst, MAKEINTRESOURCE(IDR_MENUACCELERATORS));
+#endif
+
 	RegisterClassEx(&wcex);
 
 	// Make sure the client size is correct
@@ -310,8 +364,11 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
 			}
 			else
 			{
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
+				if (!TranslateAccelerator(msg.hwnd, hAcc, &msg))
+				{
+					TranslateMessage(&msg);
+					DispatchMessage(&msg);
+				}
 			}
 		}
 		else

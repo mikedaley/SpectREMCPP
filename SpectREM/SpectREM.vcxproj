@@ -144,7 +144,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -172,6 +172,7 @@
     <ClCompile Include="SpectREM\Win32\WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="resource.h" />
     <ClInclude Include="SpectREM\AudioQueue.hpp" />
     <ClInclude Include="SpectREM\Emulation Core\Debugger\Debug.hpp" />
     <ClInclude Include="SpectREM\Emulation Core\Tape\Tape.hpp" />
@@ -198,6 +199,12 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="Info.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SpectREM.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Y:\OneDrive\Z80 Asm Editor\ZXAsmEd.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

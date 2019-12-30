@@ -142,6 +142,7 @@
     <ClInclude Include="SpectREM\Emulation Core\ZX_Spectrum_Core\ZXSpectrum.hpp">
       <Filter>Emulation Core\ZX_Spectrum_Core</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="SpectREM\clut.frag" />
@@ -153,5 +154,11 @@
     <Text Include="Info.txt">
       <Filter>Win32</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SpectREM.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Y:\OneDrive\Z80 Asm Editor\ZXAsmEd.ico" />
   </ItemGroup>
 </Project>
