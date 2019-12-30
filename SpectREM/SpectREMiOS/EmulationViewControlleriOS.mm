@@ -216,7 +216,7 @@ NSString  *const cSESSION_FILE_NAME = @"session.z80";
     }
     else
     {
-        NSLog(@"Unknown machine type!");
+        NSLog(@"initMachineWithRomPath: Unknown machine type!");
         return;
     }
     
