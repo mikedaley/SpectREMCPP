@@ -116,7 +116,10 @@ void AudioCore::OnVoiceProcessingPassStart(UINT32 SamplesRequired)
 
 void AudioCore::OnBufferEnd(void * pBufferContext)
 {
-	m_pCallback((44100 * 2) / 50, &pBuffer[buffer_idx * bytes_per_frame]);
+	if (m_pCallback != NULL)
+	{
+		m_pCallback((44100 * 2) / 50, &pBuffer[buffer_idx * bytes_per_frame]);
+	}
 
 	XAUDIO2_BUFFER buf = { 0 };
 	buf.AudioBytes = bytes_per_frame;

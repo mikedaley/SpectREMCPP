@@ -18,11 +18,31 @@
 #include "..\AudioQueue.hpp"
 #include "OpenGLView.hpp"
 
-ZXSpectrum					*	m_pMachine;
-Tape						*	m_pTape;
-AudioCore					*	m_pAudioCore;
-AudioQueue					*	m_pAudioQueue;
-OpenGLView					*	m_pOpenGLView;
+static void audio_callback(uint32_t nNumSamples, uint8_t* pBuffer);
+static void tapeStatusCallback(int blockIndex, int bytes);
+static void ResetMachineForSnapshot(uint8_t mc);
+static void Log(std::string text);
+
+ZXSpectrum* m_pMachine;
+Tape* m_pTape;
+AudioCore* m_pAudioCore;
+AudioQueue* m_pAudioQueue;
+OpenGLView* m_pOpenGLView;
+
+enum MachineType
+{
+	ZX48, ZX128, PLUS2, PLUS3, UNKNOWN
+} mType;
+
+enum SnapType
+{
+	SNA, Z80
+};
+
+const std::string EXT_Z80 = "z80";
+const std::string EXT_SNA = "sna";
+
+bool isResetting = false;
 
 //-----------------------------------------------------------------------------------------
 
@@ -58,9 +78,37 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 				if (GetOpenFileNameA(&ofn))
 				{
-					m_pMachine->snapshotZ80LoadWithPath(szFile);
+					int32_t mType = m_pMachine->snapshotMachineInSnapshotWithPath(szFile);
+					std::string s(szFile, sizeof(szFile));
+					std::string extension = s.substr(s.find_last_of(".") + 1, s.find_last_of(".") + 4);
+
+					// Check the machine type returned from the user supplied snapshot
+					if (mType <= ZX48)
+					{
+						// 48 based
+						OutputDebugString(TEXT("Snapshot changed SpectREM to 48K mode"));
+						ResetMachineForSnapshot(ZX48);
+						Sleep(500);
+					}
+					else
+					{
+						// 128 based
+						OutputDebugString(TEXT("Snapshot changed SpectREM to 128K Mode"));
+						ResetMachineForSnapshot(ZX128);
+						Sleep(500);
+					}
+
+					if (extension.compare(0, 3, EXT_Z80) == 0)
+					{
+						m_pMachine->snapshotZ80LoadWithPath(szFile);
+					}
+					else if (extension.compare(0, 3, EXT_SNA) == 0)
+					{
+						m_pMachine->snapshotSNALoadWithPath(szFile);
+					}
 				}
 			}
+
 			else if (wparam == VK_F3)
 			{
 				m_pMachine->resetMachine(true);
@@ -69,6 +117,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			{
 				m_pMachine->resetMachine(false);
 			}
+
 			// See if we asked to stop
 			else if (wparam == VK_ESCAPE)
 			{
@@ -79,7 +128,6 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				m_pMachine->keyboardKeyDown(static_cast<uint16_t>(wparam));
 			}
 		}
-		break;
 
 	case WM_KEYUP:
 		if (m_pMachine != NULL)
@@ -89,23 +137,23 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		break;
 
-// 	case WM_PAINT:
-// 	{
-// 		PAINTSTRUCT ps;
-// 
-// 		HDC hdc = BeginPaint(hwnd, &ps);
-// 
-// 		// Draw the display
-// 
-// 		if (m_pMachine != NULL)
-// 		{
-// 
-// 		}
-// 
-// 
-// 		EndPaint(hwnd, &ps);
-// 	}
-// 	return 0L;
+		// 	case WM_PAINT:
+		// 	{
+		// 		PAINTSTRUCT ps;
+		// 
+		// 		HDC hdc = BeginPaint(hwnd, &ps);
+		// 
+		// 		// Draw the display
+		// 
+		// 		if (m_pMachine != NULL)
+		// 		{
+		// 
+		// 		}
+		// 
+		// 
+		// 		EndPaint(hwnd, &ps);
+		// 	}
+		// 	return 0L;
 
 	case WM_SIZE:
 		glViewport(0, 0, LOWORD(lparam), HIWORD(lparam));
@@ -126,18 +174,19 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 
 //-----------------------------------------------------------------------------------------
 
-static void audio_callback(uint32_t nNumSamples, uint8_t *pBuffer)
+static void audio_callback(uint32_t nNumSamples, uint8_t* pBuffer)
 {
+	if (isResetting == true) return;
 	if (m_pMachine)
 	{
-		m_pAudioQueue->read((int16_t *)pBuffer, nNumSamples);
+		m_pAudioQueue->read((int16_t*)pBuffer, nNumSamples);
 
 		// Check if we have used a frames worth of buffer storage and if so then its time to generate another frame.
-		if (m_pAudioQueue->bufferUsed() < ((44100 * 2) / 50) )
+		if (m_pAudioQueue->bufferUsed() < ((44100 * 2) / 50))
 		{
 			m_pMachine->generateFrame();
 
-//			m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer);
+			//			m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer);
 
 			m_pAudioQueue->write(m_pMachine->audioBuffer, ((44100 * 2) / 50));
 		}
@@ -152,6 +201,7 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
 	LARGE_INTEGER  perf_freq, time, last_time;
 	MSG	msg;
 
+	OutputDebugString(TEXT("SpectREM startup"));
 	// Create our window
 	WNDCLASSEX wcex;
 
@@ -207,7 +257,8 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
 		}
 		else
 		{
-
+			//Sleep(10);
+			if (isResetting == true) break;
 			// Get the current time counter
 			LARGE_INTEGER old_time = last_time;
 			QueryPerformanceCounter(&time);
@@ -228,12 +279,46 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
 				sprintf_s(buff, 64, "SpectREM - %4.1f fps", 1.0f / delta_time);
 				SetWindowTextA(window, buff);
 			}
-
 			//g_pMachine->RunFrame();
 		}
 	}
-
 	return 0;
+}
+
+
+static void ResetMachineForSnapshot(uint8_t mc)
+{
+	isResetting = true;
+	delete m_pAudioQueue;
+	m_pAudioQueue = nullptr;
+	m_pAudioQueue = new AudioQueue();
+
+	m_pAudioCore->Deinit();
+	delete m_pAudioCore;
+	m_pAudioCore = nullptr;
+	m_pAudioCore = new AudioCore();
+	m_pAudioCore->Init(44100, 50, audio_callback);
+
+	delete m_pMachine;
+	m_pMachine = nullptr;
+
+	switch (mc)
+	{
+	case ZX48:
+		m_pMachine = new ZXSpectrum48(m_pTape);
+		m_pMachine->emuUseAYSound = false;
+		break;
+	case ZX128:
+		m_pMachine = new ZXSpectrum128(m_pTape);
+		m_pMachine->emuUseAYSound = true;
+		break;
+	}
+
+	m_pMachine->initialise("SpectREM\\Emulation Core\\ROMS\\");
+	//m_pMachine->resetMachine(true);
+	m_pAudioCore->Start();
+	//m_pMachine->resume();
+	isResetting = false;
 }
 
 //-----------------------------------------------------------------------------------------

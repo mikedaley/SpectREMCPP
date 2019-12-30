@@ -3,3 +3,6 @@
 /.vs/SpectREMCPP/v16
 /.vs
 /SpectREM/.vs/SpectREM/v16
+/SpectREM/x64/Debug
+/SpectREM/x64/Release
+/SpectREM/SpectREM.vcxproj.user
