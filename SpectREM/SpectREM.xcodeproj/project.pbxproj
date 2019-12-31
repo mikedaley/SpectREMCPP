@@ -405,14 +405,14 @@
 		2963B3D123B7977D00CAE4CD /* ZX_Spectrum_Core */ = {
 			isa = PBXGroup;
 			children = (
+				2963B3D923B7977D00CAE4CD /* MachineInfo.h */,
+				2963B3D823B7977D00CAE4CD /* ZXSpectrum.hpp */,
+				2963B3D423B7977D00CAE4CD /* ZXSpectrum.cpp */,
+				2963B3D723B7977D00CAE4CD /* Contention.cpp */,
 				2963B3D223B7977D00CAE4CD /* FloatingBus.cpp */,
 				2963B3D323B7977D00CAE4CD /* Audio.cpp */,
-				2963B3D423B7977D00CAE4CD /* ZXSpectrum.cpp */,
 				2963B3D523B7977D00CAE4CD /* Display.cpp */,
 				2963B3D623B7977D00CAE4CD /* Snapshot.cpp */,
-				2963B3D723B7977D00CAE4CD /* Contention.cpp */,
-				2963B3D823B7977D00CAE4CD /* ZXSpectrum.hpp */,
-				2963B3D923B7977D00CAE4CD /* MachineInfo.h */,
 				2963B3DA23B7977D00CAE4CD /* Keyboard.cpp */,
 			);
 			path = ZX_Spectrum_Core;
