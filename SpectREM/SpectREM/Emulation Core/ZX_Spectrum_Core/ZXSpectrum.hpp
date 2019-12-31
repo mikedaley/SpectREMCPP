@@ -338,16 +338,19 @@ public:
     uint32_t                audioAYrandom = 0;
     uint32_t                audioAYOutput = 0;
     uint32_t                audioAYNoiseCount = 0;
-    uint32_t                audioAYEnvelopeCount = 0;
-    uint32_t                 audioAYEnvelopeStep = 0;
+    uint16_t                audioAYEnvelopeCount = 0;
+    
     uint8_t                 audioAYRegisters[ eAY_MAX_REGISTERS ]{0};
     uint8_t                 audioAYCurrentRegister = 0;
     uint8_t                 audioAYFloatingRegister = 0;
-    bool                    audioAYEnvelopeHolding = 0;
-    bool                    audioAYEnvelopeHold = 0;
-    bool                    audioAYEnvelopeAlt = 0;
-    bool                    audioAYEnvelope = 0;
-    uint32_t                audioAYAttackEndVol = 0;
+    bool                    audioAYEnvelopeHolding = false;
+    bool                    audioAYEnvelopeHold = false;
+    bool                    audioAYEnvelopeAlt = false;
+    bool                    audioAYEnvelopeContinue = false;
+    bool                    audioAYEnvelope = false;;
+    bool                    audioAYOneShot = false;
+    bool                    audioAYEnvelopeAttack = false;
+    uint8_t                 audioAYAttackEndVol = 0;
     float                   audioAYTsStep = 0;
     float                   audioAYTs = 0;
     

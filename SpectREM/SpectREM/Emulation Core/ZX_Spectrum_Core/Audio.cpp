@@ -53,10 +53,10 @@ void ZXSpectrum::audioReset()
     audioBufferIndex = 0;
     audioTsCounter = 0;
     audioTsStepCounter = 0;
-	audioOutputLevelLeft = 0;
-	audioOutputLevelRight = 0;
-	audioAYLevelLeft = 0;
-	audioAYLevelRight = 0;
+    audioOutputLevelLeft = 0;
+    audioOutputLevelRight = 0;
+    audioAYLevelLeft = 0;
+    audioAYLevelRight = 0;
     audioAYOutput = 0;
     audioAYrandom = 1;
     audioAYChannelOutput[0] = 0;
@@ -67,7 +67,6 @@ void ZXSpectrum::audioReset()
     audioAYChannelCount[2] = 0;
     audioAYNoiseCount = 0;
     audioAYEnvelopeCount = 0;
-    audioAYEnvelopeStep = 15;
     audioAYEnvelopeHolding = false;
     specdrumDACValue = 0;
     
@@ -102,10 +101,10 @@ void ZXSpectrum::audioUpdateWithTs(int32_t tStates)
     {
         // If we have done more cycles now than the audio step counter, generate a new sample
         audioTsCounter += 1.0f;
-		audioOutputLevelLeft += audioEarLevel;
-		audioOutputLevelRight += audioEarLevel;
-		audioOutputLevelLeft += audioAYLevelLeft;
-		audioOutputLevelRight += audioAYLevelRight;
+        audioOutputLevelLeft += audioEarLevel;
+        audioOutputLevelRight += audioEarLevel;
+        audioOutputLevelLeft += audioAYLevelLeft;
+        audioOutputLevelRight += audioAYLevelRight;
 
         // Loop over each tState so that the necessary audio samples can be generated
        if (emuUseAYSound)
@@ -115,12 +114,12 @@ void ZXSpectrum::audioUpdateWithTs(int32_t tStates)
            {
                audioAYUpdate();
 
-			   audioAYLevelLeft = audioAYChannelOutput[0];      // A - Left
-			   audioAYLevelLeft += audioAYChannelOutput[1];     // B - Left
+               audioAYLevelLeft = audioAYChannelOutput[0];      // A - Left
+               audioAYLevelLeft += audioAYChannelOutput[1];     // B - Left
                audioAYLevelLeft += audioAYChannelOutput[2];     // C - Left
 
                audioAYLevelRight = audioAYChannelOutput[0];     // A - Right
-			   audioAYLevelRight += audioAYChannelOutput[1];    // B - Right
+               audioAYLevelRight += audioAYChannelOutput[1];    // B - Right
                audioAYLevelRight += audioAYChannelOutput[2];    // C - Right
 
                audioAYChannelOutput[0] = 0;
@@ -134,17 +133,17 @@ void ZXSpectrum::audioUpdateWithTs(int32_t tStates)
         if (audioTsCounter >= audioBeeperTsStep)
         {
             // Scale down
-			audioOutputLevelLeft /= audioTsCounter;
-			audioOutputLevelRight /= audioTsCounter;
+            audioOutputLevelLeft /= audioTsCounter;
+            audioOutputLevelRight /= audioTsCounter;
             
             // Load the buffer with the sample for both left and right channels
             audioBuffer[ audioBufferIndex++ ] = static_cast< int16_t >(audioOutputLevelLeft);
             audioBuffer[ audioBufferIndex++ ] = static_cast< int16_t >(audioOutputLevelRight);
 
             audioTsCounter -= audioBeeperTsStep;
-			audioOutputLevelLeft = (audioEarLevel + audioAYLevelLeft) * audioTsCounter;
-			audioOutputLevelRight = (audioEarLevel + audioAYLevelRight) * audioTsCounter;
-		}
+            audioOutputLevelLeft = (audioEarLevel + audioAYLevelLeft) * audioTsCounter;
+            audioOutputLevelRight = (audioEarLevel + audioAYLevelRight) * audioTsCounter;
+        }
     }
 }
 
@@ -166,6 +165,8 @@ void ZXSpectrum::audioAYSetRegister(uint8_t reg)
 
 void ZXSpectrum::audioAYWriteData(uint8_t data)
 {
+    uint8_t envelopeType;
+
     switch (audioAYCurrentRegister) {
         case eAYREGISTER_A_FINE:
         case eAYREGISTER_B_FINE:
@@ -185,23 +186,32 @@ void ZXSpectrum::audioAYWriteData(uint8_t data)
             
         case eAYREGISTER_E_SHAPE:
             audioAYEnvelopeHolding = false;
-            audioAYEnvelopeStep = 15;
+            audioAYEnvelopeCount = 0;
             data &= 0x0f;
-            
+
             audioAYAttackEndVol = (data & eENVFLAG_ATTACK) != 0 ? 15 : 0;
-            
-            if ((data & eENVFLAG_CONTINUE) == 0)
+
+            envelopeType = data;
+            switch (envelopeType & 12)
             {
-                audioAYEnvelopeHold = true;
-                audioAYEnvelopeAlt = (data & eENVFLAG_ATTACK) ? false: true;
+            case 0:
+                envelopeType = 9;
+                break;
+            case 4:
+                envelopeType = 15;
+                break;
             }
-            else
-            {
-                audioAYEnvelopeHold = (data & eENVFLAG_HOLD) ? true : false;
-                audioAYEnvelopeAlt = (data & eENVFLAG_ALTERNATE) ? true : false;
-            }
+
+            audioAYEnvelopeHold = (envelopeType & eENVFLAG_HOLD) != 0 ? true : false;
+            audioAYEnvelopeAlt = (envelopeType & eENVFLAG_ALTERNATE) != 0 ? true : false;
+            audioAYEnvelopeAttack = (envelopeType & eENVFLAG_ATTACK) != 0 ? true : false;
+            audioAYEnvelopeContinue = (envelopeType & eENVFLAG_CONTINUE) != 0 ? true : false;
+
+            audioAYOneShot = false;
+
+            audioAYAttackEndVol = (audioAYEnvelopeAttack) ? 0 : 15;
             break;
-            
+
         case eAYREGISTER_NOISEPER:
         case eAYREGISTER_A_VOL:
         case eAYREGISTER_B_VOL:
@@ -230,6 +240,25 @@ uint8_t ZXSpectrum::audioAYReadData()
     return audioAYRegisters[ audioAYCurrentRegister ];
 }
 
+// The possible combinations and resulting shapes are :
+//
+// Binary  Hex      Shape
+// 00XX    00h - 03h  \_________ (same as 09h)
+// 01XX    04h - 07h  /|________ (same as 0Fh)
+// 1000    08h        \\\\\\\\\\
+// 1001    09h        \_________ (volume remains quiet)
+// 1010    0Ah        \/\/\/\/\/
+// 1011    0Bh        \|```````` (volume remains high)
+// 1100    0Ch        /|/|/|/|/|
+// 1101    0Dh        /````````` (volume remains high)
+// 1110    0Eh        /\/\/\/\/\
+// 1111    0Fh        /|________ (volume remains quiet)
+
+// Bit 0  Hold(1 = stop envelope past first cycle)
+// Bit 1  Alternate(1 = reverse direction at end of each cycle)
+// Bit 2  Attack(1 = initial direction increase)
+// Bit 3  Continue(0 = same as if Bit0 = 1 and Bit1 = Bit2)
+
 void ZXSpectrum::audioAYUpdate()
 {
     if (!audioAYEnvelopeHolding)
@@ -239,20 +268,47 @@ void ZXSpectrum::audioAYUpdate()
         if ( audioAYEnvelopeCount >= static_cast<uint32_t>(audioAYRegisters[ eAYREGISTER_E_FINE ] | (audioAYRegisters[ eAYREGISTER_E_COARSE] << 8)))
         {
             audioAYEnvelopeCount = 0;
-            audioAYEnvelopeStep--;
-            
-            if (audioAYEnvelopeStep < 0)
+
+            if (audioAYOneShot)
             {
-                audioAYEnvelopeStep = 15;
-                
-                if ( audioAYEnvelopeAlt )
-                {
-                    audioAYAttackEndVol ^= 15;
-                }
-                
+                audioAYOneShot = !audioAYOneShot;
+
                 if (audioAYEnvelopeHold)
                 {
                     audioAYEnvelopeHolding = true;
+                    if (audioAYEnvelopeAlt)
+                    {
+                        audioAYAttackEndVol = audioAYAttackEndVol ^ 15;
+                    }
+                }
+                else
+                {
+                    if (audioAYEnvelopeAlt)
+                    {
+                        audioAYEnvelopeAttack = !audioAYEnvelopeAttack;
+                    }
+                    audioAYAttackEndVol = (audioAYEnvelopeAttack) ? audioAYAttackEndVol = 0 : audioAYAttackEndVol = 15;
+                }
+            }
+            else
+            {
+                if (audioAYEnvelopeAttack)
+                {
+                    if (audioAYAttackEndVol < 15)
+                    {
+                        audioAYAttackEndVol += 1;
+                        if (audioAYAttackEndVol == 15)
+                            { audioAYOneShot = true; }
+                    }
+                }
+                else
+                {
+                    if (audioAYAttackEndVol > 0)
+                    {
+                        audioAYAttackEndVol -= 1;
+                        if (audioAYAttackEndVol == 0)
+                            { audioAYOneShot = true; }
+                    }
                 }
             }
         }
@@ -288,7 +344,6 @@ void ZXSpectrum::audioAYUpdate()
     
     // Noise frequency
     uint16_t freq = audioAYRegisters[ eAYREGISTER_A_FINE ] | (audioAYRegisters[ eAYREGISTER_A_COARSE] << 8);
-//    cout << freq << endl;
     if (freq == 0)
     {
         freq = 1;
@@ -309,7 +364,7 @@ void ZXSpectrum::audioAYUpdate()
         
         if ((vol & 0x10) != 0)
         {
-            vol = audioAYEnvelopeStep ^ audioAYAttackEndVol;
+            vol = audioAYAttackEndVol;
         }
 
         audioAYChannelOutput[0] += audioAYVolumes[vol];
@@ -319,7 +374,7 @@ void ZXSpectrum::audioAYUpdate()
     audioAYChannelCount[1] += 2;
 
     // Noise frequency
-    freq = audioAYRegisters[ 2 + eAYREGISTER_A_FINE ] | (audioAYRegisters[ 2 + eAYREGISTER_A_COARSE] << 8);
+    freq = audioAYRegisters[ eAYREGISTER_B_FINE ] | (audioAYRegisters[ eAYREGISTER_B_COARSE] << 8);
 
     if (freq == 0)
     {
@@ -341,7 +396,7 @@ void ZXSpectrum::audioAYUpdate()
 
         if ((vol & 0x10) != 0)
         {
-            vol = audioAYEnvelopeStep ^ audioAYAttackEndVol;
+            vol = audioAYAttackEndVol;
         }
 
         audioAYChannelOutput[1] += audioAYVolumes[vol];
@@ -351,7 +406,7 @@ void ZXSpectrum::audioAYUpdate()
     audioAYChannelCount[2] += 2;
 
     // Noise frequency
-    freq = audioAYRegisters[ 4 + eAYREGISTER_A_FINE ] | (audioAYRegisters[ 4 + eAYREGISTER_A_COARSE] << 8);
+    freq = audioAYRegisters[ eAYREGISTER_C_FINE ] | (audioAYRegisters[ eAYREGISTER_C_COARSE] << 8);
 
     if (freq == 0)
     {
@@ -369,11 +424,11 @@ void ZXSpectrum::audioAYUpdate()
 
     if ((tone_output & noise_output) == 1)
     {
-        uint8_t vol = audioAYRegisters[eAYREGISTER_A_VOL + 2];
+        uint8_t vol = audioAYRegisters[eAYREGISTER_C_VOL];
 
         if ((vol & 0x10) != 0)
         {
-            vol = audioAYEnvelopeStep ^ audioAYAttackEndVol;
+            vol = audioAYAttackEndVol;
         }
 
         audioAYChannelOutput[2] += audioAYVolumes[vol];
