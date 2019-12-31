@@ -1,6 +1,6 @@
 # SpectREMCPP (Spectrum Retro EMulator using C++ and Objective-C++) 
 
-This is a ZX Spectrum emulator written for MacOS 10.14+. The main emulator core has been written in C++ and is available from the ZXEmuCore repository. This is the repository that is used for the core of this emulatore.
+This is a ZX Spectrum emulator written for MacOS 10.14+. The main emulator core has been written in C++ and is shared across a Mac, Windows and iOS version. This is very much a hobby/play project, but it's prettry accurate for the 48k/128k Spectrum :)
 
 ## Features
 
