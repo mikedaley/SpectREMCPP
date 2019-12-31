@@ -402,6 +402,23 @@ const int cSCREEN_FILL = 1;
     
     _machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
     
+    [self setupDebugger];
+    
+    // Once a machine instance has been created we need to apply the defaults to that instance
+    [self applyDefaults];
+    
+    [self.audioCore start];
+    _machine->resume();
+    
+    [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@",
+                                [NSString stringWithCString:_machine->machineInfo.machineName
+                                                   encoding:NSUTF8StringEncoding]]];
+}
+
+#pragma mark - Debugger
+
+- (void)setupDebugger
+{
     _debugger = new Debug;
     _debugger->attachMachine(_machine);
     
@@ -427,17 +444,8 @@ const int cSCREEN_FILL = 1;
     });
     
     _machine->registerDebugOpCallback( debugBlock );
-    
-    // Once a machine instance has been created we need to apply the defaults to that instance
-    [self applyDefaults];
-    
-    [self.audioCore start];
-    _machine->resume();
-    
-    [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@",
-                                [NSString stringWithCString:_machine->machineInfo.machineName
-                                                   encoding:NSUTF8StringEncoding]]];
 }
+
 
 #pragma mark - Local Notifications
 
@@ -457,74 +465,74 @@ const int cSCREEN_FILL = 1;
 - (void)setupKeyMappings
 {
     _keyMappings = @{
-    @(56) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Shift), //Left Shift
-    @(60) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Shift), //Right Shift
-    @(6) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Z),
-    @(7) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_X),
-    @(8) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_C),
-    @(9) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_V),
+        @(56) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Shift), //Left Shift
+        @(60) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Shift), //Right Shift
+        @(6) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Z),
+        @(7) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_X),
+        @(8) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_C),
+        @(9) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_V),
 
-    @(0) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_A),
-    @(1) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_S),
-    @(2) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_D),
-    @(3) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_F),
-    @(5) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_G),
+        @(0) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_A),
+        @(1) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_S),
+        @(2) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_D),
+        @(3) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_F),
+        @(5) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_G),
 
-    @(12) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Q),
-    @(13) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_W),
-    @(14) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_E),
-    @(15) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_R),
-    @(17) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_T),
+        @(12) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Q),
+        @(13) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_W),
+        @(14) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_E),
+        @(15) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_R),
+        @(17) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_T),
 
-    @(18) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_1),
-    @(19) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_2),
-    @(20) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_3),
-    @(21) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_4),
-    @(23) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_5),
+        @(18) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_1),
+        @(19) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_2),
+        @(20) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_3),
+        @(21) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_4),
+        @(23) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_5),
 
-    @(29) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_0),
-    @(25) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_9),
-    @(28) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_8),
-    @(26) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_7),
-    @(22) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_6),
+        @(29) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_0),
+        @(25) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_9),
+        @(28) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_8),
+        @(26) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_7),
+        @(22) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_6),
 
-    @(35) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_P),
-    @(31) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_O),
-    @(34) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_I),
-    @(32) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_U),
-    @(16) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Y),
+        @(35) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_P),
+        @(31) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_O),
+        @(34) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_I),
+        @(32) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_U),
+        @(16) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Y),
 
-    @(36) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Enter),
-    @(37) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_L),
-    @(40) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_K),
-    @(38) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_J),
-    @(4) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_H),
+        @(36) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Enter),
+        @(37) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_L),
+        @(40) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_K),
+        @(38) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_J),
+        @(4) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_H),
 
-    @(49) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Space),
-    @(59) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_SymbolShift),
-    @(46) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_M),
-    @(45) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_N),
-    @(11) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_B),
+        @(49) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Space),
+        @(59) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_SymbolShift), // Control key
+        @(46) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_M),
+        @(45) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_N),
+        @(11) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_B),
 
-    @(30) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_InvVideo),
-    @(33) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_TrueVideo),
-    @(39) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Quote),
-    @(41) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_SemiColon),
-    @(43) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Comma),
-    @(27) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Minus),
-    @(24) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Plus),
-    @(47) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Period),
-    @(48) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Edit),
-    @(50) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Graph),
-    @(53) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Break),
-    @(51) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Backspace),
-    @(126) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_ArrowUp),
-    @(125) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_ArrowDown),
-    @(123) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_ArrowLeft),
-    @(124) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_ArrowRight),
-    @(58) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_ExtendMode), // Left Alt
-    @(61) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_ExtendMode), // Right Alt
-    @(57) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_CapsLock)
+        @(30) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_InvVideo),
+        @(33) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_TrueVideo),
+        @(39) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Quote),
+        @(41) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_SemiColon),
+        @(43) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Comma),
+        @(27) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Minus),
+        @(24) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Plus),
+        @(47) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Period),
+        @(48) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Edit),
+        @(50) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Graph),
+        @(53) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Break), // ESC key
+        @(51) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Backspace),
+        @(126) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_ArrowUp),
+        @(125) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_ArrowDown),
+        @(123) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_ArrowLeft),
+        @(124) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_ArrowRight),
+        @(58) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_ExtendMode), // Left Alt
+        @(61) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_ExtendMode), // Right Alt
+        @(57) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_CapsLock)
     };
 }
 
@@ -601,6 +609,8 @@ const int cSCREEN_FILL = 1;
 {
     BOOL success = NO;
     
+    _machine->pause();
+    
     NSString *urlPath = [url.pathExtension uppercaseString];
     if (([urlPath isEqualToString:cZ80_EXTENSION] || [urlPath isEqualToString:cSNA_EXTENSION]))
     {
@@ -644,6 +654,8 @@ const int cSCREEN_FILL = 1;
             // No need to do anything
         }];
     }
+    
+    _machine->resume();
 }
 
 #pragma mark - Restore Session

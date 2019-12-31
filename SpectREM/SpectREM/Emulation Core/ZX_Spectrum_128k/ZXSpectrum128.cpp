@@ -153,7 +153,7 @@ void ZXSpectrum128::coreIOWrite(uint16_t address, uint8_t data)
     }
     
     // AY-3-8912 ports
-    if(address == 0xfffd && machineInfo.hasAY)
+    if((address & 0xc002) == 0xc000 && machineInfo.hasAY)
     {
         ULAPortnnFDValue = data;
         audioAYSetRegister(data);
