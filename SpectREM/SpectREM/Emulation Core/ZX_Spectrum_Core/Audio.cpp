@@ -318,7 +318,7 @@ void ZXSpectrum::audioAYUpdate()
     {
         audioAYNoiseCount++;
         
-        int32_t freq = audioAYRegisters[ eAYREGISTER_NOISEPER ];
+        uint16_t freq = audioAYRegisters[ eAYREGISTER_NOISEPER ];
         
         // 0 is assumed to be 1
         if (freq == 0)
