@@ -114,7 +114,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_TEMPICON            ICON                    "Y:\\OneDrive\\Z80 Asm Editor\\ZXAsmEd.ico"
+IDI_ICON2               ICON                    "C:\\Users\\polom\\Downloads\\SpectREM.ico"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

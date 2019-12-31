@@ -160,5 +160,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Y:\OneDrive\Z80 Asm Editor\ZXAsmEd.ico" />
+    <Image Include="..\..\..\..\Downloads\SpectREM.png" />
+    <Image Include="..\..\..\..\Downloads\SpectREM.ico" />
   </ItemGroup>
 </Project>

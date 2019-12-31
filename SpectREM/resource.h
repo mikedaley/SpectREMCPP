@@ -5,7 +5,8 @@
 #define IDR_MENU1                       101
 #define IDR_ACCELERATOR1                102
 #define IDR_MENUACCELERATORS            102
-#define IDI_TEMPICON                    103
+#define IDI_ICON1                       105
+#define IDI_ICON2                       106
 #define ID_FILE_OPENSNAPSHOT            40001
 #define ID_FILE_EXIT                    40002
 #define ID_EMULATION_FULLSPEED          40003
@@ -27,7 +28,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        104
+#define _APS_NEXT_RESOURCE_VALUE        107
 #define _APS_NEXT_COMMAND_VALUE         40029
 #define _APS_NEXT_CONTROL_VALUE         1001
 #define _APS_NEXT_SYMED_VALUE           101
