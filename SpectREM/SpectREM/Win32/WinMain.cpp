@@ -29,6 +29,10 @@ static void LoadSnapshot();
 static void HardReset();
 static void SoftReset();
 static void SwitchMachines();
+static void ShowHelpAbout();
+static void ShowHideUI(HWND hWnd);
+static void ShowUI(HWND hWnd);
+static void HideUI(HWND hWnd);
 static void ResetMachineForSnapshot(uint8_t mc);
 static void Log(std::string text);
 static std::string GetApplicationBasePath();
@@ -54,8 +58,8 @@ const std::string EXT_Z80 = "z80";
 const std::string EXT_SNA = "sna";
 std::string romPath;
 HACCEL hAcc;
-
 bool isResetting = false;
+HWND mainWindow;
 
 std::unordered_map<WPARAM, ZXSpectrum::ZXSpectrumKey> KeyMappings
 {
@@ -84,7 +88,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			LoadSnapshot();
 			break;
 		case ID_EMULATION_FULLSPEED:
-			
+			//
 			break;
 		case ID_RESET_HARD:
 			HardReset();
@@ -100,9 +104,14 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			break;
 		case ID_SWITCH_FLIP:
 			SwitchMachines();
-			return 0;
 			break;
-
+		case ID_HELP_ABOUT:
+			ShowHelpAbout();
+			break;
+		case ID_SHOWUI:
+			//
+			ShowHideUI(mainWindow);
+			break;
 		default:
 			break;
 		}
@@ -130,9 +139,13 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			}
 			else if (wparam == VK_F5)
 			{
+				/// TODO: Fails sometimes 48 -> 128
 				SwitchMachines();
 			}
-
+			else if (wparam == VK_F10)
+			{
+				ShowHideUI(mainWindow);
+			}
 			// See if we asked to stop
 			else if (wparam == VK_ESCAPE)
 			{
@@ -147,6 +160,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				}
 			}
 		}
+		break;
 
 	case WM_KEYUP:
 		if (m_pMachine != nullptr)
@@ -171,7 +185,69 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	return 0;
 }
 
-void SwitchMachines()
+static void ShowHideUI(HWND hWnd = mainWindow)
+{
+	// Get the current state of the menu item checkbox
+	MENUITEMINFO lpmi;
+	HMENU mainMenu = GetMenu(hWnd);
+	if (mainMenu != NULL)
+	{
+		if (GetMenuItemInfo(mainMenu, ID_SHOWUI, false, &lpmi))
+		{
+			// got the menuitem data, now check/uncheck and do the UI thing
+			if (lpmi.fState & MFS_CHECKED)
+			{
+				// item is currently checked (UI visible)
+				// uncheck it and remove the UI	
+				lpmi.fState |= MFS_CHECKED;
+				if (SetMenuItemInfo(mainMenu, ID_SHOWUI, false, &lpmi))
+				{
+					// changed the check so do the deed...
+					HideUI(hWnd);
+				}
+			}
+			else
+			{
+				// item is currently unchecked (UI invisible)
+				// check it and show the UI
+				lpmi.fState &= ~MFS_CHECKED;
+				if (SetMenuItemInfo(mainMenu, ID_SHOWUI, false, &lpmi))
+				{
+					// changed the check so do the deed...
+					ShowUI(hWnd);
+				}
+			}
+		}
+		DWORD lastError = GetLastError();
+		if (lastError != 0)
+		{
+			LPSTR messageBuffer = nullptr;
+			size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+				NULL, lastError, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, NULL);
+			std::string message(messageBuffer, size);
+			cout << "ERROR: Could not change menu item..." << message;
+		}
+	}
+}
+
+static void ShowUI(HWND hWnd = mainWindow)
+{
+
+}
+
+static void HideUI(HWND hWnd = mainWindow)
+{
+
+}
+
+
+static void ShowHelpAbout()
+{
+	// 
+
+}
+
+static void SwitchMachines()
 {
 	// Switch machine (128<>48)
 	if (m_pMachine->machineInfo.machineType == 1) // is it 128?
@@ -190,7 +266,7 @@ void SwitchMachines()
 	}
 }
 
-void SoftReset()
+static void SoftReset()
 {
 	// Soft reset
 	if (isResetting != true)
@@ -199,7 +275,7 @@ void SoftReset()
 	}
 }
 
-void HardReset()
+static void HardReset()
 {
 	// Hard reset
 	if (isResetting != true)
@@ -208,7 +284,7 @@ void HardReset()
 	}
 }
 
-void LoadSnapshot()
+static void LoadSnapshot()
 {
 	OPENFILENAMEA ofn;
 	char szFile[_MAX_PATH];
@@ -333,15 +409,16 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
 	RECT wr = { 0, 0, 256 * 3, 192 * 3 };
 	AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE);
 
-	HWND window = CreateWindowEx(WS_EX_APPWINDOW, TEXT("SpectREM"), TEXT("SpectREM"), WS_OVERLAPPEDWINDOW, 0, 0, wr.right - wr.left, wr.bottom - wr.top, 0, 0, inst, 0);
-	ShowWindow(window, ncmd);
-	UpdateWindow(window);
+	
+	mainWindow = CreateWindowEx(WS_EX_APPWINDOW, TEXT("SpectREM"), TEXT("SpectREM"), WS_OVERLAPPEDWINDOW, 0, 0, wr.right - wr.left, wr.bottom - wr.top, 0, 0, inst, 0);
+	ShowWindow(mainWindow, ncmd);
+	UpdateWindow(mainWindow);
 
 	QueryPerformanceFrequency(&perf_freq);
 	QueryPerformanceCounter(&last_time);
 
 	m_pOpenGLView = new OpenGLView();
-	m_pOpenGLView->Init(window, 256 * 3, 192 * 3);
+	m_pOpenGLView->Init(mainWindow, 256 * 3, 192 * 3);
 	m_pAudioQueue = new AudioQueue();
 	m_pAudioCore = new AudioCore();
 	m_pAudioCore->Init(44100, 50, audio_callback);
@@ -390,9 +467,18 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
 				//InvalidateRect(window, NULL, true);
 
 				// Set the time
+				char specType[20];
+				if (m_pMachine->machineInfo.machineType == eZXSpectrum48)
+				{
+					sprintf_s(specType, sizeof(specType), "ZX Spectrum 48K");
+				}
+				else
+				{
+					sprintf_s(specType, sizeof(specType), "ZX Spectrum 128K");
+				}
 				char buff[64];
-				sprintf_s(buff, 64, "SpectREM - %4.1f fps", 1.0f / delta_time);
-				SetWindowTextA(window, buff);
+				sprintf_s(buff, sizeof(buff), "SpectREM - %4.1f fps - [%s]", 1.0f / delta_time, specType);
+				SetWindowTextA(mainWindow, buff);
 			}
 		}
 	}
@@ -406,6 +492,9 @@ static void ResetMachineForSnapshot(uint8_t mc)
 
 	m_pMachine->pause();
 	m_pAudioCore->Stop();
+	delete m_pAudioCore;
+	m_pAudioCore = new AudioCore();
+	m_pAudioCore->Init(44100, 50, audio_callback);
 	delete m_pMachine;
 	m_pMachine = nullptr;
 

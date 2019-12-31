@@ -54,31 +54,35 @@ IDR_MENU1 MENU
 BEGIN
     POPUP "&File"
     BEGIN
-        MENUITEM "&Open Snapshot  - Ctrl+F1",   ID_FILE_OPENSNAPSHOT
+        MENUITEM "&Open Snapshot\tF1",          ID_FILE_OPENSNAPSHOT
         MENUITEM SEPARATOR
-        MENUITEM "E&xit - Ctrl+X",              ID_FILE_EXIT
+        MENUITEM "E&xit\tEsc",                  ID_FILE_EXIT
     END
     POPUP "&Emulation"
     BEGIN
         MENUITEM "Full Speed",                  ID_EMULATION_FULLSPEED, INACTIVE
         POPUP "Reset"
         BEGIN
-            MENUITEM "Hard",                        ID_RESET_HARD
-            MENUITEM "Soft",                        ID_RESET_SOFT
+            MENUITEM "Hard\tF3",                    ID_RESET_HARD
+            MENUITEM "Soft\tF4",                    ID_RESET_SOFT
         END
     END
     POPUP "&Machine"
     BEGIN
         POPUP "Switch"
         BEGIN
-            MENUITEM "to 48K",                      ID_SWITCH_TO48K
-            MENUITEM "to 128K",                     ID_SWITCH_TO128K
-            MENUITEM "Flip",                        ID_SWITCH_FLIP
+            MENUITEM "to 48K\tShift+F5",            ID_SWITCH_TO48K
+            MENUITEM "to 128K\tCtrl+F5",            ID_SWITCH_TO128K
+            MENUITEM "Flip\tF5",                    ID_SWITCH_FLIP
         END
+    END
+    POPUP "&Settings"
+    BEGIN
+        MENUITEM "Show/Hide UI\tF10",           ID_SHOWUI
     END
     POPUP "&Help"
     BEGIN
-        MENUITEM "&About",                      ID_HELP_ABOUT
+        MENUITEM "&About\tCtrl+F1",             ID_HELP_ABOUT
     END
 END
 
@@ -90,8 +94,16 @@ END
 
 IDR_MENUACCELERATORS ACCELERATORS
 BEGIN
-    VK_F1,          ID_FILE_OPENSNAPSHOT,   VIRTKEY, CONTROL, NOINVERT
-    "X",            ID_FILE_EXIT,           VIRTKEY, CONTROL, NOINVERT
+    VK_F2,          ID_EMULATION_FULLSPEED, VIRTKEY, NOINVERT
+    VK_ESCAPE,      ID_FILE_EXIT,           VIRTKEY, NOINVERT
+    VK_F1,          ID_FILE_OPENSNAPSHOT,   VIRTKEY, NOINVERT
+    VK_F1,          ID_HELP_ABOUT,          VIRTKEY, CONTROL, NOINVERT
+    VK_F3,          ID_RESET_HARD,          VIRTKEY, NOINVERT
+    VK_F4,          ID_RESET_SOFT,          VIRTKEY, NOINVERT
+    VK_F10,         ID_SHOWUI,              VIRTKEY, NOINVERT
+    VK_F5,          ID_SWITCH_FLIP,         VIRTKEY, NOINVERT
+    VK_F5,          ID_SWITCH_TO128K,       VIRTKEY, CONTROL, NOINVERT
+    VK_F5,          ID_SWITCH_TO48K,        VIRTKEY, SHIFT, NOINVERT
 END
 
 
