@@ -213,6 +213,8 @@ void ZXSpectrum::audioAYWriteData(uint8_t data)
             break;
 
         case eAYREGISTER_NOISEPER:
+            data &= 0x1f;
+            break;
         case eAYREGISTER_A_VOL:
         case eAYREGISTER_B_VOL:
         case eAYREGISTER_C_VOL:
