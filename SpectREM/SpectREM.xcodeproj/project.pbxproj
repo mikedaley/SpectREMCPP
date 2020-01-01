@@ -693,7 +693,7 @@
 			attributes = {
 				CLASSPREFIX = "";
 				LastUpgradeCheck = 1100;
-				ORGANIZATIONNAME = "71Squared Ltd";
+				ORGANIZATIONNAME = "Michael Daley";
 				TargetAttributes = {
 					296888FE21E3B98800BFC3BD = {
 						CreatedOnToolsVersion = 10.1;
