@@ -331,13 +331,16 @@ void ZXSpectrum::audioAYUpdate()
         if (audioAYNoiseCount >= freq)
         {
             audioAYNoiseCount = 0;
-            
-            if (((audioAYrandom & 1) ^ ((audioAYrandom >> 1) & 1)) == 1)
+
+            // Better random noise from Woody :)
+            bool carry = (audioAYrandom & 1);
+            audioAYrandom = audioAYrandom >> 1;
+            audioAYOutput &= ~(1 << 3);
+            if (carry)
             {
-                audioAYOutput ^= (1 << 3);
+                audioAYOutput |= (1 << 3);
+                audioAYrandom ^= (0x24000 >> 1);
             }
-            
-            audioAYrandom = (((audioAYrandom & 1) ^ ((audioAYrandom >> 3) & 1)) << 16) | ((audioAYrandom >> 1) & 0x1ffff);
         }
     }
     
