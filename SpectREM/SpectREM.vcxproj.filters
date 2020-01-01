@@ -30,7 +30,6 @@
     <ClCompile Include="SpectREM\Win32\WinMain.cpp">
       <Filter>Win32</Filter>
     </ClCompile>
-    <ClCompile Include="SpectREM\AudioQueue.cpp" />
     <ClCompile Include="SpectREM\Win32\AudioCore.cpp">
       <Filter>Win32</Filter>
     </ClCompile>
@@ -91,9 +90,11 @@
     <ClCompile Include="SpectREM\Emulation Core\ZX_Spectrum_Core\ZXSpectrum.cpp">
       <Filter>Emulation Core\ZX_Spectrum_Core</Filter>
     </ClCompile>
+    <ClCompile Include="SpectREM\OSX\AudioQueue.cpp">
+      <Filter>Win32</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SpectREM\AudioQueue.hpp" />
     <ClInclude Include="SpectREM\Win32\AudioCore.hpp">
       <Filter>Win32</Filter>
     </ClInclude>
@@ -143,6 +144,9 @@
       <Filter>Emulation Core\ZX_Spectrum_Core</Filter>
     </ClInclude>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="SpectREM\OSX\AudioQueue.hpp">
+      <Filter>Win32</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SpectREM\clut.frag" />

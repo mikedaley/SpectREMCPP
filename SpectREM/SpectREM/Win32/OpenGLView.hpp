@@ -101,6 +101,7 @@ class OpenGLView
 {
 public:
 										OpenGLView();
+										OpenGLView(std::string bpath);
 										~OpenGLView();
 
 public:

@@ -148,7 +148,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="SpectREM\AudioQueue.cpp" />
     <ClCompile Include="SpectREM\Emulation Core\Debugger\Debug.cpp" />
     <ClCompile Include="SpectREM\Emulation Core\Tape\Tape.cpp" />
     <ClCompile Include="SpectREM\Emulation Core\Z80_Core\Z80Core.cpp" />
@@ -167,13 +166,13 @@
     <ClCompile Include="SpectREM\Emulation Core\ZX_Spectrum_Core\Keyboard.cpp" />
     <ClCompile Include="SpectREM\Emulation Core\ZX_Spectrum_Core\Snapshot.cpp" />
     <ClCompile Include="SpectREM\Emulation Core\ZX_Spectrum_Core\ZXSpectrum.cpp" />
+    <ClCompile Include="SpectREM\OSX\AudioQueue.cpp" />
     <ClCompile Include="SpectREM\Win32\AudioCore.cpp" />
     <ClCompile Include="SpectREM\Win32\OpenGLView.cpp" />
     <ClCompile Include="SpectREM\Win32\WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
-    <ClInclude Include="SpectREM\AudioQueue.hpp" />
     <ClInclude Include="SpectREM\Emulation Core\Debugger\Debug.hpp" />
     <ClInclude Include="SpectREM\Emulation Core\Tape\Tape.hpp" />
     <ClInclude Include="SpectREM\Emulation Core\Z80_Core\Z80Core.h" />
@@ -188,6 +187,7 @@
     <ClInclude Include="SpectREM\Emulation Core\ZX_Spectrum_48k\ZXSpectrum48.hpp" />
     <ClInclude Include="SpectREM\Emulation Core\ZX_Spectrum_Core\MachineInfo.h" />
     <ClInclude Include="SpectREM\Emulation Core\ZX_Spectrum_Core\ZXSpectrum.hpp" />
+    <ClInclude Include="SpectREM\OSX\AudioQueue.hpp" />
     <ClInclude Include="SpectREM\Win32\AudioCore.hpp" />
     <ClInclude Include="SpectREM\Win32\OpenGLView.hpp" />
   </ItemGroup>

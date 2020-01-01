@@ -52,10 +52,10 @@ static char const * cU_SHOW_REFLECTION = "u_showReflection";
 static char const * cU_TIME = "u_time";
 static char const * cU_SCREEN_SIZE = "u_screenSize";
 
-static char * cDISPLAY_VERT_SHADER = "SpectREM\\display.vert";
-static char * cDISPLAY_FRAG_SHADER = "SpectREM\\display.frag";
-static char * cCLUT_VERT_SHADER = "SpectREM\\clut.vert";
-static char * cCLUT_FRAG_SHADER = "SpectREM\\clut.frag";
+static std::string cDISPLAY_VERT_SHADER = "";
+static std::string cDISPLAY_FRAG_SHADER = "";
+static std::string cCLUT_VERT_SHADER = "";
+static std::string cCLUT_FRAG_SHADER = "";
 
 /**
      3-----2 <--  1
@@ -113,12 +113,37 @@ const Color CLUT[] = {
 OpenGLView::OpenGLView()
 {
 	// check if under VS/Debugger and set up ROM paths accordingly
+	// could probably remove these.. Will test further first
 	if (IsDebuggerPresent() != 0)
 	{
-		cDISPLAY_VERT_SHADER = "SpectREM\\display.vert";
-		cDISPLAY_FRAG_SHADER = "SpectREM\\display.frag";
-		cCLUT_VERT_SHADER = "SpectREM\\clut.vert";
-		cCLUT_FRAG_SHADER = "SpectREM\\clut.frag";
+		cDISPLAY_VERT_SHADER = "\\SpectREM\\Win32\\display.vert";
+		cDISPLAY_FRAG_SHADER = "\\SpectREM\\Win32\\display.frag";
+		cCLUT_VERT_SHADER = "\\SpectREM\\Win32\\clut.vert";
+		cCLUT_FRAG_SHADER = "\\SpectREM\\Win32\\clut.frag";
+	}
+	else
+	{
+		cDISPLAY_VERT_SHADER = "display.vert";
+		cDISPLAY_FRAG_SHADER = "display.frag";
+		cCLUT_VERT_SHADER = "clut.vert";
+		cCLUT_FRAG_SHADER = "clut.frag";
+	}
+}
+
+OpenGLView::OpenGLView(std::string bpath)
+{
+	// check if under VS/Debugger and set up ROM paths accordingly
+	// could probably remove these.. Will test further first
+	if (IsDebuggerPresent() != 0)
+	{
+		cDISPLAY_VERT_SHADER.append(bpath);
+		cDISPLAY_VERT_SHADER.append("\\display.vert");
+		cDISPLAY_FRAG_SHADER.append(bpath);
+		cDISPLAY_FRAG_SHADER.append("\\display.frag");
+		cCLUT_VERT_SHADER.append(bpath);
+		cCLUT_VERT_SHADER.append("\\clut.vert");
+		cCLUT_FRAG_SHADER.append(bpath);
+		cCLUT_FRAG_SHADER.append("\\clut.frag");
 	}
 	else
 	{
