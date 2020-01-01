@@ -1,6 +1,5 @@
-SPECTREM
-===========
-
+SPECTREM (https://github.com/mikedaley/SpectREMCPP)
+===================================================-
 
 Current key assignments
 -------------------------
@@ -10,19 +9,16 @@ F3	- Hard reset
 F4	- Soft reset
 F5	- Switch machine - 48K <> 128K
 F10	- Turn on/off Windows UI (menus etc.)
+F12 - Open the settings dialog (Disabled as a wip)
 
 
 
-
-
-
-
-
-
-
-
-
-
+2020-01-01
+-----------
+ADDED	: All keyboard buttons work now
+STARTED	: Settings dialog box
+NOTE	: The menu will be switchable on/off at some point, also need to look into resizing the display when menu is enabled
+FIXED	: Show/Hide UI bits
 
 2019-12-31
 -----------
@@ -30,7 +26,3 @@ UPDATED	: OpenGL3.2 specified, so that it works for Inky and Richard
 FIXED	: Reset, switch machine were flaky, still not quite perfect
 ADDED	: Windows MenuStrip with accelerators (About dialog not done yet)
 FIXED	: Keyboard now works (missed a break; statement, doh!)
-
-
-
-

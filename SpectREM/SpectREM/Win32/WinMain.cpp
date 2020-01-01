@@ -35,6 +35,7 @@ static void ShowUI(HWND hWnd);
 static void HideUI(HWND hWnd);
 static void ResetMachineForSnapshot(uint8_t mc);
 static void Log(std::string text);
+static void ShowSettingsDialog();
 static std::string GetApplicationBasePath();
 static std::string GetCurrentDirectoryAsString();
 
@@ -60,6 +61,9 @@ std::string romPath;
 HACCEL hAcc;
 bool isResetting = false;
 HWND mainWindow;
+HMENU mainMenu;
+bool TurboMode = false;
+bool menuDisplayed = true;
 
 std::unordered_map<WPARAM, ZXSpectrum::ZXSpectrumKey> KeyMappings
 {
@@ -130,6 +134,9 @@ std::unordered_map<WPARAM, ZXSpectrum::ZXSpectrumKey> KeyMappings
 };
 
 //-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------
 
 static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
@@ -147,7 +154,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             LoadSnapshot();
             break;
         case ID_EMULATION_FULLSPEED:
-            //
+            TurboMode != TurboMode;
             break;
         case ID_RESET_HARD:
             HardReset();
@@ -168,9 +175,12 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             ShowHelpAbout();
             break;
         case ID_SHOWUI:
-            //
             ShowHideUI(mainWindow);
             break;
+        case ID_APPLICATION_SETTINGS:
+            ShowSettingsDialog();
+            break;
+
         default:
             break;
         }
@@ -187,6 +197,10 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             if (wparam == VK_F1)
             {
                 LoadSnapshot();
+            }
+            else if (wparam == VK_F2)
+            {
+                TurboMode != TurboMode;
             }
             else if (wparam == VK_F3)
             {
@@ -205,7 +219,10 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             {
                 ShowHideUI(mainWindow);
             }
-            // See if we asked to stop
+            else if (wparam == VK_F12)
+            {
+                ShowSettingsDialog();
+            }
             else if (wparam == VK_ESCAPE)
             {
                 PostQuitMessage(0);
@@ -244,67 +261,56 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     return 0;
 }
 
+//-----------------------------------------------------------------------------------------
+
+static void ShowSettingsDialog()
+{
+
+}
+
+//-----------------------------------------------------------------------------------------
+
 static void ShowHideUI(HWND hWnd = mainWindow)
 {
     // Get the current state of the menu item checkbox
     MENUITEMINFO lpmi;
-    HMENU mainMenu = GetMenu(hWnd);
-    if (mainMenu != NULL)
+    if (menuDisplayed == true)
     {
-        if (GetMenuItemInfo(mainMenu, ID_SHOWUI, false, &lpmi))
-        {
-            // got the menuitem data, now check/uncheck and do the UI thing
-            if (lpmi.fState & MFS_CHECKED)
-            {
-                // item is currently checked (UI visible)
-                // uncheck it and remove the UI	
-                lpmi.fState |= MFS_CHECKED;
-                if (SetMenuItemInfo(mainMenu, ID_SHOWUI, false, &lpmi))
-                {
-                    // changed the check so do the deed...
-                    HideUI(hWnd);
-                }
-            }
-            else
-            {
-                // item is currently unchecked (UI invisible)
-                // check it and show the UI
-                lpmi.fState &= ~MFS_CHECKED;
-                if (SetMenuItemInfo(mainMenu, ID_SHOWUI, false, &lpmi))
-                {
-                    // changed the check so do the deed...
-                    ShowUI(hWnd);
-                }
-            }
-        }
-        DWORD lastError = GetLastError();
-        if (lastError != 0)
-        {
-            LPSTR messageBuffer = nullptr;
-            size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                NULL, lastError, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, NULL);
-            std::string message(messageBuffer, size);
-            cout << "ERROR: Could not change menu item..." << message;
-        }
+        SetMenu(hWnd, NULL);
+        menuDisplayed = false;
+    }
+    else
+    {
+        SetMenu(hWnd, mainMenu);
+        menuDisplayed = true;
     }
 }
 
+//-----------------------------------------------------------------------------------------
+
 static void ShowUI(HWND hWnd = mainWindow)
 {
+    //
 
 }
+
+//-----------------------------------------------------------------------------------------
 
 static void HideUI(HWND hWnd = mainWindow)
 {
+    //
 
 }
 
+//-----------------------------------------------------------------------------------------
 
 static void ShowHelpAbout()
 {
     // 
 
 }
+
+//-----------------------------------------------------------------------------------------
 
 static void SwitchMachines()
 {
@@ -325,6 +331,8 @@ static void SwitchMachines()
     }
 }
 
+//-----------------------------------------------------------------------------------------
+
 static void SoftReset()
 {
     // Soft reset
@@ -334,6 +342,8 @@ static void SoftReset()
     }
 }
 
+//-----------------------------------------------------------------------------------------
+
 static void HardReset()
 {
     // Hard reset
@@ -342,6 +352,8 @@ static void HardReset()
         ResetMachineForSnapshot(m_pMachine->machineInfo.machineType);
     }
 }
+
+//-----------------------------------------------------------------------------------------
 
 static void LoadSnapshot()
 {
@@ -473,6 +485,8 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
     mainWindow = CreateWindowEx(WS_EX_APPWINDOW, TEXT("SpectREM"), TEXT("SpectREM"), WS_OVERLAPPEDWINDOW, 0, 0, wr.right - wr.left, wr.bottom - wr.top, 0, 0, inst, 0);
     ShowWindow(mainWindow, ncmd);
     UpdateWindow(mainWindow);
+    mainMenu = GetMenu(mainWindow);
+    menuDisplayed = true;
 
     QueryPerformanceFrequency(&perf_freq);
     QueryPerformanceCounter(&last_time);
@@ -517,14 +531,11 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
             const float delta_time = (time.QuadPart - old_time.QuadPart) / (float)perf_freq.QuadPart;
 
             // See if we need to update
-            if (delta_time > 1.0f / 50.0f || GetAsyncKeyState(VK_F2))
+            if (delta_time > 1.0f / 50.0f || GetAsyncKeyState(VK_F2)) // TURBO !! :D
             {
                 last_time = time;
 
                 m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer);
-
-                // Force the window to redraw
-                //InvalidateRect(window, NULL, true);
 
                 // Set the time
                 char specType[20];
@@ -545,6 +556,10 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
     return 0;
 }
 
+//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------
 
 static void ResetMachineForSnapshot(uint8_t mc)
 {
@@ -586,6 +601,8 @@ static void ResetMachineForSnapshot(uint8_t mc)
     isResetting = false;
 }
 
+//-----------------------------------------------------------------------------------------
+
 static std::string GetCurrentDirectoryAsString()
 {
     TCHAR basePT[MAX_PATH];
@@ -598,6 +615,8 @@ static std::string GetCurrentDirectoryAsString()
     return baseP;
 }
 
+//-----------------------------------------------------------------------------------------
+
 static std::string GetApplicationBasePath()
 {
     TCHAR appDirT[MAX_PATH];
@@ -607,4 +626,5 @@ static std::string GetApplicationBasePath()
     std::string appDir(test.begin(), test.end()); // then finally get into a std::string
     return appDir;
 }
+
 //-----------------------------------------------------------------------------------------
