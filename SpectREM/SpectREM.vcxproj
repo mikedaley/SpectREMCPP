@@ -94,7 +94,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>xaudio2.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;opengl32.lib;glu32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;opengl32.lib;glu32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -192,10 +192,18 @@
     <ClInclude Include="SpectREM\Win32\OpenGLView.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="SpectREM\clut.frag" />
-    <None Include="SpectREM\clut.vert" />
-    <None Include="SpectREM\display.frag" />
-    <None Include="SpectREM\display.vert" />
+    <None Include="SpectREM\clut.frag">
+      <DeploymentContent>false</DeploymentContent>
+    </None>
+    <None Include="SpectREM\clut.vert">
+      <DeploymentContent>false</DeploymentContent>
+    </None>
+    <None Include="SpectREM\display.frag">
+      <DeploymentContent>false</DeploymentContent>
+    </None>
+    <None Include="SpectREM\display.vert">
+      <DeploymentContent>false</DeploymentContent>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Info.txt" />

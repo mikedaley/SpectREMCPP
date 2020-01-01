@@ -215,7 +215,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
                 /// TODO: Fails sometimes 48 -> 128
                 SwitchMachines();
             }
-            else if (wparam == VK_F10)
+            else if (wparam == VK_F11)
             {
                 ShowHideUI(mainWindow);
             }
@@ -610,7 +610,7 @@ static std::string GetCurrentDirectoryAsString()
     OutputDebugString(TEXT("Start path = "));
     OutputDebugString(basePT);
     OutputDebugString(TEXT("\r\n"));
-    wstring test(&basePT[0]); // first convert it to WSTR
+    wstring test(&basePT[0]); // first convert it to WSTR, DOES NOT WORK FOR X86 !
     std::string baseP(test.begin(), test.end()); // then finally get into a std::string
     return baseP;
 }
@@ -622,7 +622,7 @@ static std::string GetApplicationBasePath()
     TCHAR appDirT[MAX_PATH];
     GetModuleFileName(NULL, appDirT, MAX_PATH);
     PathRemoveFileSpec(appDirT);
-    wstring test(&appDirT[0]); // first convert it to WSTR
+    wstring test(&appDirT[0]); // first convert it to WSTR, DOES NOT WORK FOR X86 !
     std::string appDir(test.begin(), test.end()); // then finally get into a std::string
     return appDir;
 }
