@@ -204,8 +204,8 @@
     <ResourceCompile Include="SpectREM.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\..\..\Downloads\SpectREM.ico" />
     <Image Include="..\..\..\..\Downloads\SpectREM.png" />
+    <Image Include="SpectREM\Win32\SpectREM.ico" />
     <Image Include="Y:\OneDrive\Z80 Asm Editor\ZXAsmEd.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

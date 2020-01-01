@@ -17,7 +17,6 @@ F12 - Open the settings dialog (Disabled as a wip)
 -----------
 ADDED	: All keyboard buttons work now
 STARTED	: Settings dialog box
-NOTE	: The menu will be switchable on/off at some point, also need to look into resizing the display when menu is enabled
 FIXED	: Show/Hide UI bits
 
 2019-12-31
