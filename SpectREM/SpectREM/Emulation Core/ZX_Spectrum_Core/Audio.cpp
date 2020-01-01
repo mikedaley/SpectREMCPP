@@ -213,6 +213,8 @@ void ZXSpectrum::audioAYWriteData(uint8_t data)
             break;
 
         case eAYREGISTER_NOISEPER:
+            data &= 0x1f;
+            break;
         case eAYREGISTER_A_VOL:
         case eAYREGISTER_B_VOL:
         case eAYREGISTER_C_VOL:
@@ -318,7 +320,7 @@ void ZXSpectrum::audioAYUpdate()
     {
         audioAYNoiseCount++;
         
-        int32_t freq = audioAYRegisters[ eAYREGISTER_NOISEPER ];
+        uint16_t freq = audioAYRegisters[ eAYREGISTER_NOISEPER ];
         
         // 0 is assumed to be 1
         if (freq == 0)
