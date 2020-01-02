@@ -170,8 +170,7 @@ ZXSpectrum::SnapResponse ZXSpectrum::snapshotSNALoadWithPath(const string path)
 
     std::cout << "Loading SNA snapshot: " << std::endl;
     
-    snapshotSNALoadWithBuffer(pFileBytes.data(), pFileBytes.size());
-    return SnapResponse{true, "Loaded successfully"};
+    return snapshotSNALoadWithBuffer(pFileBytes.data(), pFileBytes.size());
 }
 
 // - Z80
@@ -524,10 +523,8 @@ ZXSpectrum::SnapResponse ZXSpectrum::snapshotZ80LoadWithPath(const string path)
     vector<char> pFileBytes(stream.tellg());
     stream.seekg(0, ios::beg);
     stream.read(pFileBytes.data(), pFileBytes.size());
-
-    snapshotZ80LoadWithBuffer(pFileBytes.data(), pFileBytes.size());
     
-    return SnapResponse{true, "Loaded successfully"};
+    return snapshotZ80LoadWithBuffer(pFileBytes.data(), pFileBytes.size());
 }
 
 void ZXSpectrum::snapshotExtractMemoryBlock(const char *buffer, size_t bufferSize, uint32_t memAddr, uint32_t fileOffset, bool isCompressed, uint32_t unpackedLength)
