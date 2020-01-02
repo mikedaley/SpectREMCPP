@@ -1,0 +1,190 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_SETTINGS_DIALOG DIALOGEX 0, 0, 309, 189
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_CHILD | WS_CAPTION
+CAPTION "SpectREM Settings"
+FONT 8, "MS Shell Dlg", 400, 0, 0x0
+BEGIN
+    PUSHBUTTON      "Save",IDC_BTN_SETTINGS_SAVE,191,157,50,14
+    PUSHBUTTON      "Close",IDC_BTN_SETTINGS_CLOSE,243,157,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_SETTINGS_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 302
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 182
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_SETTINGS_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United Kingdom) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENG)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU1 MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Open Snapshot\tF1",          ID_FILE_OPENSNAPSHOT
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit\tEsc",                  ID_FILE_EXIT
+    END
+    POPUP "&Emulation"
+    BEGIN
+        MENUITEM "Full Speed",                  ID_EMULATION_FULLSPEED
+        POPUP "Reset"
+        BEGIN
+            MENUITEM "Hard\tF3",                    ID_RESET_HARD
+            MENUITEM "Soft\tF4",                    ID_RESET_SOFT
+        END
+    END
+    POPUP "&Machine"
+    BEGIN
+        POPUP "Switch"
+        BEGIN
+            MENUITEM "to 48K\tShift+F5",            ID_SWITCH_TO48K
+            MENUITEM "to 128K\tCtrl+F5",            ID_SWITCH_TO128K
+            MENUITEM "Flip\tF5",                    ID_SWITCH_FLIP
+        END
+    END
+    POPUP "&Settings"
+    BEGIN
+        MENUITEM "Show/Hide UI\tF10",           ID_SHOWUI
+        MENUITEM "Application Settings\tF12",   ID_APPLICATION_SETTINGS, INACTIVE
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About\tCtrl+F1",             ID_HELP_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MENUACCELERATORS ACCELERATORS
+BEGIN
+    VK_F2,          ID_EMULATION_FULLSPEED, VIRTKEY, NOINVERT
+    VK_ESCAPE,      ID_FILE_EXIT,           VIRTKEY, NOINVERT
+    VK_F1,          ID_FILE_OPENSNAPSHOT,   VIRTKEY, NOINVERT
+    VK_F1,          ID_HELP_ABOUT,          VIRTKEY, CONTROL, NOINVERT
+    VK_F3,          ID_RESET_HARD,          VIRTKEY, NOINVERT
+    VK_F4,          ID_RESET_SOFT,          VIRTKEY, NOINVERT
+    VK_F10,         ID_SHOWUI,              VIRTKEY, NOINVERT
+    VK_F5,          ID_SWITCH_FLIP,         VIRTKEY, NOINVERT
+    VK_F5,          ID_SWITCH_TO128K,       VIRTKEY, CONTROL, NOINVERT
+    VK_F5,          ID_SWITCH_TO48K,        VIRTKEY, SHIFT, NOINVERT
+    VK_F12,         ID_APPLICATION_SETTINGS, VIRTKEY, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON2               ICON                    "SpectREM\\Win32\\SpectREM.ico"
+
+#endif    // English (United Kingdom) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

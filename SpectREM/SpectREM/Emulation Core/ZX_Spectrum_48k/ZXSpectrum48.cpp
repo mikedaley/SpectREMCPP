@@ -320,7 +320,7 @@ void ZXSpectrum48::resetMachine(bool hard)
 
 void ZXSpectrum48::resetToSnapLoad()
 {
-    loadROM( cSMART_ROM, 0 );
+    loadROM(cSMART_ROM, 0 );
     resetMachine(false);
 }
 

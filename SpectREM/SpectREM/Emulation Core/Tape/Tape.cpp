@@ -204,7 +204,16 @@ Tape::Tape(TapeStatusCallback callback)
 
 Tape::~Tape()
 {
+    // CONSTRUCTOR !
+}
 
+// Clear the callback, usually done before deleting this, ready for creating a new one.
+void Tape::clearStatusCallback(void)
+{
+    if (updateStatusCallback)
+    {
+        updateStatusCallback = nullptr;
+    }
 }
 
 void Tape::resetAndClearBlocks(bool clearBlocks)

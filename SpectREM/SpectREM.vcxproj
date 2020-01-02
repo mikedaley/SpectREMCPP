@@ -90,11 +90,12 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>SpectREM\Emulator Core\Base;SpectREM\Emulator Core\Z80 Core;SpectREM\Emulator Core\Tape;SpectREM\Win32;SpectREM\Emulator Core\ZX Spectrum +2;SpectREM\Emulator Core\ZX Spectrum 48k;SpectREM\Emulator Core\ZX Spectrum 128k;SpectREM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4068</DisableSpecificWarnings>
+      <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>xaudio2.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;opengl32.lib;glu32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>xaudio2.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;opengl32.lib;glu32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -104,11 +105,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -120,6 +122,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -138,17 +141,17 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="SpectREM\AudioQueue.cpp" />
     <ClCompile Include="SpectREM\Emulation Core\Debugger\Debug.cpp" />
     <ClCompile Include="SpectREM\Emulation Core\Tape\Tape.cpp" />
     <ClCompile Include="SpectREM\Emulation Core\Z80_Core\Z80Core.cpp" />
@@ -167,12 +170,13 @@
     <ClCompile Include="SpectREM\Emulation Core\ZX_Spectrum_Core\Keyboard.cpp" />
     <ClCompile Include="SpectREM\Emulation Core\ZX_Spectrum_Core\Snapshot.cpp" />
     <ClCompile Include="SpectREM\Emulation Core\ZX_Spectrum_Core\ZXSpectrum.cpp" />
+    <ClCompile Include="SpectREM\OSX\AudioQueue.cpp" />
     <ClCompile Include="SpectREM\Win32\AudioCore.cpp" />
     <ClCompile Include="SpectREM\Win32\OpenGLView.cpp" />
     <ClCompile Include="SpectREM\Win32\WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SpectREM\AudioQueue.hpp" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="SpectREM\Emulation Core\Debugger\Debug.hpp" />
     <ClInclude Include="SpectREM\Emulation Core\Tape\Tape.hpp" />
     <ClInclude Include="SpectREM\Emulation Core\Z80_Core\Z80Core.h" />
@@ -187,14 +191,34 @@
     <ClInclude Include="SpectREM\Emulation Core\ZX_Spectrum_48k\ZXSpectrum48.hpp" />
     <ClInclude Include="SpectREM\Emulation Core\ZX_Spectrum_Core\MachineInfo.h" />
     <ClInclude Include="SpectREM\Emulation Core\ZX_Spectrum_Core\ZXSpectrum.hpp" />
+    <ClInclude Include="SpectREM\OSX\AudioQueue.hpp" />
     <ClInclude Include="SpectREM\Win32\AudioCore.hpp" />
     <ClInclude Include="SpectREM\Win32\OpenGLView.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="SpectREM\clut.frag" />
-    <None Include="SpectREM\clut.vert" />
-    <None Include="SpectREM\display.frag" />
-    <None Include="SpectREM\display.vert" />
+    <None Include="SpectREM\clut.frag">
+      <DeploymentContent>false</DeploymentContent>
+    </None>
+    <None Include="SpectREM\clut.vert">
+      <DeploymentContent>false</DeploymentContent>
+    </None>
+    <None Include="SpectREM\display.frag">
+      <DeploymentContent>false</DeploymentContent>
+    </None>
+    <None Include="SpectREM\display.vert">
+      <DeploymentContent>false</DeploymentContent>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Info.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SpectREM.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\..\Downloads\SpectREM.png" />
+    <Image Include="SpectREM\Win32\SpectREM.ico" />
+    <Image Include="Y:\OneDrive\Z80 Asm Editor\ZXAsmEd.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

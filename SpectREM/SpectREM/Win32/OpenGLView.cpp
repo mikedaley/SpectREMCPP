@@ -52,10 +52,10 @@ static char const * cU_SHOW_REFLECTION = "u_showReflection";
 static char const * cU_TIME = "u_time";
 static char const * cU_SCREEN_SIZE = "u_screenSize";
 
-static char const * cDISPLAY_VERT_SHADER = "SpectREM\\display.vert";
-static char const * cDISPLAY_FRAG_SHADER = "SpectREM\\display.frag";
-static char const * cCLUT_VERT_SHADER = "SpectREM\\clut.vert";
-static char const * cCLUT_FRAG_SHADER = "SpectREM\\clut.frag";
+static std::string cDISPLAY_VERT_SHADER = "";
+static std::string cDISPLAY_FRAG_SHADER = "";
+static std::string cCLUT_VERT_SHADER = "";
+static std::string cCLUT_FRAG_SHADER = "";
 
 /**
      3-----2 <--  1
@@ -112,6 +112,46 @@ const Color CLUT[] = {
 
 OpenGLView::OpenGLView()
 {
+	// check if under VS/Debugger and set up ROM paths accordingly
+	// could probably remove these.. Will test further first
+	if (IsDebuggerPresent() != 0)
+	{
+		cDISPLAY_VERT_SHADER = "\\SpectREM\\Win32\\display.vert";
+		cDISPLAY_FRAG_SHADER = "\\SpectREM\\Win32\\display.frag";
+		cCLUT_VERT_SHADER = "\\SpectREM\\Win32\\clut.vert";
+		cCLUT_FRAG_SHADER = "\\SpectREM\\Win32\\clut.frag";
+	}
+	else
+	{
+		cDISPLAY_VERT_SHADER = "display.vert";
+		cDISPLAY_FRAG_SHADER = "display.frag";
+		cCLUT_VERT_SHADER = "clut.vert";
+		cCLUT_FRAG_SHADER = "clut.frag";
+	}
+}
+
+OpenGLView::OpenGLView(std::string bpath)
+{
+	// check if under VS/Debugger and set up ROM paths accordingly
+	// could probably remove these.. Will test further first
+	if (IsDebuggerPresent() != 0)
+	{
+		cDISPLAY_VERT_SHADER.append(bpath);
+		cDISPLAY_VERT_SHADER.append("\\display.vert");
+		cDISPLAY_FRAG_SHADER.append(bpath);
+		cDISPLAY_FRAG_SHADER.append("\\display.frag");
+		cCLUT_VERT_SHADER.append(bpath);
+		cCLUT_VERT_SHADER.append("\\clut.vert");
+		cCLUT_FRAG_SHADER.append(bpath);
+		cCLUT_FRAG_SHADER.append("\\clut.frag");
+	}
+	else
+	{
+		cDISPLAY_VERT_SHADER = "display.vert";
+		cDISPLAY_FRAG_SHADER = "display.frag";
+		cCLUT_VERT_SHADER = "clut.vert";
+		cCLUT_FRAG_SHADER = "clut.frag";
+	}
 }
 
 //-----------------------------------------------------------------------------------------
@@ -180,8 +220,8 @@ bool OpenGLView::Init(HWND hWnd, int width, int height)
 	// Set the 4.0 version of OpenGL in the attribute list.
 	int contextAL[] = 
 	{
-		WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
-		WGL_CONTEXT_MINOR_VERSION_ARB, 0,
+		WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+		WGL_CONTEXT_MINOR_VERSION_ARB, 2,
 		0
 	};
 
