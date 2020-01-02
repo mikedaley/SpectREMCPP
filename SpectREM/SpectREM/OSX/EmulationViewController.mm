@@ -623,18 +623,15 @@ const int cSCREEN_FILL = 1;
     
     if ([[url.pathExtension uppercaseString] isEqualToString:cZ80_EXTENSION])
     {
-        ifstream stream([url.path cStringUsingEncoding:NSUTF8StringEncoding], ios::binary | ios::ate);
-        snapResponse = _machine->snapshotZ80LoadWithPath(stream);
+        snapResponse = _machine->snapshotZ80LoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
     }
     else if ([[url.pathExtension uppercaseString] isEqualToString:cSNA_EXTENSION])
     {
-        ifstream stream([url.path cStringUsingEncoding:NSUTF8StringEncoding], ios::binary | ios::ate);
-        snapResponse = _machine->snapshotSNALoadWithPath(stream);
+        snapResponse = _machine->snapshotSNALoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
     }
     else if ([[url.pathExtension uppercaseString] isEqualToString:cTAP_EXTENSION])
     {
-        ifstream stream([url.path cStringUsingEncoding:NSUTF8StringEncoding], ios::binary | ios::ate);
-        tapResponse = _tape->loadWithPath(stream);
+        tapResponse = _tape->loadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
         [[NSNotificationCenter defaultCenter] postNotificationName:@"TAPE_CHANGED_NOTIFICATION" object:NULL];
     }
     

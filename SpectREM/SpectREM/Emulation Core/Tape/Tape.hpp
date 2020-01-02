@@ -150,7 +150,7 @@ public:
 public:
     void                    clearStatusCallback(void); // Removes the callback allocated to the Tape
     // Load a TAP file
-    TapResponse             loadWithPath(ifstream &stream);
+    TapResponse             loadWithPath(const string path);
 
     // Loads/Saves the block controlled by performing a ROM load or save
     void                    loadBlock(void *m);

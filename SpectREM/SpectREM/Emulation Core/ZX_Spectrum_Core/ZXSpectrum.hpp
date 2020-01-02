@@ -197,8 +197,10 @@ public:
     void                    keyboardKeyUp(ZXSpectrumKey key);
     void                    keyboardFlagsChanged(uint64_t flags, ZXSpectrumKey key);
     
-    SnapResponse            snapshotZ80LoadWithPath(ifstream &stream);
-    SnapResponse            snapshotSNALoadWithPath(ifstream &stream);
+    SnapResponse            snapshotZ80LoadWithPath(const string path);
+    SnapResponse            snapshotZ80LoadWithBuffer(const char *buffer, size_t size);
+    SnapResponse            snapshotSNALoadWithPath(const string path);
+    SnapResponse            snapshotSNALoadWithBuffer(const char *buffer, size_t size);
     int                     snapshotMachineInSnapshotWithPath(const char *path);
     Snap                    snapshotCreateSNA();
     Snap                    snapshotCreateZ80();
@@ -239,7 +241,7 @@ private:
     void                    keyboardCheckCapsLockStatus();
     void                    keyboardMapReset();
     string                  snapshotHardwareTypeForVersion(uint32_t version, uint32_t hardwareType);
-    void                    snapshotExtractMemoryBlock(vector<char> fileBytes, uint32_t memAddr, uint32_t fileOffset, bool isCompressed, uint32_t unpackedLength);
+    void                    snapshotExtractMemoryBlock(const char *buffer, size_t bufferSize, uint32_t memAddr, uint32_t fileOffset, bool isCompressed, uint32_t unpackedLength);
     void                    displaySetup();
     void                    displayClear();
     void                    audioSetup(double sampleRate, double fps);

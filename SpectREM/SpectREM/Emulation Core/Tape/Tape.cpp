@@ -241,10 +241,11 @@ void Tape::resetAndClearBlocks(bool clearBlocks)
    }
 }
 
-Tape::TapResponse Tape::loadWithPath(ifstream &stream)
+Tape::TapResponse Tape::loadWithPath(const string path)
 {
     bool success = false;
 
+    ifstream stream(path, ios::binary | ios::ate);
     if (stream.good())
     {
         vector<uint8_t> snapshotData(static_cast<size_t>(stream.tellg()));
