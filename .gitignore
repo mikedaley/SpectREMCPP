@@ -3,13 +3,10 @@
 /.vs/SpectREMCPP/v16
 /.vs
 /SpectREM/.vs/SpectREM/v16
-<<<<<<< HEAD
 /SpectREM/x64/Debug
 /SpectREM/x64/Release
 /SpectREM/SpectREM.vcxproj.user
-=======
 xcschememanagement.plist
 UserInterfaceState.xcuserstate
->>>>>>> 420cd40c98c18a0d711731786187b8bf09c3475a
 /SpectREM/Debug/SpectREM.tlog
 /SpectREM/Debug
