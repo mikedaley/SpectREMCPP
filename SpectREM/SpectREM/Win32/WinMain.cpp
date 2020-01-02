@@ -154,7 +154,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             LoadSnapshot();
             break;
         case ID_EMULATION_FULLSPEED:
-            TurboMode != TurboMode;
+            TurboMode =! TurboMode;
             break;
         case ID_RESET_HARD:
             HardReset();
@@ -200,7 +200,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             }
             else if (wparam == VK_F2)
             {
-                TurboMode != TurboMode;
+                TurboMode = !TurboMode;
             }
             else if (wparam == VK_F3)
             {
@@ -273,7 +273,6 @@ static void ShowSettingsDialog()
 static void ShowHideUI(HWND hWnd = mainWindow)
 {
     // Get the current state of the menu item checkbox
-    MENUITEMINFO lpmi;
     if (menuDisplayed == true)
     {
         SetMenu(hWnd, NULL);
@@ -605,26 +604,22 @@ static void ResetMachineForSnapshot(uint8_t mc)
 
 static std::string GetCurrentDirectoryAsString()
 {
-    TCHAR basePT[MAX_PATH];
-    GetCurrentDirectory(MAX_PATH, basePT);
+    char basePT[MAX_PATH];
+    GetCurrentDirectoryA(MAX_PATH, basePT);
     OutputDebugString(TEXT("Start path = "));
-    OutputDebugString(basePT);
+    OutputDebugStringA(basePT);
     OutputDebugString(TEXT("\r\n"));
-    wstring test(&basePT[0]); // first convert it to WSTR, DOES NOT WORK FOR X86 !
-    std::string baseP(test.begin(), test.end()); // then finally get into a std::string
-    return baseP;
+    return basePT;
 }
 
 //-----------------------------------------------------------------------------------------
 
 static std::string GetApplicationBasePath()
 {
-    TCHAR appDirT[MAX_PATH];
-    GetModuleFileName(NULL, appDirT, MAX_PATH);
-    PathRemoveFileSpec(appDirT);
-    wstring test(&appDirT[0]); // first convert it to WSTR, DOES NOT WORK FOR X86 !
-    std::string appDir(test.begin(), test.end()); // then finally get into a std::string
-    return appDir;
+    char appDirT[MAX_PATH];
+    GetModuleFileNameA(NULL, appDirT, MAX_PATH);
+    PathRemoveFileSpecA(appDirT);// appDirT);
+    return appDirT;
 }
 
 //-----------------------------------------------------------------------------------------
