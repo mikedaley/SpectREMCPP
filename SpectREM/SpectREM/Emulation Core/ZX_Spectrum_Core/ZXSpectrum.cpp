@@ -252,7 +252,7 @@ void ZXSpectrum::emuReset()
 
 // - ROM Loading
 
-void ZXSpectrum::loadROM(const char* rom, uint32_t page)
+void ZXSpectrum::loadROM(const string rom, uint32_t page)
 {
 	size_t romAddress = cROM_SIZE * page;
 
