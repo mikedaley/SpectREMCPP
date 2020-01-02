@@ -118,7 +118,6 @@ ZXSpectrum::SnapResponse ZXSpectrum::snapshotSNALoadWithPath(ifstream &stream)
     displayClear();
     audioReset();
 
-
     if (pFileBytes.size() > 0)
     {
         // Decode the header

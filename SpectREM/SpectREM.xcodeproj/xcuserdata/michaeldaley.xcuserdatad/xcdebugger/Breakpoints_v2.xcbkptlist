@@ -7,16 +7,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "569EF502-76E2-4675-89B9-267B246557AE"
+            uuid = "DE414809-BB4E-4A7E-93D3-725FE2EC8BE2"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "../../ZXEmuCore/Emulator_Core/Debugger/Debug.cpp"
+            filePath = "SpectREM/OSX/EmulationViewController.mm"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "210"
-            endingLineNumber = "210"
-            landmarkName = "Debug::stackTableUpdate()"
+            startingLineNumber = "397"
+            endingLineNumber = "397"
+            landmarkName = "-initMachineWithRomPath:machineType:"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

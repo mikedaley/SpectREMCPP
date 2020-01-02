@@ -397,7 +397,6 @@ const int cSCREEN_FILL = 1;
         NSLog(@"initMachineWithRomPath: Unknown machine type, defaulting to 48K");
         _machine = new ZXSpectrum48(_tape);
         [_infoPanelViewController displayMessage:@"ZX Spectrum 48k" duration:5];
-        return;
     }
     
     _machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
@@ -607,7 +606,8 @@ const int cSCREEN_FILL = 1;
 
 - (void)loadFileWithURL:(NSURL *)url addToRecent:(BOOL)addToRecent
 {
-    BOOL success = NO;
+    ZXSpectrum::SnapResponse snapResponse;
+    Tape::TapResponse tapResponse;
     
     _machine->pause();
     
@@ -623,19 +623,22 @@ const int cSCREEN_FILL = 1;
     
     if ([[url.pathExtension uppercaseString] isEqualToString:cZ80_EXTENSION])
     {
-        success = _machine->snapshotZ80LoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+        ifstream stream([url.path cStringUsingEncoding:NSUTF8StringEncoding], ios::binary | ios::ate);
+        snapResponse = _machine->snapshotZ80LoadWithPath(stream);
     }
     else if ([[url.pathExtension uppercaseString] isEqualToString:cSNA_EXTENSION])
     {
-        success = _machine->snapshotSNALoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+        ifstream stream([url.path cStringUsingEncoding:NSUTF8StringEncoding], ios::binary | ios::ate);
+        snapResponse = _machine->snapshotSNALoadWithPath(stream);
     }
     else if ([[url.pathExtension uppercaseString] isEqualToString:cTAP_EXTENSION])
     {
-        success = _tape->loadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+        ifstream stream([url.path cStringUsingEncoding:NSUTF8StringEncoding], ios::binary | ios::ate);
+        tapResponse = _tape->loadWithPath(stream);
         [[NSNotificationCenter defaultCenter] postNotificationName:@"TAPE_CHANGED_NOTIFICATION" object:NULL];
     }
     
-    if (success)
+    if (snapResponse.success || tapResponse.success)
     {
         _lastOpenedURL = url;
         if (addToRecent)
@@ -644,15 +647,13 @@ const int cSCREEN_FILL = 1;
         }
     }
     
-    if (!success)
+    if (!snapResponse.success && !tapResponse.success)
     {
-        NSWindow *window = [[NSApplication sharedApplication] mainWindow];
         NSAlert *alert = [NSAlert new];
-        alert.informativeText = [NSString stringWithFormat:@"An error occurred trying to open %@", url.path];
+        alert.informativeText = [NSString stringWithFormat:[NSString stringWithCString:snapResponse.responseMsg.c_str() encoding:[NSString defaultCStringEncoding]], url.path];
         [alert addButtonWithTitle:@"OK"];
-        [alert beginSheetModalForWindow:window completionHandler:^(NSModalResponse returnCode) {
-            // No need to do anything
-        }];
+        [alert setAlertStyle:NSAlertStyleWarning];
+        [alert runModal];
     }
     
     _machine->resume();
@@ -666,10 +667,10 @@ const int cSCREEN_FILL = 1;
     {
         // Load the last session file if it exists
         supportDirUrl = [supportDirUrl URLByAppendingPathComponent:cSESSION_FILE_NAME];
-        if ([[NSFileManager defaultManager] fileExistsAtPath:supportDirUrl.path])
-        {
+//        if ([[NSFileManager defaultManager] fileExistsAtPath:supportDirUrl.path])
+//        {
             [self loadFileWithURL:supportDirUrl addToRecent:NO];
-        }
+//        }
     }
 }
 

@@ -287,6 +287,7 @@ public:
     uint32_t                emuDisplayPage = 0;
     bool                    emuDisablePaging = true;
     string                  emuROMPath;
+    string                  emuBasePath;
     bool                    emuTapeInstantLoad = 0;
     bool                    emuUseAYSound = 0;
     bool                    emuLoadTrapTriggered = 0;

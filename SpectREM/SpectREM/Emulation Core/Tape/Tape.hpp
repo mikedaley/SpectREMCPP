@@ -148,6 +148,7 @@ public:
     virtual ~Tape();
 
 public:
+    void                    clearStatusCallback(void); // Removes the callback allocated to the Tape
     // Load a TAP file
     TapResponse             loadWithPath(ifstream &stream);
 

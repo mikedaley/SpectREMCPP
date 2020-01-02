@@ -30,7 +30,6 @@
     <ClCompile Include="SpectREM\Win32\WinMain.cpp">
       <Filter>Win32</Filter>
     </ClCompile>
-    <ClCompile Include="SpectREM\AudioQueue.cpp" />
     <ClCompile Include="SpectREM\Win32\AudioCore.cpp">
       <Filter>Win32</Filter>
     </ClCompile>
@@ -91,9 +90,11 @@
     <ClCompile Include="SpectREM\Emulation Core\ZX_Spectrum_Core\ZXSpectrum.cpp">
       <Filter>Emulation Core\ZX_Spectrum_Core</Filter>
     </ClCompile>
+    <ClCompile Include="SpectREM\OSX\AudioQueue.cpp">
+      <Filter>Win32</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SpectREM\AudioQueue.hpp" />
     <ClInclude Include="SpectREM\Win32\AudioCore.hpp">
       <Filter>Win32</Filter>
     </ClInclude>
@@ -142,11 +143,28 @@
     <ClInclude Include="SpectREM\Emulation Core\ZX_Spectrum_Core\ZXSpectrum.hpp">
       <Filter>Emulation Core\ZX_Spectrum_Core</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="SpectREM\OSX\AudioQueue.hpp">
+      <Filter>Win32</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SpectREM\clut.frag" />
     <None Include="SpectREM\clut.vert" />
     <None Include="SpectREM\display.frag" />
     <None Include="SpectREM\display.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Info.txt">
+      <Filter>Win32</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SpectREM.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Y:\OneDrive\Z80 Asm Editor\ZXAsmEd.ico" />
+    <Image Include="..\..\..\..\Downloads\SpectREM.png" />
+    <Image Include="SpectREM\Win32\SpectREM.ico" />
   </ItemGroup>
 </Project>

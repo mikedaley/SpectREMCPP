@@ -18,276 +18,291 @@ const uint32_t cROM_SIZE = 16384;
 
 ZXSpectrum::ZXSpectrum()
 {
-    std::cout << "ZXSpectrum::Constructor" << std::endl;
-    
-    displayCLUT = new uint64_t[32 * 1024];
-    displayALUT = new uint8_t[256];
+	std::cout << "ZXSpectrum::Constructor" << std::endl;
+
+	displayCLUT = new uint64_t[32 * 1024];
+	displayALUT = new uint8_t[256];
 }
 
 ZXSpectrum::~ZXSpectrum()
 {
-    std::cout << "ZXSpectrum::Destructor" << std::endl;
-    
-    delete [] displayCLUT;
-    delete [] displayALUT; 
+	std::cout << "ZXSpectrum::Destructor" << std::endl;
+
+	delete[] displayCLUT;
+	delete[] displayALUT;
 }
 
 // - Initialise
 
 void ZXSpectrum::initialise(string romPath)
 {
-    std::cout << "ZXSpectrum::initialise(char *romPath)" << std::endl;
-    
-    z80Core.Initialise(zxSpectrumMemoryRead,
-                       zxSpectrumMemoryWrite,
-                       zxSpectrumIORead,
-                       zxSpectrumIOWrite,
-                       zxSpectrumMemoryContention,
-                       zxSpectrumDebugRead,
-                       zxSpectrumDebugWrite,
-                       this);
-    
-    emuROMPath = romPath;
+	std::cout << "ZXSpectrum::initialise(char *romPath)" << std::endl;
 
-    screenWidth = machineInfo.pxEmuBorder + machineInfo.pxHorizontalDisplay + machineInfo.pxEmuBorder;
-    screenHeight = machineInfo.pxEmuBorder + machineInfo.pxVerticalDisplay + machineInfo.pxEmuBorder;
-    screenBufferSize = screenHeight * screenWidth;
-    
-    memoryRom.resize( machineInfo.romSize );
-    memoryRam.resize( machineInfo.ramSize );
+	z80Core.Initialise(zxSpectrumMemoryRead,
+		zxSpectrumMemoryWrite,
+		zxSpectrumIORead,
+		zxSpectrumIOWrite,
+		zxSpectrumMemoryContention,
+		zxSpectrumDebugRead,
+		zxSpectrumDebugWrite,
+		this);
 
-    displaySetup();
-    displayBuildLineAddressTable();
-    displayBuildTsTable();
-    displayBuildCLUT();
-    
-    ULABuildContentionTable();
+	emuROMPath = romPath;
 
-    audioSetup(cSAMPLE_RATE, cFPS);
-    audioBuildAYVolumesTable();
-    
-    resetMachine(true);
+	screenWidth = machineInfo.pxEmuBorder + machineInfo.pxHorizontalDisplay + machineInfo.pxEmuBorder;
+	screenHeight = machineInfo.pxEmuBorder + machineInfo.pxVerticalDisplay + machineInfo.pxEmuBorder;
+	screenBufferSize = screenHeight * screenWidth;
+
+	memoryRom.resize(machineInfo.romSize);
+	memoryRam.resize(machineInfo.ramSize);
+
+	displaySetup();
+	displayBuildLineAddressTable();
+	displayBuildTsTable();
+	displayBuildCLUT();
+
+	ULABuildContentionTable();
+
+	audioSetup(cSAMPLE_RATE, cFPS);
+	audioBuildAYVolumesTable();
+
+	resetMachine(true);
 }
 
 void ZXSpectrum::registerDebugOpCallback(std::function<bool(uint16_t, uint8_t)> debugOpCallbackBlock)
 {
-    this->debugOpCallbackBlock = debugOpCallbackBlock;
+	this->debugOpCallbackBlock = debugOpCallbackBlock;
 }
 
 // - Generate a frame
 
 void ZXSpectrum::generateFrame()
 {
-    uint32_t currentFrameTstates = machineInfo.tsPerFrame;
-    
-    while (currentFrameTstates > 0 && !emuPaused && !breakpointHit)
-    {
-        if (debugOpCallbackBlock)
-        {
-            if( debugOpCallbackBlock( z80Core.GetRegister(CZ80Core::eREG_PC), eDebugExecuteOp ) || emuPaused)
-            {
-                return;
-            }
-        }
-        
-        uint32_t tStates = z80Core.Execute(1, machineInfo.intLength);
-                
-        if (tape && tape->playing)
-        {
-            tape->updateWithTs(tStates);
-        }
-        
-        if (tape && emuSaveTrapTriggered)
-        {
-            tape->saveBlock(this);
-        }
-        else if (emuLoadTrapTriggered && tape && tape->loaded)
-        {
-            tape->loadBlock(this);
-        }
-        else
-        {
-            currentFrameTstates -= tStates;
-            
-            audioUpdateWithTs(tStates);
+	uint32_t currentFrameTstates = machineInfo.tsPerFrame;
 
-            if (z80Core.GetTStates() >= machineInfo.tsPerFrame)
-            {
-                z80Core.ResetTStates( machineInfo.tsPerFrame );
-                z80Core.SignalInterrupt();
-                
-                displayUpdateWithTs(static_cast<int32_t>(machineInfo.tsPerFrame - emuCurrentDisplayTs));
-                
-                emuFrameCounter++;
-                
-                audioLastIndex = audioBufferIndex;
-                displayFrameReset();
-                keyboardCheckCapsLockStatus();
-                audioDecayAYFloatingRegister();
-                
-                currentFrameTstates = 0;
-            }
-        }
-    }
+	while (currentFrameTstates > 0 && !emuPaused && !breakpointHit)
+	{
+		if (debugOpCallbackBlock)
+		{
+			if (debugOpCallbackBlock(z80Core.GetRegister(CZ80Core::eREG_PC), eDebugExecuteOp) || emuPaused)
+			{
+				return;
+			}
+		}
+
+		uint32_t tStates = z80Core.Execute(1, machineInfo.intLength);
+
+		if (tape && tape->playing)
+		{
+			tape->updateWithTs(tStates);
+		}
+
+		if (tape && emuSaveTrapTriggered)
+		{
+			tape->saveBlock(this);
+		}
+		else if (emuLoadTrapTriggered && tape && tape->loaded)
+		{
+			tape->loadBlock(this);
+		}
+		else
+		{
+			currentFrameTstates -= tStates;
+
+			audioUpdateWithTs(tStates);
+
+			if (z80Core.GetTStates() >= machineInfo.tsPerFrame)
+			{
+				z80Core.ResetTStates(machineInfo.tsPerFrame);
+				z80Core.SignalInterrupt();
+
+				displayUpdateWithTs(static_cast<int32_t>(machineInfo.tsPerFrame - emuCurrentDisplayTs));
+
+				emuFrameCounter++;
+
+				audioLastIndex = audioBufferIndex;
+				displayFrameReset();
+				keyboardCheckCapsLockStatus();
+				audioDecayAYFloatingRegister();
+
+				currentFrameTstates = 0;
+			}
+		}
+	}
 }
 
 // - Debug
 
 void ZXSpectrum::step()
 {
-    uint32_t tStates = z80Core.Execute(1, machineInfo.intLength);
-    
-    if (tape && tape->playing)
-    {
-        tape->updateWithTs(tStates);
-    }
-    
-    if (tape && emuSaveTrapTriggered)
-    {
-        tape->saveBlock(this);
-    }
-    else if (emuLoadTrapTriggered && tape && tape->loaded)
-    {
-        tape->loadBlock(this);
-    }
-    else
-    {
-        if (z80Core.GetTStates() >= machineInfo.tsPerFrame)
-        {
-            z80Core.ResetTStates( machineInfo.tsPerFrame );
-            z80Core.SignalInterrupt();
-            
-            emuFrameCounter++;
-            
-            displayFrameReset();
-            keyboardCheckCapsLockStatus();
-            
-            audioDecayAYFloatingRegister();
-        }
-    }
+	uint32_t tStates = z80Core.Execute(1, machineInfo.intLength);
 
-    displayUpdateWithTs(static_cast<int32_t>(machineInfo.tsPerFrame - emuCurrentDisplayTs));
+	if (tape && tape->playing)
+	{
+		tape->updateWithTs(tStates);
+	}
+
+	if (tape && emuSaveTrapTriggered)
+	{
+		tape->saveBlock(this);
+	}
+	else if (emuLoadTrapTriggered && tape && tape->loaded)
+	{
+		tape->loadBlock(this);
+	}
+	else
+	{
+		if (z80Core.GetTStates() >= machineInfo.tsPerFrame)
+		{
+			z80Core.ResetTStates(machineInfo.tsPerFrame);
+			z80Core.SignalInterrupt();
+
+			emuFrameCounter++;
+
+			displayFrameReset();
+			keyboardCheckCapsLockStatus();
+
+			audioDecayAYFloatingRegister();
+		}
+	}
+
+	displayUpdateWithTs(static_cast<int32_t>(machineInfo.tsPerFrame - emuCurrentDisplayTs));
 }
 
 // - Memory Access
 
-uint8_t ZXSpectrum::zxSpectrumMemoryRead(uint16_t address, void *param)
+uint8_t ZXSpectrum::zxSpectrumMemoryRead(uint16_t address, void* param)
 {
-    return static_cast<ZXSpectrum *>(param)->coreMemoryRead(address);
+	return static_cast<ZXSpectrum*>(param)->coreMemoryRead(address);
 }
 
-void ZXSpectrum::zxSpectrumMemoryWrite(uint16_t address, uint8_t data, void *param)
+void ZXSpectrum::zxSpectrumMemoryWrite(uint16_t address, uint8_t data, void* param)
 {
-    static_cast<ZXSpectrum *>(param)->coreMemoryWrite(address, data);
+	static_cast<ZXSpectrum*>(param)->coreMemoryWrite(address, data);
 }
 
-void ZXSpectrum::zxSpectrumMemoryContention(uint16_t address, uint32_t tStates, void *param)
+void ZXSpectrum::zxSpectrumMemoryContention(uint16_t address, uint32_t tStates, void* param)
 {
-    static_cast<ZXSpectrum *>(param)->coreMemoryContention(address, tStates);
+	static_cast<ZXSpectrum*>(param)->coreMemoryContention(address, tStates);
 }
 
-uint8_t ZXSpectrum::zxSpectrumDebugRead(uint16_t address, void *param, void *data)
+uint8_t ZXSpectrum::zxSpectrumDebugRead(uint16_t address, void* param, void* data)
 {
-    return static_cast<ZXSpectrum *>(param)->coreDebugRead(address, data);
+	return static_cast<ZXSpectrum*>(param)->coreDebugRead(address, data);
 }
 
-void ZXSpectrum::zxSpectrumDebugWrite(uint16_t address, uint8_t byte, void *param, void *)
+void ZXSpectrum::zxSpectrumDebugWrite(uint16_t address, uint8_t byte, void* param, void*)
 {
-    static_cast<ZXSpectrum *>(param)->coreMemoryWrite(address, byte);
+	static_cast<ZXSpectrum*>(param)->coreMemoryWrite(address, byte);
 }
 
 // - IO Access
 
-uint8_t ZXSpectrum::zxSpectrumIORead(uint16_t address, void *param)
+uint8_t ZXSpectrum::zxSpectrumIORead(uint16_t address, void* param)
 {
-    return static_cast<ZXSpectrum *>(param)->coreIORead(address);
+	return static_cast<ZXSpectrum*>(param)->coreIORead(address);
 }
 
-void ZXSpectrum::zxSpectrumIOWrite(uint16_t address, uint8_t data, void *param)
+void ZXSpectrum::zxSpectrumIOWrite(uint16_t address, uint8_t data, void* param)
 {
-    static_cast<ZXSpectrum *>(param)->coreIOWrite(address, data);
+	static_cast<ZXSpectrum*>(param)->coreIOWrite(address, data);
 }
 
 // - Pause/Resume
 
 void ZXSpectrum::pause()
 {
-    emuPaused = true;
+	emuPaused = true;
 }
 
 void ZXSpectrum::resume()
 {
-    emuPaused = false;
+	emuPaused = false;
 }
 
 // - Reset
 
 void ZXSpectrum::resetMachine(bool hard)
 {
-    if (hard)
-    {
-        for (uint32_t i = 0; i < machineInfo.ramSize; i++)
-        {
-            memoryRam[i] = static_cast<char>(rand() % 255);
-        }
-    }
-    
-    delete [] displayBuffer;
-    
-    displaySetup();
-    
-    z80Core.Reset(hard);
-    emuReset();
-    keyboardMapReset();
-    displayFrameReset();
-    audioReset();
+	if (hard)
+	{
+		for (uint32_t i = 0; i < machineInfo.ramSize; i++)
+		{
+			memoryRam[i] = static_cast<char>(rand() % 255);
+		}
+	}
+
+	delete[] displayBuffer;
+
+	displaySetup();
+
+	z80Core.Reset(hard);
+	emuReset();
+	keyboardMapReset();
+	displayFrameReset();
+	audioReset();
 }
 
 void ZXSpectrum::emuReset()
 {
-    emuFrameCounter = 0;
-    emuSaveTrapTriggered = false;
-    emuLoadTrapTriggered = false;
+	emuFrameCounter = 0;
+	emuSaveTrapTriggered = false;
+	emuLoadTrapTriggered = false;
 }
 
 // - ROM Loading
 
-void ZXSpectrum::loadROM(const string rom, uint32_t page)
+void ZXSpectrum::loadROM(const char* rom, uint32_t page)
 {
-    size_t romAddress = cROM_SIZE * page;
+	size_t romAddress = cROM_SIZE * page;
 
-    if (memoryRom.size() < romAddress)
-    {
-        std::cout << "ZXSpectrum::loadROM - Unable to load into ROM page " << page << std::endl;
-        exit(1);
-    }
+	if (memoryRom.size() < romAddress)
+	{
+		std::cout << "ZXSpectrum::loadROM - Unable to load into ROM page " << page << std::endl;
+		exit(1);
+	}
 
-    string romPath = emuROMPath;
-    romPath.append(rom);
+	string romPath = emuBasePath + emuROMPath;
+	romPath.append(rom);
 
-    ifstream romFile(romPath, ios::binary | ios::ate);
-    if (romFile.good())
-    {
-        std::streampos fileSize = romFile.tellg();
-        romFile.seekg(0, ios::beg);
-        romFile.read(memoryRom.data() + romAddress, fileSize);
-        romFile.close();
-    }
+#ifdef QT_SPECTRUM
+	QFile file(rom);
+	if (!file.open(QIODevice::ReadOnly)) return;
+	QByteArray romData = file.readAll();
+	std::memcpy(memoryRom.data(), romData.data(), file.size());
+#else
+	ifstream romFile(romPath, ios::binary | ios::ate | ios::in);
+	if (romFile.good())
+	{
+		std::streampos fileSize = romFile.tellg();
+		romFile.seekg(0, ios::beg);
+		romFile.read(memoryRom.data() + romAddress, fileSize);
+		romFile.close();
+	}
+	else
+	{
+		char* errorstring = strerror(errno);
+		cout << "ERROR: Could not read from ROM file: " << errorstring;
+	}
+
+#endif
 }
+
+
 
 // - Getters
 
 void* ZXSpectrum::getScreenBuffer()
 {
-    return displayBuffer;
+	return displayBuffer;
 }
 
 // - Release
 
 void ZXSpectrum::release()
 {
-    delete[] displayBuffer;
-    delete[] audioBuffer;
+	delete[] displayBuffer;
+	delete[] audioBuffer;
 }
 
 
