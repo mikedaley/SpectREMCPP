@@ -28,7 +28,6 @@ const uint8_t               cZ80_V3_MACHINE_TYPE_128_IF1 = 5;
 const uint8_t               cz80_V3_MACHINE_TYPE_128_MGT = 6;
 const uint8_t               cZ80_V3_MACHINE_TYPE_128_2 = 12;
 
-
 // - SNA
 
 ZXSpectrum::Snap ZXSpectrum::snapshotCreateSNA()
@@ -99,34 +98,29 @@ ZXSpectrum::Snap ZXSpectrum::snapshotCreateSNA()
     return snap;
 }
 
-bool ZXSpectrum::snapshotSNALoadWithPath(const char *path)
+ZXSpectrum::SnapResponse ZXSpectrum::snapshotSNALoadWithPath(ifstream &stream)
 {
-    FILE *fileHandle;
-
-    fileHandle = fopen(path, "rb");
-
-    if (!fileHandle)
-    {
-        std::cout << "ERROR LOADING SNAPSHOT: " << path << std::endl;
-        return false;
+    bool bSuccess = false;
+    
+    if (!stream) {
+        SnapResponse response;
+        return SnapResponse{bSuccess, "File not found"};
     }
-    std::cout << "Loading SNA snapshot: " << path << std::endl;
+    
+    vector<char> pFileBytes(stream.tellg());
+    stream.seekg(0, ios::beg);
+    stream.read(pFileBytes.data(), pFileBytes.size());
+
+    std::cout << "Loading SNA snapshot: " << std::endl;
 
     pause();
     displayFrameReset();
     displayClear();
     audioReset();
 
-    fseek(fileHandle, 0, SEEK_END);
-    size_t size = static_cast<size_t>( ftell(fileHandle) );
-    fseek(fileHandle, 0, SEEK_SET);
 
-    uint8_t *pFileBytes = new uint8_t[size];
-
-    if (pFileBytes != nullptr)
+    if (pFileBytes.size() > 0)
     {
-        fread(pFileBytes, 1, size, fileHandle);
-
         // Decode the header
         z80Core.SetRegister(CZ80Core::eREG_I, pFileBytes[0]);
         z80Core.SetRegister(CZ80Core::eREG_R, pFileBytes[20]);
@@ -152,7 +146,7 @@ bool ZXSpectrum::snapshotSNALoadWithPath(const char *path)
         z80Core.SetIFF1((pFileBytes[19] >> 2) & 1);
         z80Core.SetIFF2((pFileBytes[19] >> 2) & 1);
 
-        if (size == (48 * 1024) + cSNA_HEADER_SIZE)
+        if (pFileBytes.size() == (48 * 1024) + cSNA_HEADER_SIZE)
         {
             uint32_t snaAddr = cSNA_HEADER_SIZE;
             for (uint32_t i = 16384; i < (64 * 1024); i++)
@@ -166,13 +160,11 @@ bool ZXSpectrum::snapshotSNALoadWithPath(const char *path)
             z80Core.SetRegister(CZ80Core::eREG_PC, static_cast<uint16_t>((pc_msb << 8) | pc_lsb));
             z80Core.SetRegister(CZ80Core::eREG_SP, z80Core.GetRegister(CZ80Core::eREG_SP) + 2);
         }
-
-        delete[] pFileBytes;
     }
 
     resume();
 
-    return true;
+    return SnapResponse{true, "Loaded successfully"};
 
 }
 
@@ -347,35 +339,26 @@ ZXSpectrum::Snap ZXSpectrum::snapshotCreateZ80()
     return snapData;
 }
 
-bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
+ZXSpectrum::SnapResponse ZXSpectrum::snapshotZ80LoadWithPath(ifstream &stream)
 {
-    FILE *fileHandle;
     bool bSuccess = false;
-
-    fileHandle = fopen(path, "rb");
-
-    if (!fileHandle)
-    {
-        std::cout << "ERROR LOADING Z80 SNAPSHOT: " << path << std::endl;
-        fclose(fileHandle);
-        return false;
+    
+    if (!stream.ios_base::good()) {
+        SnapResponse response;
+        return SnapResponse{bSuccess, "Stream error"};
     }
+    
+    vector<char> pFileBytes(stream.tellg());
+    stream.seekg(0, ios::beg);
+    stream.read(pFileBytes.data(), pFileBytes.size());
 
     pause();
     displayFrameReset();
     displayClear();
     audioReset();
-
-    fseek(fileHandle, 0, SEEK_END);
-    size_t size = static_cast<size_t>( ftell(fileHandle) );
-    fseek(fileHandle, 0, SEEK_SET);
-
-    uint8_t *pFileBytes = new uint8_t[ size ];
-
-    if (pFileBytes != nullptr)
+    
+    if (pFileBytes.size() > 0)
     {
-        fread(pFileBytes, 1, size, fileHandle);
-
         // Decode the header
         uint16_t headerLength = (reinterpret_cast<uint16_t *>( &pFileBytes[30])[0] );
         uint16_t version;
@@ -403,7 +386,7 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
             version = 2;
             pc = (reinterpret_cast<uint16_t *>( &pFileBytes[32])[0]);
         }
-        std::cout << "Loading Z80 snapshot v" << version << ": " << path << std::endl;
+        std::cout << "Loading Z80 snapshot v" << version << ": " << std::endl;
 
         z80Core.SetRegister(CZ80Core::eREG_A, pFileBytes[0]);
         z80Core.SetRegister(CZ80Core::eREG_F, pFileBytes[1]);
@@ -483,7 +466,7 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
                 emuDisplayPage = 1;
             }
 
-            while (offset < size)
+            while (offset < pFileBytes.size())
             {
                 uint32_t compressedLength = reinterpret_cast<uint16_t*>(&pFileBytes[offset])[0];
                 bool isCompressed = true;
@@ -530,11 +513,11 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
     }
 
     resume();
-
-    return bSuccess;
+    
+    return SnapResponse{bSuccess, "Loaded successfully"};
 }
 
-void ZXSpectrum::snapshotExtractMemoryBlock(uint8_t *fileBytes, uint32_t memAddr, uint32_t fileOffset, bool isCompressed, uint32_t unpackedLength)
+void ZXSpectrum::snapshotExtractMemoryBlock(vector<char> fileBytes, uint32_t memAddr, uint32_t fileOffset, bool isCompressed, uint32_t unpackedLength)
 {
     uint32_t filePtr = fileOffset;
     uint32_t memoryPtr = memAddr;

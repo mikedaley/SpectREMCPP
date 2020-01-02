@@ -9,17 +9,11 @@
 #ifndef ZXSpectrum_hpp
 #define ZXSpectrum_hpp
 
-#define QT = true
-
 #include <vector>
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <functional>
-
-#ifdef QT_SPECTRUM
-#include <QFile>
-#endif
 
 #include "../Z80_Core/Z80Core.h"
 #include "MachineInfo.h"
@@ -28,11 +22,6 @@
 using namespace std;
 
 // - Base ZXSpectrum class
-
-typedef enum {
-    eULAPlusPaletteGroup = 0,
-    eULAPlusModeGroup
-} ULAPlusMode;
 
 class ZXSpectrum
 {
@@ -85,6 +74,7 @@ public:
         eDebugExecuteOp = 0x04
     };
     
+    // Spectrum keyboard
     enum class ZXSpectrumKey
     {
         __NoKey,
@@ -148,7 +138,6 @@ public:
         Key_CapsLock,
     };
 
-
 private:
     // Holds details of the host platforms key codes and how they map to the spectrum keyboard matrix
     typedef struct
@@ -166,7 +155,13 @@ public:
         int32_t     length = 0;
         uint8_t     *data = nullptr;
     };
-    
+
+    // Snapshot loading response structure
+    struct SnapResponse {
+        bool success;
+        string responseMsg;
+    };
+
     // Breakpoint information
     struct Breakpoint {
         uint16_t    address = 0;
@@ -202,8 +197,8 @@ public:
     void                    keyboardKeyUp(ZXSpectrumKey key);
     void                    keyboardFlagsChanged(uint64_t flags, ZXSpectrumKey key);
     
-    bool                    snapshotZ80LoadWithPath(const char *path);
-    bool                    snapshotSNALoadWithPath(const char *path);
+    SnapResponse            snapshotZ80LoadWithPath(ifstream &stream);
+    SnapResponse            snapshotSNALoadWithPath(ifstream &stream);
     int                     snapshotMachineInSnapshotWithPath(const char *path);
     Snap                    snapshotCreateSNA();
     Snap                    snapshotCreateZ80();
@@ -213,12 +208,12 @@ public:
     void                    registerDebugOpCallback(std::function<bool(uint16_t, uint8_t)> debugOpCallbackBlock);
     std::function<bool(uint16_t, uint8_t)>    debugOpCallbackBlock = nullptr;
     
-    void                   *getScreenBuffer();
-    uint32_t               getLastAudioBufferIndex() { return audioLastIndex; }
+    void                    *getScreenBuffer();
+    uint32_t                getLastAudioBufferIndex() { return audioLastIndex; }
 
 protected:
     void                    emuReset();
-    void                    loadROM(const char *rom, uint32_t page);
+    void                    loadROM(const string rom, uint32_t page);
     
     void                    displayFrameReset();
     void                    displayUpdateWithTs(int32_t tStates);
@@ -244,7 +239,7 @@ private:
     void                    keyboardCheckCapsLockStatus();
     void                    keyboardMapReset();
     string                  snapshotHardwareTypeForVersion(uint32_t version, uint32_t hardwareType);
-    void                    snapshotExtractMemoryBlock(uint8_t *fileBytes, uint32_t memAddr, uint32_t fileOffset, bool isCompressed, uint32_t unpackedLength);
+    void                    snapshotExtractMemoryBlock(vector<char> fileBytes, uint32_t memAddr, uint32_t fileOffset, bool isCompressed, uint32_t unpackedLength);
     void                    displaySetup();
     void                    displayClear();
     void                    audioSetup(double sampleRate, double fps);

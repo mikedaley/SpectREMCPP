@@ -232,16 +232,15 @@ void Tape::resetAndClearBlocks(bool clearBlocks)
    }
 }
 
-bool Tape::loadWithPath(const char *path)
+Tape::TapResponse Tape::loadWithPath(ifstream &stream)
 {
     bool success = false;
 
-    ifstream tapeFile(path, ios::binary | ios::ate);
-    if (tapeFile.good())
+    if (stream.good())
     {
-        vector<uint8_t> snapshotData(static_cast<size_t>(tapeFile.tellg()));
-        tapeFile.seekg(0, ios::beg);
-        tapeFile.read(reinterpret_cast<char*>(snapshotData.data()), snapshotData.size());
+        vector<uint8_t> snapshotData(static_cast<size_t>(stream.tellg()));
+        stream.seekg(0, ios::beg);
+        stream.read(reinterpret_cast<char*>(snapshotData.data()), snapshotData.size());
 
         resetAndClearBlocks(true);
         if (processData(snapshotData.data(), static_cast<unsigned int>(snapshotData.size())))
@@ -251,10 +250,11 @@ bool Tape::loadWithPath(const char *path)
     }
     else
     {
-        std::cout << "ERROR LOADING TAPE: " << path << std::endl;
+        std::cout << "ERROR LOADING TAPE: " << std::endl;
+        return TapResponse{false, "Unable to load TAP file"};
     }
     loaded = success;
-    return success;
+    return TapResponse{true, "Loaded successfully"};
 }
 
 void Tape::updateWithTs(uint32_t tStates)

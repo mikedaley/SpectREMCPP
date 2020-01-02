@@ -252,7 +252,7 @@ void ZXSpectrum::emuReset()
 
 // - ROM Loading
 
-void ZXSpectrum::loadROM(const char *rom, uint32_t page)
+void ZXSpectrum::loadROM(const string rom, uint32_t page)
 {
     size_t romAddress = cROM_SIZE * page;
 
@@ -265,12 +265,6 @@ void ZXSpectrum::loadROM(const char *rom, uint32_t page)
     string romPath = emuROMPath;
     romPath.append(rom);
 
-#ifdef QT_SPECTRUM
-    QFile file(rom);
-    if (!file.open(QIODevice::ReadOnly)) return;
-    QByteArray romData = file.readAll();
-    std::memcpy(memoryRom.data(), romData.data(), file.size());
-#else
     ifstream romFile(romPath, ios::binary | ios::ate);
     if (romFile.good())
     {
@@ -279,7 +273,6 @@ void ZXSpectrum::loadROM(const char *rom, uint32_t page)
         romFile.read(memoryRom.data() + romAddress, fileSize);
         romFile.close();
     }
-#endif
 }
 
 // - Getters
