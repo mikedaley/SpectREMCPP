@@ -134,7 +134,7 @@ BEGIN
     POPUP "&Settings"
     BEGIN
         MENUITEM "Show/Hide UI\tF10",           ID_SHOWUI
-        MENUITEM "Application Settings\tF12",   ID_APPLICATION_SETTINGS, INACTIVE
+        MENUITEM "Application Settings\tF12",   ID_APPLICATION_SETTINGS
     END
     POPUP "&Help"
     BEGIN
