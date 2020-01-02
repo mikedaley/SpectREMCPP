@@ -212,7 +212,6 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             }
             else if (wparam == VK_F5)
             {
-                /// TODO: Fails sometimes 48 -> 128
                 SwitchMachines();
             }
             else if (wparam == VK_F11)
@@ -265,7 +264,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 static void ShowSettingsDialog()
 {
-
+    MessageBoxA(mainWindow, "NOT IMPLEMENTED YET.", "Oh oh...", MB_OK | MB_ICONINFORMATION | MB_APPLMODAL);
 }
 
 //-----------------------------------------------------------------------------------------
@@ -275,13 +274,11 @@ static void ShowHideUI(HWND hWnd = mainWindow)
     // Get the current state of the menu item checkbox
     if (menuDisplayed == true)
     {
-        SetMenu(hWnd, NULL);
-        menuDisplayed = false;
+        HideUI(hWnd);
     }
     else
     {
-        SetMenu(hWnd, mainMenu);
-        menuDisplayed = true;
+        ShowUI(hWnd);
     }
 }
 
@@ -289,24 +286,23 @@ static void ShowHideUI(HWND hWnd = mainWindow)
 
 static void ShowUI(HWND hWnd = mainWindow)
 {
-    //
-
+        SetMenu(hWnd, mainMenu);
+        menuDisplayed = true;
 }
 
 //-----------------------------------------------------------------------------------------
 
 static void HideUI(HWND hWnd = mainWindow)
 {
-    //
-
+    SetMenu(hWnd, NULL);
+    menuDisplayed = false;
 }
 
 //-----------------------------------------------------------------------------------------
 
 static void ShowHelpAbout()
 {
-    // 
-
+    MessageBoxA(mainWindow, "NOT IMPLEMENTED YET.", "Oh oh...", MB_OK | MB_ICONINFORMATION | MB_APPLMODAL);
 }
 
 //-----------------------------------------------------------------------------------------

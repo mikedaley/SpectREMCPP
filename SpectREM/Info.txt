@@ -13,6 +13,10 @@ F12 - Open the settings dialog (Disabled as a wip)
 
 
 
+2020-01-02
+-----------
+FIXED	: x86 build now works again and runs
+
 2020-01-01
 -----------
 ADDED	: All keyboard buttons work now
