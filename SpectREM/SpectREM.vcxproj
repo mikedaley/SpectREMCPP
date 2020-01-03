@@ -232,6 +232,10 @@ copy "$(ProjectDir)SpectREM\Emulation Core\ROMS\*.*" $(TargetDir)ROMS\*.*
     <None Include="SpectREM\display.vert">
       <DeploymentContent>false</DeploymentContent>
     </None>
+    <None Include="Spectrem\Win32\clut.frag" />
+    <None Include="Spectrem\Win32\clut.vert" />
+    <None Include="Spectrem\Win32\display.frag" />
+    <None Include="Spectrem\Win32\display.vert" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Info.txt" />

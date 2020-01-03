@@ -113,47 +113,9 @@ const Color CLUT[] = {
 
 OpenGLView::OpenGLView()
 {
-	// check if under VS/Debugger and set up ROM paths accordingly
-	// could probably remove these.. Will test further first
-	if (IsDebuggerPresent() != 0)
-	{
-		cDISPLAY_VERT_SHADER = "\\SpectREM\\Win32\\display.vert";
-		cDISPLAY_FRAG_SHADER = "\\SpectREM\\Win32\\display.frag";
-		cCLUT_VERT_SHADER = "\\SpectREM\\Win32\\clut.vert";
-		cCLUT_FRAG_SHADER = "\\SpectREM\\Win32\\clut.frag";
-	}
-	else
-	{
-		cDISPLAY_VERT_SHADER = "display.vert";
-		cDISPLAY_FRAG_SHADER = "display.frag";
-		cCLUT_VERT_SHADER = "clut.vert";
-		cCLUT_FRAG_SHADER = "clut.frag";
-	}
+
 }
 
-OpenGLView::OpenGLView(std::string bpath)
-{
-	// check if under VS/Debugger and set up ROM paths accordingly
-	// could probably remove these.. Will test further first
-	if (IsDebuggerPresent() != 0)
-	{
-		cDISPLAY_VERT_SHADER.append(bpath);
-		cDISPLAY_VERT_SHADER.append("\\display.vert");
-		cDISPLAY_FRAG_SHADER.append(bpath);
-		cDISPLAY_FRAG_SHADER.append("\\display.frag");
-		cCLUT_VERT_SHADER.append(bpath);
-		cCLUT_VERT_SHADER.append("\\clut.vert");
-		cCLUT_FRAG_SHADER.append(bpath);
-		cCLUT_FRAG_SHADER.append("\\clut.frag");
-	}
-	else
-	{
-		cDISPLAY_VERT_SHADER = "display.vert";
-		cDISPLAY_FRAG_SHADER = "display.frag";
-		cCLUT_VERT_SHADER = "clut.vert";
-		cCLUT_FRAG_SHADER = "clut.frag";
-	}
-}
 
 //-----------------------------------------------------------------------------------------
 
@@ -169,6 +131,14 @@ void OpenGLView::Deinit()
 	wglMakeCurrent(NULL, NULL);
 	ReleaseDC(m_hWnd, m_HDC);
 	wglDeleteContext(m_GLRC);
+}
+
+//-----------------------------------------------------------------------------------------
+
+void OpenGLView::Resize(int width, int height)
+{
+    _viewWidth = width;
+    _viewHeight = height;
 }
 
 //-----------------------------------------------------------------------------------------
@@ -586,24 +556,6 @@ GLuint OpenGLView::prepareShaderProgram(std::string vertexShaderPath, std::strin
 
     for (int i = 0; i < 2; ++i) {
         Shader &s = shaders[i];
-
-        /*std::ifstream file(s.filename, std::ios::in);
-        if (file.is_open())
-        {
-            std::string Line = "";
-            while (std::getline(file, Line))
-            {
-                s.source += "\n" + Line;
-            }
-            file.close();
-        }
-        else
-        {
-            std::cerr << "Can't open " << s.filename << ". Are you in the right directory ? Don't forget to read the FAQ !\n";
-            getchar();
-            continue;
-        }*/
-
         GLuint shader = glCreateShader(s.type);
         char const * pSource = s.source.c_str();
         glShaderSource(shader, 1, &pSource, nullptr);
