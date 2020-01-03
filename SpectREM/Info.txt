@@ -12,6 +12,9 @@ F10	- Turn on/off Windows UI (menus etc.)
 F12 - Open the settings dialog (Disabled as a wip)
 
 
+2020-01-03
+-----------
+FIXED	: Shader files are now loaded from resources in the .exe instead of needing the files in the folder
 
 2020-01-02
 -----------
