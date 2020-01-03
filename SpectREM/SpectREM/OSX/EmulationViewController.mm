@@ -107,8 +107,6 @@ const int cSCREEN_FILL = 1;
         {
             if (_defaults.machineAcceleration == 1)
             {
-                _machine->generateFrame();
-                
                 // No point in updating the screen if the screen isn't visible. Also needed to stop the app from stalling when
                 // brought to the front
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -117,6 +115,9 @@ const int cSCREEN_FILL = 1;
                         [_metalRenderer updateTextureData:_machine->getScreenBuffer()];
                     }
                 });
+
+                // Generate another frame
+                _machine->generateFrame();
             }
             _audioQueue->write(_machine->audioBuffer, b);
         }
@@ -149,6 +150,7 @@ const int cSCREEN_FILL = 1;
 - (void)updateDisplay
 {
     [_metalRenderer updateTextureData:_machine->displayBuffer];
+    
 //    if (_debugger && _debugViewController) {
 //        if (!_debugViewController.view.isHidden) {
 //            dispatch_async(dispatch_get_main_queue(), ^{
@@ -164,6 +166,12 @@ const int cSCREEN_FILL = 1;
 {
     [super viewDidLoad];
     
+//    NSURL *supportDir = [self getSupportDirUrl];
+//    NSURL *output = [supportDir URLByAppendingPathComponent:@"output.txt"];
+//    const char *outputPath = [output.path cStringUsingEncoding:NSUTF8StringEncoding];
+//    NSLog(@"%@", output.path);
+//    freopen(outputPath, "w", stdout);
+
     _metalView = (MTKView *)self.view;
     _metalView.device = MTLCreateSystemDefaultDevice();
     
@@ -522,7 +530,7 @@ const int cSCREEN_FILL = 1;
         @(24) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Plus),
         @(47) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Period),
         @(48) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Edit),
-        @(50) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Graph),
+        @(50) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Graph), 
         @(53) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Break), // ESC key
         @(51) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Backspace),
         @(126) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_ArrowUp),

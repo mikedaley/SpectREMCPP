@@ -1046,7 +1046,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="640" height="512"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <visualEffectView wantsLayer="YES" appearanceType="vibrantDark" fixedFrame="YES" blendingMode="withinWindow" material="dark" state="active" translatesAutoresizingMaskIntoConstraints="NO" id="6nS-g3-5ZX">
+                            <visualEffectView wantsLayer="YES" fixedFrame="YES" blendingMode="withinWindow" material="appearanceBased" state="active" translatesAutoresizingMaskIntoConstraints="NO" id="6nS-g3-5ZX">
                                 <rect key="frame" x="0.0" y="0.0" width="261" height="512"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" heightSizable="YES"/>
                                 <subviews>

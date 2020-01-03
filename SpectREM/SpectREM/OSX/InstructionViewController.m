@@ -23,6 +23,7 @@
     
     NSString *path = [[NSBundle mainBundle] pathForResource:@"Commands" ofType:@"rtf"];
     [self.textView readRTFDFromFile:path];
+    self.textView.textColor = NSColor.controlTextColor;
 }
 
 @end
