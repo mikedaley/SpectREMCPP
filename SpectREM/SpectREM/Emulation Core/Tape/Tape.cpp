@@ -87,9 +87,9 @@ uint16_t TapeBlock::getStartAddress()
    return 0;
 }
 
-string TapeBlock::getFilename()
+std::string TapeBlock::getFilename()
 {
-   string filename(&blockData[ cHEADER_FILENAME_OFFSET ], &blockData[ cHEADER_FILENAME_OFFSET ] + cHEADER_FILENAME_LENGTH);
+   std::string filename(&blockData[ cHEADER_FILENAME_OFFSET ], &blockData[ cHEADER_FILENAME_OFFSET ] + cHEADER_FILENAME_LENGTH);
    return filename;
 }
 
@@ -97,9 +97,9 @@ string TapeBlock::getFilename()
 // - Program Header
 
 
-string ProgramHeader::getBlockName()
+std::string ProgramHeader::getBlockName()
 {
-   string blockName = "Program Header";
+   std::string blockName = "Program Header";
    return blockName;
 }
 
@@ -127,7 +127,7 @@ uint16_t ProgramHeader::getDataLength()
 // - Numeric Header
 
 
-string NumericDataHeader::getBlockName()
+std::string NumericDataHeader::getBlockName()
 {
    return "Numeric Data Header";
 }
@@ -136,7 +136,7 @@ string NumericDataHeader::getBlockName()
 // - Alphanumeric Header
 
 
-string AlphanumericDataHeader::getBlockName()
+std::string AlphanumericDataHeader::getBlockName()
 {
    return "Alphanumeric Data Header";
 }
@@ -145,7 +145,7 @@ string AlphanumericDataHeader::getBlockName()
 // - Byter Header
 
 
-string ByteHeader::getBlockName()
+std::string ByteHeader::getBlockName()
 {
    return "Byte Header";
 }
@@ -164,7 +164,7 @@ uint8_t ByteHeader::getChecksum()
 // - Data Block
 
 
-string DataBlock::getBlockName()
+std::string DataBlock::getBlockName()
 {
    return "Data Block";
 }
@@ -241,15 +241,15 @@ void Tape::resetAndClearBlocks(bool clearBlocks)
    }
 }
 
-Tape::TapResponse Tape::loadWithPath(const string path)
+Tape::TapResponse Tape::loadWithPath(const std::string path)
 {
     bool success = false;
 
-    ifstream stream(path, ios::binary | ios::ate);
+    std::ifstream stream(path, std::ios::binary | std::ios::ate);
     if (stream.good())
     {
-        vector<uint8_t> snapshotData(static_cast<size_t>(stream.tellg()));
-        stream.seekg(0, ios::beg);
+        std::vector<uint8_t> snapshotData(static_cast<size_t>(stream.tellg()));
+        stream.seekg(0, std::ios::beg);
         stream.read(reinterpret_cast<char*>(snapshotData.data()), snapshotData.size());
 
         resetAndClearBlocks(true);
@@ -791,9 +791,9 @@ void Tape::eject()
    loaded = false;
 }
 
-vector<uint8_t> Tape::getTapeData()
+std::vector<uint8_t> Tape::getTapeData()
 {
-   vector<uint8_t> tapeData;
+   std::vector<uint8_t> tapeData;
    for (size_t i = 0; i < blocks.size(); i++)
    {
        uint16_t blockLength = blocks[ i ]->getDataLength();

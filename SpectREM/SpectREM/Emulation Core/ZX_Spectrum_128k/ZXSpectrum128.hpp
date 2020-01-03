@@ -19,7 +19,7 @@ public:
     virtual ~ZXSpectrum128();
     
 public:
-    virtual void            initialise(string romPath) override;
+    virtual void            initialise(std::string romPath) override;
     virtual void            release() override;
     virtual void            resetMachine(bool hard = true) override;
     virtual void            resetToSnapLoad() override;

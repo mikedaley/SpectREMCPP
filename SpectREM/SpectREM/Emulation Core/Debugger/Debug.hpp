@@ -18,8 +18,6 @@
 #include <map>
 #include "../ZX_Spectrum_Core/ZXSpectrum.hpp"
 
-using namespace std;
-
 // - Debugger
 
 class Debug
@@ -29,8 +27,8 @@ public:
     struct DisassembledOpcode
     {
         uint16_t    address;
-        string      bytes;
-        string      mnemonic;
+        std::string bytes;
+        std::string mnemonic;
     };
 
     struct Breakpoint
@@ -68,7 +66,7 @@ public:
     void                        stackTableUpdate();
     Stack                       stackAddress(uint32_t index);
 
-    bool                        setRegister(string reg, uint8_t value);
+    bool                        setRegister(std::string reg, uint8_t value);
 
     void                        fillMemory(uint16_t fromAddress, uint16_t toAddress, uint8_t value);
 
@@ -76,11 +74,11 @@ public:
 
 protected:
 
-    vector<DisassembledOpcode>                  m_disassembly;
-    vector<Breakpoint>                          m_breakpoints;
-    vector<Stack>                               m_stack;
-    map<string, CZ80Core::eZ80BYTEREGISTERS>    m_byteRegisters;
-    map<string, CZ80Core::eZ80WORDREGISTERS>    m_wordRegisters;
+    std::vector<DisassembledOpcode>                  m_disassembly;
+    std::vector<Breakpoint>                          m_breakpoints;
+    std::vector<Stack>                               m_stack;
+    std::map<std::string, CZ80Core::eZ80BYTEREGISTERS>    m_byteRegisters;
+    std::map<std::string, CZ80Core::eZ80WORDREGISTERS>    m_wordRegisters;
 
 public:
     ZXSpectrum *                machine;

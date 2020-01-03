@@ -263,7 +263,7 @@ static const uint8_t cSendOK = 0xaa;
     [self sendSmartlinkAction:cSMARTLINK_RESET];
 
     // Send register data using the new snapBuffer
-    cout << "Send Regs" << endl;
+    std::cout << "Send Regs" << std::endl;
     [self sendBlockWithCommand:cCMD_LOAD_REGS
                       location:0
                         length:cSMARTLINK_SNAPSHOT_HEADER_LENGTH
@@ -307,15 +307,15 @@ static const uint8_t cSendOK = 0xaa;
             // 48k - Uses the Z80 snapshot format page numbers
             switch (pageId) {
             case 4:
-                    cout << "Send 48k page 4" << endl;
+                    std::cout << "Send 48k page 4" << std::endl;
                     [self bulkSendWithSpectrumMemoryAddress:0x8000 length:compressedLength snapshotOffset:offset + 3 snapshot:snapshot];
                 break;
             case 5:
-                    cout << "Send 48k page 5" << endl;
+                    std::cout << "Send 48k page 5" << std::endl;
                     [self bulkSendWithSpectrumMemoryAddress:0xc000 length:compressedLength snapshotOffset:offset + 3 snapshot:snapshot];
                 break;
             case 8:
-                    cout << "Send 48k page 8" << endl;
+                    std::cout << "Send 48k page 8" << std::endl;
                     [self bulkSendWithSpectrumMemoryAddress:0x4000 length:compressedLength snapshotOffset:offset + 3 snapshot:snapshot];
                 break;
             default:
@@ -331,7 +331,7 @@ static const uint8_t cSendOK = 0xaa;
                                 length:3
                                   data:bankSwitch
                       expectedResponse:self.sendOkResponse];
-            cout << "Send 128k page " << pageId - 3 << endl;
+            std::cout << "Send 128k page " << pageId - 3 << std::endl;
             [self bulkSendWithSpectrumMemoryAddress:0xc000 length:compressedLength snapshotOffset:offset + 3 snapshot:snapshot];
         }
 

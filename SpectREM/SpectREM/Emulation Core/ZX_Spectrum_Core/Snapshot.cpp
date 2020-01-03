@@ -105,7 +105,7 @@ ZXSpectrum::SnapResponse ZXSpectrum::snapshotSNALoadWithBuffer(const char *buffe
     displayClear();
     audioReset();
 
-    vector<char> pFileBytes(buffer, buffer + size);
+    std::vector<char> pFileBytes(buffer, buffer + size);
 
     if (size > 0)
     {
@@ -155,17 +155,17 @@ ZXSpectrum::SnapResponse ZXSpectrum::snapshotSNALoadWithBuffer(const char *buffe
     return SnapResponse{true, "Loaded successfully"};
 }
 
-ZXSpectrum::SnapResponse ZXSpectrum::snapshotSNALoadWithPath(const string path)
+ZXSpectrum::SnapResponse ZXSpectrum::snapshotSNALoadWithPath(const std::string path)
 {
     
-    ifstream stream(path, ios::binary | ios::ate);
+    std::ifstream stream(path, std::ios::binary | std::ios::ate);
     if (!stream.ios_base::good()) {
         SnapResponse response;
         return SnapResponse{false, "Path/file not found"};
     }
     
-    vector<char> pFileBytes(stream.tellg());
-    stream.seekg(0, ios::beg);
+    std::vector<char> pFileBytes(stream.tellg());
+    stream.seekg(0, std::ios::beg);
     stream.read(pFileBytes.data(), pFileBytes.size());
 
     std::cout << "Loading SNA snapshot: " << std::endl;
@@ -351,7 +351,7 @@ ZXSpectrum::SnapResponse ZXSpectrum::snapshotZ80LoadWithBuffer(const char *buffe
     displayClear();
     audioReset();
 
-    vector<char> pFileBytes(buffer, buffer + size);
+    std::vector<char> pFileBytes(buffer, buffer + size);
 
     if (size > 0)
     {
@@ -473,7 +473,7 @@ ZXSpectrum::SnapResponse ZXSpectrum::snapshotZ80LoadWithBuffer(const char *buffe
                 }
 
                 uint32_t pageId = buffer[offset + 2];
-                cout << "Page:" << pageId << " Compressed Length:" << compressedLength << " IsCompressed:" << isCompressed << endl;
+                std::cout << "Page:" << pageId << " Compressed Length:" << compressedLength << " IsCompressed:" << isCompressed << std::endl;
 
                 if (version == 1 || ((version == 2 || version == 3) && (hardwareType == cZ80_V2_MACHINE_TYPE_48 || hardwareType == cZ80_V3_MACHINE_TYPE_48 ||
                     hardwareType == cZ80_V2_MACHINE_TYPE_48_IF1 || hardwareType == cZ80_V3_MACHINE_TYPE_48_IF1)
@@ -512,16 +512,16 @@ ZXSpectrum::SnapResponse ZXSpectrum::snapshotZ80LoadWithBuffer(const char *buffe
     return SnapResponse{true, "Loaded successfully"};
 }
 
-ZXSpectrum::SnapResponse ZXSpectrum::snapshotZ80LoadWithPath(const string path)
+ZXSpectrum::SnapResponse ZXSpectrum::snapshotZ80LoadWithPath(const std::string path)
 {
-    ifstream stream(path, ios::binary | ios::ate);
+    std::ifstream stream(path, std::ios::binary | std::ios::ate);
     if (!stream.ios_base::good()) {
         SnapResponse response;
         return SnapResponse{false, "Path/file not found"};
     }
     
-    vector<char> pFileBytes(stream.tellg());
-    stream.seekg(0, ios::beg);
+    std::vector<char> pFileBytes(stream.tellg());
+    stream.seekg(0, std::ios::beg);
     stream.read(pFileBytes.data(), pFileBytes.size());
     
     return snapshotZ80LoadWithBuffer(pFileBytes.data(), pFileBytes.size());
@@ -531,7 +531,7 @@ void ZXSpectrum::snapshotExtractMemoryBlock(const char *buffer, size_t bufferSiz
 {
     uint32_t filePtr = fileOffset;
     uint32_t memoryPtr = memAddr;
-    vector<char> fileBytes(buffer, buffer + bufferSize);
+    std::vector<char> fileBytes(buffer, buffer + bufferSize);
 
     if (!isCompressed)
     {
@@ -566,9 +566,9 @@ void ZXSpectrum::snapshotExtractMemoryBlock(const char *buffer, size_t bufferSiz
 }
 
 
-string ZXSpectrum::snapshotHardwareTypeForVersion(uint32_t version, uint32_t hardwareType)
+std::string ZXSpectrum::snapshotHardwareTypeForVersion(uint32_t version, uint32_t hardwareType)
 {
-    string hardware = "Unknown";
+    std::string hardware = "Unknown";
     if (version == 2)
     {
         switch (hardwareType) {
