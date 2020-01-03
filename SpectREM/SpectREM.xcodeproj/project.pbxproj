@@ -270,9 +270,8 @@
 				17B27F021F6877C800B811FC /* AudioQueue.cpp */,
 				17B27F031F6877C800B811FC /* AudioQueue.hpp */,
 			);
-			name = "Audio Core";
-			path = "/Users/michaeldaley/SpectREMCPP/SpectREM/SpectREM/OSX/Audio Core";
-			sourceTree = "<absolute>";
+			path = "Audio Core";
+			sourceTree = "<group>";
 		};
 		17B5DB9B1F5B1CCE003E7EF3 /* Frameworks */ = {
 			isa = PBXGroup;
@@ -453,8 +452,8 @@
 		2963B3E123B7977D00CAE4CD /* Tape */ = {
 			isa = PBXGroup;
 			children = (
-				2963B41323B7982900CAE4CD /* Tape.cpp */,
 				2963B41423B7982900CAE4CD /* Tape.hpp */,
+				2963B41323B7982900CAE4CD /* Tape.cpp */,
 			);
 			path = Tape;
 			sourceTree = "<group>";

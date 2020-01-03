@@ -28,7 +28,6 @@ const uint8_t               cZ80_V3_MACHINE_TYPE_128_IF1 = 5;
 const uint8_t               cz80_V3_MACHINE_TYPE_128_MGT = 6;
 const uint8_t               cZ80_V3_MACHINE_TYPE_128_2 = 12;
 
-
 // - SNA
 
 ZXSpectrum::Snap ZXSpectrum::snapshotCreateSNA()
@@ -99,37 +98,20 @@ ZXSpectrum::Snap ZXSpectrum::snapshotCreateSNA()
     return snap;
 }
 
-bool ZXSpectrum::snapshotSNALoadWithPath(const char *path)
+ZXSpectrum::SnapResponse ZXSpectrum::snapshotSNALoadWithBuffer(const char *buffer, size_t size)
 {
-    FILE *fileHandle;
-
-    fileHandle = fopen(path, "rb");
-
-    if (!fileHandle)
-    {
-        std::cout << "ERROR LOADING SNAPSHOT: " << path << std::endl;
-        return false;
-    }
-    std::cout << "Loading SNA snapshot: " << path << std::endl;
-
     pause();
     displayFrameReset();
     displayClear();
     audioReset();
 
-    fseek(fileHandle, 0, SEEK_END);
-    size_t size = static_cast<size_t>( ftell(fileHandle) );
-    fseek(fileHandle, 0, SEEK_SET);
+    vector<char> pFileBytes(buffer, buffer + size);
 
-    uint8_t *pFileBytes = new uint8_t[size];
-
-    if (pFileBytes != nullptr)
+    if (size > 0)
     {
-        fread(pFileBytes, 1, size, fileHandle);
-
         // Decode the header
-        z80Core.SetRegister(CZ80Core::eREG_I, pFileBytes[0]);
-        z80Core.SetRegister(CZ80Core::eREG_R, pFileBytes[20]);
+        z80Core.SetRegister(CZ80Core::eREG_I, buffer[0]);
+        z80Core.SetRegister(CZ80Core::eREG_R, buffer[20]);
         z80Core.SetRegister(CZ80Core::eREG_ALT_HL, (reinterpret_cast<uint16_t *>(&pFileBytes[1])[0]));
         z80Core.SetRegister(CZ80Core::eREG_ALT_DE, (reinterpret_cast<uint16_t *>(&pFileBytes[1])[1]));
         z80Core.SetRegister(CZ80Core::eREG_ALT_BC, (reinterpret_cast<uint16_t *>(&pFileBytes[1])[2]));
@@ -166,14 +148,29 @@ bool ZXSpectrum::snapshotSNALoadWithPath(const char *path)
             z80Core.SetRegister(CZ80Core::eREG_PC, static_cast<uint16_t>((pc_msb << 8) | pc_lsb));
             z80Core.SetRegister(CZ80Core::eREG_SP, z80Core.GetRegister(CZ80Core::eREG_SP) + 2);
         }
-
-        delete[] pFileBytes;
     }
 
     resume();
 
-    return true;
+    return SnapResponse{true, "Loaded successfully"};
+}
 
+ZXSpectrum::SnapResponse ZXSpectrum::snapshotSNALoadWithPath(const string path)
+{
+    
+    ifstream stream(path, ios::binary | ios::ate);
+    if (!stream.ios_base::good()) {
+        SnapResponse response;
+        return SnapResponse{false, "Path/file not found"};
+    }
+    
+    vector<char> pFileBytes(stream.tellg());
+    stream.seekg(0, ios::beg);
+    stream.read(pFileBytes.data(), pFileBytes.size());
+
+    std::cout << "Loading SNA snapshot: " << std::endl;
+    
+    return snapshotSNALoadWithBuffer(pFileBytes.data(), pFileBytes.size());
 }
 
 // - Z80
@@ -347,37 +344,19 @@ ZXSpectrum::Snap ZXSpectrum::snapshotCreateZ80()
     return snapData;
 }
 
-bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
+ZXSpectrum::SnapResponse ZXSpectrum::snapshotZ80LoadWithBuffer(const char *buffer, size_t size)
 {
-    FILE *fileHandle;
-    bool bSuccess = false;
-
-    fileHandle = fopen(path, "rb");
-
-    if (!fileHandle)
-    {
-        std::cout << "ERROR LOADING Z80 SNAPSHOT: " << path << std::endl;
-        fclose(fileHandle);
-        return false;
-    }
-
     pause();
     displayFrameReset();
     displayClear();
     audioReset();
 
-    fseek(fileHandle, 0, SEEK_END);
-    size_t size = static_cast<size_t>( ftell(fileHandle) );
-    fseek(fileHandle, 0, SEEK_SET);
+    vector<char> pFileBytes(buffer, buffer + size);
 
-    uint8_t *pFileBytes = new uint8_t[ size ];
-
-    if (pFileBytes != nullptr)
+    if (size > 0)
     {
-        fread(pFileBytes, 1, size, fileHandle);
-
         // Decode the header
-        uint16_t headerLength = (reinterpret_cast<uint16_t *>( &pFileBytes[30])[0] );
+        uint16_t headerLength = (reinterpret_cast<uint16_t *>(&pFileBytes[30])[0] );
         uint16_t version;
         uint16_t hardwareType;
         uint16_t pc;
@@ -403,7 +382,7 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
             version = 2;
             pc = (reinterpret_cast<uint16_t *>( &pFileBytes[32])[0]);
         }
-        std::cout << "Loading Z80 snapshot v" << version << ": " << path << std::endl;
+        std::cout << "Loading Z80 snapshot v" << version << ": " << std::endl;
 
         z80Core.SetRegister(CZ80Core::eREG_A, pFileBytes[0]);
         z80Core.SetRegister(CZ80Core::eREG_F, pFileBytes[1]);
@@ -453,8 +432,8 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
         // Based on the version number of the snapshot, decode the memory contents
         switch (version) {
         case 1:
-            snapshotExtractMemoryBlock(pFileBytes, 0x4000, 30, compressed, 0xc000);
-            bSuccess = true;
+            
+            snapshotExtractMemoryBlock(buffer, size, 0x4000, 30, compressed, 0xc000);
             break;
 
         case 2:
@@ -493,7 +472,7 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
                     isCompressed = false;
                 }
 
-                uint32_t pageId = pFileBytes[offset + 2];
+                uint32_t pageId = buffer[offset + 2];
                 cout << "Page:" << pageId << " Compressed Length:" << compressedLength << " IsCompressed:" << isCompressed << endl;
 
                 if (version == 1 || ((version == 2 || version == 3) && (hardwareType == cZ80_V2_MACHINE_TYPE_48 || hardwareType == cZ80_V3_MACHINE_TYPE_48 ||
@@ -503,13 +482,13 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
                     // 48k
                     switch (pageId) {
                     case 4:
-                        snapshotExtractMemoryBlock(pFileBytes, 0x8000, offset + 3, isCompressed, 0x4000);
+                        snapshotExtractMemoryBlock(buffer, size, 0x8000, offset + 3, isCompressed, 0x4000);
                         break;
                     case 5:
-                        snapshotExtractMemoryBlock(pFileBytes, 0xc000, offset + 3, isCompressed, 0x4000);
+                        snapshotExtractMemoryBlock(buffer, size, 0xc000, offset + 3, isCompressed, 0x4000);
                         break;
                     case 8:
-                        snapshotExtractMemoryBlock(pFileBytes, 0x4000, offset + 3, isCompressed, 0x4000);
+                        snapshotExtractMemoryBlock(buffer, size, 0x4000, offset + 3, isCompressed, 0x4000);
                         break;
                     default:
                         break;
@@ -518,26 +497,41 @@ bool ZXSpectrum::snapshotZ80LoadWithPath(const char *path)
                 else
                 {
                     // 128k
-                    snapshotExtractMemoryBlock(pFileBytes, (pageId - 3) * 0x4000, offset + 3, isCompressed, 0x4000);
+                    snapshotExtractMemoryBlock(buffer, size, (pageId - 3) * 0x4000, offset + 3, isCompressed, 0x4000);
                 }
 
                 offset += compressedLength + 3;
             }
 
-            bSuccess = true;
             break;
         }
     }
 
     resume();
-
-    return bSuccess;
+    
+    return SnapResponse{true, "Loaded successfully"};
 }
 
-void ZXSpectrum::snapshotExtractMemoryBlock(uint8_t *fileBytes, uint32_t memAddr, uint32_t fileOffset, bool isCompressed, uint32_t unpackedLength)
+ZXSpectrum::SnapResponse ZXSpectrum::snapshotZ80LoadWithPath(const string path)
+{
+    ifstream stream(path, ios::binary | ios::ate);
+    if (!stream.ios_base::good()) {
+        SnapResponse response;
+        return SnapResponse{false, "Path/file not found"};
+    }
+    
+    vector<char> pFileBytes(stream.tellg());
+    stream.seekg(0, ios::beg);
+    stream.read(pFileBytes.data(), pFileBytes.size());
+    
+    return snapshotZ80LoadWithBuffer(pFileBytes.data(), pFileBytes.size());
+}
+
+void ZXSpectrum::snapshotExtractMemoryBlock(const char *buffer, size_t bufferSize, uint32_t memAddr, uint32_t fileOffset, bool isCompressed, uint32_t unpackedLength)
 {
     uint32_t filePtr = fileOffset;
     uint32_t memoryPtr = memAddr;
+    vector<char> fileBytes(buffer, buffer + bufferSize);
 
     if (!isCompressed)
     {

@@ -107,8 +107,6 @@ const int cSCREEN_FILL = 1;
         {
             if (_defaults.machineAcceleration == 1)
             {
-                _machine->generateFrame();
-                
                 // No point in updating the screen if the screen isn't visible. Also needed to stop the app from stalling when
                 // brought to the front
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -117,6 +115,9 @@ const int cSCREEN_FILL = 1;
                         [_metalRenderer updateTextureData:_machine->getScreenBuffer()];
                     }
                 });
+
+                // Generate another frame
+                _machine->generateFrame();
             }
             _audioQueue->write(_machine->audioBuffer, b);
         }
@@ -149,6 +150,7 @@ const int cSCREEN_FILL = 1;
 - (void)updateDisplay
 {
     [_metalRenderer updateTextureData:_machine->displayBuffer];
+    
 //    if (_debugger && _debugViewController) {
 //        if (!_debugViewController.view.isHidden) {
 //            dispatch_async(dispatch_get_main_queue(), ^{
@@ -164,6 +166,12 @@ const int cSCREEN_FILL = 1;
 {
     [super viewDidLoad];
     
+//    NSURL *supportDir = [self getSupportDirUrl];
+//    NSURL *output = [supportDir URLByAppendingPathComponent:@"output.txt"];
+//    const char *outputPath = [output.path cStringUsingEncoding:NSUTF8StringEncoding];
+//    NSLog(@"%@", output.path);
+//    freopen(outputPath, "w", stdout);
+
     _metalView = (MTKView *)self.view;
     _metalView.device = MTLCreateSystemDefaultDevice();
     
@@ -397,7 +405,6 @@ const int cSCREEN_FILL = 1;
         NSLog(@"initMachineWithRomPath: Unknown machine type, defaulting to 48K");
         _machine = new ZXSpectrum48(_tape);
         [_infoPanelViewController displayMessage:@"ZX Spectrum 48k" duration:5];
-        return;
     }
     
     _machine->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
@@ -523,7 +530,7 @@ const int cSCREEN_FILL = 1;
         @(24) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Plus),
         @(47) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Period),
         @(48) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Edit),
-        @(50) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Graph),
+        @(50) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Graph), 
         @(53) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Break), // ESC key
         @(51) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Backspace),
         @(126) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_ArrowUp),
@@ -607,7 +614,8 @@ const int cSCREEN_FILL = 1;
 
 - (void)loadFileWithURL:(NSURL *)url addToRecent:(BOOL)addToRecent
 {
-    BOOL success = NO;
+    ZXSpectrum::SnapResponse snapResponse;
+    Tape::TapResponse tapResponse;
     
     _machine->pause();
     
@@ -623,19 +631,19 @@ const int cSCREEN_FILL = 1;
     
     if ([[url.pathExtension uppercaseString] isEqualToString:cZ80_EXTENSION])
     {
-        success = _machine->snapshotZ80LoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+        snapResponse = _machine->snapshotZ80LoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
     }
     else if ([[url.pathExtension uppercaseString] isEqualToString:cSNA_EXTENSION])
     {
-        success = _machine->snapshotSNALoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+        snapResponse = _machine->snapshotSNALoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
     }
     else if ([[url.pathExtension uppercaseString] isEqualToString:cTAP_EXTENSION])
     {
-        success = _tape->loadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+        tapResponse = _tape->loadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
         [[NSNotificationCenter defaultCenter] postNotificationName:@"TAPE_CHANGED_NOTIFICATION" object:NULL];
     }
     
-    if (success)
+    if (snapResponse.success || tapResponse.success)
     {
         _lastOpenedURL = url;
         if (addToRecent)
@@ -644,15 +652,13 @@ const int cSCREEN_FILL = 1;
         }
     }
     
-    if (!success)
+    if (!snapResponse.success && !tapResponse.success)
     {
-        NSWindow *window = [[NSApplication sharedApplication] mainWindow];
         NSAlert *alert = [NSAlert new];
-        alert.informativeText = [NSString stringWithFormat:@"An error occurred trying to open %@", url.path];
+        alert.informativeText = [NSString stringWithFormat:[NSString stringWithCString:snapResponse.responseMsg.c_str() encoding:[NSString defaultCStringEncoding]], url.path];
         [alert addButtonWithTitle:@"OK"];
-        [alert beginSheetModalForWindow:window completionHandler:^(NSModalResponse returnCode) {
-            // No need to do anything
-        }];
+        [alert setAlertStyle:NSAlertStyleWarning];
+        [alert runModal];
     }
     
     _machine->resume();
@@ -666,10 +672,10 @@ const int cSCREEN_FILL = 1;
     {
         // Load the last session file if it exists
         supportDirUrl = [supportDirUrl URLByAppendingPathComponent:cSESSION_FILE_NAME];
-        if ([[NSFileManager defaultManager] fileExistsAtPath:supportDirUrl.path])
-        {
+//        if ([[NSFileManager defaultManager] fileExistsAtPath:supportDirUrl.path])
+//        {
             [self loadFileWithURL:supportDirUrl addToRecent:NO];
-        }
+//        }
     }
 }
 

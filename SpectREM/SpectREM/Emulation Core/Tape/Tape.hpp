@@ -36,14 +36,14 @@ public:
     virtual uint8_t   getChecksum();
     virtual uint16_t  getAutoStartLine();
     virtual uint16_t  getStartAddress();
-    virtual string          getBlockName() = 0;
-    virtual string          getFilename();
+    virtual string    getBlockName() = 0;
+    virtual string    getFilename();
 
 public:
     uint16_t          blockLength = 0;
     uint8_t           *blockData = nullptr;
-    int                     blockType = 0;
-    int                     currentByte = 0;
+    int               blockType = 0;
+    int               currentByte = 0;
 };
 
 
@@ -57,7 +57,7 @@ public:
     virtual uint16_t  getProgramLength();
     virtual uint16_t  getDataLength();
     virtual uint8_t   getChecksum();
-    virtual string          getBlockName();
+    virtual string    getBlockName();
 };
 
 
@@ -89,7 +89,7 @@ class ByteHeader : public TapeBlock
 public:
     uint16_t          getStartAddress();
     virtual uint8_t   getChecksum();
-    virtual string          getBlockName();
+    virtual string    getBlockName();
 };
 
 
@@ -102,7 +102,7 @@ public:
     uint8_t           *getDataBlock();
     virtual uint8_t   getDataType();
     virtual uint8_t   getChecksum();
-    virtual string          getBlockName();
+    virtual string    getBlockName();
 };
 
 
@@ -138,13 +138,19 @@ class Tape
     };
 
 public:
+    struct TapResponse {
+        bool success;
+        string responseMsg;
+    };
+    
+public:
     Tape(TapeStatusCallback callback);
     virtual ~Tape();
 
 public:
     void                    clearStatusCallback(void); // Removes the callback allocated to the Tape
     // Load a TAP file
-    bool                    loadWithPath(const char *);
+    TapResponse             loadWithPath(const string path);
 
     // Loads/Saves the block controlled by performing a ROM load or save
     void                    loadBlock(void *m);
@@ -166,7 +172,7 @@ public:
     void                    setSelectedBlock(uint32_t blockIndex);
 
     // Returns a vector that contains the current tape data ready to write to disk
-    vector<uint8_t>   getTapeData();
+    vector<uint8_t>         getTapeData();
 
 private:
     void                    resetAndClearBlocks(bool clearBlocks);
