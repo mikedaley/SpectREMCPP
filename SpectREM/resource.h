@@ -28,11 +28,17 @@
 #define ID_SHOWUI                       40028
 #define ID_APPLICATION_SETTINGS         40030
 
+#define ID_TEXTFILE                     256
+#define ID_SHADER_DISPLAY_FRAG          57000
+#define ID_SHADER_DISPLAY_VERT          57001
+#define ID_SHADER_CLUT_FRAG             57002
+#define ID_SHADER_CLUT_VERT             57003
+
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        109
+#define _APS_NEXT_RESOURCE_VALUE        110
 #define _APS_NEXT_COMMAND_VALUE         40032
 #define _APS_NEXT_CONTROL_VALUE         1002
 #define _APS_NEXT_SYMED_VALUE           101

@@ -2,6 +2,16 @@
 //
 #include "resource.h"
 
+/////////////////////////////////////////////////////////////////////////////
+//
+// Shaders
+//
+
+ID_SHADER_DISPLAY_FRAG          RCDATA      "Spectrem\\Win32\\display.frag"
+ID_SHADER_DISPLAY_VERT          RCDATA    "Spectrem\\Win32\\display.vert"
+ID_SHADER_CLUT_FRAG             RCDATA    "Spectrem\\Win32\\clut.frag"
+ID_SHADER_CLUT_VERT             RCDATA    "Spectrem\\Win32\\clut.vert"
+
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
 //

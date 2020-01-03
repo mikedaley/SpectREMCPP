@@ -487,7 +487,7 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
     QueryPerformanceCounter(&last_time);
 
     m_pOpenGLView = new OpenGLView(GetApplicationBasePath());
-    m_pOpenGLView->Init(mainWindow, 256 * 3, 192 * 3);
+    m_pOpenGLView->Init(mainWindow, 256 * 3, 192 * 3, ID_SHADER_CLUT_VERT, ID_SHADER_CLUT_FRAG, ID_SHADER_DISPLAY_VERT, ID_SHADER_DISPLAY_FRAG, RT_RCDATA);
     m_pAudioQueue = new AudioQueue();
     m_pAudioCore = new AudioCore();
     m_pAudioCore->Init(44100, 50, audio_callback);

@@ -106,19 +106,21 @@ public:
 
 public:
 	void								Deinit();
-	bool								Init(HWND hWnd, int width, int height);
+	bool								Init(HWND hWnd, int width, int height, const uint16_t idClutVert, uint16_t idClutFrag, uint16_t idDisplayVert, uint16_t idDisplayFrag, LPWSTR idType);
 
 	void								UpdateTextureData(unsigned char *pData);
 
 private:
 	bool								InitialiseExtensions();
 	bool								LoadExtensionList();
-	void								LoadShaders();
+	void								LoadShaders(uint16_t vertCLUT, uint16_t fragCLUT, uint16_t vertDISPLAY, uint16_t fragDISPLAY, LPWSTR idtype);
 	void								SetupTexture();
 	void								SetupQuad();
     void                                paintGL();
-    GLuint                              prepareShaderProgram(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
+	GLuint								OpenGLView::prepareShaderProgram(std::string vertexShaderPath, std::string fragmentShaderPath);
     void                                CheckOpenGLError(const char* stmt, const char* fname, int line);
+	std::string							GetLastErrorAsString();
+	
 
 
 public:
