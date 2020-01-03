@@ -34,7 +34,7 @@ ZXSpectrum::~ZXSpectrum()
 
 // - Initialise
 
-void ZXSpectrum::initialise(string romPath)
+void ZXSpectrum::initialise(std::string romPath)
 {
 	std::cout << "ZXSpectrum::initialise(char *romPath)" << std::endl;
 
@@ -252,7 +252,7 @@ void ZXSpectrum::emuReset()
 
 // - ROM Loading
 
-void ZXSpectrum::loadROM(const string rom, uint32_t page)
+void ZXSpectrum::loadROM(const std::string rom, uint32_t page)
 {
 	size_t romAddress = cROM_SIZE * page;
 
@@ -262,7 +262,7 @@ void ZXSpectrum::loadROM(const string rom, uint32_t page)
 		exit(1);
 	}
 
-	string romPath = emuBasePath + emuROMPath;
+    std::string romPath = emuBasePath + emuROMPath;
 	romPath.append(rom);
 
 #ifdef QT_SPECTRUM
@@ -271,18 +271,18 @@ void ZXSpectrum::loadROM(const string rom, uint32_t page)
 	QByteArray romData = file.readAll();
 	std::memcpy(memoryRom.data(), romData.data(), file.size());
 #else
-	ifstream romFile(romPath, ios::binary | ios::ate | ios::in);
+    std::ifstream romFile(romPath, std::ios::binary | std::ios::ate | std::ios::in);
 	if (romFile.good())
 	{
 		std::streampos fileSize = romFile.tellg();
-		romFile.seekg(0, ios::beg);
+        romFile.seekg(0, std::ios::beg);
 		romFile.read(memoryRom.data() + romAddress, fileSize);
 		romFile.close();
 	}
 	else
 	{
 		char* errorstring = strerror(errno);
-		cout << "ERROR: Could not read from ROM file: " << errorstring;
+        std::cout << "ERROR: Could not read from ROM file: " << errorstring;
 	}
 
 #endif

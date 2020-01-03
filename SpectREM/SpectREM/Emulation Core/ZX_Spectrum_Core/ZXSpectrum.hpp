@@ -19,8 +19,6 @@
 #include "MachineInfo.h"
 #include "../Tape/Tape.hpp"
 
-using namespace std;
-
 // - Base ZXSpectrum class
 
 class ZXSpectrum
@@ -159,7 +157,7 @@ public:
     // Snapshot loading response structure
     struct SnapResponse {
         bool success;
-        string responseMsg;
+        std::string responseMsg;
     };
 
     // Breakpoint information
@@ -182,7 +180,7 @@ public:
     virtual ~ZXSpectrum();
 
 public:
-    virtual void            initialise(string romPath);
+    virtual void            initialise(std::string romPath);
     virtual void            resetMachine(bool hard = true);
     virtual void            resetToSnapLoad() = 0;
     void                    pause();
@@ -197,9 +195,9 @@ public:
     void                    keyboardKeyUp(ZXSpectrumKey key);
     void                    keyboardFlagsChanged(uint64_t flags, ZXSpectrumKey key);
     
-    SnapResponse            snapshotZ80LoadWithPath(const string path);
+    SnapResponse            snapshotZ80LoadWithPath(const std::string path);
     SnapResponse            snapshotZ80LoadWithBuffer(const char *buffer, size_t size);
-    SnapResponse            snapshotSNALoadWithPath(const string path);
+    SnapResponse            snapshotSNALoadWithPath(const std::string path);
     SnapResponse            snapshotSNALoadWithBuffer(const char *buffer, size_t size);
     int                     snapshotMachineInSnapshotWithPath(const char *path);
     Snap                    snapshotCreateSNA();
@@ -215,7 +213,7 @@ public:
 
 protected:
     void                    emuReset();
-    void                    loadROM(const string rom, uint32_t page);
+    void                    loadROM(const std::string rom, uint32_t page);
     
     void                    displayFrameReset();
     void                    displayUpdateWithTs(int32_t tStates);
@@ -240,7 +238,7 @@ private:
     void                    audioBuildAYVolumesTable();
     void                    keyboardCheckCapsLockStatus();
     void                    keyboardMapReset();
-    string                  snapshotHardwareTypeForVersion(uint32_t version, uint32_t hardwareType);
+    std::string             snapshotHardwareTypeForVersion(uint32_t version, uint32_t hardwareType);
     void                    snapshotExtractMemoryBlock(const char *buffer, size_t bufferSize, uint32_t memAddr, uint32_t fileOffset, bool isCompressed, uint32_t unpackedLength);
     void                    displaySetup();
     void                    displayClear();
@@ -268,8 +266,8 @@ public:
     // Machine hardware
     CZ80Core                z80Core;
     
-    vector<char>            memoryRom;
-    vector<char>            memoryRam;
+    std::vector<char>            memoryRom;
+    std::vector<char>            memoryRam;
     
     uint8_t                 keyboardMap[8]{0};
     static KEYBOARD_ENTRY   keyboardLookup[];
@@ -288,8 +286,8 @@ public:
     uint32_t                emuROMPage = 0;
     uint32_t                emuDisplayPage = 0;
     bool                    emuDisablePaging = true;
-    string                  emuROMPath;
-    string                  emuBasePath;
+    std::string             emuROMPath;
+    std::string             emuBasePath;
     bool                    emuTapeInstantLoad = 0;
     bool                    emuUseAYSound = 0;
     bool                    emuLoadTrapTriggered = 0;

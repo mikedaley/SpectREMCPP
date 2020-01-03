@@ -13,8 +13,6 @@
 #include <iostream>
 #include <fstream>
 
-using namespace std;
-
 // - TypeDefs
 
 
@@ -36,8 +34,8 @@ public:
     virtual uint8_t   getChecksum();
     virtual uint16_t  getAutoStartLine();
     virtual uint16_t  getStartAddress();
-    virtual string    getBlockName() = 0;
-    virtual string    getFilename();
+    virtual std::string getBlockName() = 0;
+    virtual std::string getFilename();
 
 public:
     uint16_t          blockLength = 0;
@@ -57,7 +55,7 @@ public:
     virtual uint16_t  getProgramLength();
     virtual uint16_t  getDataLength();
     virtual uint8_t   getChecksum();
-    virtual string    getBlockName();
+    virtual std::string    getBlockName();
 };
 
 
@@ -67,7 +65,7 @@ public:
 class NumericDataHeader : public TapeBlock
 {
 public:
-    virtual string          getBlockName();
+    virtual std::string          getBlockName();
 };
 
 
@@ -77,7 +75,7 @@ public:
 class AlphanumericDataHeader : public TapeBlock
 {
 public:
-    virtual string          getBlockName();
+    virtual std::string          getBlockName();
 };
 
 
@@ -89,7 +87,7 @@ class ByteHeader : public TapeBlock
 public:
     uint16_t          getStartAddress();
     virtual uint8_t   getChecksum();
-    virtual string    getBlockName();
+    virtual std::string    getBlockName();
 };
 
 
@@ -102,7 +100,7 @@ public:
     uint8_t           *getDataBlock();
     virtual uint8_t   getDataType();
     virtual uint8_t   getChecksum();
-    virtual string    getBlockName();
+    virtual std::string    getBlockName();
 };
 
 
@@ -140,7 +138,7 @@ class Tape
 public:
     struct TapResponse {
         bool success;
-        string responseMsg;
+        std::string responseMsg;
     };
     
 public:
@@ -150,7 +148,7 @@ public:
 public:
     void                    clearStatusCallback(void); // Removes the callback allocated to the Tape
     // Load a TAP file
-    TapResponse             loadWithPath(const string path);
+    TapResponse             loadWithPath(const std::string path);
 
     // Loads/Saves the block controlled by performing a ROM load or save
     void                    loadBlock(void *m);
@@ -172,7 +170,7 @@ public:
     void                    setSelectedBlock(uint32_t blockIndex);
 
     // Returns a vector that contains the current tape data ready to write to disk
-    vector<uint8_t>         getTapeData();
+    std::vector<uint8_t>    getTapeData();
 
 private:
     void                    resetAndClearBlocks(bool clearBlocks);
@@ -191,7 +189,7 @@ public:
     bool                    playing = false;
     uint32_t                currentBlockIndex = 0;
     bool                    newBlock = false;
-    vector<TapeBlock *>     blocks;
+    std::vector<TapeBlock *>     blocks;
     int                     inputBit = 0;
 
 private:

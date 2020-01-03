@@ -746,7 +746,7 @@ const int cSCREEN_FILL = 1;
 
 static void tapeStatusCallback(int blockIndex, int bytes)
 {
-    cout << "Tape Callback: " << blockIndex << endl;
+    std::cout << "Tape Callback: " << blockIndex << std::endl;
     [[NSNotificationCenter defaultCenter] postNotificationName:@"TAPE_CHANGED_NOTIFICATION" object:NULL];
 }
 
@@ -968,7 +968,7 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     [savePanel beginSheetModalForWindow:_tapeBrowserWindowController.window completionHandler:^(NSInteger result) {
         if (result == NSModalResponseOK)
         {
-            vector<unsigned char> tapeData = _tape->getTapeData();
+            std::vector<unsigned char> tapeData = _tape->getTapeData();
             NSMutableData *saveData = [NSMutableData new];
             [saveData appendBytes:tapeData.data() length:tapeData.size()];
             [saveData writeToURL:savePanel.URL atomically:YES];

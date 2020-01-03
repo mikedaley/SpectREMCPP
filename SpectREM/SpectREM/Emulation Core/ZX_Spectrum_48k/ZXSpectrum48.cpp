@@ -48,7 +48,7 @@ ZXSpectrum48::~ZXSpectrum48()
 
 // - Initialise
 
-void ZXSpectrum48::initialise(string romPath)
+void ZXSpectrum48::initialise(std::string romPath)
 {
     std::cout << "ZXSpectrum48::initialise(char *rom)" << std::endl;
     
