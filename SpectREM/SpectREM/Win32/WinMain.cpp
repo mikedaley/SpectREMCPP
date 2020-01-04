@@ -12,7 +12,10 @@
 #include <stdint.h>
 #include <unordered_map>
 #include <Shlwapi.h>
+#include <thread>
 #include "AudioCore.hpp"
+#include <iostream>
+#include <fstream>
 #include "..\Emulation Core\ZX_Spectrum_Core\ZXSpectrum.hpp"
 #include "..\Emulation Core\ZX_Spectrum_48k\ZXSpectrum48.hpp"
 #include "..\Emulation Core\ZX_Spectrum_128k\ZXSpectrum128.hpp"
@@ -22,6 +25,14 @@
 #include "../../resource.h"
 
 #define WIN32API_GUI
+
+// LogType:
+//    LOG_INFO is for general info
+//    LOG_DEBUG is for debugging info, note that it will also include INFO
+enum LogType
+{
+    LOG_NONE, LOG_INFO, LOG_DEBUG, LOG_FULL
+};
 
 static void audio_callback(uint32_t nNumSamples, uint8_t* pBuffer);
 static void tapeStatusCallback(int blockIndex, int bytes);
@@ -34,8 +45,11 @@ static void ShowHideUI(HWND hWnd);
 static void ShowUI(HWND hWnd);
 static void HideUI(HWND hWnd);
 static void ResetMachineForSnapshot(uint8_t mc);
-static void Log(std::string text);
+static bool LogOpenOrCreate(std::string filename);
+static bool Log(LogType lType, std::string text);
+static bool LogClose();
 static void ShowSettingsDialog();
+static std::string GetTimeAsString();
 static std::string GetApplicationBasePath();
 static std::string GetCurrentDirectoryAsString();
 
@@ -55,6 +69,8 @@ enum SnapType
     SNA, Z80
 };
 
+
+
 const std::string EXT_Z80 = "z80";
 const std::string EXT_SNA = "sna";
 std::string romPath;
@@ -65,6 +81,10 @@ HMENU mainMenu;
 bool TurboMode = false;
 bool menuDisplayed = true;
 uint8_t zoomLevel = 4;
+uint8_t logLevel = LOG_NONE;
+const std::string logFilename = "spectrem_win32.log";
+std::string logFullFilename = "";
+std::ofstream logFileStream;
 
 std::unordered_map<WPARAM, ZXSpectrum::ZXSpectrumKey> KeyMappings
 {
@@ -147,6 +167,7 @@ void ZoomWindow(uint8_t zLevel)
     SetWindowPos(mainWindow, HWND_TOP, 0, 0, wr.right - wr.left, wr.bottom - wr.top, SWP_NOMOVE | SWP_SHOWWINDOW);
     //glViewport(0, 0, 256 * zoomLevel, 192 * zoomLevel);
     m_pOpenGLView->Resize(256 * zoomLevel, 192 * zoomLevel);
+    Log(LOG_INFO, "Zoom level changed to " + std::to_string(zoomLevel));
 }
 
 static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -165,7 +186,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             LoadSnapshot();
             break;
         case ID_EMULATION_FULLSPEED:
-            TurboMode =! TurboMode;
+            TurboMode = !TurboMode;
             break;
         case ID_RESET_HARD:
             HardReset();
@@ -296,7 +317,7 @@ static void ShowSettingsDialog()
 
 static void ShowHideUI(HWND hWnd = mainWindow)
 {
-    // Get the current state of the menu item checkbox
+    // Get the current state of the menu item check box
     if (menuDisplayed == true)
     {
         HideUI(hWnd);
@@ -311,14 +332,16 @@ static void ShowHideUI(HWND hWnd = mainWindow)
 
 static void ShowUI(HWND hWnd = mainWindow)
 {
-        SetMenu(hWnd, mainMenu);
-        menuDisplayed = true;
+    Log(LOG_DEBUG, "ShowUI()");
+    SetMenu(hWnd, mainMenu);
+    menuDisplayed = true;
 }
 
 //-----------------------------------------------------------------------------------------
 
 static void HideUI(HWND hWnd = mainWindow)
 {
+    Log(LOG_DEBUG, "HideUI()");
     SetMenu(hWnd, NULL);
     menuDisplayed = false;
 }
@@ -339,6 +362,7 @@ static void SwitchMachines()
     {
         if (isResetting != true)
         {
+            Log(LOG_DEBUG, "Flip machine requested");
             ResetMachineForSnapshot(ZX48);
         }
     }
@@ -359,6 +383,7 @@ static void SoftReset()
     if (isResetting != true)
     {
         ResetMachineForSnapshot(m_pMachine->machineInfo.machineType);
+        Log(LOG_INFO, "Soft reset completed");
     }
 }
 
@@ -370,6 +395,7 @@ static void HardReset()
     if (isResetting != true)
     {
         ResetMachineForSnapshot(m_pMachine->machineInfo.machineType);
+        Log(LOG_INFO, "Hard reset completed");
     }
 }
 
@@ -416,10 +442,12 @@ static void LoadSnapshot()
 
         if (_stricmp(extension.c_str(), EXT_Z80.c_str()) == 0)
         {
+            Log(LOG_DEBUG, "Loading Z80 Snapshot - " + s);
             m_pMachine->snapshotZ80LoadWithPath(szFile);
         }
         else if (_stricmp(extension.c_str(), EXT_SNA.c_str()) == 0)
         {
+            Log(LOG_DEBUG, "Loading SNA Snapshot - " + s);
             m_pMachine->snapshotSNALoadWithPath(szFile);
         }
     }
@@ -458,15 +486,39 @@ static void audio_callback(uint32_t nNumSamples, uint8_t* pBuffer)
 
 int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
 {
+    // Check for logging type if needed, CTRL = LOG_INFO, ALT = LOG_DEBUG
+    logLevel = LOG_NONE;
+    if (GetAsyncKeyState(VK_MENU))
+    {
+        // ALT is pressed
+        logLevel = LOG_DEBUG;
+    }
+    else if (GetAsyncKeyState(VK_CONTROL))
+    {
+        // CTRL is pressed
+        logLevel = LOG_INFO;
+    }
+    if (logLevel != LOG_NONE)
+    {
+        if (LogOpenOrCreate(GetApplicationBasePath() + "\\" + logFilename))
+        {
+            Log(LOG_INFO, "Log created");
+        }
+    }
+
     // check if under VS/Debugger and set up ROM paths accordingly
     if (IsDebuggerPresent() != 0)
     {
+        Log(LOG_INFO, "Running under debugger");
         romPath = "\\ROMS\\";
     }
     else
     {
+        Log(LOG_INFO, "Running standalone");
         romPath = "\\ROMS\\";
     }
+    unsigned int cThreads = std::thread::hardware_concurrency();
+    Log(LOG_INFO, "Maximum available threads = " + std::to_string(cThreads));
 
     bool exit_emulator = false;
     LARGE_INTEGER  perf_freq, time, last_time;
@@ -474,6 +526,7 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
 
     OutputDebugString(TEXT("SpectREM startup\r\n"));
     std::string bpath = GetApplicationBasePath();
+    Log(LOG_INFO, "Application base path is " + bpath);
     // Create our window
     WNDCLASSEX wcex;
 
@@ -500,6 +553,7 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
     // Make sure the client size is correct
     RECT wr = { 0, 0, 256 * zoomLevel, 192 * zoomLevel };
     AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME ^ WS_MAXIMIZEBOX, FALSE);
+    Log(LOG_INFO, "Current zoom level is " + std::to_string(zoomLevel));
 
 
     mainWindow = CreateWindowEx(WS_EX_APPWINDOW, TEXT("SpectREM"), TEXT("SpectREM"), WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME ^ WS_MAXIMIZEBOX, 0, 0, wr.right - wr.left, wr.bottom - wr.top, 0, 0, inst, 0);
@@ -520,6 +574,7 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
     m_pMachine = new ZXSpectrum128(m_pTape);
     m_pMachine->emuUseAYSound = true;
     m_pMachine->emuBasePath = GetApplicationBasePath();
+    Log(LOG_INFO, "ROMs path = " + m_pMachine->emuBasePath + romPath);
     m_pMachine->initialise(romPath);
     m_pAudioCore->Start();
     m_pMachine->resume();
@@ -532,6 +587,11 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
             if (msg.message == WM_QUIT)
             {
                 exit_emulator = true;
+                if (logLevel != LOG_NONE)
+                {
+                    Log(LOG_INFO, "Log closed");
+                    LogClose();
+                }
             }
             else
             {
@@ -585,8 +645,22 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
                 default:
                     break;
                 }
+                char lLevel[30];
+                if (logLevel == LOG_DEBUG)
+                {
+                    sprintf_s(lLevel, sizeof(lLevel), "[logging = DEBUG, INFO]");
+                }
+                else if (logLevel = LOG_INFO)
+                {
+                    sprintf_s(lLevel, sizeof(lLevel), "[logging = INFO]");
+                }
+                else
+                {
+                    sprintf_s(lLevel, sizeof(lLevel), " ");
+                }
+
                 char buff[100];
-                sprintf_s(buff, sizeof(buff), "SpectREM - %4.1f fps - [%s] - %s", 1.0f / delta_time, specType, zoom);
+                sprintf_s(buff, sizeof(buff), "SpectREM - %4.1f fps - [%s] - %s - %s", 1.0f / delta_time, specType, zoom, lLevel);
                 SetWindowTextA(mainWindow, buff);
             }
         }
@@ -614,18 +688,18 @@ static void ResetMachineForSnapshot(uint8_t mc)
     switch (mc)
     {
     case ZX48:
-        OutputDebugString(TEXT("SpectREM changed to 48K Mode\r\n"));
+        Log(LOG_INFO, "SpectREM changed to 48K Mode");
         m_pMachine = new ZXSpectrum48(m_pTape);
         m_pMachine->emuUseAYSound = false;
         break;
     case ZX128:
-        OutputDebugString(TEXT("SpectREM changed to 128K Mode\r\n"));
+        Log(LOG_INFO, "SpectREM changed to 128K Mode");
         m_pMachine = new ZXSpectrum128(m_pTape);
         m_pMachine->emuUseAYSound = true;
         break;
     default:
         // default to 128K
-        OutputDebugString(TEXT("UNKNOWN MACHINE TYPE, Defaulting to 128K Mode\r\n"));
+        Log(LOG_INFO, "UNKNOWN MACHINE TYPE, Defaulting to 128K Mode");
         m_pMachine = new ZXSpectrum128(m_pTape);
         m_pMachine->emuUseAYSound = true;
         break;
@@ -662,3 +736,85 @@ static std::string GetApplicationBasePath()
 }
 
 //-----------------------------------------------------------------------------------------
+
+static bool LogOpenOrCreate(std::string filename)
+{
+    logFileStream.open(filename, std::ios::ate | std::ios::app);
+    if (logFileStream.is_open())
+    {
+        logFullFilename = filename;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+//-----------------------------------------------------------------------------------------
+
+static bool Log(LogType lType, std::string text)
+{
+    // we will use the file and always append to it
+    if (logFileStream.is_open())
+    {
+        std::string lty = "";
+        switch (lType)
+        {
+        case LOG_INFO:
+            lty = "[INFO]   ";
+            break;
+        case LOG_DEBUG:
+            lty = "[DEBUG]  ";
+            break;
+        default:
+            lty = "[UNKNOWN]";
+            break;
+        }
+        logFileStream << GetTimeAsString().c_str() << " : " << lty.c_str() << " : " << text.c_str() << std::endl;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+//-----------------------------------------------------------------------------------------
+
+static bool LogClose()
+{
+    if (logFileStream.is_open())
+    {
+        logFileStream.close();
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+//-----------------------------------------------------------------------------------------
+
+static bool fileExists(const std::string& filename)
+{
+    struct stat fileBuffer;
+    return (stat(filename.c_str(), &fileBuffer) == 0);
+}
+
+//-----------------------------------------------------------------------------------------
+
+static std::string GetTimeAsString()
+{
+    time_t rawtime;
+    struct tm* timeinfo;
+    char buffer[80];
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+    strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", timeinfo);
+    std::string str(buffer);
+    return str;
+}
+
+
