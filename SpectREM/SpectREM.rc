@@ -136,6 +136,12 @@ BEGIN
             MENUITEM "300%\tAlt+3",                 ID_ZOOM_300
             MENUITEM "400%\tAlt+4",                 ID_ZOOM_400
         END
+        POPUP "SCR Slideshow"
+        BEGIN
+            MENUITEM "Delay 3 seconds",             ID_SCRSLIDESHOW_DELAY3SECONDS
+            MENUITEM "Delay 6 seconds",             ID_SCRSLIDESHOW_DELAY6SECONDS
+            MENUITEM "Delay 10 seconds",            ID_SCRSLIDESHOW_DELAY10SECONDS
+        END
     END
     POPUP "&Emulation"
     BEGIN

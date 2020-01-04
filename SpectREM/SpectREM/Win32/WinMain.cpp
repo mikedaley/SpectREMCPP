@@ -13,6 +13,7 @@
 #include <unordered_map>
 #include <Shlwapi.h>
 #include <thread>
+#include <filesystem>
 #include "AudioCore.hpp"
 #include <iostream>
 #include <fstream>
@@ -49,9 +50,11 @@ static bool LogOpenOrCreate(std::string filename);
 static bool Log(LogType lType, std::string text);
 static bool LogClose();
 static void ShowSettingsDialog();
+static void RunSlideshow(int secs);
 static std::string GetTimeAsString();
 static std::string GetApplicationBasePath();
 static std::string GetCurrentDirectoryAsString();
+static std::vector<std::string> GetFilesInDirectory(std::string folder, std::string filter);
 
 ZXSpectrum* m_pMachine;
 Tape* m_pTape;
@@ -80,11 +83,12 @@ HWND mainWindow;
 HMENU mainMenu;
 bool TurboMode = false;
 bool menuDisplayed = true;
-uint8_t zoomLevel = 4;
+uint8_t zoomLevel = 3;
 uint8_t logLevel = LOG_NONE;
 const std::string logFilename = "spectrem_win32.log";
 std::string logFullFilename = "";
 std::ofstream logFileStream;
+std::string slideshowDirectory = "\\slideshow\\";
 
 std::unordered_map<WPARAM, ZXSpectrum::ZXSpectrumKey> KeyMappings
 {
@@ -224,7 +228,15 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         case ID_ZOOM_400:
             ZoomWindow(4);
             break;
-
+        case ID_SCRSLIDESHOW_DELAY3SECONDS:
+            RunSlideshow(3);
+            break;
+        case ID_SCRSLIDESHOW_DELAY6SECONDS:
+            RunSlideshow(6);
+            break;
+        case ID_SCRSLIDESHOW_DELAY10SECONDS:
+            RunSlideshow(10);
+            break;
 
 
         default:
@@ -304,6 +316,38 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     }
 
     return 0;
+}
+
+//-----------------------------------------------------------------------------------------
+
+static void RunSlideshow(int secs)
+{
+    Log(LOG_INFO, "Running slideshow (" + std::to_string(secs) + " secs) from " + GetApplicationBasePath() + slideshowDirectory);
+    std::vector<std::string> fileList = GetFilesInDirectory(GetApplicationBasePath() + slideshowDirectory, "*.scr");
+    Log(LOG_DEBUG, "Found " + std::to_string(fileList.size()) + " matching files");
+    // iterate (randomly maybe) through the list of files as long as there is at least one file :)
+    if (fileList.size() < 1)
+    {
+        MessageBox(mainWindow, TEXT("No files found for the slideshow"), TEXT("Gimme SCR's !!!"), MB_OK | MB_ICONINFORMATION | MB_APPLMODAL);
+        return;
+    }
+    else
+    {
+        for (std::size_t i = 0; i < fileList.size(); i++)
+        {
+            ZXSpectrum::Response sR = m_pMachine->scrLoadWithPath(GetApplicationBasePath() + slideshowDirectory + fileList[i]);
+            m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer);
+            Sleep(100);
+        }
+    }
+}
+
+//-----------------------------------------------------------------------------------------
+
+void IterateSCRImages()
+{
+    // THREAD
+
 }
 
 //-----------------------------------------------------------------------------------------
@@ -445,7 +489,7 @@ static void LoadSnapshot()
         if (_stricmp(extension.c_str(), EXT_Z80.c_str()) == 0)
         {
             Log(LOG_INFO, "Loading Z80 Snapshot - " + s);
-            ZXSpectrum::SnapResponse sR = m_pMachine->snapshotZ80LoadWithPath(szFile);
+            ZXSpectrum::Response sR = m_pMachine->snapshotZ80LoadWithPath(szFile);
             if (sR.success)
             {
                 Log(LOG_INFO, "Snapshot loaded successfully");
@@ -458,7 +502,7 @@ static void LoadSnapshot()
         else if (_stricmp(extension.c_str(), EXT_SNA.c_str()) == 0)
         {
             Log(LOG_DEBUG, "Loading SNA Snapshot - " + s);
-            ZXSpectrum::SnapResponse sR = m_pMachine->snapshotSNALoadWithPath(szFile);
+            ZXSpectrum::Response sR = m_pMachine->snapshotSNALoadWithPath(szFile);
             if (sR.success)
             {
                 Log(LOG_INFO, "Snapshot loaded successfully");
@@ -668,7 +712,7 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
                 {
                     sprintf_s(lLevel, sizeof(lLevel), "[logging = DEBUG, INFO]");
                 }
-                else if (logLevel = LOG_INFO)
+                else if (logLevel == LOG_INFO)
                 {
                     sprintf_s(lLevel, sizeof(lLevel), "[logging = INFO]");
                 }
@@ -678,7 +722,7 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
                 }
 
                 char buff[100];
-                sprintf_s(buff, sizeof(buff), "SpectREM - %4.1f fps - [%s] - %s - %s", 1.0f / delta_time, specType, zoom, lLevel);
+                sprintf_s(buff, sizeof(buff), "SpectREM - %4.1f fps - [%s] - %s %s", 1.0f / delta_time, specType, zoom, lLevel);
                 SetWindowTextA(mainWindow, buff);
             }
         }
@@ -835,4 +879,26 @@ static std::string GetTimeAsString()
     return str;
 }
 
+static std::vector<std::string> GetFilesInDirectory(std::string folder, std::string filter)
+{
+    std::vector<std::string> fileList;
+    std::string fullPath = folder + filter;
+    WIN32_FIND_DATAA data;
+    HANDLE hFind = FindFirstFileA(fullPath.c_str(), &data);
 
+    if (hFind != INVALID_HANDLE_VALUE) {
+        do
+        {
+            Log(LOG_DEBUG, std::string(data.cFileName));
+            fileList.push_back(data.cFileName);
+        } while (FindNextFileA(hFind, &data));
+        FindClose(hFind);
+        return fileList;
+    }
+    else
+    {
+        // Error finding files, so clear the list and return
+        fileList.clear();
+        return fileList;
+    }
+}
