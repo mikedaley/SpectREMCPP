@@ -1,4 +1,4 @@
-SPECTREM (https://github.com/mikedaley/SpectREMCPP)
+SPECTREM (https://github.com/mikedaley/SpectREMCPP / https://github.com/polomint/SpectREMCPP)
 ===================================================-
 
 Current key assignments
@@ -15,6 +15,10 @@ ALT-2	: Zoom level 200%
 ALT-3	: Zoom level 300%
 ALT-4	: Zoom level 400%
 
+
+2020-01-04
+-----------
+ADDED	: Logging to a text file, on startup hold CTRL for loggin INFO items, ALT for INFO and DEBUG items
 
 2020-01-03
 -----------

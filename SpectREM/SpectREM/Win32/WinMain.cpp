@@ -260,7 +260,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             {
                 SwitchMachines();
             }
-            else if (wparam == VK_F11)
+            else if (wparam == VK_F10)
             {
                 ShowHideUI(mainWindow);
             }
@@ -310,6 +310,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 static void ShowSettingsDialog()
 {
+    Log(LOG_DEBUG, "ShowSettingsDialog()");
     MessageBoxA(mainWindow, "NOT IMPLEMENTED YET.", "Oh oh...", MB_OK | MB_ICONINFORMATION | MB_APPLMODAL);
 }
 
@@ -350,6 +351,7 @@ static void HideUI(HWND hWnd = mainWindow)
 
 static void ShowHelpAbout()
 {
+    Log(LOG_DEBUG, "ShowHelpAbout()");
     MessageBoxA(mainWindow, "NOT IMPLEMENTED YET.", "Oh oh...", MB_OK | MB_ICONINFORMATION | MB_APPLMODAL);
 }
 
@@ -442,13 +444,29 @@ static void LoadSnapshot()
 
         if (_stricmp(extension.c_str(), EXT_Z80.c_str()) == 0)
         {
-            Log(LOG_DEBUG, "Loading Z80 Snapshot - " + s);
-            m_pMachine->snapshotZ80LoadWithPath(szFile);
+            Log(LOG_INFO, "Loading Z80 Snapshot - " + s);
+            ZXSpectrum::SnapResponse sR = m_pMachine->snapshotZ80LoadWithPath(szFile);
+            if (sR.success)
+            {
+                Log(LOG_INFO, "Snapshot loaded successfully");
+            }
+            else
+            {
+                Log(LOG_INFO, "Snapshot loading failed : " + sR.responseMsg);
+            }
         }
         else if (_stricmp(extension.c_str(), EXT_SNA.c_str()) == 0)
         {
             Log(LOG_DEBUG, "Loading SNA Snapshot - " + s);
-            m_pMachine->snapshotSNALoadWithPath(szFile);
+            ZXSpectrum::SnapResponse sR = m_pMachine->snapshotSNALoadWithPath(szFile);
+            if (sR.success)
+            {
+                Log(LOG_INFO, "Snapshot loaded successfully");
+            }
+            else
+            {
+                Log(LOG_INFO, "Snapshot loading failed : " + sR.responseMsg);
+            }
         }
     }
 }
@@ -808,11 +826,11 @@ static bool fileExists(const std::string& filename)
 static std::string GetTimeAsString()
 {
     time_t rawtime;
-    struct tm* timeinfo;
+    struct tm timeinfo;
     char buffer[80];
     time(&rawtime);
-    timeinfo = localtime(&rawtime);
-    strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", timeinfo);
+    localtime_s(&timeinfo, &rawtime);
+    strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &timeinfo);
     std::string str(buffer);
     return str;
 }
