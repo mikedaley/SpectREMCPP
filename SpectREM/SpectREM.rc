@@ -136,6 +136,7 @@ BEGIN
             MENUITEM "300%\tAlt+3",                 ID_ZOOM_300
             MENUITEM "400%\tAlt+4",                 ID_ZOOM_400
         END
+        MENUITEM "Open SCR\tCtrl+Alt+F1",       ID_VIEW_OPENSCR
         POPUP "SCR Slideshow"
         BEGIN
             MENUITEM "Delay 1 second",              ID_SCRSLIDESHOW_DELAY1SECOND
@@ -196,6 +197,7 @@ BEGIN
     "2",            ID_ZOOM_200,            ASCII,  ALT, NOINVERT
     "3",            ID_ZOOM_300,            ASCII,  ALT, NOINVERT
     "4",            ID_ZOOM_400,            ASCII,  ALT, NOINVERT
+    VK_F1,          ID_VIEW_OPENSCR,        VIRTKEY, CONTROL, ALT, NOINVERT
 END
 
 

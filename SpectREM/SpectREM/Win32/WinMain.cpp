@@ -63,6 +63,7 @@ static std::string GetCurrentDirectoryAsString();
 static std::vector<std::string> GetFilesInDirectory(std::string folder, std::string filter);
 void IterateSCRImages(HWND mWindow, std::vector<std::string> fileList, ZXSpectrum* m_pMachine, int secs);
 static void IterateSCRImagesOnTimerCallback();
+static void OpenSCR();
 
 ZXSpectrum* m_pMachine;
 Tape* m_pTape;
@@ -254,6 +255,9 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         case ID_SCRSLIDESHOW_DELAY10SECONDS:
             RunSlideshow(10);
             break;
+        case ID_VIEW_OPENSCR:
+            OpenSCR();
+            break;
 
         default:
             break;
@@ -343,6 +347,45 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     }
 
     return 0;
+}
+
+//-----------------------------------------------------------------------------------------
+
+static void OpenSCR()
+{
+    HardReset();
+    Sleep(1000);
+
+    OPENFILENAMEA ofn;
+    char szFile[_MAX_PATH];
+    // Setup the ofn structure
+    ZeroMemory(&ofn, sizeof(ofn));
+    ofn.lStructSize = sizeof(ofn);
+    ofn.hwndOwner = NULL;
+    ofn.lpstrFile = szFile;
+    ofn.lpstrFile[0] = '\0';
+    ofn.nMaxFile = sizeof(szFile);
+    ofn.lpstrFilter = "All\0*.*\0Snapshot\0*.SNA\0Z80\0*.Z80\0\0";
+    ofn.nFilterIndex = 1;
+    ofn.lpstrFileTitle = NULL;
+    ofn.nMaxFileTitle = 0;
+    ofn.lpstrInitialDir = NULL;
+    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+    if (GetOpenFileNameA(&ofn))
+    {
+        ZXSpectrum::Response sR = m_pMachine->scrLoadWithPath(szFile);
+        Sleep(1);
+        m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer);
+    }
+    else
+    {
+        MessageBox(mainWindow, TEXT("Invalid SCR file"), TEXT("Gimme SCR's !!!"), MB_OK | MB_ICONINFORMATION | MB_APPLMODAL);
+        return;
+    }
+
+
+
 }
 
 //-----------------------------------------------------------------------------------------

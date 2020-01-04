@@ -3,17 +3,18 @@ SPECTREM (https://github.com/mikedaley/SpectREMCPP / https://github.com/polomint
 
 Current key assignments
 -------------------------
-F1		: Open file selector (currently supports .sna/.z80)
-F2		: Full speed ahead ! (No frame limiter)
-F3		: Hard reset
-F4		: Soft reset
-F5		: Switch machine - 48K <> 128K
-F10		: Turn on/off Windows UI (menus etc.)
-F12		: Open the settings dialog (Disabled as a wip)
-ALT-1	: Zoom level 100%
-ALT-2	: Zoom level 200%
-ALT-3	: Zoom level 300%
-ALT-4	: Zoom level 400%
+F1				: Open file selector (currently supports .sna/.z80)
+F2				: Full speed ahead ! (No frame limiter)
+F3				: Hard reset
+F4				: Soft reset
+F5				: Switch machine - 48K <> 128K
+F10				: Turn on/off Windows UI (menus etc.)
+F12				: Open the settings dialog (Disabled as a wip)
+ALT-1			: Zoom level 100%
+ALT-2			: Zoom level 200%
+ALT-3			: Zoom level 300%
+ALT-4			: Zoom level 400%
+CTRL+ALT+F1		: Open single .SCR file
 
 
 2020-01-04
@@ -22,6 +23,7 @@ ADDED	: Logging to a text file, on startup hold CTRL for loggin INFO items, ALT 
 ADDED	: .SCR slideshow, choice of 1/3/6/10 seconds between images, loading a snap or reset stops it
 		  Images are to be in a folder called "slideshow" in the .exe folder, a bunch of .scr files is 
 		  available at https://drive.google.com/file/d/1L6_sAM-BlQsGFtZoYU7MNBgid1LiCBXq/view?usp=sharing
+ADDED	: Open single .SCR file
 
 2020-01-03
 -----------
