@@ -145,6 +145,12 @@ BEGIN
             MENUITEM "Delay 10 seconds",            ID_SCRSLIDESHOW_DELAY10SECONDS
         END
     END
+    POPUP "Tape"
+    BEGIN
+        MENUITEM "Insert Tape\tShift+F1",       ID_TAPE_INSERTTAPE
+        MENUITEM "Eject Tape\tAlt+F1",          ID_TAPE_EJECTTAPE
+        MENUITEM "Start/Stop Tape\tF9",         ID_TAPE_START
+    END
     POPUP "&Emulation"
     BEGIN
         MENUITEM "Full Speed",                  ID_EMULATION_FULLSPEED
@@ -193,11 +199,14 @@ BEGIN
     VK_F5,          ID_SWITCH_FLIP,         VIRTKEY, NOINVERT
     VK_F5,          ID_SWITCH_TO128K,       VIRTKEY, CONTROL, NOINVERT
     VK_F5,          ID_SWITCH_TO48K,        VIRTKEY, SHIFT, NOINVERT
+    VK_F1,          ID_TAPE_EJECTTAPE,      VIRTKEY, ALT, NOINVERT
+    VK_F1,          ID_TAPE_INSERTTAPE,     VIRTKEY, SHIFT, NOINVERT
+    VK_F1,          ID_VIEW_OPENSCR,        VIRTKEY, CONTROL, ALT, NOINVERT
     "1",            ID_ZOOM_100,            ASCII,  ALT, NOINVERT
     "2",            ID_ZOOM_200,            ASCII,  ALT, NOINVERT
     "3",            ID_ZOOM_300,            ASCII,  ALT, NOINVERT
     "4",            ID_ZOOM_400,            ASCII,  ALT, NOINVERT
-    VK_F1,          ID_VIEW_OPENSCR,        VIRTKEY, CONTROL, ALT, NOINVERT
+    VK_F9,          ID_TAPE_START,          VIRTKEY, NOINVERT
 END
 
 

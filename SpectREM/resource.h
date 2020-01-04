@@ -38,6 +38,11 @@
 #define ID_SCRSLIDESHOW_DELAY10SECONDS  40047
 #define ID_SCRSLIDESHOW_DELAY1SECOND    40048
 #define ID_VIEW_OPENSCR                 40049
+#define ID_FILE_INSERTTAPE              40052
+#define ID_FILE_EJECTTAP                40053
+#define ID_TAPE_INSERTTAPE              40054
+#define ID_TAPE_EJECTTAPE               40055
+#define ID_TAPE_START                   40059
 #define ID_SHADER_DISPLAY_FRAG          57000
 #define ID_SHADER_DISPLAY_VERT          57001
 #define ID_SHADER_CLUT_FRAG             57002
@@ -48,7 +53,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        110
-#define _APS_NEXT_COMMAND_VALUE         40052
+#define _APS_NEXT_COMMAND_VALUE         40062
 #define _APS_NEXT_CONTROL_VALUE         1002
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

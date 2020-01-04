@@ -64,6 +64,9 @@ static std::vector<std::string> GetFilesInDirectory(std::string folder, std::str
 void IterateSCRImages(HWND mWindow, std::vector<std::string> fileList, ZXSpectrum* m_pMachine, int secs);
 static void IterateSCRImagesOnTimerCallback();
 static void OpenSCR();
+static void InsertTape();
+static void EjectTape();
+static void PlayPauseTape();
 
 ZXSpectrum* m_pMachine;
 Tape* m_pTape;
@@ -258,6 +261,15 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         case ID_VIEW_OPENSCR:
             OpenSCR();
             break;
+        case ID_TAPE_INSERTTAPE:
+            InsertTape();
+            break;
+        case ID_TAPE_EJECTTAPE:
+            EjectTape();
+            break;
+        case ID_TAPE_START:
+            PlayPauseTape();
+            break;
 
         default:
             break;
@@ -351,6 +363,72 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 //-----------------------------------------------------------------------------------------
 
+static void InsertTape()
+{
+    OPENFILENAMEA ofn;
+    char szFile[_MAX_PATH];
+
+    // Setup the ofn structure
+    ZeroMemory(&ofn, sizeof(ofn));
+    ofn.lStructSize = sizeof(ofn);
+    ofn.hwndOwner = NULL;
+    ofn.lpstrFile = szFile;
+    ofn.lpstrFile[0] = '\0';
+    ofn.nMaxFile = sizeof(szFile);
+    ofn.lpstrFilter = "All\0*.*\0Tape\0*.TAP\0\0";
+    ofn.nFilterIndex = 1;
+    ofn.lpstrFileTitle = NULL;
+    ofn.nMaxFileTitle = 0;
+    ofn.lpstrInitialDir = NULL;
+    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+    if (GetOpenFileNameA(&ofn))
+    {
+        EjectTape(); // Eject the current tape if inserted
+        Tape::TapResponse tR = m_pTape->loadWithPath(szFile);
+        if (tR.success)
+        {
+            Log(LOG_INFO, "Loaded tape - " + std::string(szFile));
+        }
+        else
+        {
+            MessageBox(mainWindow, TEXT("Unable to load tape >> "), TEXT("Tape Loader"), MB_OK | MB_ICONINFORMATION | MB_APPLMODAL);
+            Log(LOG_INFO, "Failed to load tape - " + std::string(szFile) + " > " + tR.responseMsg);
+            return;
+        }
+    }
+}
+
+//-----------------------------------------------------------------------------------------
+
+static void PlayPauseTape()
+{
+    if (m_pTape->loaded)
+    {
+        if (m_pTape->playing)
+        {
+            m_pTape->stopPlaying();
+        }
+        else
+        {
+            m_pTape->startPlaying();
+        }
+    }
+}
+
+//-----------------------------------------------------------------------------------------
+
+static void EjectTape()
+{
+    if (m_pTape->loaded)
+    {
+        m_pTape->stopPlaying();
+        m_pTape->eject();
+    }
+}
+
+//-----------------------------------------------------------------------------------------
+
 static void OpenSCR()
 {
     HardReset();
@@ -375,15 +453,20 @@ static void OpenSCR()
     if (GetOpenFileNameA(&ofn))
     {
         ZXSpectrum::Response sR = m_pMachine->scrLoadWithPath(szFile);
-        Sleep(1);
-        m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer);
+        if (sR.success)
+        {
+            Sleep(1);
+            m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer);
+            Log(LOG_INFO, "Loaded .scr file - " + std::string(szFile));
+        }
+        else
+        {
+            MessageBox(mainWindow, TEXT("Invalid SCR file"), TEXT("Gimme SCR's !!!"), MB_OK | MB_ICONINFORMATION | MB_APPLMODAL);
+            Log(LOG_INFO, "Failed to load .scr file - " + std::string(szFile) + " > " + sR.responseMsg);
+            return;
+        }
     }
-    else
-    {
-        MessageBox(mainWindow, TEXT("Invalid SCR file"), TEXT("Gimme SCR's !!!"), MB_OK | MB_ICONINFORMATION | MB_APPLMODAL);
-        return;
-    }
-
+    
 
 
 }

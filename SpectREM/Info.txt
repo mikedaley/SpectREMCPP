@@ -15,7 +15,9 @@ ALT-2			: Zoom level 200%
 ALT-3			: Zoom level 300%
 ALT-4			: Zoom level 400%
 CTRL+ALT+F1		: Open single .SCR file
-
+SHIFT+F1		: Insert a tape
+ALT+F1			: Eject currently inserted tape
+F9				: Start/Stop currently inserted tape
 
 2020-01-04
 -----------
@@ -24,6 +26,7 @@ ADDED	: .SCR slideshow, choice of 1/3/6/10 seconds between images, loading a sna
 		  Images are to be in a folder called "slideshow" in the .exe folder, a bunch of .scr files is 
 		  available at https://drive.google.com/file/d/1L6_sAM-BlQsGFtZoYU7MNBgid1LiCBXq/view?usp=sharing
 ADDED	: Open single .SCR file
+ADDING	: Loading of TAP files
 
 2020-01-03
 -----------
