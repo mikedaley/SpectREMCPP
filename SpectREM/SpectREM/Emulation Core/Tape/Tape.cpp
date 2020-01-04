@@ -261,10 +261,10 @@ Tape::TapResponse Tape::loadWithPath(const std::string path)
     else
     {
         std::cout << "ERROR LOADING TAPE: " << std::endl;
-        return TapResponse{false, "Unable to load TAP file"};
+        return Tape::TapResponse{false, "Unable to load TAP file"};
     }
     loaded = success;
-    return TapResponse{true, "Loaded successfully"};
+    return Tape::TapResponse{true, "Loaded successfully"};
 }
 
 void Tape::updateWithTs(uint32_t tStates)

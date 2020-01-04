@@ -329,7 +329,6 @@ void ZXSpectrum48::resetToSnapLoad()
 bool ZXSpectrum48::opcodeCallback(uint8_t opcode, uint16_t address, void *param)
 {
     ZXSpectrum48 *machine = static_cast<ZXSpectrum48*>(param);
-    CZ80Core core = machine->z80Core;
     
     if (machine->emuTapeInstantLoad)
     {

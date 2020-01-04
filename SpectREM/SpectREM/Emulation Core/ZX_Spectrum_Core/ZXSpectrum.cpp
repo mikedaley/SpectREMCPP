@@ -261,14 +261,14 @@ void ZXSpectrum::emuReset()
 
 // - ROM Loading
 
-void ZXSpectrum::loadROM(const std::string rom, uint32_t page)
+ZXSpectrum::Response ZXSpectrum::loadROM(const std::string rom, uint32_t page)
 {
 	size_t romAddress = cROM_SIZE * page;
 
 	if (memoryRom.size() < romAddress)
 	{
-		std::cout << "ZXSpectrum::loadROM - Unable to load into ROM page " << page << std::endl;
-		exit(1);
+        std::cout << "ZXSpectrum::loadROM - Unable to load into ROM page " << page << std::endl;
+        return ZXSpectrum::Response{false, std::to_string(page) + " is an invalid ROM page" };
 	}
 
     std::string romPath = emuBasePath + emuROMPath;
@@ -281,12 +281,12 @@ void ZXSpectrum::loadROM(const std::string rom, uint32_t page)
         romFile.seekg(0, std::ios::beg);
 		romFile.read(memoryRom.data() + romAddress, fileSize);
 		romFile.close();
+        return ZXSpectrum::Response{true, "Loaded successfully"};
 	}
-	else
-	{
-		char* errorstring = strerror(errno);
-        std::cout << "ERROR: Could not read from ROM file: " << errorstring;
-	}
+
+    char* errorstring = strerror(errno);
+    std::cout << "ERROR: Could not read from ROM file: " << errorstring;
+    return ZXSpectrum::Response{false, errorstring};
 }
 
 // SCR Loading

@@ -585,6 +585,7 @@
 			children = (
 				ED913FB81F30767A00316E1A /* Emulation */,
 				ED2A6D061F6036D8003CD6CE /* Configuration */,
+				17C33DF71F65788F00720A06 /* Tape Browser */,
 				27C5AE442146F0A5008DBD54 /* Info Panel View Controller */,
 				ED2A6D0D1F616C1A003CD6CE /* Export Accessory View Controller */,
 				27C5DBA21FFBFFD40064C661 /* Debug View Controller */,
@@ -620,7 +621,6 @@
 			isa = PBXGroup;
 			children = (
 				17C33DFB1F657CDB00720A06 /* Main Window */,
-				17C33DF71F65788F00720A06 /* Tape Browser */,
 			);
 			name = "Window Controllers";
 			sourceTree = "<group>";
