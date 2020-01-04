@@ -138,6 +138,7 @@ BEGIN
         END
         POPUP "SCR Slideshow"
         BEGIN
+            MENUITEM "Delay 1 second",              ID_SCRSLIDESHOW_DELAY1SECOND
             MENUITEM "Delay 3 seconds",             ID_SCRSLIDESHOW_DELAY3SECONDS
             MENUITEM "Delay 6 seconds",             ID_SCRSLIDESHOW_DELAY6SECONDS
             MENUITEM "Delay 10 seconds",            ID_SCRSLIDESHOW_DELAY10SECONDS

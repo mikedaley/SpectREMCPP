@@ -7,7 +7,12 @@
 //
 //  25/07/17 - Adrian Brown - Added initial Win32 platform code
 
+#define _CRT_RAND_S
+#define WIN32API_GUI
+
+
 #include <windows.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <unordered_map>
@@ -17,6 +22,7 @@
 #include "AudioCore.hpp"
 #include <iostream>
 #include <fstream>
+#include <future>
 #include "..\Emulation Core\ZX_Spectrum_Core\ZXSpectrum.hpp"
 #include "..\Emulation Core\ZX_Spectrum_48k\ZXSpectrum48.hpp"
 #include "..\Emulation Core\ZX_Spectrum_128k\ZXSpectrum128.hpp"
@@ -25,7 +31,7 @@
 #include "OpenGLView.hpp"
 #include "../../resource.h"
 
-#define WIN32API_GUI
+
 
 // LogType:
 //    LOG_INFO is for general info
@@ -55,6 +61,8 @@ static std::string GetTimeAsString();
 static std::string GetApplicationBasePath();
 static std::string GetCurrentDirectoryAsString();
 static std::vector<std::string> GetFilesInDirectory(std::string folder, std::string filter);
+void IterateSCRImages(HWND mWindow, std::vector<std::string> fileList, ZXSpectrum* m_pMachine, int secs);
+static void IterateSCRImagesOnTimerCallback();
 
 ZXSpectrum* m_pMachine;
 Tape* m_pTape;
@@ -73,9 +81,10 @@ enum SnapType
 };
 
 
-
+const UINT PM_UPDATESPECTREM = 7777;
 const std::string EXT_Z80 = "z80";
 const std::string EXT_SNA = "sna";
+const UINT_PTR IDT_SLIDESHOW = 7778;
 std::string romPath;
 HACCEL hAcc;
 bool isResetting = false;
@@ -89,6 +98,11 @@ const std::string logFilename = "spectrem_win32.log";
 std::string logFullFilename = "";
 std::ofstream logFileStream;
 std::string slideshowDirectory = "\\slideshow\\";
+std::vector<std::string> fileList;
+uint8_t fileListIndex = 0;
+std::thread scrDisplayThread;
+bool slideshowTimerRunning = false;
+bool slideshowRandom = true;
 
 std::unordered_map<WPARAM, ZXSpectrum::ZXSpectrumKey> KeyMappings
 {
@@ -228,6 +242,9 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         case ID_ZOOM_400:
             ZoomWindow(4);
             break;
+        case ID_SCRSLIDESHOW_DELAY1SECOND:
+            RunSlideshow(1);
+            break;
         case ID_SCRSLIDESHOW_DELAY3SECONDS:
             RunSlideshow(3);
             break;
@@ -237,7 +254,6 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         case ID_SCRSLIDESHOW_DELAY10SECONDS:
             RunSlideshow(10);
             break;
-
 
         default:
             break;
@@ -311,6 +327,17 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         glViewport(0, 0, LOWORD(lparam), HIWORD(lparam));
         break;
 
+    case WM_USER:
+        switch (LOWORD(wparam))
+        {
+        case PM_UPDATESPECTREM:
+            Sleep(50);
+            m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer);
+            Log(LOG_DEBUG, "Changed slideshow image");
+            break;
+        }
+        break;
+
     default:
         return DefWindowProc(hwnd, msg, wparam, lparam);
     }
@@ -322,8 +349,11 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 static void RunSlideshow(int secs)
 {
+    HardReset();
+    Sleep(1000);
     Log(LOG_INFO, "Running slideshow (" + std::to_string(secs) + " secs) from " + GetApplicationBasePath() + slideshowDirectory);
-    std::vector<std::string> fileList = GetFilesInDirectory(GetApplicationBasePath() + slideshowDirectory, "*.scr");
+    fileList.clear();
+    fileList = GetFilesInDirectory(GetApplicationBasePath() + slideshowDirectory, "*.scr");
     Log(LOG_DEBUG, "Found " + std::to_string(fileList.size()) + " matching files");
     // iterate (randomly maybe) through the list of files as long as there is at least one file :)
     if (fileList.size() < 1)
@@ -333,21 +363,73 @@ static void RunSlideshow(int secs)
     }
     else
     {
-        for (std::size_t i = 0; i < fileList.size(); i++)
+        fileListIndex = 0;
+        // setup timer
+        SetTimer(mainWindow, IDT_SLIDESHOW, secs * 1000, (TIMERPROC)IterateSCRImagesOnTimerCallback);
+        slideshowTimerRunning = true;
+
+        ////auto scrDisplayThread = std::async(IterateSCRImages, std::ref(mainWindow), std::ref(fileList), std::ref(m_pMachine), std::ref(secs));
+        //try 
+        //{
+        //	std::thread scrDisplayThread(IterateSCRImages, std::ref(mainWindow), std::ref(fileList), std::ref(m_pMachine), std::ref(secs));
+        //    //scrDisplayThread = std::thread(IterateSCRImages, std::ref(mainWindow), std::ref(fileList), std::ref(m_pMachine), std::ref(secs));
+        //    //scrDisplayThread.join();
+        //}
+        //catch (std::exception & r)
+        //{
+        //    Log(LOG_DEBUG, "EXCEPTION");
+        //    std::string errormsg = r.what();
+        //}
+    }
+}
+
+//-----------------------------------------------------------------------------------------
+
+static void IterateSCRImagesOnTimerCallback()
+{
+    if (slideshowRandom)
+    {
+        int randomIndex = (int)rand() % fileList.size();
+        ZXSpectrum::Response sR = m_pMachine->scrLoadWithPath(GetApplicationBasePath() + slideshowDirectory + fileList[randomIndex]);
+        Sleep(1);
+        m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer);
+    }
+    else
+    {
+        ZXSpectrum::Response sR = m_pMachine->scrLoadWithPath(GetApplicationBasePath() + slideshowDirectory + fileList[fileListIndex]);
+        Sleep(1);
+        m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer);
+        fileListIndex++;
+        if (fileListIndex >= fileList.size())
         {
-            ZXSpectrum::Response sR = m_pMachine->scrLoadWithPath(GetApplicationBasePath() + slideshowDirectory + fileList[i]);
-            m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer);
-            Sleep(100);
+            fileListIndex = 0;
+            KillTimer(mainWindow, IDT_SLIDESHOW);
+            slideshowTimerRunning = false;
+            return;
         }
     }
 }
 
 //-----------------------------------------------------------------------------------------
 
-void IterateSCRImages()
+static void IterateSCRImages(HWND mWindow, std::vector<std::string> fileList, ZXSpectrum* machine, int delaysecs)
 {
     // THREAD
-
+    try
+    {
+        std::chrono::milliseconds msecs(delaysecs * 1000);
+        for (std::size_t i = 0; i < 10; i++)//< fileList.size(); i++)
+        {
+            ZXSpectrum::Response sR = machine->scrLoadWithPath(GetApplicationBasePath() + slideshowDirectory + fileList[i]);
+            //SendMessageCallback(mWindow, WM_USER, PM_UPDATESPECTREM, PM_UPDATESPECTREM, nullptr, 0);
+            PostMessage(mWindow, WM_USER, PM_UPDATESPECTREM, PM_UPDATESPECTREM);
+            std::this_thread::sleep_for(msecs);
+        }
+    }
+    catch (std::exception & r)
+    {
+        std::string errormsg = r.what();
+    }
 }
 
 //-----------------------------------------------------------------------------------------
@@ -582,6 +664,10 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
     unsigned int cThreads = std::thread::hardware_concurrency();
     Log(LOG_INFO, "Maximum available threads = " + std::to_string(cThreads));
 
+    slideshowTimerRunning = false;
+    slideshowRandom = true;
+    //srand((unsigned int)time(NULL));
+
     bool exit_emulator = false;
     LARGE_INTEGER  perf_freq, time, last_time;
     MSG	msg;
@@ -738,6 +824,13 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
 static void ResetMachineForSnapshot(uint8_t mc)
 {
     isResetting = true;
+
+    // check if slideshow is running
+    if (slideshowTimerRunning)
+    {
+        KillTimer(mainWindow, IDT_SLIDESHOW);
+        slideshowTimerRunning = false;
+    }
 
     m_pMachine->pause();
     m_pAudioCore->Stop();
