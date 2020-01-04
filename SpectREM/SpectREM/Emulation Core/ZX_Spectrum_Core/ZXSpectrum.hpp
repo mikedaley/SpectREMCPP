@@ -216,7 +216,7 @@ public:
 
 protected:
     void                    emuReset();
-    void                    loadROM(const std::string rom, uint32_t page);
+    Response                loadROM(const std::string rom, uint32_t page);
     
     void                    displayFrameReset();
     void                    displayUpdateWithTs(int32_t tStates);
@@ -286,10 +286,10 @@ public:
     MachineInfo             machineInfo;
     uint32_t                emuCurrentDisplayTs = 0;
     uint32_t                emuFrameCounter = 0;
-    bool                    emuPaused = 0;
-    uint32_t                emuRAMPage = 0;
-    uint32_t                emuROMPage = 0;
-    uint32_t                emuDisplayPage = 0;
+    bool                    emuPaused = true;
+    uint8_t                 emuRAMPage = 0;
+    uint8_t                 emuROMPage = 0;
+    uint8_t                 emuDisplayPage = 0;
     bool                    emuDisablePaging = true;
     std::string             emuROMPath;
     std::string             emuBasePath;
