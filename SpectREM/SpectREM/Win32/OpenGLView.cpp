@@ -12,6 +12,7 @@
 #include <iostream>
 #include <vector>
 #include "OpenGLView.hpp"
+#include <unordered_map>
 
 #ifdef _DEBUG
 #define GL_CHECK(stmt) do { \
@@ -112,47 +113,9 @@ const Color CLUT[] = {
 
 OpenGLView::OpenGLView()
 {
-	// check if under VS/Debugger and set up ROM paths accordingly
-	// could probably remove these.. Will test further first
-	if (IsDebuggerPresent() != 0)
-	{
-		cDISPLAY_VERT_SHADER = "\\SpectREM\\Win32\\display.vert";
-		cDISPLAY_FRAG_SHADER = "\\SpectREM\\Win32\\display.frag";
-		cCLUT_VERT_SHADER = "\\SpectREM\\Win32\\clut.vert";
-		cCLUT_FRAG_SHADER = "\\SpectREM\\Win32\\clut.frag";
-	}
-	else
-	{
-		cDISPLAY_VERT_SHADER = "display.vert";
-		cDISPLAY_FRAG_SHADER = "display.frag";
-		cCLUT_VERT_SHADER = "clut.vert";
-		cCLUT_FRAG_SHADER = "clut.frag";
-	}
+
 }
 
-OpenGLView::OpenGLView(std::string bpath)
-{
-	// check if under VS/Debugger and set up ROM paths accordingly
-	// could probably remove these.. Will test further first
-	if (IsDebuggerPresent() != 0)
-	{
-		cDISPLAY_VERT_SHADER.append(bpath);
-		cDISPLAY_VERT_SHADER.append("\\display.vert");
-		cDISPLAY_FRAG_SHADER.append(bpath);
-		cDISPLAY_FRAG_SHADER.append("\\display.frag");
-		cCLUT_VERT_SHADER.append(bpath);
-		cCLUT_VERT_SHADER.append("\\clut.vert");
-		cCLUT_FRAG_SHADER.append(bpath);
-		cCLUT_FRAG_SHADER.append("\\clut.frag");
-	}
-	else
-	{
-		cDISPLAY_VERT_SHADER = "display.vert";
-		cDISPLAY_FRAG_SHADER = "display.frag";
-		cCLUT_VERT_SHADER = "clut.vert";
-		cCLUT_FRAG_SHADER = "clut.frag";
-	}
-}
 
 //-----------------------------------------------------------------------------------------
 
@@ -172,7 +135,15 @@ void OpenGLView::Deinit()
 
 //-----------------------------------------------------------------------------------------
 
-bool OpenGLView::Init(HWND hWnd, int width, int height)
+void OpenGLView::Resize(int width, int height)
+{
+    _viewWidth = width;
+    _viewHeight = height;
+}
+
+//-----------------------------------------------------------------------------------------
+
+bool OpenGLView::Init(HWND hWnd, int width, int height, uint16_t idClutVert, uint16_t idClutFrag,  uint16_t idDisplayVert, uint16_t idDisplayFrag, LPWSTR idType)
 {
 	unsigned int formatCount;
 	int pixelformats[1];
@@ -233,7 +204,7 @@ bool OpenGLView::Init(HWND hWnd, int width, int height)
 	
 	glClearColor(1.0f, 0.0f, 0.4f, 1.0f);
 
-	LoadShaders();
+	LoadShaders(idClutVert, idClutFrag, idDisplayVert, idDisplayFrag, idType);
 	SetupTexture();
 	SetupQuad();
 
@@ -242,15 +213,73 @@ bool OpenGLView::Init(HWND hWnd, int width, int height)
 
 //-----------------------------------------------------------------------------------------
 
-void OpenGLView::LoadShaders()
+void OpenGLView::LoadShaders(uint16_t vertCLUT, uint16_t fragCLUT, uint16_t vertDISPLAY, uint16_t fragDISPLAY, LPWSTR idtype)
 {
     // CLUT Shader program
-    _clutShaderProg = prepareShaderProgram(cCLUT_VERT_SHADER, cCLUT_FRAG_SHADER);
+	// Get the shaders from resource
+	std::string vertCLUTR;
+	HRSRC hRes = FindResource(NULL, MAKEINTRESOURCE(vertCLUT), MAKEINTRESOURCE(idtype));
+ 	if (NULL != hRes)
+	{
+		HGLOBAL hData = LoadResource(0, hRes);
+		if (NULL != hData)
+		{
+			DWORD dataSize = SizeofResource(0, hRes);
+			char* data = (char*)LockResource(hData);
+			vertCLUTR.assign(data, dataSize);
+		}
+	}
+    else
+    {
+        int meh = GetLastError();
+        wchar_t buf[256];
+        FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+            NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+            buf, (sizeof(buf) / sizeof(wchar_t)), NULL);
+        int n = 0;
+    }
+	std::string fragCLUTR;
+	hRes = FindResource(0, MAKEINTRESOURCE(fragCLUT), MAKEINTRESOURCE(idtype));
+	if (NULL != hRes)
+	{
+		HGLOBAL hData = LoadResource(0, hRes);
+		if (NULL != hData)
+		{
+			DWORD dataSize = SizeofResource(0, hRes);
+			char* data = (char*)LockResource(hData);
+			fragCLUTR.assign(data, dataSize);
+		}
+	}
+    _clutShaderProg = prepareShaderProgram(vertCLUTR, fragCLUTR);
     GL_CHECK(s_displayTexture = glGetUniformLocation(_clutShaderProg, cS_DISPLAY_TEXTURE));
     GL_CHECK(s_clutTexture = glGetUniformLocation(_clutShaderProg, cS_CLUT_TEXTURE));
 
     // Display Shader program
-    _displayShaderProg = prepareShaderProgram(cDISPLAY_VERT_SHADER, cDISPLAY_FRAG_SHADER);
+	std::string vertDisplayR;
+	hRes = FindResource(0, MAKEINTRESOURCE(vertDISPLAY), MAKEINTRESOURCE(idtype));
+	if (NULL != hRes)
+	{
+		HGLOBAL hData = LoadResource(0, hRes);
+		if (NULL != hData)
+		{
+			DWORD dataSize = SizeofResource(0, hRes);
+			char* data = (char*)LockResource(hData);
+			vertDisplayR.assign(data, dataSize);
+		}
+	}
+	std::string fragDisplayR;
+	hRes = FindResource(0, MAKEINTRESOURCE(fragDISPLAY), MAKEINTRESOURCE(idtype));
+	if (NULL != hRes)
+	{
+		HGLOBAL hData = LoadResource(0, hRes);
+		if (NULL != hData)
+		{
+			DWORD dataSize = SizeofResource(0, hRes);
+			char* data = (char*)LockResource(hData);
+			fragDisplayR.assign(data, dataSize);
+		}
+	}
+    _displayShaderProg = prepareShaderProgram(vertDisplayR, fragDisplayR);
     GL_CHECK(s_texture = glGetUniformLocation(_displayShaderProg, cS_DISPLAY_TEXTURE));
     GL_CHECK(s_reflectionTexture = glGetUniformLocation(_displayShaderProg, cS_REFLECTION_TEXTURE));
     GL_CHECK(u_borderSize = glGetUniformLocation(_displayShaderProg, cU_BORDER_SIZE));
@@ -421,270 +450,63 @@ bool OpenGLView::InitialiseExtensions()
 
 bool OpenGLView::LoadExtensionList()
 {
-	wglChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
-	if (!wglChoosePixelFormatARB)
-	{
-		return false;
-	}
-
-	wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
-	if (!wglCreateContextAttribsARB)
-	{
-		return false;
-	}
-
-	wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
-	if (!wglSwapIntervalEXT)
-	{
-		return false;
-	}
-
-	glAttachShader = (PFNGLATTACHSHADERPROC)wglGetProcAddress("glAttachShader");
-	if (!glAttachShader)
-	{
-		return false;
-	}
-
-	glBindBuffer = (PFNGLBINDBUFFERPROC)wglGetProcAddress("glBindBuffer");
-	if (!glBindBuffer)
-	{
-		return false;
-	}
-
-	glBindVertexArray = (PFNGLBINDVERTEXARRAYPROC)wglGetProcAddress("glBindVertexArray");
-	if (!glBindVertexArray)
-	{
-		return false;
-	}
-
-	glBufferData = (PFNGLBUFFERDATAPROC)wglGetProcAddress("glBufferData");
-	if (!glBufferData)
-	{
-		return false;
-	}
-
-	glCompileShader = (PFNGLCOMPILESHADERPROC)wglGetProcAddress("glCompileShader");
-	if (!glCompileShader)
-	{
-		return false;
-	}
-
-	glCreateProgram = (PFNGLCREATEPROGRAMPROC)wglGetProcAddress("glCreateProgram");
-	if (!glCreateProgram)
-	{
-		return false;
-	}
-
-	glCreateShader = (PFNGLCREATESHADERPROC)wglGetProcAddress("glCreateShader");
-	if (!glCreateShader)
-	{
-		return false;
-	}
-
-	glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)wglGetProcAddress("glDeleteBuffers");
-	if (!glDeleteBuffers)
-	{
-		return false;
-	}
-
-	glDeleteProgram = (PFNGLDELETEPROGRAMPROC)wglGetProcAddress("glDeleteProgram");
-	if (!glDeleteProgram)
-	{
-		return false;
-	}
-
-	glDeleteShader = (PFNGLDELETESHADERPROC)wglGetProcAddress("glDeleteShader");
-	if (!glDeleteShader)
-	{
-		return false;
-	}
-
-	glDeleteVertexArrays = (PFNGLDELETEVERTEXARRAYSPROC)wglGetProcAddress("glDeleteVertexArrays");
-	if (!glDeleteVertexArrays)
-	{
-		return false;
-	}
-
-	glDetachShader = (PFNGLDETACHSHADERPROC)wglGetProcAddress("glDetachShader");
-	if (!glDetachShader)
-	{
-		return false;
-	}
-
-	glEnableVertexAttribArray = (PFNGLENABLEVERTEXATTRIBARRAYPROC)wglGetProcAddress("glEnableVertexAttribArray");
-	if (!glEnableVertexAttribArray)
-	{
-		return false;
-	}
-
-	glGenBuffers = (PFNGLGENBUFFERSPROC)wglGetProcAddress("glGenBuffers");
-	if (!glGenBuffers)
-	{
-		return false;
-	}
-
-	glGenVertexArrays = (PFNGLGENVERTEXARRAYSPROC)wglGetProcAddress("glGenVertexArrays");
-	if (!glGenVertexArrays)
-	{
-		return false;
-	}
-
-	glGetAttribLocation = (PFNGLGETATTRIBLOCATIONPROC)wglGetProcAddress("glGetAttribLocation");
-	if (!glGetAttribLocation)
-	{
-		return false;
-	}
-
-	glGetProgramInfoLog = (PFNGLGETPROGRAMINFOLOGPROC)wglGetProcAddress("glGetProgramInfoLog");
-	if (!glGetProgramInfoLog)
-	{
-		return false;
-	}
-
-	glGetProgramiv = (PFNGLGETPROGRAMIVPROC)wglGetProcAddress("glGetProgramiv");
-	if (!glGetProgramiv)
-	{
-		return false;
-	}
-
-	glGetShaderInfoLog = (PFNGLGETSHADERINFOLOGPROC)wglGetProcAddress("glGetShaderInfoLog");
-	if (!glGetShaderInfoLog)
-	{
-		return false;
-	}
-
-	glGetShaderiv = (PFNGLGETSHADERIVPROC)wglGetProcAddress("glGetShaderiv");
-	if (!glGetShaderiv)
-	{
-		return false;
-	}
-
-	glLinkProgram = (PFNGLLINKPROGRAMPROC)wglGetProcAddress("glLinkProgram");
-	if (!glLinkProgram)
-	{
-		return false;
-	}
-
-	glShaderSource = (PFNGLSHADERSOURCEPROC)wglGetProcAddress("glShaderSource");
-	if (!glShaderSource)
-	{
-		return false;
-	}
-
-	glUseProgram = (PFNGLUSEPROGRAMPROC)wglGetProcAddress("glUseProgram");
-	if (!glUseProgram)
-	{
-		return false;
-	}
-
-	glVertexAttribPointer = (PFNGLVERTEXATTRIBPOINTERPROC)wglGetProcAddress("glVertexAttribPointer");
-	if (!glVertexAttribPointer)
-	{
-		return false;
-	}
-
-	glBindAttribLocation = (PFNGLBINDATTRIBLOCATIONPROC)wglGetProcAddress("glBindAttribLocation");
-	if (!glBindAttribLocation)
-	{
-		return false;
-	}
-
-	glGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC)wglGetProcAddress("glGetUniformLocation");
-	if (!glGetUniformLocation)
-	{
-		return false;
-	}
-
-	glUniformMatrix4fv = (PFNGLUNIFORMMATRIX4FVPROC)wglGetProcAddress("glUniformMatrix4fv");
-	if (!glUniformMatrix4fv)
-	{
-		return false;
-	}
-
-	glActiveTexture = (PFNGLACTIVETEXTUREPROC)wglGetProcAddress("glActiveTexture");
-	if (!glActiveTexture)
-	{
-		return false;
-	}
-
-	glUniform1i = (PFNGLUNIFORM1IPROC)wglGetProcAddress("glUniform1i");
-	if (!glUniform1i)
-	{
-		return false;
-	}
-
-	glProgramUniform1f = (PFNGLPROGRAMUNIFORM1FPROC)wglGetProcAddress("glProgramUniform1f");
-	if (!glProgramUniform1f)
-	{
-		return false;
-	}
-
-	glGenerateMipmap = (PFNGLGENERATEMIPMAPPROC)wglGetProcAddress("glGenerateMipmap");
-	if (!glGenerateMipmap)
-	{
-		return false;
-	}
-
-	glDisableVertexAttribArray = (PFNGLDISABLEVERTEXATTRIBARRAYPROC)wglGetProcAddress("glDisableVertexAttribArray");
-	if (!glDisableVertexAttribArray)
-	{
-		return false;
-	}
-
-	glUniform3fv = (PFNGLUNIFORM3FVPROC)wglGetProcAddress("glUniform3fv");
-	if (!glUniform3fv)
-	{
-		return false;
-	}
-
-	glUniform4fv = (PFNGLUNIFORM4FVPROC)wglGetProcAddress("glUniform4fv");
-	if (!glUniform4fv)
-	{
-		return false;
-	}
-
-    glGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC)wglGetProcAddress("glGenFramebuffers");
-    if (!glGenFramebuffers)
+    std::unordered_map<const char*, PROC*> glBindings
     {
-        return false;
+        {"wglChoosePixelFormatARB", reinterpret_cast<PROC*>(&wglChoosePixelFormatARB)},
+        {"wglCreateContextAttribsARB", reinterpret_cast<PROC*>(&wglCreateContextAttribsARB)},
+        {"wglSwapIntervalEXT", reinterpret_cast<PROC*>(&wglSwapIntervalEXT)},
+        {"glAttachShader", reinterpret_cast<PROC*>(&glAttachShader)},
+        {"glBindBuffer", reinterpret_cast<PROC*>(&glBindBuffer)},
+        {"glBindVertexArray", reinterpret_cast<PROC*>(&glBindVertexArray)},
+        {"glBufferData", reinterpret_cast<PROC*>(&glBufferData)},
+        {"glCompileShader", reinterpret_cast<PROC*>(&glCompileShader)},
+        {"glCreateProgram", reinterpret_cast<PROC*>(&glCreateProgram)},
+        {"glCreateShader", reinterpret_cast<PROC*>(&glCreateShader)},
+        {"glDeleteBuffers", reinterpret_cast<PROC*>(&glDeleteBuffers)},
+        {"glDeleteProgram", reinterpret_cast<PROC*>(&glDeleteProgram)},
+        {"glDeleteShader", reinterpret_cast<PROC*>(&glDeleteShader)},
+        {"glDeleteVertexArrays", reinterpret_cast<PROC*>(&glDeleteVertexArrays)},
+        {"glDetachShader", reinterpret_cast<PROC*>(&glDetachShader)},
+        {"glEnableVertexAttribArray", reinterpret_cast<PROC*>(&glEnableVertexAttribArray)},
+        {"glGenBuffers", reinterpret_cast<PROC*>(&glGenBuffers)},
+        {"glGenVertexArrays", reinterpret_cast<PROC*>(&glGenVertexArrays)},
+        {"glGetAttribLocation", reinterpret_cast<PROC*>(&glGetAttribLocation)},
+        {"glGetProgramInfoLog", reinterpret_cast<PROC*>(&glGetProgramInfoLog)},
+        {"glGetProgramiv", reinterpret_cast<PROC*>(&glGetProgramiv)},
+        {"glGetShaderInfoLog", reinterpret_cast<PROC*>(&glGetShaderInfoLog)},
+        {"glGetShaderiv", reinterpret_cast<PROC*>(&glGetShaderiv)},
+        {"glLinkProgram", reinterpret_cast<PROC*>(&glLinkProgram)},
+        {"glShaderSource", reinterpret_cast<PROC*>(&glShaderSource)},
+        {"glUseProgram", reinterpret_cast<PROC*>(&glUseProgram)},
+        {"glVertexAttribPointer", reinterpret_cast<PROC*>(&glVertexAttribPointer)},
+        {"glBindAttribLocation", reinterpret_cast<PROC*>(&glBindAttribLocation)},
+        {"glGetUniformLocation", reinterpret_cast<PROC*>(&glGetUniformLocation)},
+        {"glUniformMatrix4fv", reinterpret_cast<PROC*>(&glUniformMatrix4fv)},
+        {"glActiveTexture", reinterpret_cast<PROC*>(&glActiveTexture)},
+        {"glUniform1i", reinterpret_cast<PROC*>(&glUniform1i)},
+        {"glProgramUniform1f", reinterpret_cast<PROC*>(&glProgramUniform1f)},
+        {"glGenerateMipmap", reinterpret_cast<PROC*>(&glGenerateMipmap)},
+        {"glDisableVertexAttribArray", reinterpret_cast<PROC*>(&glDisableVertexAttribArray)},
+        {"glUniform3fv", reinterpret_cast<PROC*>(&glUniform3fv)},
+        {"glUniform4fv", reinterpret_cast<PROC*>(&glUniform4fv)},
+        {"glGenFramebuffers", reinterpret_cast<PROC*>(&glGenFramebuffers)},
+        {"glBindFramebuffer", reinterpret_cast<PROC*>(&glBindFramebuffer)},
+        {"glFramebufferTexture", reinterpret_cast<PROC*>(&glFramebufferTexture)},
+        {"glDrawBuffers", reinterpret_cast<PROC*>(&glDrawBuffers)},
+        {"glCheckFramebufferStatus", reinterpret_cast<PROC*>(&glCheckFramebufferStatus)},
+        {"glProgramUniform1i", reinterpret_cast<PROC*>(&glProgramUniform1i)},
+        {"glProgramUniform2f", reinterpret_cast<PROC*>(&glProgramUniform2f)}
+    };
+
+    for (auto& glBinding : glBindings)
+    {
+        *glBinding.second = wglGetProcAddress(glBinding.first);
+        if (*glBinding.second == nullptr)
+        {
+            return false;
+        }
     }
 
-    glBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC)wglGetProcAddress("glBindFramebuffer");
-    if (!glBindFramebuffer)
-    {
-        return false;
-    }
-    
-    glFramebufferTexture = (PFNGLFRAMEBUFFERTEXTUREPROC)wglGetProcAddress("glFramebufferTexture");
-    if (!glFramebufferTexture)
-    {
-        return false;
-    }
-
-    glDrawBuffers = (PFNGLDRAWBUFFERSPROC)wglGetProcAddress("glDrawBuffers");
-    if (!glDrawBuffers)
-    {
-        return false;
-    }
-
-    glCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSPROC)wglGetProcAddress("glCheckFramebufferStatus");
-    if (!glCheckFramebufferStatus)
-    {
-        return false;
-    }
-
-    glProgramUniform1i = (PFNGLPROGRAMUNIFORM1IPROC)wglGetProcAddress("glProgramUniform1i");
-    if (!glProgramUniform1i)
-    {
-        return false;
-    }
-
-    glProgramUniform2f = (PFNGLPROGRAMUNIFORM2FPROC)wglGetProcAddress("glProgramUniform2f");
-    if (!glProgramUniform2f)
-    {
-        return false;
-    }
- 
     return true;
 }
 
@@ -718,7 +540,7 @@ void OpenGLView::paintGL()
     GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));
 }
 
-GLuint OpenGLView::prepareShaderProgram(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
+GLuint OpenGLView::prepareShaderProgram(std::string vertexShaderPath, std::string fragmentShaderPath)
 {
     struct Shader {
         const std::string&  filename;
@@ -726,32 +548,14 @@ GLuint OpenGLView::prepareShaderProgram(const std::string& vertexShaderPath, con
         int                 padding;
         std::string         source;
     }   shaders[2] = {
-        { vertexShaderPath, GL_VERTEX_SHADER, 0, "" },
-        { fragmentShaderPath, GL_FRAGMENT_SHADER, 0, "" }
+        { "vertShader", GL_VERTEX_SHADER, 0, vertexShaderPath },
+        { "fragShader", GL_FRAGMENT_SHADER, 0, fragmentShaderPath }
     };
 
     GLuint program = glCreateProgram();
 
     for (int i = 0; i < 2; ++i) {
         Shader &s = shaders[i];
-
-        std::ifstream file(s.filename, std::ios::in);
-        if (file.is_open())
-        {
-            std::string Line = "";
-            while (std::getline(file, Line))
-            {
-                s.source += "\n" + Line;
-            }
-            file.close();
-        }
-        else
-        {
-            std::cerr << "Can't open " << s.filename << ". Are you in the right directory ? Don't forget to read the FAQ !\n";
-            getchar();
-            continue;
-        }
-
         GLuint shader = glCreateShader(s.type);
         char const * pSource = s.source.c_str();
         glShaderSource(shader, 1, &pSource, nullptr);

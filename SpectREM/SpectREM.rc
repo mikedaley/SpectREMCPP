@@ -74,6 +74,20 @@ END
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
 #pragma code_page(1252)
 
+/////////////////////////////////////////////////////////////////////////////
+//
+// RCDATA
+//
+
+ID_SHADER_DISPLAY_FRAG  RCDATA                  "Spectrem\\Win32\\display.frag"
+
+ID_SHADER_DISPLAY_VERT  RCDATA                  "Spectrem\\Win32\\display.vert"
+
+ID_SHADER_CLUT_FRAG     RCDATA                  "Spectrem\\Win32\\clut.frag"
+
+ID_SHADER_CLUT_VERT     RCDATA                  "Spectrem\\Win32\\clut.vert"
+
+
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -113,6 +127,16 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "E&xit\tEsc",                  ID_FILE_EXIT
     END
+    POPUP "&View"
+    BEGIN
+        POPUP "Zoom"
+        BEGIN
+            MENUITEM "100%\tAlt+1",                 ID_ZOOM_100
+            MENUITEM "200%\tAlt+2",                 ID_ZOOM_200
+            MENUITEM "300%\tAlt+3",                 ID_ZOOM_300
+            MENUITEM "400%\tAlt+4",                 ID_ZOOM_400
+        END
+    END
     POPUP "&Emulation"
     BEGIN
         MENUITEM "Full Speed",                  ID_EMULATION_FULLSPEED
@@ -150,6 +174,7 @@ END
 
 IDR_MENUACCELERATORS ACCELERATORS
 BEGIN
+    VK_F12,         ID_APPLICATION_SETTINGS, VIRTKEY, NOINVERT
     VK_F2,          ID_EMULATION_FULLSPEED, VIRTKEY, NOINVERT
     VK_ESCAPE,      ID_FILE_EXIT,           VIRTKEY, NOINVERT
     VK_F1,          ID_FILE_OPENSNAPSHOT,   VIRTKEY, NOINVERT
@@ -160,7 +185,10 @@ BEGIN
     VK_F5,          ID_SWITCH_FLIP,         VIRTKEY, NOINVERT
     VK_F5,          ID_SWITCH_TO128K,       VIRTKEY, CONTROL, NOINVERT
     VK_F5,          ID_SWITCH_TO48K,        VIRTKEY, SHIFT, NOINVERT
-    VK_F12,         ID_APPLICATION_SETTINGS, VIRTKEY, NOINVERT
+    "1",            ID_ZOOM_100,            ASCII,  ALT, NOINVERT
+    "2",            ID_ZOOM_200,            ASCII,  ALT, NOINVERT
+    "3",            ID_ZOOM_300,            ASCII,  ALT, NOINVERT
+    "4",            ID_ZOOM_400,            ASCII,  ALT, NOINVERT
 END
 
 
