@@ -64,6 +64,7 @@ HWND mainWindow;
 HMENU mainMenu;
 bool TurboMode = false;
 bool menuDisplayed = true;
+uint8_t zoomLevel = 4;
 
 std::unordered_map<WPARAM, ZXSpectrum::ZXSpectrumKey> KeyMappings
 {
@@ -138,6 +139,16 @@ std::unordered_map<WPARAM, ZXSpectrum::ZXSpectrumKey> KeyMappings
 //-----------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------
 
+void ZoomWindow(uint8_t zLevel)
+{
+    zoomLevel = zLevel;
+    RECT wr = { 0, 0, 256 * zoomLevel, 192 * zoomLevel };
+    AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME ^ WS_MAXIMIZEBOX, FALSE);
+    SetWindowPos(mainWindow, HWND_TOP, 0, 0, wr.right - wr.left, wr.bottom - wr.top, SWP_NOMOVE | SWP_SHOWWINDOW);
+    //glViewport(0, 0, 256 * zoomLevel, 192 * zoomLevel);
+    m_pOpenGLView->Resize(256 * zoomLevel, 192 * zoomLevel);
+}
+
 static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
     switch (msg)
@@ -180,6 +191,20 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         case ID_APPLICATION_SETTINGS:
             ShowSettingsDialog();
             break;
+        case ID_ZOOM_100:
+            ZoomWindow(1);
+            break;
+        case ID_ZOOM_200:
+            ZoomWindow(2);
+            break;
+        case ID_ZOOM_300:
+            ZoomWindow(3);
+            break;
+        case ID_ZOOM_400:
+            ZoomWindow(4);
+            break;
+
+
 
         default:
             break;
@@ -473,11 +498,11 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
     RegisterClassEx(&wcex);
 
     // Make sure the client size is correct
-    RECT wr = { 0, 0, 256 * 3, 192 * 3 };
-    AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE);
+    RECT wr = { 0, 0, 256 * zoomLevel, 192 * zoomLevel };
+    AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME ^ WS_MAXIMIZEBOX, FALSE);
 
 
-    mainWindow = CreateWindowEx(WS_EX_APPWINDOW, TEXT("SpectREM"), TEXT("SpectREM"), WS_OVERLAPPEDWINDOW, 0, 0, wr.right - wr.left, wr.bottom - wr.top, 0, 0, inst, 0);
+    mainWindow = CreateWindowEx(WS_EX_APPWINDOW, TEXT("SpectREM"), TEXT("SpectREM"), WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME ^ WS_MAXIMIZEBOX, 0, 0, wr.right - wr.left, wr.bottom - wr.top, 0, 0, inst, 0);
     ShowWindow(mainWindow, ncmd);
     UpdateWindow(mainWindow);
     mainMenu = GetMenu(mainWindow);
@@ -486,8 +511,8 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
     QueryPerformanceFrequency(&perf_freq);
     QueryPerformanceCounter(&last_time);
 
-    m_pOpenGLView = new OpenGLView(GetApplicationBasePath());
-    m_pOpenGLView->Init(mainWindow, 256 * 3, 192 * 3);
+    m_pOpenGLView = new OpenGLView();
+    m_pOpenGLView->Init(mainWindow, 256 * zoomLevel, 192 * zoomLevel, ID_SHADER_CLUT_VERT, ID_SHADER_CLUT_FRAG, ID_SHADER_DISPLAY_VERT, ID_SHADER_DISPLAY_FRAG, RT_RCDATA);
     m_pAudioQueue = new AudioQueue();
     m_pAudioCore = new AudioCore();
     m_pAudioCore->Init(44100, 50, audio_callback);
@@ -542,8 +567,26 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
                 {
                     sprintf_s(specType, sizeof(specType), "ZX Spectrum 128K");
                 }
-                char buff[64];
-                sprintf_s(buff, sizeof(buff), "SpectREM - %4.1f fps - [%s]", 1.0f / delta_time, specType);
+                char zoom[10];
+                switch (zoomLevel)
+                {
+                case 1:
+                    sprintf_s(zoom, sizeof(zoom), "[100%%]");
+                    break;
+                case 2:
+                    sprintf_s(zoom, sizeof(zoom), "[200%%]");
+                    break;
+                case 3:
+                    sprintf_s(zoom, sizeof(zoom), "[300%%]");
+                    break;
+                case 4:
+                    sprintf_s(zoom, sizeof(zoom), "[400%%]");
+                    break;
+                default:
+                    break;
+                }
+                char buff[100];
+                sprintf_s(buff, sizeof(buff), "SpectREM - %4.1f fps - [%s] - %s", 1.0f / delta_time, specType, zoom);
                 SetWindowTextA(mainWindow, buff);
             }
         }
