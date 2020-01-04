@@ -154,8 +154,8 @@ public:
         uint8_t     *data = nullptr;
     };
 
-    // Snapshot loading response structure
-    struct SnapResponse {
+    // Response from core when you have asked it to deal with a file
+    struct Response {
         bool success;
         std::string responseMsg;
     };
@@ -195,18 +195,21 @@ public:
     void                    keyboardKeyUp(ZXSpectrumKey key);
     void                    keyboardFlagsChanged(uint64_t flags, ZXSpectrumKey key);
     
-    SnapResponse            snapshotZ80LoadWithPath(const std::string path);
-    SnapResponse            snapshotZ80LoadWithBuffer(const char *buffer, size_t size);
-    SnapResponse            snapshotSNALoadWithPath(const std::string path);
-    SnapResponse            snapshotSNALoadWithBuffer(const char *buffer, size_t size);
+    Response                snapshotZ80LoadWithPath(const std::string path);
+    Response                snapshotZ80LoadWithBuffer(const char *buffer, size_t size);
+    Response                snapshotSNALoadWithPath(const std::string path);
+    Response                snapshotSNALoadWithBuffer(const char *buffer, size_t size);
     int                     snapshotMachineInSnapshotWithPath(const char *path);
     Snap                    snapshotCreateSNA();
     Snap                    snapshotCreateZ80();
     
+    Response                scrLoadWithPath(const std::string path);
+    
+    
     void                    step();
     
     void                    registerDebugOpCallback(std::function<bool(uint16_t, uint8_t)> debugOpCallbackBlock);
-    std::function<bool(uint16_t, uint8_t)>    debugOpCallbackBlock = nullptr;
+    std::function<bool(uint16_t, uint8_t)> debugOpCallbackBlock = nullptr;
     
     void                    *getScreenBuffer();
     uint32_t                getLastAudioBufferIndex() { return audioLastIndex; }
@@ -262,6 +265,8 @@ public:
 
     virtual uint8_t         coreDebugRead(uint16_t address, void *data) = 0;
     virtual void            coreDebugWrite(uint16_t address, uint8_t byte, void *data) = 0;
+    
+    void                    coreMemoryWriteWithBuffer(const char *buffer, size_t size, uint16_t address);
         
     // Machine hardware
     CZ80Core                z80Core;

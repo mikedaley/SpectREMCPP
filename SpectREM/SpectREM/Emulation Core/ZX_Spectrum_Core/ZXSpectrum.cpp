@@ -196,6 +196,15 @@ void ZXSpectrum::zxSpectrumDebugWrite(uint16_t address, uint8_t byte, void* para
 	static_cast<ZXSpectrum*>(param)->coreMemoryWrite(address, byte);
 }
 
+void ZXSpectrum::coreMemoryWriteWithBuffer(const char *buffer, size_t size, uint16_t address)
+{
+    std::vector<uint8_t> bufferData(buffer, buffer + size);
+    for (size_t i = 0; i < size; i++)
+    {
+        ZXSpectrum::zxSpectrumDebugWrite(address++, bufferData[i], nullptr, nullptr);
+    }
+}
+
 // - IO Access
 
 uint8_t ZXSpectrum::zxSpectrumIORead(uint16_t address, void* param)
@@ -265,12 +274,6 @@ void ZXSpectrum::loadROM(const std::string rom, uint32_t page)
     std::string romPath = emuBasePath + emuROMPath;
 	romPath.append(rom);
 
-#ifdef QT_SPECTRUM
-	QFile file(rom);
-	if (!file.open(QIODevice::ReadOnly)) return;
-	QByteArray romData = file.readAll();
-	std::memcpy(memoryRom.data(), romData.data(), file.size());
-#else
     std::ifstream romFile(romPath, std::ios::binary | std::ios::ate | std::ios::in);
 	if (romFile.good())
 	{
@@ -284,11 +287,39 @@ void ZXSpectrum::loadROM(const std::string rom, uint32_t page)
 		char* errorstring = strerror(errno);
         std::cout << "ERROR: Could not read from ROM file: " << errorstring;
 	}
-
-#endif
 }
 
+// SCR Loading
 
+ZXSpectrum::Response ZXSpectrum::scrLoadWithPath(const std::string path)
+{
+    std::ifstream scrFile(path, std::ios::binary | std::ios::ate | std::ios::in);
+    if (scrFile.good())
+    {
+        std::streampos fileSize = scrFile.tellg();
+        scrFile.seekg(0, std::ios::beg);
+        
+        switch (machineInfo.machineType) {
+            case eZXSpectrum48:
+                scrFile.read(memoryRam.data() + cBITMAP_ADDRESS, fileSize);
+                break;
+            case eZXSpectrum128:
+                // Load the image data into memory page 5
+                scrFile.read(memoryRam.data() + (cBITMAP_ADDRESS * 5), fileSize);
+                break;
+                
+            default:
+                break;
+        }
+        scrFile.close();
+        return ZXSpectrum::Response{true, "Loaded successfully"};
+    }
+
+    char* errorstring = strerror(errno);
+    std::cout << "ERROR: Could not read from file: " << errorstring << std::endl;
+    
+    return ZXSpectrum::Response{false, errorstring};
+}
 
 // - Getters
 
