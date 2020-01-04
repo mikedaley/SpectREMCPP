@@ -41,9 +41,11 @@
         if (sourceDragMask * NSDragOperationCopy)
         {
             NSURL *fileURL = [NSURL URLFromPasteboard:pBoard];
-            if ([[fileURL.pathExtension uppercaseString] isEqualToString:cZ80_EXTENSION] ||
-                [[fileURL.pathExtension uppercaseString] isEqualToString:cSNA_EXTENSION] ||
-                [[fileURL.pathExtension uppercaseString] isEqualToString:cTAP_EXTENSION])
+            NSString *extension = [fileURL.pathExtension uppercaseString];
+            if ([extension isEqualToString:cZ80_EXTENSION] ||
+                [extension isEqualToString:cSNA_EXTENSION] ||
+                [extension isEqualToString:cTAP_EXTENSION] ||
+                [extension isEqualToString:cSCR_EXTENSION])
             {
                 return NSDragOperationCopy;
             }
@@ -62,9 +64,11 @@
     if ([[pBoard types] containsObject:NSPasteboardTypeFileURL])
     {
         NSURL *fileURL = [NSURL URLFromPasteboard:pBoard];
-        if ([[fileURL.pathExtension uppercaseString] isEqualToString:cZ80_EXTENSION] ||
-            [[fileURL.pathExtension uppercaseString] isEqualToString:cSNA_EXTENSION] ||
-            [[fileURL.pathExtension uppercaseString] isEqualToString:cTAP_EXTENSION])
+        NSString *extension = [fileURL.pathExtension uppercaseString];
+        if ([extension isEqualToString:cZ80_EXTENSION] ||
+            [extension isEqualToString:cSNA_EXTENSION] ||
+            [extension isEqualToString:cTAP_EXTENSION] ||
+            [extension isEqualToString:cSCR_EXTENSION])
         {
             id <EmulationProtocol> emulationViewController = (id <EmulationProtocol>)[self.window contentViewController];
             [emulationViewController loadFileWithURL:fileURL addToRecent:YES];

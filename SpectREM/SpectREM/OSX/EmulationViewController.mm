@@ -614,13 +614,13 @@ const int cSCREEN_FILL = 1;
 
 - (void)loadFileWithURL:(NSURL *)url addToRecent:(BOOL)addToRecent
 {
-    ZXSpectrum::SnapResponse snapResponse;
+    ZXSpectrum::Response response;
     Tape::TapResponse tapResponse;
     
     _machine->pause();
     
-    NSString *urlPath = [url.pathExtension uppercaseString];
-    if (([urlPath isEqualToString:cZ80_EXTENSION] || [urlPath isEqualToString:cSNA_EXTENSION]))
+    NSString *extension = [url.pathExtension uppercaseString];
+    if (([extension isEqualToString:cZ80_EXTENSION] || [extension isEqualToString:cSNA_EXTENSION]))
     {
         int snapshotMachineType = _machine->snapshotMachineInSnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
         if (_machine->machineInfo.machineType != snapshotMachineType)
@@ -629,21 +629,29 @@ const int cSCREEN_FILL = 1;
         }
     }
     
-    if ([[url.pathExtension uppercaseString] isEqualToString:cZ80_EXTENSION])
+    extension = [url.pathExtension uppercaseString];
+    
+    if ([extension isEqualToString:cZ80_EXTENSION])
     {
-        snapResponse = _machine->snapshotZ80LoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+        response = _machine->snapshotZ80LoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
     }
-    else if ([[url.pathExtension uppercaseString] isEqualToString:cSNA_EXTENSION])
+    else if ([extension isEqualToString:cSNA_EXTENSION])
     {
-        snapResponse = _machine->snapshotSNALoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+        response = _machine->snapshotSNALoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
     }
-    else if ([[url.pathExtension uppercaseString] isEqualToString:cTAP_EXTENSION])
+    else if ([extension isEqualToString:cTAP_EXTENSION])
     {
         tapResponse = _tape->loadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
         [[NSNotificationCenter defaultCenter] postNotificationName:@"TAPE_CHANGED_NOTIFICATION" object:NULL];
     }
+    else if ([extension isEqualToString:cSCR_EXTENSION])
+    {
+        _machine->scrLoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+        _machine->resume();
+        return;
+    }
     
-    if (snapResponse.success || tapResponse.success)
+    if (response.success || tapResponse.success)
     {
         _lastOpenedURL = url;
         if (addToRecent)
@@ -652,10 +660,11 @@ const int cSCREEN_FILL = 1;
         }
     }
     
-    if (!snapResponse.success && !tapResponse.success)
+    if (!response.success && !tapResponse.success)
     {
         NSAlert *alert = [NSAlert new];
-        alert.informativeText = [NSString stringWithFormat:[NSString stringWithCString:snapResponse.responseMsg.c_str() encoding:[NSString defaultCStringEncoding]], url.path];
+        alert.informativeText = [NSString stringWithFormat:[NSString stringWithCString:response.responseMsg.c_str()
+                                                                              encoding:[NSString defaultCStringEncoding]], url.path];
         [alert addButtonWithTitle:@"OK"];
         [alert setAlertStyle:NSAlertStyleWarning];
         [alert runModal];
@@ -792,20 +801,22 @@ static void tapeStatusCallback(int blockIndex, int bytes)
             ZXSpectrum::Snap snapshot;
             NSURL *url = savePanel.URL;
             
-            if (_saveAccessoryController.exportType == cZ80_SNAPSHOT_TYPE)
-            {
-                snapshot = _machine->snapshotCreateZ80();
-                url = [[url URLByDeletingPathExtension] URLByAppendingPathExtension:cZ80_EXTENSION];
-                NSData *data = [NSData dataWithBytes:snapshot.data length:snapshot.length];
-                [data writeToURL:url atomically:YES];
+            switch (_saveAccessoryController.exportType) {
+                case cZ80_SNAPSHOT_TYPE:
+                    snapshot = _machine->snapshotCreateZ80();
+                    url = [[url URLByDeletingPathExtension] URLByAppendingPathExtension:cZ80_EXTENSION];
+                    break;
+                    
+                case cSNA_SNAPSHOT_TYPE:
+                    snapshot = _machine->snapshotCreateSNA();
+                    url = [[url URLByDeletingPathExtension] URLByAppendingPathExtension:cSNA_EXTENSION];
+                    break;
+                    
+                default:
+                    break;
             }
-            else if (_saveAccessoryController.exportType == cSNA_SNAPSHOT_TYPE)
-            {
-                snapshot = _machine->snapshotCreateSNA();
-                url = [[url URLByDeletingPathExtension] URLByAppendingPathExtension:cSNA_EXTENSION];
-                NSData *data = [NSData dataWithBytes:snapshot.data length:snapshot.length];
-                [data writeToURL:url atomically:YES];
-            }
+            NSData *data = [NSData dataWithBytes:snapshot.data length:snapshot.length];
+            [data writeToURL:url atomically:YES];
         }
     }];
 }
