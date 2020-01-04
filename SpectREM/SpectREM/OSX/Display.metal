@@ -9,7 +9,7 @@
 #include <metal_stdlib>
 #include <simd/simd.h>
 
-using namespace metal;
+//using namespace metal;
 
 #import "ShaderTypes.h"
 
@@ -28,7 +28,7 @@ typedef struct
 vector_float2 radialDistortion(vector_float2 pos, float distortion)
 {
     vector_float2 cc = pos - vector_float2(0.5, 0.5);
-    float dist = dot(cc, cc) * distortion;
+    float dist = metal::dot(cc, cc) * distortion;
     return (pos + cc * (0.5 + dist) * dist);
 }
 
@@ -36,7 +36,7 @@ vector_float3 scanline(float2 texCoord, float3 fragColor, float time, float amou
     const float scale = 0.0008;
     const float amt = amount;// intensity of effect
     const float spd = -0.03;//speed of scrolling rows transposed per second
-    fragColor.rgb -= sin( (texCoord.y / scale - (time * spd * 6.28) ) ) * amt;
+    fragColor.rgb -= metal::sin( (texCoord.y / scale - (time * spd * 6.28) ) ) * amt;
     return fragColor;
 }
 
@@ -49,16 +49,16 @@ vector_float3 colorCorrection(vector_float3 color, float saturation, float contr
     const vector_float3 rgb2greyCoeff = vector_float3(0.2126, 0.7152, 0.0722);    // Updated greyscale coefficients for sRGB and modern TVs
     
     vector_float3 brightened = color * brightness;
-    float intensity = dot(brightened, rgb2greyCoeff);
-    vector_float3 saturated = mix(vector_float3(intensity), brightened, saturation);
+    float intensity = metal::dot(brightened, rgb2greyCoeff);
+    vector_float3 saturated = metal::mix(vector_float3(intensity), brightened, saturation);
 
-    return mix(meanLuminosity, saturated, contrast);
+    return metal::mix(meanLuminosity, saturated, contrast);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Split the red, green and blue channels of the texture passed in
 ///////////////////////////////////////////////////////////////////////////////////////
-vector_float4 channelSplit(texture2d<float>image, sampler tex, vector_float2 coord, float spread){
+vector_float4 channelSplit(metal::texture2d<float>image, metal::sampler tex, vector_float2 coord, float spread){
     vector_float4 frag;
     frag.r = image.sample(tex, vector_float2(coord.x - spread, coord.y)).r;
     frag.g = image.sample(tex, vector_float2(coord.x, coord.y)).g;
@@ -92,11 +92,11 @@ vertex RasterizerData vertexShader(uint vertexID [[ vertex_id ]],
  lookup texture
  **/
 fragment vector_float4 clutShader( RasterizerData in [[stage_in]],
-                                  texture2d<half> colorTexture [[ texture(TextureIndexPackedDisplay) ]],
-                                  texture1d<float> clutTexture [[ texture(TextureIndexCLUT) ]])
+                                  metal::texture2d<half> colorTexture [[ texture(TextureIndexPackedDisplay) ]],
+                                  metal::texture1d<float> clutTexture [[ texture(TextureIndexCLUT) ]])
 {
-    constexpr sampler textureSampler (mag_filter::nearest,
-                                      min_filter::nearest);
+    constexpr metal::sampler textureSampler (metal::mag_filter::nearest,
+                                      metal::min_filter::nearest);
 
     const float paletteColors = 16.0;
     const float clutUVAdjust = 1.0 / paletteColors;
@@ -110,13 +110,13 @@ fragment vector_float4 clutShader( RasterizerData in [[stage_in]],
  then displayed on screen
  **/
 fragment vector_float4 effectsShader(RasterizerData in [[stage_in]],
-                                     texture2d<float> colorTexture [[ texture(0) ]],
+                                     metal::texture2d<float> colorTexture [[ texture(0) ]],
                                      constant Uniforms & uniforms [[buffer(0) ]])
 {
-    constexpr sampler textureSampler (mag_filter::linear,
-                                      min_filter::linear);
+    constexpr metal::sampler textureSampler (metal::mag_filter::linear,
+                                      metal::min_filter::linear);
     
-    float max = pow(uniforms.displayVignetteX, uniforms.displayVignetteY);
+    float max = metal::pow(uniforms.displayVignetteX, uniforms.displayVignetteY);
     const float w = 32 + 256 + 32;
     const float h = 32 + 192 + 32;
     float border = 32 - uniforms.displayBorderSize;
@@ -141,9 +141,9 @@ fragment vector_float4 effectsShader(RasterizerData in [[stage_in]],
         // Apply pixel filtering
         vector_float2 vUv = vector_float2(u, v);
         float alpha = uniforms.displayPixelFilterValue; // 0.5 = Linear, 0.0 = Nearest
-        vector_float2 x = fract(vUv);
-        vector_float2 x_ = clamp(0.5 / alpha * x, 0.0, 0.5) + clamp(0.5 / alpha * (x - 1.0) + 0.5, 0.0, 0.5);
-        texCoord = (floor(vUv) + x_) / vector_float2(w, h);
+        vector_float2 x = metal::fract(vUv);
+        vector_float2 x_ = metal::clamp(0.5 / alpha * x, 0.0, 0.5) + metal::clamp(0.5 / alpha * (x - 1.0) + 0.5, 0.0, 0.5);
+        texCoord = (metal::floor(vUv) + x_) / vector_float2(w, h);
 
         // Apply RGB shift if necessary, otherwise just take the colour from the texture as is
         if (uniforms.displayRGBOffset > 0)
@@ -170,7 +170,7 @@ fragment vector_float4 effectsShader(RasterizerData in [[stage_in]],
         if (uniforms.displayShowVignette)
         {
             float vignette = scanTexCoord.x * scanTexCoord.y * (1.0 - scanTexCoord.x) * (1.0 - scanTexCoord.y);
-            fragColor.rgb *= smoothstep(0.0, max, vignette);
+            fragColor.rgb *= metal::smoothstep(0.0, max, vignette);
         }
     }
     // We return the color of the texture

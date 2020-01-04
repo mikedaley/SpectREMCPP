@@ -98,7 +98,7 @@ ZXSpectrum::Snap ZXSpectrum::snapshotCreateSNA()
     return snap;
 }
 
-ZXSpectrum::SnapResponse ZXSpectrum::snapshotSNALoadWithBuffer(const char *buffer, size_t size)
+ZXSpectrum::Response ZXSpectrum::snapshotSNALoadWithBuffer(const char *buffer, size_t size)
 {
     pause();
     displayFrameReset();
@@ -152,16 +152,16 @@ ZXSpectrum::SnapResponse ZXSpectrum::snapshotSNALoadWithBuffer(const char *buffe
 
     resume();
 
-    return SnapResponse{true, "Loaded successfully"};
+    return Response{true, "Loaded successfully"};
 }
 
-ZXSpectrum::SnapResponse ZXSpectrum::snapshotSNALoadWithPath(const std::string path)
+ZXSpectrum::Response ZXSpectrum::snapshotSNALoadWithPath(const std::string path)
 {
     
     std::ifstream stream(path, std::ios::binary | std::ios::ate);
     if (!stream.ios_base::good()) {
-        SnapResponse response;
-        return SnapResponse{false, "Path/file not found"};
+        Response response;
+        return Response{false, "Path/file not found"};
     }
     
     std::vector<char> pFileBytes(stream.tellg());
@@ -344,7 +344,7 @@ ZXSpectrum::Snap ZXSpectrum::snapshotCreateZ80()
     return snapData;
 }
 
-ZXSpectrum::SnapResponse ZXSpectrum::snapshotZ80LoadWithBuffer(const char *buffer, size_t size)
+ZXSpectrum::Response ZXSpectrum::snapshotZ80LoadWithBuffer(const char *buffer, size_t size)
 {
     pause();
     displayFrameReset();
@@ -509,15 +509,15 @@ ZXSpectrum::SnapResponse ZXSpectrum::snapshotZ80LoadWithBuffer(const char *buffe
 
     resume();
     
-    return SnapResponse{true, "Loaded successfully"};
+    return Response{true, "Loaded successfully"};
 }
 
-ZXSpectrum::SnapResponse ZXSpectrum::snapshotZ80LoadWithPath(const std::string path)
+ZXSpectrum::Response ZXSpectrum::snapshotZ80LoadWithPath(const std::string path)
 {
     std::ifstream stream(path, std::ios::binary | std::ios::ate);
     if (!stream.ios_base::good()) {
-        SnapResponse response;
-        return SnapResponse{false, "Path/file not found"};
+        Response response;
+        return Response{false, "Path/file not found"};
     }
     
     std::vector<char> pFileBytes(stream.tellg());

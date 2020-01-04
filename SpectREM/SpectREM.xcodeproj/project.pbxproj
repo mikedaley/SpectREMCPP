@@ -354,6 +354,7 @@
 		295745F323BCBE3F00F6CF8C /* OSX */ = {
 			isa = PBXGroup;
 			children = (
+				296888FA21E3B35300BFC3BD /* SharedConstants.h */,
 				ED913FB41F30762600316E1A /* App Delegate */,
 				EDC56FD71F6C226E00162739 /* Defaults */,
 				EDEDE71D1F7556BD00DAC9AE /* User Interface */,
@@ -608,7 +609,6 @@
 			isa = PBXGroup;
 			children = (
 				276ADE3121021B1700EC7DC9 /* Metal */,
-				296888FA21E3B35300BFC3BD /* SharedConstants.h */,
 				296888F921E3898F00BFC3BD /* EmulationProtocol.h */,
 				ED913FA51F30759300316E1A /* EmulationViewController.h */,
 				ED913FA61F30759300316E1A /* EmulationViewController.mm */,
