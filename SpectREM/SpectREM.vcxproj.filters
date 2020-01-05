@@ -96,6 +96,9 @@
     <ClCompile Include="SpectREM\Win32\PMDawn.cpp">
       <Filter>Win32</Filter>
     </ClCompile>
+    <ClCompile Include="SpectREM\Win32\TapeViewerWindow.cpp">
+      <Filter>Win32</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SpectREM\Win32\AudioCore.hpp">
@@ -148,6 +151,9 @@
     </ClInclude>
     <ClInclude Include="resource.h" />
     <ClInclude Include="SpectREM\OSX\AudioQueue.hpp">
+      <Filter>Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectREM\Win32\TapeViewerWindow.hpp">
       <Filter>Win32</Filter>
     </ClInclude>
   </ItemGroup>

@@ -32,12 +32,12 @@
 #include "../../resource.h"
 #include "PMDawn.cpp"
 #include <CommCtrl.h>
+#include "TapeViewerWindow.hpp"
 
 #pragma comment(lib, "comctl32.lib")
 
 
-
-
+// WinMain.cpp
 static void audio_callback(uint32_t nNumSamples, uint8_t* pBuffer);
 static void tapeStatusCallback(int blockIndex, int bytes);
 static void LoadSnapshot();
@@ -58,7 +58,8 @@ static void InsertTape();
 static void EjectTape();
 static void PlayPauseTape();
 static void RewindTape();
-static void SetOutputVolume();
+static void OpenTapeViewer();
+static void SetOutputVolume(float vol);
 static void IncreaseApplicationVolume();
 static void DecreaseApplicationVolume();
 
@@ -89,6 +90,7 @@ HACCEL hAcc;
 bool isResetting = false;
 HWND mainWindow;
 HWND statusWindow;
+//HWND tapeViewerWindow;
 HMENU mainMenu;
 bool TurboMode = false;
 bool menuDisplayed = true;
@@ -267,6 +269,9 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             break;
         case ID_TAPE_REWINDTAPE:
             RewindTape();
+            break;
+        case ID_TAPE_TAPEVIEWER:
+            OpenTapeViewer();
             break;
         case ID_VOLUME_INCREASE:
             IncreaseApplicationVolume();
@@ -1084,7 +1089,11 @@ static void DecreaseApplicationVolume()
 
 //-----------------------------------------------------------------------------------------
 
-
+static void OpenTapeViewer()
+{
+    TapeViewer* tvWindow = new TapeViewer(GetModuleHandle(NULL), mainWindow);
+    //int retval = TapeViewer::OpenTapeViewerWindow(GetModuleHandle(NULL), mainWindow);
+}
 
 //-----------------------------------------------------------------------------------------
 

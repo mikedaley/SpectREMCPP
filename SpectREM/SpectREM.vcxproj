@@ -198,6 +198,7 @@ copy "$(ProjectDir)SpectREM\Emulation Core\ROMS\*.*" $(TargetDir)ROMS\*.*
     <ClCompile Include="SpectREM\Win32\AudioCore.cpp" />
     <ClCompile Include="SpectREM\Win32\OpenGLView.cpp" />
     <ClCompile Include="SpectREM\Win32\PMDawn.cpp" />
+    <ClCompile Include="SpectREM\Win32\TapeViewerWindow.cpp" />
     <ClCompile Include="SpectREM\Win32\WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -219,6 +220,7 @@ copy "$(ProjectDir)SpectREM\Emulation Core\ROMS\*.*" $(TargetDir)ROMS\*.*
     <ClInclude Include="SpectREM\OSX\AudioQueue.hpp" />
     <ClInclude Include="SpectREM\Win32\AudioCore.hpp" />
     <ClInclude Include="SpectREM\Win32\OpenGLView.hpp" />
+    <ClInclude Include="SpectREM\Win32\TapeViewerWindow.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="SpectREM\clut.frag">

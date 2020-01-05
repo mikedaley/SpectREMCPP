@@ -151,6 +151,7 @@ BEGIN
         MENUITEM "Eject Tape\tAlt+F1",          ID_TAPE_EJECTTAPE
         MENUITEM "Start/Stop Tape\tF9",         ID_TAPE_START
         MENUITEM "Rewind Tape\tShift+F9",       ID_TAPE_REWINDTAPE
+        MENUITEM "Tape Viewer\tAlt+F9",         ID_TAPE_TAPEVIEWER
     END
     POPUP "&Emulation"
     BEGIN
@@ -207,6 +208,7 @@ BEGIN
     VK_F5,          ID_SWITCH_TO48K,        VIRTKEY, SHIFT, NOINVERT
     VK_F1,          ID_TAPE_EJECTTAPE,      VIRTKEY, ALT, NOINVERT
     VK_F1,          ID_TAPE_INSERTTAPE,     VIRTKEY, SHIFT, NOINVERT
+    VK_F9,          ID_TAPE_REWINDTAPE,     VIRTKEY, SHIFT, NOINVERT
     VK_F9,          ID_TAPE_START,          VIRTKEY, NOINVERT
     VK_F1,          ID_VIEW_OPENSCR,        VIRTKEY, CONTROL, ALT, NOINVERT
     VK_NEXT,        ID_VOLUME_DECREASE,     VIRTKEY, NOINVERT
@@ -215,7 +217,7 @@ BEGIN
     "2",            ID_ZOOM_200,            ASCII,  ALT, NOINVERT
     "3",            ID_ZOOM_300,            ASCII,  ALT, NOINVERT
     "4",            ID_ZOOM_400,            ASCII,  ALT, NOINVERT
-    VK_F9,          ID_TAPE_REWINDTAPE,     VIRTKEY, SHIFT, NOINVERT
+    VK_F9,          ID_TAPE_TAPEVIEWER,     VIRTKEY, ALT, NOINVERT
 END
 
 
