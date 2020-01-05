@@ -123,7 +123,7 @@ IDR_MENU1 MENU
 BEGIN
     POPUP "&File"
     BEGIN
-        MENUITEM "&Open Snapshot\tF1",          ID_FILE_OPENSNAPSHOT
+        MENUITEM "&Open File\tF1",              ID_FILE_OPENSNAPSHOT
         MENUITEM SEPARATOR
         MENUITEM "E&xit\tEsc",                  ID_FILE_EXIT
     END
@@ -150,6 +150,7 @@ BEGIN
         MENUITEM "Insert Tape\tShift+F1",       ID_TAPE_INSERTTAPE
         MENUITEM "Eject Tape\tAlt+F1",          ID_TAPE_EJECTTAPE
         MENUITEM "Start/Stop Tape\tF9",         ID_TAPE_START
+        MENUITEM "Rewind Tape\tShift+F9",       ID_TAPE_REWINDTAPE
     END
     POPUP "&Emulation"
     BEGIN
@@ -208,12 +209,13 @@ BEGIN
     VK_F1,          ID_TAPE_INSERTTAPE,     VIRTKEY, SHIFT, NOINVERT
     VK_F9,          ID_TAPE_START,          VIRTKEY, NOINVERT
     VK_F1,          ID_VIEW_OPENSCR,        VIRTKEY, CONTROL, ALT, NOINVERT
+    VK_NEXT,        ID_VOLUME_DECREASE,     VIRTKEY, NOINVERT
+    VK_PRIOR,       ID_VOLUME_INCREASE,     VIRTKEY, NOINVERT
     "1",            ID_ZOOM_100,            ASCII,  ALT, NOINVERT
     "2",            ID_ZOOM_200,            ASCII,  ALT, NOINVERT
     "3",            ID_ZOOM_300,            ASCII,  ALT, NOINVERT
     "4",            ID_ZOOM_400,            ASCII,  ALT, NOINVERT
-    VK_PRIOR,       ID_VOLUME_INCREASE,     VIRTKEY, NOINVERT
-    VK_NEXT,        ID_VOLUME_DECREASE,     VIRTKEY, NOINVERT
+    VK_F9,          ID_TAPE_REWINDTAPE,     VIRTKEY, SHIFT, NOINVERT
 END
 
 
