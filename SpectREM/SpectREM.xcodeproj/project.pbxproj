@@ -450,8 +450,8 @@
 		2963B3DB23B7977D00CAE4CD /* ZX_Spectrum_48k */ = {
 			isa = PBXGroup;
 			children = (
-				2963B3DC23B7977D00CAE4CD /* ZXSpectrum48.cpp */,
 				2963B3DD23B7977D00CAE4CD /* ZXSpectrum48.hpp */,
+				2963B3DC23B7977D00CAE4CD /* ZXSpectrum48.cpp */,
 			);
 			path = ZX_Spectrum_48k;
 			sourceTree = "<group>";
