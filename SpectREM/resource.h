@@ -43,6 +43,9 @@
 #define ID_TAPE_INSERTTAPE              40054
 #define ID_TAPE_EJECTTAPE               40055
 #define ID_TAPE_START                   40059
+#define ID_EMULATION_VOLUME             40062
+#define ID_VOLUME_INCREASE              40063
+#define ID_VOLUME_DECREASE              40064
 #define ID_SHADER_DISPLAY_FRAG          57000
 #define ID_SHADER_DISPLAY_VERT          57001
 #define ID_SHADER_CLUT_FRAG             57002
@@ -53,7 +56,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        110
-#define _APS_NEXT_COMMAND_VALUE         40062
+#define _APS_NEXT_COMMAND_VALUE         40068
 #define _APS_NEXT_CONTROL_VALUE         1002
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

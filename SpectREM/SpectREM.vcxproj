@@ -197,6 +197,7 @@ copy "$(ProjectDir)SpectREM\Emulation Core\ROMS\*.*" $(TargetDir)ROMS\*.*
     <ClCompile Include="SpectREM\OSX\AudioQueue.cpp" />
     <ClCompile Include="SpectREM\Win32\AudioCore.cpp" />
     <ClCompile Include="SpectREM\Win32\OpenGLView.cpp" />
+    <ClCompile Include="SpectREM\Win32\PMDawn.cpp" />
     <ClCompile Include="SpectREM\Win32\WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>

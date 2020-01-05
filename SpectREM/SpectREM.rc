@@ -159,6 +159,11 @@ BEGIN
             MENUITEM "Hard\tF3",                    ID_RESET_HARD
             MENUITEM "Soft\tF4",                    ID_RESET_SOFT
         END
+        POPUP "Volume"
+        BEGIN
+            MENUITEM "Increase\tPgUp",              ID_VOLUME_INCREASE
+            MENUITEM "Decrease\tPgDown",            ID_VOLUME_DECREASE
+        END
     END
     POPUP "&Machine"
     BEGIN
@@ -201,12 +206,14 @@ BEGIN
     VK_F5,          ID_SWITCH_TO48K,        VIRTKEY, SHIFT, NOINVERT
     VK_F1,          ID_TAPE_EJECTTAPE,      VIRTKEY, ALT, NOINVERT
     VK_F1,          ID_TAPE_INSERTTAPE,     VIRTKEY, SHIFT, NOINVERT
+    VK_F9,          ID_TAPE_START,          VIRTKEY, NOINVERT
     VK_F1,          ID_VIEW_OPENSCR,        VIRTKEY, CONTROL, ALT, NOINVERT
     "1",            ID_ZOOM_100,            ASCII,  ALT, NOINVERT
     "2",            ID_ZOOM_200,            ASCII,  ALT, NOINVERT
     "3",            ID_ZOOM_300,            ASCII,  ALT, NOINVERT
     "4",            ID_ZOOM_400,            ASCII,  ALT, NOINVERT
-    VK_F9,          ID_TAPE_START,          VIRTKEY, NOINVERT
+    VK_PRIOR,       ID_VOLUME_INCREASE,     VIRTKEY, NOINVERT
+    VK_NEXT,        ID_VOLUME_DECREASE,     VIRTKEY, NOINVERT
 END
 
 

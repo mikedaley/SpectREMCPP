@@ -159,3 +159,9 @@ void AudioCore::OnVoiceError(void * pBufferContext, HRESULT Error)
 }
 
 //-----------------------------------------------------------------------------------------
+
+void AudioCore::SetOutputVolume(float vol)
+{
+	if (vol < 0.0f || vol > 1.0f) { return; }
+	m_pMasteringVoice->SetVolume(vol);
+}

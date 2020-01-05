@@ -93,6 +93,9 @@
     <ClCompile Include="SpectREM\OSX\AudioQueue.cpp">
       <Filter>Win32</Filter>
     </ClCompile>
+    <ClCompile Include="SpectREM\Win32\PMDawn.cpp">
+      <Filter>Win32</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SpectREM\Win32\AudioCore.hpp">

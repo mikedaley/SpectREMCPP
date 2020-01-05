@@ -18,6 +18,15 @@ CTRL+ALT+F1		: Open single .SCR file
 SHIFT+F1		: Insert a tape
 ALT+F1			: Eject currently inserted tape
 F9				: Start/Stop currently inserted tape
+PAGEUP			: Increase volume
+PAGEDOWN		: Decreas volume
+
+
+
+2020-01-05
+-----------
+ADDED	: Volume control using PageUp/PageDown
+
 
 2020-01-04
 -----------

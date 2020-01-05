@@ -33,6 +33,7 @@
 
 
 
+
 // LogType:
 //    LOG_INFO is for general info
 //    LOG_DEBUG is for debugging info, note that it will also include INFO
@@ -67,6 +68,9 @@ static void OpenSCR();
 static void InsertTape();
 static void EjectTape();
 static void PlayPauseTape();
+static void SetOutputVolume();
+static void IncreaseApplicationVolume();
+static void DecreaseApplicationVolume();
 
 ZXSpectrum* m_pMachine;
 Tape* m_pTape;
@@ -107,6 +111,8 @@ uint8_t fileListIndex = 0;
 std::thread scrDisplayThread;
 bool slideshowTimerRunning = false;
 bool slideshowRandom = true;
+const float volumeStep = 0.1f;
+float applicationVolume = 0.75f;
 
 std::unordered_map<WPARAM, ZXSpectrum::ZXSpectrumKey> KeyMappings
 {
@@ -269,6 +275,12 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             break;
         case ID_TAPE_START:
             PlayPauseTape();
+            break;
+        case ID_VOLUME_INCREASE:
+            IncreaseApplicationVolume();
+            break;
+        case ID_VOLUME_DECREASE:
+            DecreaseApplicationVolume();
             break;
 
         default:
@@ -1098,6 +1110,8 @@ static std::string GetTimeAsString()
     return str;
 }
 
+//-----------------------------------------------------------------------------------------
+
 static std::vector<std::string> GetFilesInDirectory(std::string folder, std::string filter)
 {
     std::vector<std::string> fileList;
@@ -1121,3 +1135,56 @@ static std::vector<std::string> GetFilesInDirectory(std::string folder, std::str
         return fileList;
     }
 }
+
+//-----------------------------------------------------------------------------------------
+
+static void SetOutputVolume(float vol)
+{
+    // check volume range first
+    if (vol < 0.0f || vol > 1.0f) { return; }
+    // now set the volume
+    m_pAudioCore->SetOutputVolume(vol);
+}
+
+//-----------------------------------------------------------------------------------------
+
+static void IncreaseApplicationVolume()
+{
+    if (applicationVolume + volumeStep > 1.0f)
+    {
+        SetOutputVolume(1.0f);
+        applicationVolume = 1.0f;
+    }
+    else
+    {
+        SetOutputVolume(applicationVolume + volumeStep);
+        applicationVolume = applicationVolume + volumeStep;
+    }
+}
+
+//-----------------------------------------------------------------------------------------
+
+static void DecreaseApplicationVolume()
+{
+    if (applicationVolume - volumeStep < 0.0f)
+    {
+        SetOutputVolume(0.0f);
+        applicationVolume = 0.0f;
+    }
+    else
+    {
+        SetOutputVolume(applicationVolume - volumeStep);
+        applicationVolume = applicationVolume - volumeStep;
+    }
+}
+
+//-----------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
