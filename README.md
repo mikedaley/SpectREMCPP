@@ -1,6 +1,14 @@
 # SpectREMCPP (Spectrum Retro EMulator using C++ and Objective-C++) 
 
-This is a ZX Spectrum emulator written for MacOS 10.14+. The main emulator core has been written in C++ and is shared across a Mac, Windows and iOS version. This is very much a hobby/play project, but it's prettry accurate for the 48k/128k Spectrum :)
+This is a ZX Spectrum emulator written for MacOS 10.14+. The main emulator core has been written in C++ and is shared across a Mac, Windows and iOS versions. This is very much a hobby/play project, but it's prettry accurate for the 48k/128k Spectrum :)
+
+## Thanks
+
+- **Adrian Brown** for the initial Z80 core
+- **Paul Tankard** for testing, his C++ experience, highlighting my poor coding practices :) and creating SmartLINK hardware and software
+- **John Young** for taking on the task of creating the Windows platform specific code on top of the emulator core
+- **Mark Woodmass** for his never ending knowledge of the ZX Spectrum, emulator programming and his never ending stream emulator accuracy tests
+- **Richard Chandler** for his banta on the ZXASM - Z80 Programming Slack channel and keeping things real ;)
 
 ## Features
 
@@ -22,7 +30,6 @@ This is a ZX Spectrum emulator written for MacOS 10.14+. The main emulator core 
   - Breakpoints
   - Step In
 - Automatically restores your last session
-- Allows selection of the default 48k/128k ROM
 
 ## Peripheral Emulation
 
