@@ -4,10 +4,10 @@ This is a ZX Spectrum emulator written for MacOS 10.14+. The main emulator core 
 
 ## Thanks
 
-- **Adrian Brown** for the initial Z80 core
+- **Adrian Brown** for the initial Z80 core written in C because my core written in Swift was...well...a bad idea :) If I couldn't have switched to Adrians core this project would have died right there :)
 - **Paul Tankard** for testing, his C++ experience, highlighting my poor coding practices :) and creating SmartLINK hardware and software
 - **John Young** for taking on the task of creating the Windows platform specific code on top of the emulator core
-- **Mark Woodmass** for his never ending knowledge of the ZX Spectrum, emulator programming and his never ending stream emulator accuracy tests
+- **Mark Woodmass** for his vast knowledge of the ZX Spectrum, emulator programming and his never ending stream emulator accuracy tests
 - **Richard Chandler** for his banta on the ZXASM - Z80 Programming Slack channel and keeping things real ;)
 
 ## Features
