@@ -31,8 +31,9 @@
 #include "OpenGLView.hpp"
 #include "../../resource.h"
 #include "PMDawn.cpp"
+#include <CommCtrl.h>
 
-
+#pragma comment(lib, "comctl32.lib")
 
 
 
@@ -87,11 +88,12 @@ std::string romPath;
 HACCEL hAcc;
 bool isResetting = false;
 HWND mainWindow;
+HWND statusWindow;
 HMENU mainMenu;
 bool TurboMode = false;
 bool menuDisplayed = true;
+bool statusDisplayed = true;
 uint8_t zoomLevel = 3;
-
 std::string slideshowDirectory = "\\slideshow\\";
 std::vector<std::string> fileList;
 uint8_t fileListIndex = 0;
@@ -597,6 +599,8 @@ static void ShowUI(HWND hWnd = mainWindow)
     PMDawn::Log(PMDawn::LOG_DEBUG, "ShowUI()");
     SetMenu(hWnd, mainMenu);
     menuDisplayed = true;
+    ShowWindow(statusWindow, SW_SHOW);
+    statusDisplayed = true;
 }
 
 //-----------------------------------------------------------------------------------------
@@ -606,6 +610,8 @@ static void HideUI(HWND hWnd = mainWindow)
     PMDawn::Log(PMDawn::LOG_DEBUG, "HideUI()");
     SetMenu(hWnd, NULL);
     menuDisplayed = false;
+    ShowWindow(statusWindow, SW_HIDE);
+    statusDisplayed = false;
 }
 
 //-----------------------------------------------------------------------------------------
@@ -752,6 +758,17 @@ static void LoadSnapshot()
 
 static void tapeStatusCallback(int blockIndex, int bytes)
 {
+    if (blockIndex < 1 && m_pTape->playing ==false) return;
+    //TapeBlock* currentTBI = m_pTape->blocks[blockIndex];
+    //PMDawn::Log(PMDawn::LOG_DEBUG, "Tape block       : " + std::to_string(blockIndex));
+    //PMDawn::Log(PMDawn::LOG_DEBUG, "  Block name     : " + currentTBI->getBlockName());
+    //PMDawn::Log(PMDawn::LOG_DEBUG, "  Checksum       : " + std::to_string(currentTBI->getChecksum()));
+    //PMDawn::Log(PMDawn::LOG_DEBUG, "  Data length    : " + std::to_string(currentTBI->getDataLength()));
+    //PMDawn::Log(PMDawn::LOG_DEBUG, "  Data Type      : " + std::to_string(currentTBI->getDataType()));
+    //PMDawn::Log(PMDawn::LOG_DEBUG, "  Autostart line : " + std::to_string(currentTBI->getAutoStartLine()));
+    //PMDawn::Log(PMDawn::LOG_DEBUG, "  Filename       : " + currentTBI->getFilename());
+    //PMDawn::Log(PMDawn::LOG_DEBUG, "  Start address  : " + std::to_string(currentTBI->getStartAddress()));
+    //PMDawn::Log(PMDawn::LOG_DEBUG, "  Flag           : " + std::to_string(currentTBI->getFlag()));
 }
 
 //-----------------------------------------------------------------------------------------
@@ -856,10 +873,14 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
 
 
     mainWindow = CreateWindowEx(WS_EX_APPWINDOW, TEXT("SpectREM"), TEXT("SpectREM"), WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME ^ WS_MAXIMIZEBOX, 0, 0, wr.right - wr.left, wr.bottom - wr.top, 0, 0, inst, 0);
+#ifdef WIN32API_GUI
+    statusWindow = CreateStatusWindow(WS_CHILD | WS_VISIBLE | WS_OVERLAPPEDWINDOW, TEXT("Welcome to SpyWindows"), mainWindow, 9000);
+#endif
     ShowWindow(mainWindow, ncmd);
     UpdateWindow(mainWindow);
     mainMenu = GetMenu(mainWindow);
     menuDisplayed = true;
+    statusDisplayed = true;
 
     QueryPerformanceFrequency(&perf_freq);
     QueryPerformanceCounter(&last_time);
@@ -1062,3 +1083,23 @@ static void DecreaseApplicationVolume()
 }
 
 //-----------------------------------------------------------------------------------------
+
+
+
+//-----------------------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------------------
+
