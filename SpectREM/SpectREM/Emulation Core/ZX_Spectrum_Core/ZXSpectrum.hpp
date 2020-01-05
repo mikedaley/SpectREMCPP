@@ -182,7 +182,6 @@ public:
 public:
     virtual void            initialise(std::string romPath);
     virtual void            resetMachine(bool hard = true);
-    virtual void            resetToSnapLoad() = 0;
     void                    pause();
     void                    resume();
     virtual void            release();
