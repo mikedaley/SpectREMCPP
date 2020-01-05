@@ -26,6 +26,8 @@ static const double fAYVolBase[] = {
     0.1691, 0.2647, 0.3527, 0.4499, 0.5704, 0.6873, 0.8482, 1.0000
 };
 
+// ------------------------------------------------------------------------------------------------------------
+
 void ZXSpectrum::audioBuildAYVolumesTable()
 {
     for (int i = 0; i < 16; i++)
@@ -34,6 +36,8 @@ void ZXSpectrum::audioBuildAYVolumesTable()
     }
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 void ZXSpectrum::audioSetup(double sampleRate, double fps)
 {
     audioBufferSize = static_cast<uint32_t>((sampleRate / fps) * 4.0);
@@ -41,6 +45,8 @@ void ZXSpectrum::audioSetup(double sampleRate, double fps)
     audioBeeperTsStep = machineInfo.tsPerFrame / (sampleRate / fps);
     audioAYTsStep = 32;
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 void ZXSpectrum::audioReset()
 {
@@ -77,6 +83,7 @@ void ZXSpectrum::audioReset()
     }
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Generate audio output from Beeper and AY chip
 
 void ZXSpectrum::audioUpdateWithTs(int32_t tStates)
@@ -147,6 +154,7 @@ void ZXSpectrum::audioUpdateWithTs(int32_t tStates)
     }
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - AY Chip
 
 void ZXSpectrum::audioAYSetRegister(uint8_t reg)
@@ -162,6 +170,8 @@ void ZXSpectrum::audioAYSetRegister(uint8_t reg)
         audioAYCurrentRegister = eAYREGISTER_FLOATING;
     }
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 void ZXSpectrum::audioAYWriteData(uint8_t data)
 {
@@ -231,16 +241,22 @@ void ZXSpectrum::audioAYWriteData(uint8_t data)
     audioAYRegisters[ audioAYCurrentRegister ] = data;
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 void ZXSpectrum::audioDecayAYFloatingRegister()
 {
     // Decay the AY registers result returned for registers above 15
     audioAYRegisters[ eAYREGISTER_FLOATING ] >>= 1;
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 uint8_t ZXSpectrum::audioAYReadData()
 {
     return audioAYRegisters[ audioAYCurrentRegister ];
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 // The possible combinations and resulting shapes are :
 //

@@ -22,7 +22,6 @@ public:
     virtual void            initialise(std::string romPath) override;
     virtual void            release() override;
     virtual void            resetMachine(bool hard = true) override;
-    virtual void            resetToSnapLoad() override;
 
     virtual void            coreMemoryWrite(uint16_t address, uint8_t data) override;
     virtual uint8_t         coreMemoryRead(uint16_t address) override;

@@ -163,7 +163,7 @@ public:
     // Breakpoint information
     struct Breakpoint {
         uint16_t    address = 0;
-        bool        breakPoint = 0;
+        bool        breakPoint = false;
     };
     
     typedef struct
@@ -270,18 +270,12 @@ public:
         
     // Machine hardware
     CZ80Core                z80Core;
-    
-    std::vector<char>            memoryRom;
-    std::vector<char>            memoryRam;
-    
+    std::vector<char>       memoryRom;
+    std::vector<char>       memoryRam;
     uint8_t                 keyboardMap[8]{0};
     static KEYBOARD_ENTRY   keyboardLookup[];
     uint32_t                keyboardCapsLockFrames = 0;
-    
-    int16_t                 *audioBuffer = nullptr;
-  
-public:
-    
+      
     // Emulation
     MachineInfo             machineInfo;
     uint32_t                emuCurrentDisplayTs = 0;
@@ -293,11 +287,11 @@ public:
     bool                    emuDisablePaging = true;
     std::string             emuROMPath;
     std::string             emuBasePath;
-    bool                    emuTapeInstantLoad = 0;
-    bool                    emuUseAYSound = 0;
-    bool                    emuLoadTrapTriggered = 0;
-    bool                    emuSaveTrapTriggered = 0;
-    bool                    emuUseSpecDRUM = 0;
+    bool                    emuTapeInstantLoad = false;
+    bool                    emuUseAYSound = false;
+    bool                    emuLoadTrapTriggered = false;
+    bool                    emuSaveTrapTriggered = false;
+    bool                    emuUseSpecDRUM = false;
 
     // Display
     uint8_t                 *displayBuffer;
@@ -319,6 +313,7 @@ public:
     uint8_t                 ulaPlusCurrentReg = 0;
 
     // Audio
+    int16_t                 *audioBuffer = nullptr;
     int8_t                  audioEarBit = 0;
     int8_t                  audioMicBit = 0;
     uint32_t                audioBufferSize = 0;
@@ -354,7 +349,7 @@ public:
     uint8_t                 audioAYAttackEndVol = 0;
     float                   audioAYTsStep = 0;
     float                   audioAYTs = 0;
-    
+
     //Specdrum Peripheral
     int                     specdrumDACValue = 0;
     
@@ -379,8 +374,9 @@ public:
     Tape                    *tape = nullptr;
     
     // SPI port
-    uint16_t          spiPort = 0xfaf7;
+    uint16_t                spiPort = 0xfaf7;
 
+    // Debugger
     bool                    breakpointHit = false;
 
 };

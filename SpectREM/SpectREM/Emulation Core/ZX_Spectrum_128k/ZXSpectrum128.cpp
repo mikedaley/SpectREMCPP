@@ -11,12 +11,14 @@
 #include <iostream>
 #include <fstream>
 
+// ------------------------------------------------------------------------------------------------------------
 // - Constants
 
 //static const int cROM_SIZE = 16384;
 static const char *cDEFAULT_ROM_0 = "128-0.ROM";
 static const char *cDEFAULT_ROM_1 = "128-1.ROM";
 
+// ------------------------------------------------------------------------------------------------------------
 // - Constructor/Destructor
 
 ZXSpectrum128::ZXSpectrum128(Tape *t) : ZXSpectrum()
@@ -32,12 +34,15 @@ ZXSpectrum128::ZXSpectrum128(Tape *t) : ZXSpectrum()
     }
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 ZXSpectrum128::~ZXSpectrum128()
 {
     std::cout << "ZXSpectrum128::Destructor" << std::endl;
     release();
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Initialise
 
 void ZXSpectrum128::initialise(std::string romPath)
@@ -62,6 +67,7 @@ void ZXSpectrum128::initialise(std::string romPath)
 
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - ULA
 
 uint8_t ZXSpectrum128::coreIORead(uint16_t address)
@@ -127,6 +133,8 @@ uint8_t ZXSpectrum128::coreIORead(uint16_t address)
     return result;
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 void ZXSpectrum128::coreIOWrite(uint16_t address, uint8_t data)
 {
     bool contended = false;
@@ -170,6 +178,8 @@ void ZXSpectrum128::coreIOWrite(uint16_t address, uint8_t data)
         UpdatePort7FFD(data);
     }
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 void ZXSpectrum128::UpdatePort7FFD(uint8_t data)
 {
@@ -219,6 +229,8 @@ void ZXSpectrum128::coreMemoryWrite(uint16_t address, uint8_t data)
     }
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 uint8_t ZXSpectrum128::coreMemoryRead(uint16_t address)
 {
     int page = address / cMEMORY_PAGE_SIZE;
@@ -244,6 +256,7 @@ uint8_t ZXSpectrum128::coreMemoryRead(uint16_t address)
     return 0;
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Debug Memory Read/Write
 
 void ZXSpectrum128::coreDebugWrite(uint16_t address, uint8_t byte, void *)
@@ -268,6 +281,8 @@ void ZXSpectrum128::coreDebugWrite(uint16_t address, uint8_t byte, void *)
         memoryRam[(emuRAMPage * cMEMORY_PAGE_SIZE) + address] = byte;
     }
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 uint8_t ZXSpectrum128::coreDebugRead(uint16_t address, void *)
 {
@@ -294,6 +309,7 @@ uint8_t ZXSpectrum128::coreDebugRead(uint16_t address, void *)
     return 0;
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Memory Contention
 
 void ZXSpectrum128::coreMemoryContention(uint16_t address, uint32_t)
@@ -308,6 +324,7 @@ void ZXSpectrum128::coreMemoryContention(uint16_t address, uint32_t)
     }
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Release/Reset
 
 void ZXSpectrum128::release()
@@ -325,11 +342,7 @@ void ZXSpectrum128::resetMachine(bool hard)
     ZXSpectrum::resetMachine(hard);
 }
 
-void ZXSpectrum128::resetToSnapLoad()
-{
-    // Not implemented yet
-}
-
+// ------------------------------------------------------------------------------------------------------------
 // - Opcode Callback Function
 
 bool ZXSpectrum128::opcodeCallback(uint8_t opcode, uint16_t address, void *param)

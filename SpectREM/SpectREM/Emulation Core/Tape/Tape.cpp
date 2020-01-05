@@ -9,6 +9,7 @@
 #include "Tape.hpp"
 #include "../ZX_Spectrum_Core/ZXSpectrum.hpp"
 
+// ------------------------------------------------------------------------------------------------------------
 // - Constants
 
 //static int const cHEADER_LENGTH = 21;
@@ -49,6 +50,7 @@ static const int cHEADER_FILENAME_LENGTH = 10;
 static const int cHEADER_BLOCK_LENGTH = 19;
 
 
+// ------------------------------------------------------------------------------------------------------------
 // - TapeBlock
 
 
@@ -57,35 +59,49 @@ TapeBlock::~TapeBlock()
    delete blockData;
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 uint8_t TapeBlock::getFlag()
 {
    return blockData[ cHEADER_FLAG_OFFSET ];
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 uint8_t TapeBlock::getDataType()
 {
    return blockData[ cHEADER_DATA_TYPE_OFFSET ];
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 uint16_t TapeBlock::getDataLength()
 {
    return blockLength;
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 uint8_t TapeBlock::getChecksum()
 {
    return blockData[ cHEADER_CHECKSUM_OFFSET ];
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 uint16_t TapeBlock::getAutoStartLine()
 {
    return 0;
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 uint16_t TapeBlock::getStartAddress()
 {
    return 0;
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 std::string TapeBlock::getFilename()
 {
@@ -93,9 +109,8 @@ std::string TapeBlock::getFilename()
    return filename;
 }
 
-
+// ------------------------------------------------------------------------------------------------------------
 // - Program Header
-
 
 std::string ProgramHeader::getBlockName()
 {
@@ -103,71 +118,81 @@ std::string ProgramHeader::getBlockName()
    return blockName;
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 uint16_t ProgramHeader::getAutoStartLine()
 {
    return (reinterpret_cast<uint16_t*>(&blockData[ cPROGRAM_HEADER_AUTOSTART_LINE_OFFSET ])[0]);
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 uint16_t ProgramHeader::getProgramLength()
 {
    return (reinterpret_cast<uint16_t*>(&blockData[ cPROGRAM_HEADER_PROGRAM_LENGTH_OFFSET ])[0]);
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 uint8_t ProgramHeader::getChecksum()
 {
    return blockData[ cPROGRAM_HEADER_CHECKSUM_OFFSET ];
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 uint16_t ProgramHeader::getDataLength()
 {
    return cHEADER_BLOCK_LENGTH;
 }
 
-
+// ------------------------------------------------------------------------------------------------------------
 // - Numeric Header
-
 
 std::string NumericDataHeader::getBlockName()
 {
    return "Numeric Data Header";
 }
 
-
+// ------------------------------------------------------------------------------------------------------------
 // - Alphanumeric Header
-
 
 std::string AlphanumericDataHeader::getBlockName()
 {
    return "Alphanumeric Data Header";
 }
 
-
+// ------------------------------------------------------------------------------------------------------------
 // - Byter Header
-
 
 std::string ByteHeader::getBlockName()
 {
    return "Byte Header";
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 uint16_t ByteHeader::getStartAddress()
 {
    return (reinterpret_cast<uint16_t*>(&blockData[ cBYTE_HEADER_START_ADDRESS_OFFSET ])[0]);
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 uint8_t ByteHeader::getChecksum()
 {
    return blockData[ blockLength - 1 ];
 }
 
-
+// ------------------------------------------------------------------------------------------------------------
 // - Data Block
-
 
 std::string DataBlock::getBlockName()
 {
    return "Data Block";
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 uint8_t *DataBlock::getDataBlock()
 {
@@ -176,19 +201,22 @@ uint8_t *DataBlock::getDataBlock()
    return dataBlock;
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 uint8_t DataBlock::getDataType()
 {
    return blockData[ cHEADER_FLAG_OFFSET ];
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 uint8_t DataBlock::getChecksum()
 {
    return blockData[ blockLength - 1 ];
 }
 
-
+// ------------------------------------------------------------------------------------------------------------
 // - TAP Processing
-
 
 Tape::Tape(TapeStatusCallback callback)
 {
@@ -202,10 +230,14 @@ Tape::Tape(TapeStatusCallback callback)
    }
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 Tape::~Tape()
 {
     // CONSTRUCTOR !
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 // Clear the callback, usually done before deleting this, ready for creating a new one.
 void Tape::clearStatusCallback(void)
@@ -215,6 +247,8 @@ void Tape::clearStatusCallback(void)
         updateStatusCallback = nullptr;
     }
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 void Tape::resetAndClearBlocks(bool clearBlocks)
 {
@@ -241,6 +275,8 @@ void Tape::resetAndClearBlocks(bool clearBlocks)
    }
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 Tape::TapResponse Tape::loadWithPath(const std::string path)
 {
     bool success = false;
@@ -266,6 +302,8 @@ Tape::TapResponse Tape::loadWithPath(const std::string path)
     loaded = success;
     return Tape::TapResponse{true, "Loaded successfully"};
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 void Tape::updateWithTs(uint32_t tStates)
 {
@@ -347,6 +385,8 @@ void Tape::updateWithTs(uint32_t tStates)
 
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 void Tape::generateHeaderPilotWithTs(uint32_t tStates)
 {
    if (pilotPulses < cPILOT_HEADER_PULSES)
@@ -373,6 +413,7 @@ void Tape::generateHeaderPilotWithTs(uint32_t tStates)
    pilotPulseTStates += tStates;
 }
 
+// ------------------------------------------------------------------------------------------------------------
 
 void Tape::generateDataPilotWithTs(uint32_t tStates)
 {
@@ -400,6 +441,8 @@ void Tape::generateDataPilotWithTs(uint32_t tStates)
    pilotPulseTStates += tStates;
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 void Tape::generateSync1WithTs(uint32_t tStates)
 {
    if (flipTapeBit)
@@ -419,6 +462,8 @@ void Tape::generateSync1WithTs(uint32_t tStates)
        syncPulseTStates += tStates;
    }
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 void Tape::generateSync2WithTs(uint32_t tStates)
 {
@@ -440,6 +485,8 @@ void Tape::generateSync2WithTs(uint32_t tStates)
        syncPulseTStates += tStates;
    }
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 void Tape::tapeGenerateDataStreamWithTs(uint32_t)
 {
@@ -473,6 +520,8 @@ void Tape::tapeGenerateDataStreamWithTs(uint32_t)
    dataPulseCount = 0;
    processingState = eDATA_BIT;
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 void Tape::generateHeaderDataStreamWithTs(uint32_t)
 {
@@ -508,6 +557,8 @@ void Tape::generateHeaderDataStreamWithTs(uint32_t)
    processingState = eDATA_BIT;
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 void Tape::generateDataBitWithTs(uint32_t tStates)
 {
    if (flipTapeBit)
@@ -535,6 +586,8 @@ void Tape::generateDataBitWithTs(uint32_t tStates)
    }
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 void Tape::tapeBlockPauseWithTs(uint32_t tStates)
 {
    blockPauseTStates += tStates;
@@ -552,6 +605,7 @@ void Tape::tapeBlockPauseWithTs(uint32_t tStates)
    }
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Process Tape Data
 
 bool Tape::processData(uint8_t *dataBytes, uint32_t size)
@@ -617,9 +671,8 @@ bool Tape::processData(uint8_t *dataBytes, uint32_t size)
    return true;
 }
 
-
+// ------------------------------------------------------------------------------------------------------------
 // - Instant Tape Load
-
 
 void Tape::loadBlock(void *m)
 {
@@ -686,6 +739,7 @@ void Tape::loadBlock(void *m)
    }
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - ROM Save
 
 void Tape::saveBlock(void *m)
@@ -730,9 +784,8 @@ void Tape::saveBlock(void *m)
    newBlock = true;
 }
 
-
+// ------------------------------------------------------------------------------------------------------------
 // - Tape controls
-
 
 void Tape::startPlaying()
 {
@@ -745,6 +798,8 @@ void Tape::startPlaying()
        }
    }
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 void Tape::stopPlaying()
 {
@@ -759,6 +814,8 @@ void Tape::stopPlaying()
    }
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 void Tape::rewindTape()
 {
    if (loaded)
@@ -770,6 +827,8 @@ void Tape::rewindTape()
        updateStatusCallback(static_cast<int>(currentBlockIndex), 0);
    }
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 void Tape::rewindBlock()
 {
@@ -785,11 +844,15 @@ void Tape::rewindBlock()
    }
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 void Tape::eject()
 {
    resetAndClearBlocks(true);
    loaded = false;
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 std::vector<uint8_t> Tape::getTapeData()
 {
@@ -808,19 +871,22 @@ std::vector<uint8_t> Tape::getTapeData()
    return tapeData;
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 size_t Tape::numberOfTapeBlocks()
 {
    return blocks.size();
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 void  Tape::setSelectedBlock(uint32_t blockIndex)
 {
    currentBlockIndex = blockIndex;
 }
 
-
+// ------------------------------------------------------------------------------------------------------------
 // - Tape Callback
-
 
 void Tape::updateStatus()
 {

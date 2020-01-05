@@ -8,6 +8,7 @@
 
 #include "Debug.hpp"
 
+// ------------------------------------------------------------------------------------------------------------
 // - Constructor/Destructor
 
 Debug::Debug()
@@ -48,11 +49,14 @@ Debug::Debug()
     };
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 Debug::~Debug()
 {
     std::cout << "Debugger::Destructor" << std::endl;
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Register machine
 
 void Debug::attachMachine(ZXSpectrum * new_machine)
@@ -60,6 +64,7 @@ void Debug::attachMachine(ZXSpectrum * new_machine)
     machine = new_machine;
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Breakpoints
 
 bool Debug::checkForBreakpoint(uint16_t address, uint8_t bpType)
@@ -75,6 +80,8 @@ bool Debug::checkForBreakpoint(uint16_t address, uint8_t bpType)
 
     return false;
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 void Debug::addBreakpoint(uint16_t address, uint8_t type)
 {
@@ -93,6 +100,8 @@ void Debug::addBreakpoint(uint16_t address, uint8_t type)
     m_breakpoints.push_back(bp);
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 void Debug::removeBreakpoint(uint16_t address, uint8_t type)
 {
     for (std::vector<long>::size_type i = 0; i != m_breakpoints.size(); i++)
@@ -109,10 +118,14 @@ void Debug::removeBreakpoint(uint16_t address, uint8_t type)
     }
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 size_t Debug::numberOfBreakpoints()
 {
     return m_breakpoints.size();
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 Debug::Breakpoint Debug::breakpoint(uint32_t index)
 {
@@ -124,6 +137,8 @@ Debug::Breakpoint Debug::breakpoint(uint32_t index)
     bp.type = 0xff;
     return bp;
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 uint8_t Debug::breakpointAtAddress(uint16_t address)
 {
@@ -138,6 +153,7 @@ uint8_t Debug::breakpointAtAddress(uint16_t address)
     return 0;
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Disassemble
 
 void Debug::disassemble(uint16_t fromAddress, uint16_t bytes, bool hexFormat)
@@ -179,6 +195,8 @@ void Debug::disassemble(uint16_t fromAddress, uint16_t bytes, bool hexFormat)
     }
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 Debug::DisassembledOpcode Debug::disassembly(uint32_t index)
 {
     if (index < m_disassembly.size())
@@ -190,17 +208,22 @@ Debug::DisassembledOpcode Debug::disassembly(uint32_t index)
     return dop;
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 size_t Debug::numberOfMnemonics()
 {
     return m_disassembly.size();
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Stack
 
 size_t Debug::numberOfStackEntries()
 {
     return m_stack.size();
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 void Debug::stackTableUpdate()
 {
@@ -218,11 +241,14 @@ void Debug::stackTableUpdate()
     }
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 Debug::Stack Debug::stackAddress(uint32_t index)
 {
     return m_stack[ index ];
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Set Registers
 
 bool Debug::setRegister(std::string reg, uint8_t value)
@@ -250,6 +276,7 @@ bool Debug::setRegister(std::string reg, uint8_t value)
     return false;
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Fill Memory
 
 void Debug::fillMemory(uint16_t fromAddress, uint16_t toAddress, uint8_t value)

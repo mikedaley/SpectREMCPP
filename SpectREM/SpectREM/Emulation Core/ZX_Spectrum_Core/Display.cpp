@@ -17,6 +17,7 @@ enum
     eDisplayRetrace = 3
 };
 
+// ------------------------------------------------------------------------------------------------------------
 // - Setup
 
 void ZXSpectrum::displaySetup()
@@ -24,6 +25,7 @@ void ZXSpectrum::displaySetup()
     displayBuffer = new uint8_t[ screenBufferSize ]();
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Generate Screen
 
 void ZXSpectrum::displayUpdateWithTs(int32_t tStates)
@@ -79,6 +81,7 @@ void ZXSpectrum::displayUpdateWithTs(int32_t tStates)
     }
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Reset Display
 
 void ZXSpectrum::displayFrameReset()
@@ -88,6 +91,8 @@ void ZXSpectrum::displayFrameReset()
     audioBufferIndex = 0;
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 void ZXSpectrum::displayClear()
 {
     if (displayBuffer)
@@ -96,6 +101,7 @@ void ZXSpectrum::displayClear()
     }
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Build Display Tables
 
 void ZXSpectrum::displayBuildLineAddressTable()
@@ -111,6 +117,8 @@ void ZXSpectrum::displayBuildLineAddressTable()
         }
     }
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 void ZXSpectrum::displayBuildTsTable()
 {
@@ -181,6 +189,7 @@ void ZXSpectrum::displayBuildTsTable()
     }
 }
 
+// ------------------------------------------------------------------------------------------------------------
 /**
  Build a table that contains a colour lookup value for every combination of Bright, Paper, Ink and Pixel. This table is then
  used to populate an 8bit display buffer with an index to the colour to be used for each pixel rather than the colour data itself. The actual

@@ -11,6 +11,7 @@
 #include <iostream>
 #include <fstream>
 
+// ------------------------------------------------------------------------------------------------------------
 // - Constants
 
 static const int cROM_SIZE = 16384;
@@ -25,6 +26,7 @@ static uint8_t smartCardPortFAF3 = 0;
 static uint8_t smartCardPortFAFB = 0;
 static uint8_t smartCardSRAM[8 * 64 * 1024];		// 8 * 8k banks, mapped @ $2000-$3FFF
 
+// ------------------------------------------------------------------------------------------------------------
 // - Constructor/Destructor
 
 ZXSpectrum48::ZXSpectrum48(Tape *t) : ZXSpectrum()
@@ -40,12 +42,15 @@ ZXSpectrum48::ZXSpectrum48(Tape *t) : ZXSpectrum()
     }
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 ZXSpectrum48::~ZXSpectrum48()
 {
     std::cout << "ZXSpectrum48::Destructor" << std::endl;
     release();
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Initialise
 
 void ZXSpectrum48::initialise(std::string romPath)
@@ -62,6 +67,7 @@ void ZXSpectrum48::initialise(std::string romPath)
     loadROM( cDEFAULT_ROM, 0 );
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - ULA
 
 uint8_t ZXSpectrum48::coreIORead(uint16_t address)
@@ -130,6 +136,8 @@ uint8_t ZXSpectrum48::coreIORead(uint16_t address)
     return result;
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 void ZXSpectrum48::coreIOWrite(uint16_t address, uint8_t data)
 {
     bool contended = false;
@@ -191,6 +199,7 @@ void ZXSpectrum48::coreIOWrite(uint16_t address, uint8_t data)
 	}
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Memory Read/Write
 
 void ZXSpectrum48::coreMemoryWrite(uint16_t address, uint8_t data)
@@ -221,6 +230,8 @@ void ZXSpectrum48::coreMemoryWrite(uint16_t address, uint8_t data)
 
     memoryRam[ address ] = static_cast<char>(data);
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 uint8_t ZXSpectrum48::coreMemoryRead(uint16_t address)
 {
@@ -262,6 +273,7 @@ uint8_t ZXSpectrum48::coreMemoryRead(uint16_t address)
     return static_cast<uint8_t>(memoryRam[ address ]);
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Debug Memory Read/Write
 
 uint8_t ZXSpectrum48::coreDebugRead(uint16_t address, void *)
@@ -273,6 +285,8 @@ uint8_t ZXSpectrum48::coreDebugRead(uint16_t address, void *)
     
     return static_cast<uint8_t>(memoryRam[address]);
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 void ZXSpectrum48::coreDebugWrite(uint16_t address, uint8_t byte, void *)
 {
@@ -286,6 +300,7 @@ void ZXSpectrum48::coreDebugWrite(uint16_t address, uint8_t byte, void *)
     }
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Memory Contention
 
 void ZXSpectrum48::coreMemoryContention(uint16_t address, uint32_t)
@@ -296,12 +311,15 @@ void ZXSpectrum48::coreMemoryContention(uint16_t address, uint32_t)
     }
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Release/Reset
 
 void ZXSpectrum48::release()
 {
     ZXSpectrum::release();
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 void ZXSpectrum48::resetMachine(bool hard)
 {
@@ -318,12 +336,7 @@ void ZXSpectrum48::resetMachine(bool hard)
     ZXSpectrum::resetMachine(hard);
 }
 
-void ZXSpectrum48::resetToSnapLoad()
-{
-    loadROM(cSMART_ROM, 0 );
-    resetMachine(false);
-}
-
+// ------------------------------------------------------------------------------------------------------------
 // - Opcode Callback Function
 
 bool ZXSpectrum48::opcodeCallback(uint8_t opcode, uint16_t address, void *param)

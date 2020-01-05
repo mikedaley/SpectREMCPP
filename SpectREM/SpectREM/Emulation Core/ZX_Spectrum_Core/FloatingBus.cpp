@@ -8,6 +8,8 @@
 
 #include "ZXSpectrum.hpp"
 
+// ------------------------------------------------------------------------------------------------------------
+
 /**
  When the Z80 reads from an unattached port, such as 0xFF, it actually reads the data currently on the
  Spectrums ULA data bus. This may happen to be a byte being transferred from screen memory. If the ULA
@@ -50,6 +52,7 @@ uint8_t ZXSpectrum::ULAFloatingBus()
     return 0xff;
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Build Float bus state table
 
 void ZXSpectrum::ULABuildFloatingBusTable()
