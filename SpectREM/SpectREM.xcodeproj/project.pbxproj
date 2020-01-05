@@ -18,6 +18,7 @@
 		276ADE3421021B5100EC7DC9 /* MetalView.m in Sources */ = {isa = PBXBuildFile; fileRef = 276ADE3321021B5100EC7DC9 /* MetalView.m */; };
 		276E3F9C1F97A06B00020BB3 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17B5DB9C1F5B1CCE003E7EF3 /* AVFoundation.framework */; };
 		276E3F9E1F97AAE800020BB3 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 276E3F9D1F97AAD600020BB3 /* CoreMedia.framework */; };
+		27A8B22A23C21791007C7242 /* ORSSerial.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2934D9F423B6887100A9BAA6 /* ORSSerial.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		27BAE9A520F4CB68007A8CFB /* Commands.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 27BAE9A420F4CB68007A8CFB /* Commands.rtf */; };
 		27BAE9A820F4CE9C007A8CFB /* InstructionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BAE9A720F4CE9C007A8CFB /* InstructionViewController.m */; };
 		27BE4031239E60A7006204BA /* SmartLINK.mm in Sources */ = {isa = PBXBuildFile; fileRef = 27BE402F239E60A7006204BA /* SmartLINK.mm */; };
@@ -124,6 +125,20 @@
 			remoteInfo = ORSSerial;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		27A8B22923C21787007C7242 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				27A8B22A23C21791007C7242 /* ORSSerial.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		17B27F021F6877C800B811FC /* AudioQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioQueue.cpp; path = SpectREM/OSX/AudioQueue.cpp; sourceTree = SOURCE_ROOT; };
@@ -435,8 +450,8 @@
 		2963B3DB23B7977D00CAE4CD /* ZX_Spectrum_48k */ = {
 			isa = PBXGroup;
 			children = (
-				2963B3DC23B7977D00CAE4CD /* ZXSpectrum48.cpp */,
 				2963B3DD23B7977D00CAE4CD /* ZXSpectrum48.hpp */,
+				2963B3DC23B7977D00CAE4CD /* ZXSpectrum48.cpp */,
 			);
 			path = ZX_Spectrum_48k;
 			sourceTree = "<group>";
@@ -673,6 +688,7 @@
 				ED913F911F30759300316E1A /* Sources */,
 				ED913F921F30759300316E1A /* Frameworks */,
 				ED913F931F30759300316E1A /* Resources */,
+				27A8B22923C21787007C7242 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);

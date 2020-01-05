@@ -189,7 +189,7 @@ public:
     bool                    playing = false;
     uint32_t                currentBlockIndex = 0;
     bool                    newBlock = false;
-    std::vector<TapeBlock *>     blocks;
+    std::vector<TapeBlock *> blocks;
     int                     inputBit = 0;
 
 private:
@@ -198,7 +198,7 @@ private:
     uint32_t                pilotPulses = 0;                // How many pilot pulses have been generated
     uint32_t                syncPulseTStates = 0;           // Sync pulse tStates
     uint32_t                dataPulseTStates = 0;           // How many Ts have passed since the start of the data pulse
-    bool                    flipTapeBit = 0;                // Should the tape bit be flipped
+    bool                    flipTapeBit = false;            // Should the tape bit be flipped
     uint32_t                processingState = 0;            // Current processing state e.g. generating pilot, streaming data
     uint32_t                nextProcessingState = 0;        // Next processing state to be used
     uint32_t                currentDataBit = 0;             // Which bit of the current byte in the data stream is being processed

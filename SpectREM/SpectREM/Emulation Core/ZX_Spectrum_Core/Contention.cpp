@@ -10,6 +10,7 @@
 
 const uint32_t ZXSpectrum::ULAConentionValues[] = { 6, 5, 4, 3, 2, 1, 0, 0 };
 
+// ------------------------------------------------------------------------------------------------------------
 // - IO Contention
 
 /**
@@ -18,12 +19,12 @@ const uint32_t ZXSpectrum::ULAConentionValues[] = { 6, 5, 4, 3, 2, 1, 0, 0 };
  C:x means that contention should be calculated based on the current tState value and then x tStates are to be
  added to the current tState count
  
-  in 40 - 7F?| Low bit | Contention pattern
+ in 40 - 7F?| Low bit | Contention pattern
  ------------+---------+-------------------
- No    |  Reset  | N:1, C:3
- No    |   Set   | N:4
- Yes   |  Reset  | C:1, C:3
- Yes   |   Set   | C:1, C:1, C:1, C:1
+ No            |  Reset   | N:1, C:3
+ No            |   Set      | N:4
+ Yes           |  Reset   | C:1, C:3
+ Yes           |   Set      | C:1, C:1, C:1, C:1
  **/
 void ZXSpectrum::ULAApplyIOContention(uint16_t address, bool contended)
 {
@@ -61,6 +62,7 @@ void ZXSpectrum::ULAApplyIOContention(uint16_t address, bool contended)
     }
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Build Contention Table
 
 void ZXSpectrum::ULABuildContentionTable()

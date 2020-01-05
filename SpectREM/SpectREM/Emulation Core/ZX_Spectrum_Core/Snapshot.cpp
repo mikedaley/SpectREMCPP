@@ -28,7 +28,8 @@ const uint8_t               cZ80_V3_MACHINE_TYPE_128_IF1 = 5;
 const uint8_t               cz80_V3_MACHINE_TYPE_128_MGT = 6;
 const uint8_t               cZ80_V3_MACHINE_TYPE_128_2 = 12;
 
-// - SNA
+// ------------------------------------------------------------------------------------------------------------
+// - SNA functions
 
 ZXSpectrum::Snap ZXSpectrum::snapshotCreateSNA()
 {
@@ -98,6 +99,29 @@ ZXSpectrum::Snap ZXSpectrum::snapshotCreateSNA()
     return snap;
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
+ZXSpectrum::Response ZXSpectrum::snapshotSNALoadWithPath(const std::string path)
+{
+    
+    std::ifstream stream(path, std::ios::binary | std::ios::ate);
+    if (!stream.ios_base::good()) {
+        char* errorstring = strerror(errno);
+        Response response;
+        return Response{false, errorstring};
+    }
+    
+    std::vector<char> pFileBytes(stream.tellg());
+    stream.seekg(0, std::ios::beg);
+    stream.read(pFileBytes.data(), pFileBytes.size());
+
+    std::cout << "Loading SNA snapshot: " << std::endl;
+    
+    return snapshotSNALoadWithBuffer(pFileBytes.data(), pFileBytes.size());
+}
+
+// ------------------------------------------------------------------------------------------------------------
+
 ZXSpectrum::Response ZXSpectrum::snapshotSNALoadWithBuffer(const char *buffer, size_t size)
 {
     pause();
@@ -155,44 +179,36 @@ ZXSpectrum::Response ZXSpectrum::snapshotSNALoadWithBuffer(const char *buffer, s
     return Response{true, "Loaded successfully"};
 }
 
-ZXSpectrum::Response ZXSpectrum::snapshotSNALoadWithPath(const std::string path)
-{
-    
-    std::ifstream stream(path, std::ios::binary | std::ios::ate);
-    if (!stream.ios_base::good()) {
-        Response response;
-        return Response{false, "Path/file not found"};
-    }
-    
-    std::vector<char> pFileBytes(stream.tellg());
-    stream.seekg(0, std::ios::beg);
-    stream.read(pFileBytes.data(), pFileBytes.size());
+// ------------------------------------------------------------------------------------------------------------
+// - Z80 Snapshot functions
 
-    std::cout << "Loading SNA snapshot: " << std::endl;
-    
-    return snapshotSNALoadWithBuffer(pFileBytes.data(), pFileBytes.size());
-}
-
-// - Z80
-
+/*
+ Returning an empty Snap struct means snapshot creation failed
+ */
 ZXSpectrum::Snap ZXSpectrum::snapshotCreateZ80()
 {
-    pause();
-
     int snapshotSize = 0;
-    if (machineInfo.machineType == eZXSpectrum48)
-    {
-        snapshotSize = (48 * 1024) + cZ80_V3_HEADER_SIZE + (cZ80_V3_PAGE_HEADER_SIZE * 3);
+    switch (machineInfo.machineType) {
+        case eZXSpectrum48:
+            snapshotSize = (48 * 1024) + cZ80_V3_HEADER_SIZE + (cZ80_V3_PAGE_HEADER_SIZE * 3);
+            break;
+            
+        case eZXSpectrum128:
+        case eZXSpectrum128_2:
+            snapshotSize = (128 * 1024) + cZ80_V3_HEADER_SIZE + (cZ80_V3_PAGE_HEADER_SIZE * 8);
+            break;
+            
+        default:
+            std::cout << "Unknown machine type" << std::endl;
+            Snap emptySnap;
+            emptySnap.length = 0;
+            emptySnap.data = nullptr;
+            return emptySnap;
+            break;
     }
-    else if (machineInfo.machineType == eZXSpectrum128 || machineInfo.machineType == eZXSpectrum128_2)
-    {
-        snapshotSize = (128 * 1024) + cZ80_V3_HEADER_SIZE + (cZ80_V3_PAGE_HEADER_SIZE * 8);
-    }
-    else
-    {
-        std::cout << "Unknown machine type" << std::endl;
-        exit(1);
-    }
+
+    // We don't want the emulator running while we create a snapshot
+    pause();
 
     // Structure to be returned containing the length and size of the snapshot
     Snap snapData;
@@ -344,6 +360,26 @@ ZXSpectrum::Snap ZXSpectrum::snapshotCreateZ80()
     return snapData;
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
+ZXSpectrum::Response ZXSpectrum::snapshotZ80LoadWithPath(const std::string path)
+{
+    std::ifstream stream(path, std::ios::binary | std::ios::ate);
+    if (!stream.ios_base::good()) {
+        char* errorstring = strerror(errno);
+        Response response;
+        return Response{false, errorstring};
+    }
+    
+    std::vector<char> pFileBytes(stream.tellg());
+    stream.seekg(0, std::ios::beg);
+    stream.read(pFileBytes.data(), pFileBytes.size());
+    
+    return snapshotZ80LoadWithBuffer(pFileBytes.data(), pFileBytes.size());
+}
+
+// ------------------------------------------------------------------------------------------------------------
+
 ZXSpectrum::Response ZXSpectrum::snapshotZ80LoadWithBuffer(const char *buffer, size_t size)
 {
     pause();
@@ -444,8 +480,8 @@ ZXSpectrum::Response ZXSpectrum::snapshotZ80LoadWithBuffer(const char *buffer, s
             uint32_t offset = 32 + additionHeaderBlockLength;
 
             if ((version == 2 && (hardwareType == cZ80_V2_MACHINE_TYPE_128 || hardwareType == cZ80_V2_MACHINE_TYPE_128_IF1)) ||
-                (version == 3 && (hardwareType == cZ80_V3_MACHINE_TYPE_128 || hardwareType == cZ80_V3_MACHINE_TYPE_128_IF1 || hardwareType == cz80_V3_MACHINE_TYPE_128_MGT ||
-                    hardwareType == cZ80_V3_MACHINE_TYPE_128_2)))
+                (version == 3 && (hardwareType == cZ80_V3_MACHINE_TYPE_128 || hardwareType == cZ80_V3_MACHINE_TYPE_128_IF1 ||
+                                  hardwareType == cz80_V3_MACHINE_TYPE_128_MGT ||hardwareType == cZ80_V3_MACHINE_TYPE_128_2)))
             {
                 // Decode byte 35 so that port 0x7ffd can be set on the 128k
                 uint8_t data = reinterpret_cast<uint8_t *>(&pFileBytes[35])[0];
@@ -475,9 +511,10 @@ ZXSpectrum::Response ZXSpectrum::snapshotZ80LoadWithBuffer(const char *buffer, s
                 uint32_t pageId = buffer[offset + 2];
                 std::cout << "Page:" << pageId << " Compressed Length:" << compressedLength << " IsCompressed:" << isCompressed << std::endl;
 
-                if (version == 1 || ((version == 2 || version == 3) && (hardwareType == cZ80_V2_MACHINE_TYPE_48 || hardwareType == cZ80_V3_MACHINE_TYPE_48 ||
-                    hardwareType == cZ80_V2_MACHINE_TYPE_48_IF1 || hardwareType == cZ80_V3_MACHINE_TYPE_48_IF1)
-                    ))
+                if (version == 1 || ((version == 2 || version == 3) && (hardwareType == cZ80_V2_MACHINE_TYPE_48 ||
+                                                                        hardwareType == cZ80_V3_MACHINE_TYPE_48 ||
+                                                                        hardwareType == cZ80_V2_MACHINE_TYPE_48_IF1 ||
+                                                                        hardwareType == cZ80_V3_MACHINE_TYPE_48_IF1)))
                 {
                     // 48k
                     switch (pageId) {
@@ -512,20 +549,7 @@ ZXSpectrum::Response ZXSpectrum::snapshotZ80LoadWithBuffer(const char *buffer, s
     return Response{true, "Loaded successfully"};
 }
 
-ZXSpectrum::Response ZXSpectrum::snapshotZ80LoadWithPath(const std::string path)
-{
-    std::ifstream stream(path, std::ios::binary | std::ios::ate);
-    if (!stream.ios_base::good()) {
-        Response response;
-        return Response{false, "Path/file not found"};
-    }
-    
-    std::vector<char> pFileBytes(stream.tellg());
-    stream.seekg(0, std::ios::beg);
-    stream.read(pFileBytes.data(), pFileBytes.size());
-    
-    return snapshotZ80LoadWithBuffer(pFileBytes.data(), pFileBytes.size());
-}
+// ------------------------------------------------------------------------------------------------------------
 
 void ZXSpectrum::snapshotExtractMemoryBlock(const char *buffer, size_t bufferSize, uint32_t memAddr, uint32_t fileOffset, bool isCompressed, uint32_t unpackedLength)
 {
@@ -565,6 +589,7 @@ void ZXSpectrum::snapshotExtractMemoryBlock(const char *buffer, size_t bufferSiz
     }
 }
 
+// ------------------------------------------------------------------------------------------------------------
 
 std::string ZXSpectrum::snapshotHardwareTypeForVersion(uint32_t version, uint32_t hardwareType)
 {
@@ -622,30 +647,23 @@ std::string ZXSpectrum::snapshotHardwareTypeForVersion(uint32_t version, uint32_
     return hardware;
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 int32_t ZXSpectrum::snapshotMachineInSnapshotWithPath(const char *path)
 {
-    FILE *fileHandle;
-    int machineType = -1;
-
-    fileHandle = fopen(path, "rb");
-
-    if (!fileHandle)
-    {
-        std::cout << "ERROR LOADING SNAPSHOT: " << path << std::endl;
-        fclose(fileHandle);
+    std::ifstream stream(path, std::ios::binary | std::ios::ate);
+    if (!stream.ios_base::good()) {
         return -1;
     }
+    
+    std::vector<char> pFileBytes(stream.tellg());
+    stream.seekg(0, std::ios::beg);
+    stream.read(pFileBytes.data(), pFileBytes.size());
 
-    fseek(fileHandle, 0, SEEK_END);
-    long size = ftell(fileHandle);
-    fseek(fileHandle, 0, SEEK_SET);
+    int32_t machineType = -1;
 
-    uint8_t *pFileBytes = new uint8_t[size];
-
-    if (pFileBytes != nullptr)
+    if (pFileBytes.size() > 0)
     {
-        fread(pFileBytes, 1, size, fileHandle);
-
         // Decode the header
         uint16_t headerLength = ((uint16_t *)&pFileBytes[30])[0];
         uint32_t version;
@@ -668,51 +686,52 @@ int32_t ZXSpectrum::snapshotMachineInSnapshotWithPath(const char *path)
             break;
         }
 
-        if (pc == 0)
-        {
+        if (pc == 0) {
             version = 2;
         }
 
-        switch (version)
-        {
+        switch (version) {
         case 1:
             machineType = eZXSpectrum48;
             break;
 
         case 2:
-            hardwareType = ((uint8_t *)&pFileBytes[34])[0];
-            if (hardwareType == 0 || hardwareType == 1)
-            {
-                machineType = eZXSpectrum48;
-            }
-            else if (hardwareType == 3 || hardwareType == 4)
-            {
-                machineType = eZXSpectrum128;
-            }
-            else
-            {
-                machineType = eZXSpectrum48;
-            }
+                hardwareType = ((uint8_t *)&pFileBytes[34])[0];
+                switch (hardwareType) {
+                    case 0:
+                    case 1:
+                        machineType = eZXSpectrum48;
+                        break;
+                    
+                    case 3:
+                    case 4:
+                        machineType = eZXSpectrum128;
+                        
+                    default:
+                        machineType = eZXSpectrum48;
+                        break;
+                }
             break;
 
         case 3:
-            hardwareType = ((uint8_t *)&pFileBytes[34])[0];
-            if (hardwareType == cZ80_V3_MACHINE_TYPE_48 || hardwareType == cZ80_V3_MACHINE_TYPE_48_IF1 || hardwareType == cZ80_V3_MACHINE_TYPE_48_MGT)
-            {
-                machineType = eZXSpectrum48;
-            }
-            else if (hardwareType == cZ80_V3_MACHINE_TYPE_128 || hardwareType == cZ80_V3_MACHINE_TYPE_128_IF1 || hardwareType == cz80_V3_MACHINE_TYPE_128_MGT)
-            {
-                machineType = eZXSpectrum128;
-            }
-            else if (hardwareType == cZ80_V3_MACHINE_TYPE_128_2)
-            {
-                machineType = eZXSpectrum128_2;
-            }
+                hardwareType = ((uint8_t *)&pFileBytes[34])[0];
+                switch (hardwareType) {
+                    case cZ80_V3_MACHINE_TYPE_48:
+                    case cZ80_V3_MACHINE_TYPE_48_IF1:
+                    case cZ80_V3_MACHINE_TYPE_48_MGT:
+                        machineType = eZXSpectrum48;
+                        break;
+                        
+                    case cZ80_V3_MACHINE_TYPE_128:
+                    case cZ80_V3_MACHINE_TYPE_128_IF1:
+                    case cz80_V3_MACHINE_TYPE_128_MGT:
+                    case cZ80_V3_MACHINE_TYPE_128_2:
+                        machineType = eZXSpectrum128;
+                    default:
+                        break;
+                }
             break;
         }
-
-        delete[]pFileBytes;
     }
 
     return machineType;

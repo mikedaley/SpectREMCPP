@@ -8,6 +8,7 @@
 
 #include "ZXSpectrum.hpp"
 
+// ------------------------------------------------------------------------------------------------------------
 // - Keyboard
 
 ZXSpectrum::KEYBOARD_ENTRY ZXSpectrum::keyboardLookup[] =
@@ -80,6 +81,8 @@ ZXSpectrum::KEYBOARD_ENTRY ZXSpectrum::keyboardLookup[] =
     { ZXSpectrumKey::Key_CapsLock,      0, 0, 3, 1 },       // Caps lock
 };
 
+// ------------------------------------------------------------------------------------------------------------
+
 void ZXSpectrum::keyboardKeyDown(ZXSpectrumKey key)
 {
     for (int i = 0; i < static_cast<int>(sizeof(keyboardLookup) / sizeof(keyboardLookup[0])); i++)
@@ -104,6 +107,8 @@ void ZXSpectrum::keyboardKeyDown(ZXSpectrumKey key)
     }
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 void ZXSpectrum::keyboardKeyUp(ZXSpectrumKey key)
 {
     if (key != ZXSpectrumKey::Key_CapsLock)
@@ -127,6 +132,8 @@ void ZXSpectrum::keyboardKeyUp(ZXSpectrumKey key)
     }
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 void ZXSpectrum::keyboardCheckCapsLockStatus()
 {
     // The Caps Lock combination needs to be set for minimum 2 frames for it to be registered by the ROM.
@@ -143,6 +150,8 @@ void ZXSpectrum::keyboardCheckCapsLockStatus()
         keyboardCapsLockFrames ++;
     }
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 void ZXSpectrum::keyboardMapReset()
 {

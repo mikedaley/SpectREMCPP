@@ -12,8 +12,8 @@
 const uint32_t cSAMPLE_RATE = 44100;
 const uint32_t cFPS = 50;
 const uint32_t cROM_SIZE = 16384;
-//const char *cSMART_ROM = "smartload.v31";
 
+// ------------------------------------------------------------------------------------------------------------
 // - Constructor/Deconstructor
 
 ZXSpectrum::ZXSpectrum()
@@ -32,6 +32,7 @@ ZXSpectrum::~ZXSpectrum()
 	delete[] displayALUT;
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Initialise
 
 void ZXSpectrum::initialise(std::string romPath)
@@ -69,11 +70,14 @@ void ZXSpectrum::initialise(std::string romPath)
 	resetMachine(true);
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 void ZXSpectrum::registerDebugOpCallback(std::function<bool(uint16_t, uint8_t)> debugOpCallbackBlock)
 {
 	this->debugOpCallbackBlock = debugOpCallbackBlock;
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Generate a frame
 
 void ZXSpectrum::generateFrame()
@@ -131,6 +135,7 @@ void ZXSpectrum::generateFrame()
 	}
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Debug
 
 void ZXSpectrum::step()
@@ -169,6 +174,7 @@ void ZXSpectrum::step()
 	displayUpdateWithTs(static_cast<int32_t>(machineInfo.tsPerFrame - emuCurrentDisplayTs));
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Memory Access
 
 uint8_t ZXSpectrum::zxSpectrumMemoryRead(uint16_t address, void* param)
@@ -176,25 +182,35 @@ uint8_t ZXSpectrum::zxSpectrumMemoryRead(uint16_t address, void* param)
 	return static_cast<ZXSpectrum*>(param)->coreMemoryRead(address);
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 void ZXSpectrum::zxSpectrumMemoryWrite(uint16_t address, uint8_t data, void* param)
 {
 	static_cast<ZXSpectrum*>(param)->coreMemoryWrite(address, data);
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 void ZXSpectrum::zxSpectrumMemoryContention(uint16_t address, uint32_t tStates, void* param)
 {
 	static_cast<ZXSpectrum*>(param)->coreMemoryContention(address, tStates);
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 uint8_t ZXSpectrum::zxSpectrumDebugRead(uint16_t address, void* param, void* data)
 {
 	return static_cast<ZXSpectrum*>(param)->coreDebugRead(address, data);
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 void ZXSpectrum::zxSpectrumDebugWrite(uint16_t address, uint8_t byte, void* param, void*)
 {
 	static_cast<ZXSpectrum*>(param)->coreMemoryWrite(address, byte);
 }
+
+// ------------------------------------------------------------------------------------------------------------
 
 void ZXSpectrum::coreMemoryWriteWithBuffer(const char *buffer, size_t size, uint16_t address)
 {
@@ -205,6 +221,7 @@ void ZXSpectrum::coreMemoryWriteWithBuffer(const char *buffer, size_t size, uint
     }
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - IO Access
 
 uint8_t ZXSpectrum::zxSpectrumIORead(uint16_t address, void* param)
@@ -212,11 +229,14 @@ uint8_t ZXSpectrum::zxSpectrumIORead(uint16_t address, void* param)
 	return static_cast<ZXSpectrum*>(param)->coreIORead(address);
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 void ZXSpectrum::zxSpectrumIOWrite(uint16_t address, uint8_t data, void* param)
 {
 	static_cast<ZXSpectrum*>(param)->coreIOWrite(address, data);
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Pause/Resume
 
 void ZXSpectrum::pause()
@@ -224,11 +244,14 @@ void ZXSpectrum::pause()
 	emuPaused = true;
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 void ZXSpectrum::resume()
 {
 	emuPaused = false;
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Reset
 
 void ZXSpectrum::resetMachine(bool hard)
@@ -252,6 +275,8 @@ void ZXSpectrum::resetMachine(bool hard)
 	audioReset();
 }
 
+// ------------------------------------------------------------------------------------------------------------
+
 void ZXSpectrum::emuReset()
 {
 	emuFrameCounter = 0;
@@ -259,6 +284,7 @@ void ZXSpectrum::emuReset()
 	emuLoadTrapTriggered = false;
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - ROM Loading
 
 ZXSpectrum::Response ZXSpectrum::loadROM(const std::string rom, uint32_t page)
@@ -289,6 +315,7 @@ ZXSpectrum::Response ZXSpectrum::loadROM(const std::string rom, uint32_t page)
     return ZXSpectrum::Response{false, errorstring};
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // SCR Loading
 
 ZXSpectrum::Response ZXSpectrum::scrLoadWithPath(const std::string path)
@@ -321,6 +348,7 @@ ZXSpectrum::Response ZXSpectrum::scrLoadWithPath(const std::string path)
     return ZXSpectrum::Response{false, errorstring};
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Getters
 
 void* ZXSpectrum::getScreenBuffer()
@@ -328,6 +356,7 @@ void* ZXSpectrum::getScreenBuffer()
 	return displayBuffer;
 }
 
+// ------------------------------------------------------------------------------------------------------------
 // - Release
 
 void ZXSpectrum::release()
