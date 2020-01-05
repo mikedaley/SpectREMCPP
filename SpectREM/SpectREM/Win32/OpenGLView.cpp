@@ -361,7 +361,7 @@ void OpenGLView::UpdateTextureData(unsigned char *pData)
     glClearColor(0.0f, 1.0f, 1.0f, 0.5f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // Render the output to a texture which has the default dimentions of the output image
+    // Render the output to a texture which has the default dimensions of the output image
     GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, _clutFrameBuffer));
     GL_CHECK(glViewport(0, 0, screenWidth, screenHeight));
     GL_CHECK(glUseProgram(_clutShaderProg));
