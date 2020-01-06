@@ -664,42 +664,27 @@ static void HardReset()
 
 static void LoadSnapshot()
 {
-    OPENFILENAMEA ofn;
-    char szFile[_MAX_PATH];
+    std::string filePath = PMDawn::GetFilenameUsingDialog("");
 
-    // Setup the ofn structure
-    ZeroMemory(&ofn, sizeof(ofn));
-    ofn.lStructSize = sizeof(ofn);
-    ofn.hwndOwner = NULL;
-    ofn.lpstrFile = szFile;
-    ofn.lpstrFile[0] = '\0';
-    ofn.nMaxFile = sizeof(szFile);
-    ofn.lpstrFilter = "All\0*.*\0Snapshot\0*.SNA\0Z80\0*.Z80\0Tapes\0*.TAP\0\0";
-    ofn.nFilterIndex = 1;
-    ofn.lpstrFileTitle = NULL;
-    ofn.nMaxFileTitle = 0;
-    ofn.lpstrInitialDir = NULL;
-    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
-
-    if (GetOpenFileNameA(&ofn))
+    if (filePath != "")
     {
-        int32_t mType = m_pMachine->snapshotMachineInSnapshotWithPath(szFile);
-        std::string s(szFile, sizeof(szFile));
+        int32_t mType = m_pMachine->snapshotMachineInSnapshotWithPath(filePath.c_str());
+        std::string s(filePath, sizeof(filePath));
         std::string extension = s.substr(s.find_last_of(".") + 1, s.find_last_of(".") + 4);
 
         // Check the machine type returned from the user supplied snapshot if not a tape file
         if (_stricmp(extension.c_str(), EXT_TAP.c_str()) == 0)
         {
             EjectTape(); // Eject the current tape if inserted
-            Tape::TapResponse tR = m_pTape->loadWithPath(szFile);
+            Tape::TapResponse tR = m_pTape->loadWithPath(filePath);
             if (tR.success)
             {
-                PMDawn::Log(PMDawn::LOG_INFO, "Loaded tape - " + std::string(szFile));
+                PMDawn::Log(PMDawn::LOG_INFO, "Loaded tape - " + std::string(filePath));
             }
             else
             {
                 MessageBox(mainWindow, TEXT("Unable to load tape >> "), TEXT("Tape Loader"), MB_OK | MB_ICONINFORMATION | MB_APPLMODAL);
-                PMDawn::Log(PMDawn::LOG_INFO, "Failed to load tape - " + std::string(szFile) + " > " + tR.responseMsg);
+                PMDawn::Log(PMDawn::LOG_INFO, "Failed to load tape - " + std::string(filePath) + " > " + tR.responseMsg);
             }
         }
         else
@@ -719,7 +704,7 @@ static void LoadSnapshot()
             if (_stricmp(extension.c_str(), EXT_Z80.c_str()) == 0)
             {
                 PMDawn::Log(PMDawn::LOG_INFO, "Loading Z80 Snapshot - " + s);
-                ZXSpectrum::Response sR = m_pMachine->snapshotZ80LoadWithPath(szFile);
+                ZXSpectrum::Response sR = m_pMachine->snapshotZ80LoadWithPath(filePath);
                 if (sR.success)
                 {
                     PMDawn::Log(PMDawn::LOG_INFO, "Snapshot loaded successfully");
@@ -732,7 +717,7 @@ static void LoadSnapshot()
             else if (_stricmp(extension.c_str(), EXT_SNA.c_str()) == 0)
             {
                 PMDawn::Log(PMDawn::LOG_DEBUG, "Loading SNA Snapshot - " + s);
-                ZXSpectrum::Response sR = m_pMachine->snapshotSNALoadWithPath(szFile);
+                ZXSpectrum::Response sR = m_pMachine->snapshotSNALoadWithPath(filePath);
                 if (sR.success)
                 {
                     PMDawn::Log(PMDawn::LOG_INFO, "Snapshot loaded successfully");
