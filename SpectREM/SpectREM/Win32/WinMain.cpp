@@ -453,35 +453,21 @@ static void OpenSCR()
     HardReset();
     Sleep(1000);
 
-    OPENFILENAMEA ofn;
-    char szFile[_MAX_PATH];
-    // Setup the ofn structure
-    ZeroMemory(&ofn, sizeof(ofn));
-    ofn.lStructSize = sizeof(ofn);
-    ofn.hwndOwner = NULL;
-    ofn.lpstrFile = szFile;
-    ofn.lpstrFile[0] = '\0';
-    ofn.nMaxFile = sizeof(szFile);
-    ofn.lpstrFilter = "All\0*.*\0Screen File\0*.SCR\0\0";
-    ofn.nFilterIndex = 1;
-    ofn.lpstrFileTitle = NULL;
-    ofn.nMaxFileTitle = 0;
-    ofn.lpstrInitialDir = NULL;
-    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+    std::string scrPath = PMDawn::GetFilenameUsingDialog("");
 
-    if (GetOpenFileNameA(&ofn))
+    if (scrPath != "")
     {
-        ZXSpectrum::Response sR = m_pMachine->scrLoadWithPath(szFile);
+        ZXSpectrum::Response sR = m_pMachine->scrLoadWithPath(scrPath);
         if (sR.success)
         {
             Sleep(1);
             m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer);
-            PMDawn::Log(PMDawn::LOG_INFO, "Loaded .scr file - " + std::string(szFile));
+            PMDawn::Log(PMDawn::LOG_INFO, "Loaded .scr file - " + std::string(scrPath));
         }
         else
         {
             MessageBox(mainWindow, TEXT("Invalid SCR file"), TEXT("Gimme SCR's !!!"), MB_OK | MB_ICONINFORMATION | MB_APPLMODAL);
-            PMDawn::Log(PMDawn::LOG_INFO, "Failed to load .scr file - " + std::string(szFile) + " > " + sR.responseMsg);
+            PMDawn::Log(PMDawn::LOG_INFO, "Failed to load .scr file - " + std::string(scrPath) + " > " + sR.responseMsg);
             return;
         }
     }
@@ -495,7 +481,7 @@ static void RunSlideshow(int secs)
     Sleep(1000);
     PMDawn::Log(PMDawn::LOG_INFO, "Running slideshow (" + std::to_string(secs) + " secs) from " + PMDawn::GetApplicationBasePath() + slideshowDirectory);
     fileList.clear();
-    std::string fpath = PMDawn::GetFolderUsingDialog("meh");
+    std::string fpath = PMDawn::GetFolderUsingDialog("");
     fileList = PMDawn::GetFilesInDirectory(fpath + "\\", "*.scr");
     PMDawn::Log(PMDawn::LOG_DEBUG, "Found " + std::to_string(fileList.size()) + " matching files");
     // iterate (randomly maybe) through the list of files as long as there is at least one file :)
