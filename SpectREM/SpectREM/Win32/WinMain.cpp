@@ -495,7 +495,8 @@ static void RunSlideshow(int secs)
     Sleep(1000);
     PMDawn::Log(PMDawn::LOG_INFO, "Running slideshow (" + std::to_string(secs) + " secs) from " + PMDawn::GetApplicationBasePath() + slideshowDirectory);
     fileList.clear();
-    fileList = PMDawn::GetFilesInDirectory(PMDawn::GetApplicationBasePath() + slideshowDirectory, "*.scr");
+    std::string fpath = PMDawn::GetFolderUsingDialog("meh");
+    fileList = PMDawn::GetFilesInDirectory(fpath + "\\", "*.scr");
     PMDawn::Log(PMDawn::LOG_DEBUG, "Found " + std::to_string(fileList.size()) + " matching files");
     // iterate (randomly maybe) through the list of files as long as there is at least one file :)
     if (fileList.size() < 1)

@@ -20,7 +20,7 @@ ALT+F1			: Eject currently inserted tape
 F9				: Start/Stop currently inserted tape
 SHIFT+F9		: Rewind tape if inserted
 PAGEUP			: Increase volume
-PAGEDOWN		: Decreas volume
+PAGEDOWN		: Decrease volume
 
 
 

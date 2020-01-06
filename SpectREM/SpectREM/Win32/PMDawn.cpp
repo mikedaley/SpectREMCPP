@@ -15,6 +15,7 @@
 #include <vector>
 #include <time.h>
 #include <Shlwapi.h>
+#include <shobjidl.h> 
 
 namespace PMDawn
 {
@@ -175,7 +176,51 @@ namespace PMDawn
 
     //-----------------------------------------------------------------------------------------
 
+    static std::string GetFolderUsingDialog(std::string initialFolder = "")
+    {
+        wchar_t *fold;
+        std::string fl;
+        bool error = true;
 
+        IFileDialog* pfd;
+        if (SUCCEEDED(CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd))))
+        {
+            DWORD dwOptions;
+            if (SUCCEEDED(pfd->GetOptions(&dwOptions)))
+            {
+                pfd->SetOptions(dwOptions | FOS_PICKFOLDERS); // FOS_FORCEFILESYSTEM
+            }
+            if (SUCCEEDED(pfd->Show(NULL)))
+            {
+                IShellItem* psi;
+                if (SUCCEEDED(pfd->GetResult(&psi)))
+                {
+                    if (!SUCCEEDED(psi->GetDisplayName(SIGDN_DESKTOPABSOLUTEPARSING, &fold)))
+                    {
+                        MessageBoxA(NULL, "Failed to get folder path", "Error", NULL);
+
+                    }
+                    else
+                    {
+                        // If we get here then we should have a path :)
+                        error = false;
+                    }
+                    psi->Release();
+                }
+            }
+            pfd->Release();
+        }
+        if (!error)
+        {
+            std::wstring fstr(fold);
+            std::string fs(fstr.begin(), fstr.end());
+
+            return fs;
+        } else 
+        {
+            return "";
+        }
+    }
 
     //-----------------------------------------------------------------------------------------
 
