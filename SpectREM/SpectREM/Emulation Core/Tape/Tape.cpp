@@ -296,8 +296,9 @@ Tape::TapResponse Tape::loadWithPath(const std::string path)
     }
     else
     {
-        std::cout << "ERROR LOADING TAPE: " << "\n";
-        return Tape::TapResponse{false, "Unable to load TAP file"};
+        char* errorstring = strerror(errno);
+        std::cout << "ERROR LOADING TAPE: " << errorstring << "\n";
+        return Tape::TapResponse{false, errorstring};
     }
     loaded = success;
     return Tape::TapResponse{true, "Loaded successfully"};
@@ -858,7 +859,7 @@ std::vector<uint8_t> Tape::getTapeData()
 {
    std::vector<uint8_t> tapeData;
    for (size_t i = 0; i < blocks.size(); i++)
-   {
+   {    
        uint16_t blockLength = blocks[ i ]->getDataLength();
        tapeData.push_back(blockLength & 0xff);
        tapeData.push_back(blockLength >> 8);
