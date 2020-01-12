@@ -23,9 +23,6 @@
 #define ID_SWITCH_TO128K                40010
 #define ID_SWITCH_FLIP                  40011
 #define ID_HELP_ABOUT                   40012
-#define ID_ACCELERATOR40013             40013
-#define ID_ACCELERATOR40015             40015
-#define ID_ACCELERATOR40016             40016
 #define ID_SHOWUI                       40028
 #define ID_APPLICATION_SETTINGS         40030
 #define ID_SETTINGS_ZOOM                40032
@@ -35,6 +32,23 @@
 #define ID_ZOOM_200                     40036
 #define ID_ZOOM_300                     40037
 #define ID_ZOOM_400                     40038
+#define ID_VIEW_SCRSLIDESHOW            40044
+#define ID_SCRSLIDESHOW_DELAY3SECONDS   40045
+#define ID_SCRSLIDESHOW_DELAY6SECONDS   40046
+#define ID_SCRSLIDESHOW_DELAY10SECONDS  40047
+#define ID_SCRSLIDESHOW_DELAY1SECOND    40048
+#define ID_VIEW_OPENSCR                 40049
+#define ID_FILE_INSERTTAPE              40052
+#define ID_FILE_EJECTTAP                40053
+#define ID_TAPE_INSERTTAPE              40054
+#define ID_TAPE_EJECTTAPE               40055
+#define ID_TAPE_START                   40059
+#define ID_EMULATION_VOLUME             40062
+#define ID_VOLUME_INCREASE              40063
+#define ID_VOLUME_DECREASE              40064
+#define ID_TAPE_REWINGTAPE              40068
+#define ID_TAPE_REWINDTAPE              40069
+#define ID_TAPE_TAPEVIEWER              40072
 #define ID_SHADER_DISPLAY_FRAG          57000
 #define ID_SHADER_DISPLAY_VERT          57001
 #define ID_SHADER_CLUT_FRAG             57002
@@ -45,7 +59,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        110
-#define _APS_NEXT_COMMAND_VALUE         40044
+#define _APS_NEXT_COMMAND_VALUE         40075
 #define _APS_NEXT_CONTROL_VALUE         1002
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

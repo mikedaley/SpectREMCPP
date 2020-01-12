@@ -1,19 +1,45 @@
-SPECTREM (https://github.com/mikedaley/SpectREMCPP)
+SPECTREM (https://github.com/mikedaley/SpectREMCPP / https://github.com/polomint/SpectREMCPP)
 ===================================================-
 
 Current key assignments
 -------------------------
-F1		: Open file selector (currently supports .sna/.z80)
-F2		: Full speed ahead ! (No frame limiter)
-F3		: Hard reset
-F4		: Soft reset
-F5		: Switch machine - 48K <> 128K
-F10		: Turn on/off Windows UI (menus etc.)
-F12		: Open the settings dialog (Disabled as a wip)
-ALT-1	: Zoom level 100%
-ALT-2	: Zoom level 200%
-ALT-3	: Zoom level 300%
-ALT-4	: Zoom level 400%
+F1				: Open file selector (currently supports .sna/.z80)
+F2				: Full speed ahead ! (No frame limiter)
+F3				: Hard reset
+F4				: Soft reset
+F5				: Switch machine - 48K <> 128K
+F10				: Turn on/off Windows UI (menus etc.)
+F12				: Open the settings dialog (Disabled as a wip)
+ALT-1			: Zoom level 100%
+ALT-2			: Zoom level 200%
+ALT-3			: Zoom level 300%
+ALT-4			: Zoom level 400%
+CTRL+ALT+F1		: Open single .SCR file
+SHIFT+F1		: Insert a tape
+ALT+F1			: Eject currently inserted tape
+F9				: Start/Stop currently inserted tape
+SHIFT+F9		: Rewind tape if inserted
+PAGEUP			: Increase volume
+PAGEDOWN		: Decreas volume
+
+
+
+2020-01-05
+-----------
+ADDED	: Volume control using PageUp/PageDown
+CHANGED	: Open Snapshot (F1) is now Open File, works with .sna/.z80/.tap
+REFACTOR: Moved useful standalone routines out of winmain.cpp into PMDawn.cpp
+ADDED	: Rewind tape (if inserted)
+
+
+2020-01-04
+-----------
+ADDED	: Logging to a text file, on startup hold CTRL for loggin INFO items, ALT for INFO and DEBUG items
+ADDED	: .SCR slideshow, choice of 1/3/6/10 seconds between images, loading a snap or reset stops it
+		  Images are to be in a folder called "slideshow" in the .exe folder, a bunch of .scr files is 
+		  available at https://drive.google.com/file/d/1L6_sAM-BlQsGFtZoYU7MNBgid1LiCBXq/view?usp=sharing
+ADDED	: Open single .SCR file
+ADDED	: Loading of TAP files
 
 
 2020-01-03
@@ -21,9 +47,11 @@ ALT-4	: Zoom level 400%
 FIXED	: Shader files are now loaded from resources in the .exe instead of needing the files in the folder
 ADDED	: Zoom levels of 100/200/300/400 % implemented
 
+
 2020-01-02
 -----------
 FIXED	: x86 build now works again and runs
+
 
 2020-01-01
 -----------
@@ -31,9 +59,11 @@ ADDED	: All keyboard buttons work now
 STARTED	: Settings dialog box
 FIXED	: Show/Hide UI bits
 
+
 2019-12-31
 -----------
 UPDATED	: OpenGL3.2 specified, so that it works for Inky and Richard
 FIXED	: Reset, switch machine were flaky, still not quite perfect
 ADDED	: Windows MenuStrip with accelerators (About dialog not done yet)
 FIXED	: Keyboard now works (missed a break; statement, doh!)
+

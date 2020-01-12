@@ -30,6 +30,7 @@ public:
 	bool						Init(uint32_t sampleRate, float fps, AUDIOCORE_Callback callback);
 	void						Start();
 	void						Stop();
+	void						SetOutputVolume(float vol);
 
 	void STDMETHODCALLTYPE		OnStreamEnd();
 	void STDMETHODCALLTYPE		OnVoiceProcessingPassEnd();
