@@ -265,7 +265,7 @@ static OSStatus renderAudio(void *inRefCon,
     }
     else if (inBusNumber == 1)
     {
-        std::cout << "*** MIC INPUT ***" << std::endl;
+        std::cout << "*** MIC INPUT ***" << "\n";
     }
     
     return noErr;
@@ -278,7 +278,7 @@ static void CheckError(OSStatus error, const char *operation)
         return;
     }
 
-    std::cout << "AUDIO ERROR:  " << operation << std::endl;
+    std::cout << "AUDIO ERROR:  " << operation << "\n";
     exit(1);
 }
 

@@ -23,7 +23,7 @@ static const char *cDEFAULT_ROM_1 = "128-1.ROM";
 
 ZXSpectrum128::ZXSpectrum128(Tape *t) : ZXSpectrum()
 {
-    std::cout << "ZXSpectrum128::Constructor" << std::endl;
+    std::cout << "ZXSpectrum128::Constructor" << "\n";
     if (t)
     {
         tape = t;
@@ -38,7 +38,7 @@ ZXSpectrum128::ZXSpectrum128(Tape *t) : ZXSpectrum()
 
 ZXSpectrum128::~ZXSpectrum128()
 {
-    std::cout << "ZXSpectrum128::Destructor" << std::endl;
+    std::cout << "ZXSpectrum128::Destructor" << "\n";
     release();
 }
 
@@ -47,7 +47,7 @@ ZXSpectrum128::~ZXSpectrum128()
 
 void ZXSpectrum128::initialise(std::string romPath)
 {
-    std::cout << "ZXSpectrum128::initialise(char *rom)" << std::endl;
+    std::cout << "ZXSpectrum128::initialise(char *rom)" << "\n";
     
     machineInfo = machines[ eZXSpectrum128 ];
     ZXSpectrum::initialise(romPath);

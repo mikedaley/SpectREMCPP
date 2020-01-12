@@ -296,7 +296,7 @@ Tape::TapResponse Tape::loadWithPath(const std::string path)
     }
     else
     {
-        std::cout << "ERROR LOADING TAPE: " << std::endl;
+        std::cout << "ERROR LOADING TAPE: " << "\n";
         return Tape::TapResponse{false, "Unable to load TAP file"};
     }
     loaded = success;
@@ -309,7 +309,7 @@ void Tape::updateWithTs(uint32_t tStates)
 {
    if (currentBlockIndex > static_cast<uint32_t>(blocks.size() - 1))
    {
-       std::cout << "TAPE STOPPED" << std::endl;
+       std::cout << "TAPE STOPPED" << "\n";
        playing = false;
        inputBit = 0;
        rewindTape();
@@ -655,7 +655,7 @@ bool Tape::processData(uint8_t *dataBytes, uint32_t size)
 
        if (!newTapeBlock)
        {
-           std::cout << "INVALID FLAG FOUND PROCESSING TAP" << std::endl;
+           std::cout << "INVALID FLAG FOUND PROCESSING TAP" << "\n";
            return false;
        }
 
