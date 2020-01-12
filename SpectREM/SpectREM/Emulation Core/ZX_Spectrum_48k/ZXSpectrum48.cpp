@@ -122,7 +122,7 @@ uint8_t ZXSpectrum48::coreIORead(uint16_t address)
     
     if (address & 0xfe)
     {
-        for (int i = 0; i < 8; i++)
+        for (uint32_t i = 0; i < 8; i++)
         {
             if (!(address & (0x100 << i)))
             {
@@ -162,8 +162,6 @@ void ZXSpectrum48::coreIOWrite(uint16_t address, uint8_t data)
         audioEarBit = (data & 0x10) ? 1 : 0;
         audioMicBit = (data & 0x08) ? 1 : 0;
         displayBorderColor = data & 0x07;
-
-        //        qDebug() << static_cast<int>(audioEarBit)  ;
     }
     
     // AY-3-8912 ports

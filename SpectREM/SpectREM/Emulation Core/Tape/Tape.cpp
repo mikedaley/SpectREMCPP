@@ -862,7 +862,7 @@ std::vector<uint8_t> Tape::getTapeData()
        uint16_t blockLength = blocks[ i ]->getDataLength();
        tapeData.push_back(blockLength & 0xff);
        tapeData.push_back(blockLength >> 8);
-       for (int j = 0; j < blockLength; j++)
+       for (size_t j = 0; j < blockLength; j++)
        {
            tapeData.push_back(blocks[ i ]->blockData[ j ]);
        }

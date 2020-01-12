@@ -119,7 +119,7 @@ uint8_t ZXSpectrum128::coreIORead(uint16_t address)
     uint8_t result = 0xff;
     if (address & 0xfe)
     {
-        for (int i = 0; i < 8; i++)
+        for (uint32_t i = 0; i < 8; i++)
         {
             if (!(address & (0x100 << i)))
             {
@@ -207,7 +207,7 @@ void ZXSpectrum128::UpdatePort7FFD(uint8_t data)
 
 void ZXSpectrum128::coreMemoryWrite(uint16_t address, uint8_t data)
 {
-    int memoryPage = address / cMEMORY_PAGE_SIZE;
+    const uint32_t memoryPage = address / cMEMORY_PAGE_SIZE;
     address &= 16383;
 
     if (memoryPage == 0)
@@ -233,7 +233,7 @@ void ZXSpectrum128::coreMemoryWrite(uint16_t address, uint8_t data)
 
 uint8_t ZXSpectrum128::coreMemoryRead(uint16_t address)
 {
-    int page = address / cMEMORY_PAGE_SIZE;
+    const uint32_t page = address / cMEMORY_PAGE_SIZE;
     address &= 16383;
 
     if (page == 0)
@@ -261,7 +261,7 @@ uint8_t ZXSpectrum128::coreMemoryRead(uint16_t address)
 
 void ZXSpectrum128::coreDebugWrite(uint16_t address, uint8_t byte, void *)
 {
-    int memoryPage = address / cMEMORY_PAGE_SIZE;
+    const uint32_t memoryPage = address / cMEMORY_PAGE_SIZE;
     address &= 16383;
     
     if (memoryPage == 0)
@@ -286,7 +286,7 @@ void ZXSpectrum128::coreDebugWrite(uint16_t address, uint8_t byte, void *)
 
 uint8_t ZXSpectrum128::coreDebugRead(uint16_t address, void *)
 {
-    int page = address / cMEMORY_PAGE_SIZE;
+    const uint32_t page = address / cMEMORY_PAGE_SIZE;
     address &= 16383;
     
     if (page == 0)
@@ -314,7 +314,7 @@ uint8_t ZXSpectrum128::coreDebugRead(uint16_t address, void *)
 
 void ZXSpectrum128::coreMemoryContention(uint16_t address, uint32_t)
 {
-    int memoryPage = address / cMEMORY_PAGE_SIZE;
+    const uint32_t memoryPage = address / cMEMORY_PAGE_SIZE;
     
     if (memoryPage == 1 ||
         (memoryPage == 3 &&

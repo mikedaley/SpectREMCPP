@@ -456,8 +456,8 @@ ZXSpectrum::FileResponse ZXSpectrum::snapshotZ80LoadWithBuffer(const char *buffe
         z80Core.SetIMMode(static_cast<uint8_t>(pFileBytes[29] & 3));
 
         // Load AY register values
-        int fileBytesIndex = 39;
-        for (int i = 0; i < 16; i++)
+        uint32_t fileBytesIndex = 39;
+        for (uint32_t i = 0; i < 16; i++)
         {
             audioAYSetRegister(i);
             audioAYWriteData(pFileBytes[ fileBytesIndex++ ]);

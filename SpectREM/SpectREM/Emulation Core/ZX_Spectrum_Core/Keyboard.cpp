@@ -85,7 +85,7 @@ ZXSpectrum::KEYBOARD_ENTRY ZXSpectrum::keyboardLookup[] =
 
 void ZXSpectrum::keyboardKeyDown(eZXSpectrumKey key)
 {
-    for (int i = 0; i < static_cast<int>(sizeof(keyboardLookup) / sizeof(keyboardLookup[0])); i++)
+    for (uint32_t i = 0; i < static_cast<int>(sizeof(keyboardLookup) / sizeof(keyboardLookup[0])); i++)
     {
         if (keyboardLookup[i].key == key)
         {
@@ -113,7 +113,7 @@ void ZXSpectrum::keyboardKeyUp(eZXSpectrumKey key)
 {
     if (key != eZXSpectrumKey::Key_CapsLock)
     {
-        for (int i = 0; i < static_cast<int>(sizeof(keyboardLookup) / sizeof(keyboardLookup[0])); i++)
+        for (uint32_t i = 0; i < static_cast<int>(sizeof(keyboardLookup) / sizeof(keyboardLookup[0])); i++)
         {
             if (keyboardLookup[i].key == key)
             {
@@ -155,7 +155,7 @@ void ZXSpectrum::keyboardCheckCapsLockStatus()
 
 void ZXSpectrum::keyboardMapReset()
 {
-    for (int i = 0; i < 8; i++)
+    for (uint32_t i = 0; i < 8; i++)
     {
         keyboardMap[i] = 0xbf;
     }
