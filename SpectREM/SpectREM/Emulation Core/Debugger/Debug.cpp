@@ -13,7 +13,7 @@
 
 Debug::Debug()
 {
-    std::cout << "Debugger::Constructor" << std::endl;
+    std::cout << "Debugger::Constructor" << "\n";
     m_byteRegisters = {
         {"A" , CZ80Core::eREG_A},
         {"F" , CZ80Core::eREG_F},
@@ -53,7 +53,7 @@ Debug::Debug()
 
 Debug::~Debug()
 {
-    std::cout << "Debugger::Destructor" << std::endl;
+    std::cout << "Debugger::Destructor" << "\n";
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -73,7 +73,7 @@ bool Debug::checkForBreakpoint(uint16_t address, uint8_t bpType)
     {
         if (m_breakpoints[ i ].address == address &&  m_breakpoints[ i ].type & bpType)
         {
-            std::cout << "BREAK ON " << bpType << " at address " << address << std::endl;
+            std::cout << "BREAK ON " << bpType << " at address " << address << "\n";
             return true;
         }
     }

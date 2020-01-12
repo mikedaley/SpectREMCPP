@@ -18,7 +18,7 @@ const uint32_t cROM_SIZE = 16384;
 
 ZXSpectrum::ZXSpectrum()
 {
-	std::cout << "ZXSpectrum::Constructor" << std::endl;
+	std::cout << "ZXSpectrum::Constructor" << "\n";
 
 	displayCLUT = new uint64_t[32 * 1024];
 	displayALUT = new uint8_t[256];
@@ -26,7 +26,7 @@ ZXSpectrum::ZXSpectrum()
 
 ZXSpectrum::~ZXSpectrum()
 {
-	std::cout << "ZXSpectrum::Destructor" << std::endl;
+	std::cout << "ZXSpectrum::Destructor" << "\n";
 
 	delete[] displayCLUT;
 	delete[] displayALUT;
@@ -37,7 +37,7 @@ ZXSpectrum::~ZXSpectrum()
 
 void ZXSpectrum::initialise(std::string romPath)
 {
-	std::cout << "ZXSpectrum::initialise(char *romPath)" << std::endl;
+	std::cout << "ZXSpectrum::initialise(char *romPath)" << "\n";
 
 	z80Core.Initialise(zxSpectrumMemoryRead,
 		zxSpectrumMemoryWrite,
@@ -88,7 +88,7 @@ void ZXSpectrum::generateFrame()
 	{
 		if (debugOpCallbackBlock)
 		{
-			if (debugOpCallbackBlock(z80Core.GetRegister(CZ80Core::eREG_PC), eDebugExecuteOp) || emuPaused)
+			if (debugOpCallbackBlock(z80Core.GetRegister(CZ80Core::eREG_PC), eDEBUGOPERATION::EXECUTE) || emuPaused)
 			{
 				return;
 			}
@@ -287,14 +287,14 @@ void ZXSpectrum::emuReset()
 // ------------------------------------------------------------------------------------------------------------
 // - ROM Loading
 
-ZXSpectrum::Response ZXSpectrum::loadROM(const std::string rom, uint32_t page)
+ZXSpectrum::FileResponse ZXSpectrum::loadROM(const std::string rom, uint32_t page)
 {
 	size_t romAddress = cROM_SIZE * page;
 
 	if (memoryRom.size() < romAddress)
 	{
-        std::cout << "ZXSpectrum::loadROM - Unable to load into ROM page " << page << std::endl;
-        return ZXSpectrum::Response{false, std::to_string(page) + " is an invalid ROM page" };
+        std::cout << "ZXSpectrum::loadROM - Unable to load into ROM page " << page << "\n";
+        return ZXSpectrum::FileResponse{false, std::to_string(page) + " is an invalid ROM page" };
 	}
 
     std::string romPath = emuBasePath + emuROMPath;
@@ -307,18 +307,18 @@ ZXSpectrum::Response ZXSpectrum::loadROM(const std::string rom, uint32_t page)
         romFile.seekg(0, std::ios::beg);
 		romFile.read(memoryRom.data() + romAddress, fileSize);
 		romFile.close();
-        return ZXSpectrum::Response{true, "Loaded successfully"};
+        return ZXSpectrum::FileResponse{true, "Loaded successfully"};
 	}
 
     char* errorstring = strerror(errno);
     std::cout << "ERROR: Could not read from ROM file: " << errorstring;
-    return ZXSpectrum::Response{false, errorstring};
+    return ZXSpectrum::FileResponse{false, errorstring};
 }
 
 // ------------------------------------------------------------------------------------------------------------
 // SCR Loading
 
-ZXSpectrum::Response ZXSpectrum::scrLoadWithPath(const std::string path)
+ZXSpectrum::FileResponse ZXSpectrum::scrLoadWithPath(const std::string path)
 {
     std::ifstream scrFile(path, std::ios::binary | std::ios::ate | std::ios::in);
     if (scrFile.good())
@@ -339,13 +339,13 @@ ZXSpectrum::Response ZXSpectrum::scrLoadWithPath(const std::string path)
                 break;
         }
         scrFile.close();
-        return ZXSpectrum::Response{true, "Loaded successfully"};
+        return ZXSpectrum::FileResponse{true, "Loaded successfully"};
     }
 
     char* errorstring = strerror(errno);
-    std::cout << "ERROR: Could not read from file: " << errorstring << std::endl;
+    std::cout << "ERROR: Could not read from file: " << errorstring << "\n";
     
-    return ZXSpectrum::Response{false, errorstring};
+    return ZXSpectrum::FileResponse{false, errorstring};
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -361,7 +361,8 @@ void* ZXSpectrum::getScreenBuffer()
 
 void ZXSpectrum::release()
 {
-	delete[] displayBuffer;
+    std::cout << "ZXSpectrum::Release" << "\n";
+    delete[] displayBuffer;
 	delete[] audioBuffer;
 }
 

@@ -16,7 +16,7 @@
 
 static const int cROM_SIZE = 16384;
 static const char *cDEFAULT_ROM = "48.ROM";
-static const char *cSMART_ROM = "snapload.v31";
+//static const char *cSMART_ROM = "snapload.v31";
 
 // SmartCard ROM and sundries
 static const uint8_t cFAFB_ROM_SWITCHOUT = 0x40;
@@ -31,7 +31,7 @@ static uint8_t smartCardSRAM[8 * 64 * 1024];		// 8 * 8k banks, mapped @ $2000-$3
 
 ZXSpectrum48::ZXSpectrum48(Tape *t) : ZXSpectrum()
 {
-    std::cout << "ZXSpectrum48::Constructor" << std::endl;
+    std::cout << "ZXSpectrum48::Constructor" << "\n";
     if (t)
     {
         tape = t;
@@ -46,7 +46,7 @@ ZXSpectrum48::ZXSpectrum48(Tape *t) : ZXSpectrum()
 
 ZXSpectrum48::~ZXSpectrum48()
 {
-    std::cout << "ZXSpectrum48::Destructor" << std::endl;
+    std::cout << "ZXSpectrum48::Destructor" << "\n";
     release();
 }
 
@@ -55,7 +55,7 @@ ZXSpectrum48::~ZXSpectrum48()
 
 void ZXSpectrum48::initialise(std::string romPath)
 {
-    std::cout << "ZXSpectrum48::initialise(char *rom)" << std::endl;
+    std::cout << "ZXSpectrum48::initialise(char *rom)" << "\n";
     
     machineInfo = machines[ eZXSpectrum48 ];
     ZXSpectrum::initialise( romPath );
@@ -220,7 +220,7 @@ void ZXSpectrum48::coreMemoryWrite(uint16_t address, uint8_t data)
 
     if (debugOpCallbackBlock != nullptr)
     {
-        if (debugOpCallbackBlock( address, eDebugWriteOp ))
+        if (debugOpCallbackBlock( address, eDEBUGOPERATION::WRITE ))
         {
             breakpointHit = true;
         }
@@ -255,7 +255,7 @@ uint8_t ZXSpectrum48::coreMemoryRead(uint16_t address)
 		
         if (debugOpCallbackBlock != nullptr)
         {
-            if (debugOpCallbackBlock( address, eDebugReadOp ))
+            if (debugOpCallbackBlock( address, eDEBUGOPERATION::READ ))
             {
                 breakpointHit = true;
             }
@@ -267,7 +267,7 @@ uint8_t ZXSpectrum48::coreMemoryRead(uint16_t address)
 
     if (debugOpCallbackBlock != nullptr)
     {
-        debugOpCallbackBlock( address, eDebugReadOp );
+        debugOpCallbackBlock( address, eDEBUGOPERATION::READ );
     }
 
     return static_cast<uint8_t>(memoryRam[ address ]);

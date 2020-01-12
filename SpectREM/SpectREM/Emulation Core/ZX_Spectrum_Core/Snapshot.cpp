@@ -31,12 +31,12 @@ const uint8_t               cZ80_V3_MACHINE_TYPE_128_2 = 12;
 // ------------------------------------------------------------------------------------------------------------
 // - SNA functions
 
-ZXSpectrum::Snap ZXSpectrum::snapshotCreateSNA()
+ZXSpectrum::SnapshotData ZXSpectrum::snapshotCreateSNA()
 {
     // We don't want the core running when we take a snapshot
     pause();
 
-    Snap snap;
+    SnapshotData snap;
     snap.length = (48 * 1024) + cSNA_HEADER_SIZE;
     snap.data = new uint8_t[snap.length];
 
@@ -101,28 +101,28 @@ ZXSpectrum::Snap ZXSpectrum::snapshotCreateSNA()
 
 // ------------------------------------------------------------------------------------------------------------
 
-ZXSpectrum::Response ZXSpectrum::snapshotSNALoadWithPath(const std::string path)
+ZXSpectrum::FileResponse ZXSpectrum::snapshotSNALoadWithPath(const std::string path)
 {
     
     std::ifstream stream(path, std::ios::binary | std::ios::ate);
     if (!stream.ios_base::good()) {
         char* errorstring = strerror(errno);
-        Response response;
-        return Response{false, errorstring};
+        FileResponse response;
+        return FileResponse{false, errorstring};
     }
     
     std::vector<char> pFileBytes(stream.tellg());
     stream.seekg(0, std::ios::beg);
     stream.read(pFileBytes.data(), pFileBytes.size());
 
-    std::cout << "Loading SNA snapshot: " << std::endl;
+    std::cout << "Loading SNA snapshot: " << "\n";
     
     return snapshotSNALoadWithBuffer(pFileBytes.data(), pFileBytes.size());
 }
 
 // ------------------------------------------------------------------------------------------------------------
 
-ZXSpectrum::Response ZXSpectrum::snapshotSNALoadWithBuffer(const char *buffer, size_t size)
+ZXSpectrum::FileResponse ZXSpectrum::snapshotSNALoadWithBuffer(const char *buffer, size_t size)
 {
     pause();
     displayFrameReset();
@@ -176,7 +176,7 @@ ZXSpectrum::Response ZXSpectrum::snapshotSNALoadWithBuffer(const char *buffer, s
 
     resume();
 
-    return Response{true, "Loaded successfully"};
+    return FileResponse{true, "Loaded successfully"};
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -185,7 +185,7 @@ ZXSpectrum::Response ZXSpectrum::snapshotSNALoadWithBuffer(const char *buffer, s
 /*
  Returning an empty Snap struct means snapshot creation failed
  */
-ZXSpectrum::Snap ZXSpectrum::snapshotCreateZ80()
+ZXSpectrum::SnapshotData ZXSpectrum::snapshotCreateZ80()
 {
     int snapshotSize = 0;
     switch (machineInfo.machineType) {
@@ -199,8 +199,8 @@ ZXSpectrum::Snap ZXSpectrum::snapshotCreateZ80()
             break;
             
         default:
-            std::cout << "Unknown machine type" << std::endl;
-            Snap emptySnap;
+            std::cout << "Unknown machine type" << "\n";
+            SnapshotData emptySnap;
             emptySnap.length = 0;
             emptySnap.data = nullptr;
             return emptySnap;
@@ -211,7 +211,7 @@ ZXSpectrum::Snap ZXSpectrum::snapshotCreateZ80()
     pause();
 
     // Structure to be returned containing the length and size of the snapshot
-    Snap snapData;
+    SnapshotData snapData;
     snapData.length = snapshotSize;
     snapData.data = new uint8_t[ snapshotSize ];
 
@@ -362,13 +362,13 @@ ZXSpectrum::Snap ZXSpectrum::snapshotCreateZ80()
 
 // ------------------------------------------------------------------------------------------------------------
 
-ZXSpectrum::Response ZXSpectrum::snapshotZ80LoadWithPath(const std::string path)
+ZXSpectrum::FileResponse ZXSpectrum::snapshotZ80LoadWithPath(const std::string path)
 {
     std::ifstream stream(path, std::ios::binary | std::ios::ate);
     if (!stream.ios_base::good()) {
         char* errorstring = strerror(errno);
-        Response response;
-        return Response{false, errorstring};
+        FileResponse response;
+        return FileResponse{false, errorstring};
     }
     
     std::vector<char> pFileBytes(stream.tellg());
@@ -380,7 +380,7 @@ ZXSpectrum::Response ZXSpectrum::snapshotZ80LoadWithPath(const std::string path)
 
 // ------------------------------------------------------------------------------------------------------------
 
-ZXSpectrum::Response ZXSpectrum::snapshotZ80LoadWithBuffer(const char *buffer, size_t size)
+ZXSpectrum::FileResponse ZXSpectrum::snapshotZ80LoadWithBuffer(const char *buffer, size_t size)
 {
     pause();
     displayFrameReset();
@@ -418,7 +418,7 @@ ZXSpectrum::Response ZXSpectrum::snapshotZ80LoadWithBuffer(const char *buffer, s
             version = 2;
             pc = (reinterpret_cast<uint16_t *>( &pFileBytes[32])[0]);
         }
-        std::cout << "Loading Z80 snapshot v" << version << ": " << std::endl;
+        std::cout << "Loading Z80 snapshot v" << version << ": " << "\n";
 
         z80Core.SetRegister(CZ80Core::eREG_A, pFileBytes[0]);
         z80Core.SetRegister(CZ80Core::eREG_F, pFileBytes[1]);
@@ -468,7 +468,6 @@ ZXSpectrum::Response ZXSpectrum::snapshotZ80LoadWithBuffer(const char *buffer, s
         // Based on the version number of the snapshot, decode the memory contents
         switch (version) {
         case 1:
-            
             snapshotExtractMemoryBlock(buffer, size, 0x4000, 30, compressed, 0xc000);
             break;
 
@@ -509,7 +508,11 @@ ZXSpectrum::Response ZXSpectrum::snapshotZ80LoadWithBuffer(const char *buffer, s
                 }
 
                 uint32_t pageId = buffer[offset + 2];
-                std::cout << "Page:" << pageId << " Compressed Length:" << compressedLength << " IsCompressed:" << isCompressed << std::endl;
+                
+                std::cout << "Snapshot Page:" << pageId;
+                std::cout << ((pageId > 9) ? "\t" : "\t\t");
+                std::cout << "Mem Page:" << pageId - 3 << "\tCompressed Length:" << compressedLength << "\tIsCompressed:" << isCompressed;
+                std::cout << "\tHardware Type: " << snapshotHardwareTypeForVersion(version, hardwareType) << "\n";
 
                 if (version == 1 || ((version == 2 || version == 3) && (hardwareType == cZ80_V2_MACHINE_TYPE_48 ||
                                                                         hardwareType == cZ80_V3_MACHINE_TYPE_48 ||
@@ -546,7 +549,7 @@ ZXSpectrum::Response ZXSpectrum::snapshotZ80LoadWithBuffer(const char *buffer, s
 
     resume();
     
-    return Response{true, "Loaded successfully"};
+    return FileResponse{true, "Loaded successfully"};
 }
 
 // ------------------------------------------------------------------------------------------------------------

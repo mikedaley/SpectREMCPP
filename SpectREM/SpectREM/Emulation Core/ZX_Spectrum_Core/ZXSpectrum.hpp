@@ -30,50 +30,50 @@ public:
     static const uint16_t    cATTR_SIZE         = 768;
     static const uint16_t    cMEMORY_PAGE_SIZE  = 16384;
     
-    enum
+    enum eAYREGISTER
     {
-        eAYREGISTER_A_FINE = 0,
-        eAYREGISTER_A_COARSE,
-        eAYREGISTER_B_FINE,
-        eAYREGISTER_B_COARSE,
-        eAYREGISTER_C_FINE,
-        eAYREGISTER_C_COARSE,
-        eAYREGISTER_NOISEPER,
-        eAYREGISTER_ENABLE,
-        eAYREGISTER_A_VOL,
-        eAYREGISTER_B_VOL,
-        eAYREGISTER_C_VOL,
-        eAYREGISTER_E_FINE,
-        eAYREGISTER_E_COARSE,
-        eAYREGISTER_E_SHAPE,
-        eAYREGISTER_PORT_A,
-        eAYREGISTER_PORT_B,
+        A_FINE = 0,
+        A_COARSE,
+        B_FINE,
+        B_COARSE,
+        C_FINE,
+        C_COARSE,
+        NOISEPER,
+        ENABLE,
+        A_VOL,
+        B_VOL,
+        C_VOL,
+        E_FINE,
+        E_COARSE,
+        E_SHAPE,
+        PORT_A,
+        PORT_B,
         
         // Used to emulate the odd floating behaviour of setting an AY register > 15. The value
         // written to registers > 15 decays over time and this is the value returned when reading
         // a register > 15
-        eAYREGISTER_FLOATING,
+        FLOATING,
         
-        eAY_MAX_REGISTERS
+        MAX_REGISTERS
     };
     
     // ULAPlus mode values
-    enum
+    enum eULAPLUS
     {
-        eULAplusPaletteGroup,
-        eULAplusModeGroup
+        PALLETTEGROUP,
+        MODEGROUP
     };
     
     // Debug operation type
-    enum
+    enum eDEBUGOPERATION
     {
-        eDebugReadOp = 0x01,
-        eDebugWriteOp = 0x02,
-        eDebugExecuteOp = 0x04
+        READ = 0x01,
+        WRITE = 0x02,
+        EXECUTE = 0x04
     };
     
     // Spectrum keyboard
-    enum class ZXSpectrumKey
+    enum class eZXSpectrumKey
     {
         __NoKey,
         Key_0,
@@ -140,30 +140,30 @@ private:
     // Holds details of the host platforms key codes and how they map to the spectrum keyboard matrix
     typedef struct
     {
-        ZXSpectrumKey   key;
-        int             mapEntry1;
-        int             mapBit1;
-        int             mapEntry2;
-        int             mapBit2;
+        eZXSpectrumKey      key;
+        int                 mapEntry1;
+        int                 mapBit1;
+        int                 mapEntry2;
+        int                 mapBit2;
     } KEYBOARD_ENTRY;
     
 public:
     // Holds the data returned when creating a Snapshot or Z80 snapshot
-    struct Snap {
-        int32_t     length = 0;
-        uint8_t     *data = nullptr;
+    struct SnapshotData {
+        int32_t             length = 0;
+        uint8_t             *data = nullptr;
     };
 
     // Response from core when you have asked it to deal with a file
-    struct Response {
-        bool success;
-        std::string responseMsg;
+    struct FileResponse {
+        bool                success;
+        std::string         responseMsg;
     };
 
     // Breakpoint information
-    struct Breakpoint {
-        uint16_t    address = 0;
-        bool        breakPoint = false;
+    struct DebugBreakpoint {
+        uint16_t            address;
+        bool                breakPoint;
     };
     
     typedef struct
@@ -190,19 +190,19 @@ public:
     // On completion the displayBuffer member variable will contain RGBA formatted image data that can then be used to build a display image
     void                    generateFrame();
     
-    void                    keyboardKeyDown(ZXSpectrumKey key);
-    void                    keyboardKeyUp(ZXSpectrumKey key);
-    void                    keyboardFlagsChanged(uint64_t flags, ZXSpectrumKey key);
+    void                    keyboardKeyDown(eZXSpectrumKey key);
+    void                    keyboardKeyUp(eZXSpectrumKey key);
+    void                    keyboardFlagsChanged(uint64_t flags, eZXSpectrumKey key);
     
-    Response                snapshotZ80LoadWithPath(const std::string path);
-    Response                snapshotZ80LoadWithBuffer(const char *buffer, size_t size);
-    Response                snapshotSNALoadWithPath(const std::string path);
-    Response                snapshotSNALoadWithBuffer(const char *buffer, size_t size);
+    FileResponse            snapshotZ80LoadWithPath(const std::string path);
+    FileResponse            snapshotZ80LoadWithBuffer(const char *buffer, size_t size);
+    FileResponse            snapshotSNALoadWithPath(const std::string path);
+    FileResponse            snapshotSNALoadWithBuffer(const char *buffer, size_t size);
     int                     snapshotMachineInSnapshotWithPath(const char *path);
-    Snap                    snapshotCreateSNA();
-    Snap                    snapshotCreateZ80();
+    SnapshotData            snapshotCreateSNA();
+    SnapshotData            snapshotCreateZ80();
     
-    Response                scrLoadWithPath(const std::string path);
+    FileResponse            scrLoadWithPath(const std::string path);
     
     
     void                    step();
@@ -215,7 +215,7 @@ public:
 
 protected:
     void                    emuReset();
-    Response                loadROM(const std::string rom, uint32_t page);
+    FileResponse            loadROM(const std::string rom, uint32_t page);
     
     void                    displayFrameReset();
     void                    displayUpdateWithTs(int32_t tStates);
@@ -335,7 +335,7 @@ public:
     uint32_t                audioAYNoiseCount = 0;
     uint16_t                audioAYEnvelopeCount = 0;
     
-    uint8_t                 audioAYRegisters[ eAY_MAX_REGISTERS ]{0};
+    uint8_t                 audioAYRegisters[ eAYREGISTER::MAX_REGISTERS ]{0};
     uint8_t                 audioAYCurrentRegister = 0;
     uint8_t                 audioAYFloatingRegister = 0;
     bool                    audioAYEnvelopeHolding = false;
@@ -362,7 +362,7 @@ public:
     const static uint32_t   ULAConentionValues[];
     uint8_t                 ULAPortnnFDValue = 0;
     bool                    ULAApplySnow = false;
-    uint8_t                 ULAPlusMode = eULAplusModeGroup;
+    uint8_t                 ULAPlusMode = eULAPLUS::MODEGROUP;
     uint8_t                 ULAPlusCurrentReg = 0;
     uint8_t                 ULAPlusPaletteOn = 0;
 
