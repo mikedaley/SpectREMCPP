@@ -12,9 +12,9 @@
 // ------------------------------------------------------------------------------------------------------------
 // - Constants
 
-const uint32_t cSAMPLE_RATE = 44100;
-const uint32_t cFPS = 50;
-const uint32_t cROM_SIZE = 16384;
+static constexpr uint32_t cSAMPLE_RATE = 44100;
+static constexpr uint32_t cFPS = 50;
+static constexpr uint32_t cROM_SIZE = 16384;
 
 // ------------------------------------------------------------------------------------------------------------
 // - Constructor/Deconstructor
@@ -23,16 +23,16 @@ ZXSpectrum::ZXSpectrum()
 {
 	std::cout << "ZXSpectrum::Constructor" << "\n";
 
-	displayCLUT = new uint64_t[32 * 1024];
-	displayALUT = new uint8_t[256];
+	display_clut = new uint64_t[32 * 1024];
+	display_alut = new uint8_t[256];
 }
 
 ZXSpectrum::~ZXSpectrum()
 {
 	std::cout << "ZXSpectrum::Destructor" << "\n";
 
-	delete[] displayCLUT;
-	delete[] displayALUT;
+	delete[] display_clut;
+	delete[] display_alut;
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -42,7 +42,7 @@ void ZXSpectrum::initialise(std::string romPath)
 {
 	std::cout << "ZXSpectrum::initialise(char *romPath)" << "\n";
 
-	z80Core.Initialise(zxSpectrumMemoryRead,
+	z80_core.Initialise(zxSpectrumMemoryRead,
 		zxSpectrumMemoryWrite,
 		zxSpectrumIORead,
 		zxSpectrumIOWrite,
@@ -51,14 +51,14 @@ void ZXSpectrum::initialise(std::string romPath)
 		zxSpectrumDebugWrite,
 		this);
 
-	emuROMPath = romPath;
+	emu_rom_path = romPath;
 
-	screenWidth = machineInfo.pxEmuBorder + machineInfo.pxHorizontalDisplay + machineInfo.pxEmuBorder;
-	screenHeight = machineInfo.pxEmuBorder + machineInfo.pxVerticalDisplay + machineInfo.pxEmuBorder;
-	screenBufferSize = screenHeight * screenWidth;
+	display_screen_width = machine_info.pixel_emulator_border + machine_info.pixel_horizontal_display + machine_info.pixel_emulator_border;
+	display_screen_height = machine_info.pixel_emulator_border + machine_info.pixel_vertical_display + machine_info.pixel_emulator_border;
+	display_screen_buffer_size = display_screen_height * display_screen_width;
 
-	memoryRom.resize(machineInfo.romSize);
-	memoryRam.resize(machineInfo.ramSize);
+	memory_rom.resize(machine_info.rom_size);
+	memory_ram.resize(machine_info.ram_size);
 
 	displaySetup();
 	displayBuildLineAddressTable();
@@ -85,54 +85,54 @@ void ZXSpectrum::registerDebugOpCallback(std::function<bool(uint16_t, uint8_t)> 
 
 void ZXSpectrum::generateFrame()
 {
-	uint32_t currentFrameTstates = machineInfo.tsPerFrame;
+	uint32_t current_frame_ts_states = machine_info.ts_per_frame;
 
-	while (currentFrameTstates > 0 && !emuPaused && !breakpointHit)
+	while (current_frame_ts_states > 0 && !emu_paused && !debugger_breakpoint_hit)
 	{
 		if (debugOpCallbackBlock)
 		{
-			if (debugOpCallbackBlock(z80Core.GetRegister(CZ80Core::eREG_PC), eDEBUGOPERATION::EXECUTE) || emuPaused)
+			if (debugOpCallbackBlock(z80_core.GetRegister(CZ80Core::eREG_PC), DebugOperation::EXECUTE) || emu_paused)
 			{
 				return;
 			}
 		}
 
-		uint32_t tStates = z80Core.Execute(1, machineInfo.intLength);
+		uint32_t ts = z80_core.Execute(1, machine_info.interrupt_length);
 
-		if (tape && tape->playing)
+		if (virtual_tape && virtual_tape->playing)
 		{
-			tape->updateWithTs(tStates);
+			virtual_tape->updateWithTs(ts);
 		}
 
-		if (tape && emuSaveTrapTriggered)
+		if (virtual_tape && emu_save_trap_triggered)
 		{
-			tape->saveBlock(this);
+			virtual_tape->saveBlock(this);
 		}
-		else if (emuLoadTrapTriggered && tape && tape->loaded)
+		else if (emu_load_trap_triggered && virtual_tape && virtual_tape->loaded)
 		{
-			tape->loadBlock(this);
+			virtual_tape->loadBlock(this);
 		}
 		else
 		{
-			currentFrameTstates -= tStates;
+			current_frame_ts_states -= ts;
 
-			audioUpdateWithTs(tStates);
+			audioUpdateWithTs(ts);
 
-			if (z80Core.GetTStates() >= machineInfo.tsPerFrame)
+			if (z80_core.GetTStates() >= machine_info.ts_per_frame)
 			{
-				z80Core.ResetTStates(machineInfo.tsPerFrame);
-				z80Core.SignalInterrupt();
+				z80_core.ResetTStates(machine_info.ts_per_frame);
+				z80_core.SignalInterrupt();
 
-				displayUpdateWithTs(static_cast<int32_t>(machineInfo.tsPerFrame - emuCurrentDisplayTs));
+				displayUpdateWithTs(static_cast<int32_t>(machine_info.ts_per_frame - emu_current_display_ts));
 
-				emuFrameCounter++;
+				emu_frame_counter++;
 
-				audioLastIndex = audioBufferIndex;
+				audio_last_index = audio_buffer_index;
 				displayFrameReset();
 				keyboardCheckCapsLockStatus();
 				audioDecayAYFloatingRegister();
 
-				currentFrameTstates = 0;
+				current_frame_ts_states = 0;
 			}
 		}
 	}
@@ -143,29 +143,29 @@ void ZXSpectrum::generateFrame()
 
 void ZXSpectrum::step()
 {
-	uint32_t tStates = z80Core.Execute(1, machineInfo.intLength);
+	uint32_t ts = z80_core.Execute(1, machine_info.interrupt_length);
 
-	if (tape && tape->playing)
+	if (virtual_tape && virtual_tape->playing)
 	{
-		tape->updateWithTs(tStates);
+		virtual_tape->updateWithTs(ts);
 	}
 
-	if (tape && emuSaveTrapTriggered)
+	if (virtual_tape && emu_save_trap_triggered)
 	{
-		tape->saveBlock(this);
+		virtual_tape->saveBlock(this);
 	}
-	else if (emuLoadTrapTriggered && tape && tape->loaded)
+	else if (emu_load_trap_triggered && virtual_tape && virtual_tape->loaded)
 	{
-		tape->loadBlock(this);
+		virtual_tape->loadBlock(this);
 	}
 	else
 	{
-		if (z80Core.GetTStates() >= machineInfo.tsPerFrame)
+		if (z80_core.GetTStates() >= machine_info.ts_per_frame)
 		{
-			z80Core.ResetTStates(machineInfo.tsPerFrame);
-			z80Core.SignalInterrupt();
+			z80_core.ResetTStates(machine_info.ts_per_frame);
+			z80_core.SignalInterrupt();
 
-			emuFrameCounter++;
+			emu_frame_counter++;
 
 			displayFrameReset();
 			keyboardCheckCapsLockStatus();
@@ -174,7 +174,7 @@ void ZXSpectrum::step()
 		}
 	}
 
-	displayUpdateWithTs(static_cast<int32_t>(machineInfo.tsPerFrame - emuCurrentDisplayTs));
+	displayUpdateWithTs(static_cast<int32_t>(machine_info.ts_per_frame - emu_current_display_ts));
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -244,14 +244,14 @@ void ZXSpectrum::zxSpectrumIOWrite(uint16_t address, uint8_t data, void* param)
 
 void ZXSpectrum::pause()
 {
-	emuPaused = true;
+	emu_paused = true;
 }
 
 // ------------------------------------------------------------------------------------------------------------
 
 void ZXSpectrum::resume()
 {
-	emuPaused = false;
+	emu_paused = false;
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -261,17 +261,17 @@ void ZXSpectrum::resetMachine(bool hard)
 {
 	if (hard)
 	{
-		for (uint32_t i = 0; i < machineInfo.ramSize; i++)
+		for (size_t i = 0; i < machine_info.ram_size; i++)
 		{
-			memoryRam[i] = static_cast<char>(rand() % 255);
+			memory_ram[i] = static_cast<char>(rand() % 255);
 		}
 	}
 
-	delete[] displayBuffer;
+	delete[] display_buffer;
 
 	displaySetup();
 
-	z80Core.Reset(hard);
+	z80_core.Reset(hard);
 	emuReset();
 	keyboardMapReset();
 	displayFrameReset();
@@ -282,9 +282,9 @@ void ZXSpectrum::resetMachine(bool hard)
 
 void ZXSpectrum::emuReset()
 {
-	emuFrameCounter = 0;
-	emuSaveTrapTriggered = false;
-	emuLoadTrapTriggered = false;
+	emu_frame_counter = 0;
+	emu_save_trap_triggered = false;
+	emu_load_trap_triggered = false;
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -292,30 +292,30 @@ void ZXSpectrum::emuReset()
 
 ZXSpectrum::FileResponse ZXSpectrum::loadROM(const std::string rom, uint32_t page)
 {
-	size_t romAddress = cROM_SIZE * page;
+	size_t rom_address = cROM_SIZE * page;
 
-	if (memoryRom.size() < romAddress)
+	if (memory_rom.size() < rom_address)
 	{
         std::cout << "ZXSpectrum::loadROM - Unable to load into ROM page " << page << "\n";
         return ZXSpectrum::FileResponse{false, std::to_string(page) + " is an invalid ROM page" };
 	}
 
-    std::string romPath = emuBasePath + emuROMPath;
-	romPath.append(rom);
+    std::string rom_path = emu_base_path + emu_rom_path;
+	rom_path.append(rom);
 
-    std::ifstream romFile(romPath, std::ios::binary | std::ios::ate | std::ios::in);
-	if (romFile.good())
+    std::ifstream rom_file(rom_path, std::ios::binary | std::ios::ate | std::ios::in);
+	if (rom_file.good())
 	{
-		std::streampos fileSize = romFile.tellg();
-        romFile.seekg(0, std::ios::beg);
-		romFile.read(memoryRom.data() + romAddress, fileSize);
-		romFile.close();
+		std::streampos file_size = rom_file.tellg();
+        rom_file.seekg(0, std::ios::beg);
+		rom_file.read(memory_rom.data() + rom_address, file_size);
+		rom_file.close();
         return ZXSpectrum::FileResponse{true, "Loaded successfully"};
 	}
 
-    char* errorstring = strerror(errno);
-    std::cout << "ERROR: Could not read from ROM file: " << errorstring;
-    return ZXSpectrum::FileResponse{false, errorstring};
+    char* error_string = strerror(errno);
+    std::cout << "ERROR: Could not read from ROM file: " << error_string;
+    return ZXSpectrum::FileResponse{false, error_string};
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -323,32 +323,32 @@ ZXSpectrum::FileResponse ZXSpectrum::loadROM(const std::string rom, uint32_t pag
 
 ZXSpectrum::FileResponse ZXSpectrum::scrLoadWithPath(const std::string path)
 {
-    std::ifstream scrFile(path, std::ios::binary | std::ios::ate | std::ios::in);
-    if (scrFile.good())
+    std::ifstream scr_file(path, std::ios::binary | std::ios::ate | std::ios::in);
+    if (scr_file.good())
     {
-        std::streampos fileSize = scrFile.tellg();
-        scrFile.seekg(0, std::ios::beg);
+        std::streampos file_size = scr_file.tellg();
+        scr_file.seekg(0, std::ios::beg);
         
-        switch (machineInfo.machineType) {
+        switch (machine_info.machine_type) {
             case eZXSpectrum48:
-                scrFile.read(memoryRam.data() + cBITMAP_ADDRESS, fileSize);
+                scr_file.read(memory_ram.data() + kDisplayBitmapAddress, file_size);
                 break;
             case eZXSpectrum128:
                 // Load the image data into memory page 5
-                scrFile.read(memoryRam.data() + (cBITMAP_ADDRESS * 5), fileSize);
+                scr_file.read(memory_ram.data() + (kDisplayBitmapAddress * 5), file_size);
                 break;
                 
             default:
                 break;
         }
-        scrFile.close();
+        scr_file.close();
         return ZXSpectrum::FileResponse{true, "Loaded successfully"};
     }
 
-    char* errorstring = strerror(errno);
-    std::cout << "ERROR: Could not read from file: " << errorstring << "\n";
+    char* error_string = strerror(errno);
+    std::cout << "ERROR: Could not read from file: " << error_string << "\n";
     
-    return ZXSpectrum::FileResponse{false, errorstring};
+    return ZXSpectrum::FileResponse{false, error_string};
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -356,7 +356,7 @@ ZXSpectrum::FileResponse ZXSpectrum::scrLoadWithPath(const std::string path)
 
 void* ZXSpectrum::getScreenBuffer()
 {
-	return displayBuffer;
+	return display_buffer;
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -365,8 +365,8 @@ void* ZXSpectrum::getScreenBuffer()
 void ZXSpectrum::release()
 {
     std::cout << "ZXSpectrum::Release" << "\n";
-    delete[] displayBuffer;
-	delete[] audioBuffer;
+    delete[] display_buffer;
+	delete[] audio_buffer;
 }
 
 

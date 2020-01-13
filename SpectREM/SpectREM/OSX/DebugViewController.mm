@@ -130,7 +130,7 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
     [self.emulationViewController pauseMachine];
 
     Debug *debugger = (Debug *)[self.emulationViewController getDebugger];
-    int pc = debugger->machine->z80Core.GetRegister(CZ80Core::eREG_PC);
+    int pc = debugger->machine->z80_core.GetRegister(CZ80Core::eREG_PC);
     debugger->disassemble(pc , 0xffff - pc, self.hexFormat);
     
     [self.commandTextField becomeFirstResponder];
@@ -280,15 +280,15 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
         {
             NSString *condition = @"";
             uint8_t type = bp.type;
-            if (type & ZXSpectrum::eDEBUGOPERATION::READ)
+            if (type & ZXSpectrum::DebugOperation::READ)
             {
                 condition = [condition stringByAppendingString:@"READ "];
             }
-            if (type & ZXSpectrum::eDEBUGOPERATION::WRITE)
+            if (type & ZXSpectrum::DebugOperation::WRITE)
             {
                 condition = [condition stringByAppendingString:@"WRITE "];
             }
-            if (type & ZXSpectrum::eDEBUGOPERATION::EXECUTE)
+            if (type & ZXSpectrum::DebugOperation::EXECUTE)
             {
                 condition = [condition stringByAppendingString:@"EXEC "];
             }
@@ -332,11 +332,11 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
                 {
                     if (self.hexFormat)
                     {
-                        attrString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%02X ", (unsigned short)debugger->machine->z80Core.Z80CoreDebugMemRead(address, NULL)]];
+                        attrString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%02X ", (unsigned short)debugger->machine->z80_core.Z80CoreDebugMemRead(address, NULL)]];
                     }
                     else
                     {
-                        attrString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%03i ", (unsigned short)debugger->machine->z80Core.Z80CoreDebugMemRead(address, NULL)]];
+                        attrString = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%03i ", (unsigned short)debugger->machine->z80_core.Z80CoreDebugMemRead(address, NULL)]];
                     }
                     
                     int highlightLength = 2;
@@ -353,11 +353,11 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
                     {
                         NSColor *color = [NSColor clearColor];
                         switch (debugger->breakpointAtAddress(address)) {
-                            case ZXSpectrum::eDEBUGOPERATION::READ:
-                            case ZXSpectrum::eDEBUGOPERATION::WRITE:
+                            case ZXSpectrum::DebugOperation::READ:
+                            case ZXSpectrum::DebugOperation::WRITE:
                                 color = cRDWR_BREAKPOINT_COLOR;
                                 break;
-                            case ZXSpectrum::eDEBUGOPERATION::EXECUTE:
+                            case ZXSpectrum::DebugOperation::EXECUTE:
                                 color = cEXEC_BREAKPOINT_COLOR;
                         }
                         [attrString addAttribute:NSBackgroundColorAttributeName value:color range:NSMakeRange(0, highlightLength)];
@@ -384,7 +384,7 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
                         color = cHIGHLIGHT_COLOR;
                     }
                 
-                    unsigned char c = debugger->machine->z80Core.Z80CoreDebugMemRead(address, NULL);
+                    unsigned char c = debugger->machine->z80_core.Z80CoreDebugMemRead(address, NULL);
                     if ((c >= 0 && c < 32) || c > 126)
                     {
                         [attrString appendAttributedString:[[NSAttributedString alloc] initWithString:@"・ "]];
@@ -458,11 +458,11 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
         {
             if (debugger->breakpoint(i).address == dop.address)
             {
-                if (debugger->breakpoint(i).type & ZXSpectrum::eDEBUGOPERATION::EXECUTE)
+                if (debugger->breakpoint(i).type & ZXSpectrum::DebugOperation::EXECUTE)
                 {
                     rowColor = cEXEC_BREAKPOINT_COLOR;
                 }
-                else if (debugger->breakpoint(i).type & ZXSpectrum::eDEBUGOPERATION::READ || debugger->breakpoint(i).type & ZXSpectrum::eDEBUGOPERATION::WRITE)
+                else if (debugger->breakpoint(i).type & ZXSpectrum::DebugOperation::READ || debugger->breakpoint(i).type & ZXSpectrum::DebugOperation::WRITE)
                 {
                     rowColor = cRDWR_BREAKPOINT_COLOR;
                 }
@@ -470,7 +470,7 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
             }
         }
 
-        if (debugger->machine->z80Core.GetRegister(CZ80Core::eREG_PC) == dop.address)
+        if (debugger->machine->z80_core.GetRegister(CZ80Core::eREG_PC) == dop.address)
         {
             rowColor = cHIGHLIGHT_COLOR;
         }
@@ -495,7 +495,7 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
     {
         if (debugger->breakpoint(i).address == address)
         {
-            debugger->removeBreakpoint(address, ZXSpectrum::eDEBUGOPERATION::EXECUTE);
+            debugger->removeBreakpoint(address, ZXSpectrum::DebugOperation::EXECUTE);
             breakpointRemoved = true;
             break;
         }
@@ -503,7 +503,7 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
 
     if (!breakpointRemoved)
     {
-        debugger->addBreakpoint(address, ZXSpectrum::eDEBUGOPERATION::EXECUTE);
+        debugger->addBreakpoint(address, ZXSpectrum::DebugOperation::EXECUTE);
     }
 
     [self reloadDisassemblyData];
@@ -647,7 +647,7 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
 - (void)tokenStepFrame:(NSArray *)commandList machine:(ZXSpectrum *)machine
 {
     [self.emulationViewController pauseMachine];
-    machine->emuPaused = false;
+    machine->emu_paused = false;
     machine->generateFrame();
     [self updateViewDetails];
 }
@@ -689,7 +689,7 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
             if ( [scanner scanHexInt:&value] && value <= 0xff )
             {
                 self.memoryTableSearchAddress = address;
-                machine->z80Core.Z80CoreDebugMemWrite(address, value, NULL);
+                machine->z80_core.Z80CoreDebugMemWrite(address, value, NULL);
                 NSUInteger row = (address / self.byteWidth);
                 [self.memoryTableView scrollRowToVisible:row];
                 [self updateMemoryTable];
@@ -725,7 +725,7 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
         }
         else if ( [[commandList[1] uppercaseString]isEqualToString:@"PC"] )
         {
-            self.disassembleAddress = machine->z80Core.GetRegister(CZ80Core::eREG_PC);
+            self.disassembleAddress = machine->z80_core.GetRegister(CZ80Core::eREG_PC);
             debugger->disassemble(self.disassembleAddress, 0xffff - self.disassembleAddress, self.hexFormat);
         }
         else if ( [[commandList[1] uppercaseString]isEqualToString:@"SP"] )
@@ -758,27 +758,27 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
     
     if ( [[commandList[1] uppercaseString] isEqualToString:cTOKEN_BREAKPOINT_ADD_ACTION_EXECUTE] )
     {
-        debugger->addBreakpoint(value, ZXSpectrum::eDEBUGOPERATION::EXECUTE);
+        debugger->addBreakpoint(value, ZXSpectrum::DebugOperation::EXECUTE);
     }
     else if ( [[commandList[1] uppercaseString] isEqualToString:cTOKEN_BREAKPOINT_ADD_ACTION_READ] )
     {
-        debugger->addBreakpoint(value, ZXSpectrum::eDEBUGOPERATION::READ);
+        debugger->addBreakpoint(value, ZXSpectrum::DebugOperation::READ);
     }
     else if ( [[commandList[1] uppercaseString] isEqualToString:cTOKEN_BREAKPOINT_ADD_ACTION_WRITE] )
     {
-        debugger->addBreakpoint(value, ZXSpectrum::eDEBUGOPERATION::WRITE);
+        debugger->addBreakpoint(value, ZXSpectrum::DebugOperation::WRITE);
     }
     else if ( [[commandList[1] uppercaseString] isEqualToString:cTOKEN_BREAKPOINT_REMOVE_ACTION_READ] )
     {
-        debugger->removeBreakpoint(value, ZXSpectrum::eDEBUGOPERATION::READ);
+        debugger->removeBreakpoint(value, ZXSpectrum::DebugOperation::READ);
     }
     else if ( [[commandList[1] uppercaseString] isEqualToString:cTOKEN_BREAKPOINT_REMOVE_ACTION_WRITE] )
     {
-        debugger->removeBreakpoint(value, ZXSpectrum::eDEBUGOPERATION::WRITE);
+        debugger->removeBreakpoint(value, ZXSpectrum::DebugOperation::WRITE);
     }
     else if ( [[commandList[1] uppercaseString] isEqualToString:cTOKEN_BREAKPOINT_REMOVE_ACTION_EXECUTE] )
     {
-        debugger->removeBreakpoint(value, ZXSpectrum::eDEBUGOPERATION::EXECUTE);
+        debugger->removeBreakpoint(value, ZXSpectrum::DebugOperation::EXECUTE);
     }
     [self updateViewDetails];
 }
@@ -829,12 +829,12 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
     }
 }
 
-- (void)displayTokenError:(NSString*)errorString
+- (void)displayTokenError:(NSString*)error_string
 {
     NSAlert *alert = [NSAlert new];
     [alert addButtonWithTitle:@"OK"];
     [alert setMessageText:@"Syntax Error"];
-    [alert setInformativeText:errorString];
+    [alert setInformativeText:error_string];
     [alert runModal];
 }
 
@@ -865,7 +865,7 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
             {
                 Debug::DisassembledOpcode dop = debugger->disassembly(static_cast<unsigned int>(i));
 
-                if (dop.address == debugger->machine->z80Core.GetRegister(CZ80Core::eREG_PC))
+                if (dop.address == debugger->machine->z80_core.GetRegister(CZ80Core::eREG_PC))
                 {
                     debugger->disassemble(self.disassembleAddress, 0xffff - self.disassembleAddress, self.hexFormat);
                     [self reloadDisassemblyData];
@@ -875,7 +875,7 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
                 }
             }
         }
-        self.disassembleAddress = debugger->machine->z80Core.GetRegister(CZ80Core::eREG_PC);
+        self.disassembleAddress = debugger->machine->z80_core.GetRegister(CZ80Core::eREG_PC);
         debugger->disassemble(self.disassembleAddress, 0xffff - self.disassembleAddress, self.hexFormat);
         [self reloadDisassemblyData];
         [self.disassemblyTableview scrollRowToVisible:0];
@@ -898,63 +898,63 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
 
         if (self.hexFormat)
         {
-            self.pc = [NSString stringWithFormat:@"$%04X", debugger->machine->z80Core.GetRegister(CZ80Core::eREG_PC)];
-            self.sp = [NSString stringWithFormat:@"$%04X", debugger->machine->z80Core.GetRegister(CZ80Core::eREG_SP)];
+            self.pc = [NSString stringWithFormat:@"$%04X", debugger->machine->z80_core.GetRegister(CZ80Core::eREG_PC)];
+            self.sp = [NSString stringWithFormat:@"$%04X", debugger->machine->z80_core.GetRegister(CZ80Core::eREG_SP)];
             
-            self.af = [NSString stringWithFormat:@"$%04X", debugger->machine->z80Core.GetRegister(CZ80Core::eREG_AF)];
-            self.bc = [NSString stringWithFormat:@"$%04X", debugger->machine->z80Core.GetRegister(CZ80Core::eREG_BC)];
-            self.de = [NSString stringWithFormat:@"$%04X", debugger->machine->z80Core.GetRegister(CZ80Core::eREG_DE)];
-            self.hl = [NSString stringWithFormat:@"$%04X", debugger->machine->z80Core.GetRegister(CZ80Core::eREG_HL)];
+            self.af = [NSString stringWithFormat:@"$%04X", debugger->machine->z80_core.GetRegister(CZ80Core::eREG_AF)];
+            self.bc = [NSString stringWithFormat:@"$%04X", debugger->machine->z80_core.GetRegister(CZ80Core::eREG_BC)];
+            self.de = [NSString stringWithFormat:@"$%04X", debugger->machine->z80_core.GetRegister(CZ80Core::eREG_DE)];
+            self.hl = [NSString stringWithFormat:@"$%04X", debugger->machine->z80_core.GetRegister(CZ80Core::eREG_HL)];
             
-            self.a_af = [NSString stringWithFormat:@"$%04X", debugger->machine->z80Core.GetRegister(CZ80Core::eREG_ALT_AF)];
-            self.a_bc = [NSString stringWithFormat:@"$%04X", debugger->machine->z80Core.GetRegister(CZ80Core::eREG_ALT_BC)];
-            self.a_de = [NSString stringWithFormat:@"$%04X", debugger->machine->z80Core.GetRegister(CZ80Core::eREG_ALT_DE)];
-            self.a_hl = [NSString stringWithFormat:@"$%04X", debugger->machine->z80Core.GetRegister(CZ80Core::eREG_ALT_HL)];
+            self.a_af = [NSString stringWithFormat:@"$%04X", debugger->machine->z80_core.GetRegister(CZ80Core::eREG_ALT_AF)];
+            self.a_bc = [NSString stringWithFormat:@"$%04X", debugger->machine->z80_core.GetRegister(CZ80Core::eREG_ALT_BC)];
+            self.a_de = [NSString stringWithFormat:@"$%04X", debugger->machine->z80_core.GetRegister(CZ80Core::eREG_ALT_DE)];
+            self.a_hl = [NSString stringWithFormat:@"$%04X", debugger->machine->z80_core.GetRegister(CZ80Core::eREG_ALT_HL)];
             
-            self.i = [NSString stringWithFormat:@"$%02X", debugger->machine->z80Core.GetRegister(CZ80Core::eREG_I)];
-            self.r = [NSString stringWithFormat:@"$%02X", debugger->machine->z80Core.GetRegister(CZ80Core::eREG_R)];
+            self.i = [NSString stringWithFormat:@"$%02X", debugger->machine->z80_core.GetRegister(CZ80Core::eREG_I)];
+            self.r = [NSString stringWithFormat:@"$%02X", debugger->machine->z80_core.GetRegister(CZ80Core::eREG_R)];
             
-            self.ix = [NSString stringWithFormat:@"$%04X", debugger->machine->z80Core.GetRegister(CZ80Core::eREG_IX)];
-            self.iy = [NSString stringWithFormat:@"$%04X", debugger->machine->z80Core.GetRegister(CZ80Core::eREG_IY)];
+            self.ix = [NSString stringWithFormat:@"$%04X", debugger->machine->z80_core.GetRegister(CZ80Core::eREG_IX)];
+            self.iy = [NSString stringWithFormat:@"$%04X", debugger->machine->z80_core.GetRegister(CZ80Core::eREG_IY)];
         }
         else
         {
-            self.pc = [NSString stringWithFormat:@"%04i", debugger->machine->z80Core.GetRegister(CZ80Core::eREG_PC)];
-            self.sp = [NSString stringWithFormat:@"%04i", debugger->machine->z80Core.GetRegister(CZ80Core::eREG_SP)];
+            self.pc = [NSString stringWithFormat:@"%04i", debugger->machine->z80_core.GetRegister(CZ80Core::eREG_PC)];
+            self.sp = [NSString stringWithFormat:@"%04i", debugger->machine->z80_core.GetRegister(CZ80Core::eREG_SP)];
             
-            self.af = [NSString stringWithFormat:@"%04i", debugger->machine->z80Core.GetRegister(CZ80Core::eREG_AF)];
-            self.bc = [NSString stringWithFormat:@"%04i", debugger->machine->z80Core.GetRegister(CZ80Core::eREG_BC)];
-            self.de = [NSString stringWithFormat:@"%04i", debugger->machine->z80Core.GetRegister(CZ80Core::eREG_DE)];
-            self.hl = [NSString stringWithFormat:@"%04i", debugger->machine->z80Core.GetRegister(CZ80Core::eREG_HL)];
+            self.af = [NSString stringWithFormat:@"%04i", debugger->machine->z80_core.GetRegister(CZ80Core::eREG_AF)];
+            self.bc = [NSString stringWithFormat:@"%04i", debugger->machine->z80_core.GetRegister(CZ80Core::eREG_BC)];
+            self.de = [NSString stringWithFormat:@"%04i", debugger->machine->z80_core.GetRegister(CZ80Core::eREG_DE)];
+            self.hl = [NSString stringWithFormat:@"%04i", debugger->machine->z80_core.GetRegister(CZ80Core::eREG_HL)];
             
-            self.a_af = [NSString stringWithFormat:@"%04i", debugger->machine->z80Core.GetRegister(CZ80Core::eREG_ALT_AF)];
-            self.a_bc = [NSString stringWithFormat:@"%04i", debugger->machine->z80Core.GetRegister(CZ80Core::eREG_ALT_BC)];
-            self.a_de = [NSString stringWithFormat:@"%04i", debugger->machine->z80Core.GetRegister(CZ80Core::eREG_ALT_DE)];
-            self.a_hl = [NSString stringWithFormat:@"%04i", debugger->machine->z80Core.GetRegister(CZ80Core::eREG_ALT_HL)];
+            self.a_af = [NSString stringWithFormat:@"%04i", debugger->machine->z80_core.GetRegister(CZ80Core::eREG_ALT_AF)];
+            self.a_bc = [NSString stringWithFormat:@"%04i", debugger->machine->z80_core.GetRegister(CZ80Core::eREG_ALT_BC)];
+            self.a_de = [NSString stringWithFormat:@"%04i", debugger->machine->z80_core.GetRegister(CZ80Core::eREG_ALT_DE)];
+            self.a_hl = [NSString stringWithFormat:@"%04i", debugger->machine->z80_core.GetRegister(CZ80Core::eREG_ALT_HL)];
             
-            self.i = [NSString stringWithFormat:@"%02i", debugger->machine->z80Core.GetRegister(CZ80Core::eREG_I)];
-            self.r = [NSString stringWithFormat:@"%02i", debugger->machine->z80Core.GetRegister(CZ80Core::eREG_R)];
+            self.i = [NSString stringWithFormat:@"%02i", debugger->machine->z80_core.GetRegister(CZ80Core::eREG_I)];
+            self.r = [NSString stringWithFormat:@"%02i", debugger->machine->z80_core.GetRegister(CZ80Core::eREG_R)];
             
-            self.ix = [NSString stringWithFormat:@"%04i", debugger->machine->z80Core.GetRegister(CZ80Core::eREG_IX)];
-            self.iy = [NSString stringWithFormat:@"%04i", debugger->machine->z80Core.GetRegister(CZ80Core::eREG_IY)];
+            self.ix = [NSString stringWithFormat:@"%04i", debugger->machine->z80_core.GetRegister(CZ80Core::eREG_IX)];
+            self.iy = [NSString stringWithFormat:@"%04i", debugger->machine->z80_core.GetRegister(CZ80Core::eREG_IY)];
         }
         
-        self.currentRom = [NSString stringWithFormat:@"%02i", debugger->machine->emuROMPage];
-        self.displayPage = [NSString stringWithFormat:@"%02i", debugger->machine->emuDisplayPage];
-        self.ramPage = [NSString stringWithFormat:@"%02i", debugger->machine->emuRAMPage];
-        self.iff1 = [NSString stringWithFormat:@"%02i", debugger->machine->z80Core.GetIFF1()];
-        self.im = [NSString stringWithFormat:@"%02i", debugger->machine->z80Core.GetIMMode()];
+        self.currentRom = [NSString stringWithFormat:@"%02i", debugger->machine->emu_rom_page];
+        self.displayPage = [NSString stringWithFormat:@"%02i", debugger->machine->emu_display_page];
+        self.ramPage = [NSString stringWithFormat:@"%02i", debugger->machine->emu_ram_page];
+        self.iff1 = [NSString stringWithFormat:@"%02i", debugger->machine->z80_core.GetIFF1()];
+        self.im = [NSString stringWithFormat:@"%02i", debugger->machine->z80_core.GetIMMode()];
         
-        self.tStates = [NSString stringWithFormat:@"%04i", debugger->machine->z80Core.GetTStates()];
+        self.tStates = [NSString stringWithFormat:@"%04i", debugger->machine->z80_core.GetTStates()];
         
-        self.fs = (debugger->machine->z80Core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80Core.FLAG_S) ? @"1" : @"-";
-        self.fz = (debugger->machine->z80Core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80Core.FLAG_Z) ? @"1" : @"-";
-        self.f5 = (debugger->machine->z80Core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80Core.FLAG_5) ? @"1" : @"-";
-        self.fh = (debugger->machine->z80Core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80Core.FLAG_H) ? @"1" : @"-";
-        self.f3 = (debugger->machine->z80Core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80Core.FLAG_3) ? @"1" : @"-";
-        self.fpv = (debugger->machine->z80Core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80Core.FLAG_P) ? @"1" : @"-";
-        self.fn = (debugger->machine->z80Core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80Core.FLAG_N) ? @"1" : @"-";
-        self.fc = (debugger->machine->z80Core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80Core.FLAG_C) ? @"1" : @"-";
+        self.fs = (debugger->machine->z80_core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80_core.FLAG_S) ? @"1" : @"-";
+        self.fz = (debugger->machine->z80_core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80_core.FLAG_Z) ? @"1" : @"-";
+        self.f5 = (debugger->machine->z80_core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80_core.FLAG_5) ? @"1" : @"-";
+        self.fh = (debugger->machine->z80_core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80_core.FLAG_H) ? @"1" : @"-";
+        self.f3 = (debugger->machine->z80_core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80_core.FLAG_3) ? @"1" : @"-";
+        self.fpv = (debugger->machine->z80_core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80_core.FLAG_P) ? @"1" : @"-";
+        self.fn = (debugger->machine->z80_core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80_core.FLAG_N) ? @"1" : @"-";
+        self.fc = (debugger->machine->z80_core.GetRegister(CZ80Core::eREG_F) & debugger->machine->z80_core.FLAG_C) ? @"1" : @"-";
     });
     
 

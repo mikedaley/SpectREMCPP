@@ -26,11 +26,11 @@ ZXSpectrum128::ZXSpectrum128(Tape *t) : ZXSpectrum()
     std::cout << "ZXSpectrum128::Constructor" << "\n";
     if (t)
     {
-        tape = t;
+        virtual_tape = t;
     }
     else
     {
-        tape = nullptr;
+        virtual_tape = nullptr;
     }
 }
 
@@ -49,21 +49,21 @@ void ZXSpectrum128::initialise(std::string romPath)
 {
     std::cout << "ZXSpectrum128::initialise(char *rom)" << "\n";
     
-    machineInfo = machines[ eZXSpectrum128 ];
+    machine_info = machines[ eZXSpectrum128 ];
     ZXSpectrum::initialise(romPath);
     
     // Register an opcode callback function with the Z80 core so that opcodes can be intercepted
     // when handling things like ROM saving and loading
-    z80Core.RegisterOpcodeCallback(opcodeCallback);
+    z80_core.RegisterOpcodeCallback(opcodeCallback);
     
     loadROM( cDEFAULT_ROM_0, 0 );
     loadROM( cDEFAULT_ROM_1, 1 );
 
-    emuROMPage = 0;
-    emuRAMPage = 0;
-    emuDisplayPage = 5;
-    emuDisablePaging = false;
-    ULAPortnnFDValue = 0;
+    emu_rom_page = 0;
+    emu_ram_page = 0;
+    emu_display_page = 5;
+    emu_disable_paging = false;
+    ula_port_nnfd_value = 0;
 
 }
 
@@ -73,9 +73,9 @@ void ZXSpectrum128::initialise(std::string romPath)
 uint8_t ZXSpectrum128::coreIORead(uint16_t address)
 {
     bool contended = false;
-    int memoryPage = address / cMEMORY_PAGE_SIZE;
+    int memory_page = address / kMemoryPageSize;
     
-    if (machineInfo.hasPaging && (memoryPage == 1 || (memoryPage == 3 && (emuRAMPage == 1 || emuRAMPage == 3 || emuRAMPage == 5 || emuRAMPage == 7))))
+    if (machine_info.has_paging && (memory_page == 1 || (memory_page == 3 && (emu_ram_page == 1 || emu_ram_page == 3 || emu_ram_page == 5 || emu_ram_page == 7))))
     {
         contended = true;
     }
@@ -95,7 +95,7 @@ uint8_t ZXSpectrum128::coreIORead(uint16_t address)
         }
         
         // AY-3-8912 ports
-        else if ((address & 0xc002) == 0xc000 && machineInfo.hasAY)
+        else if ((address & 0xc002) == 0xc000 && machine_info.has_ay)
         {
             return audioAYReadData();
         }        
@@ -105,9 +105,9 @@ uint8_t ZXSpectrum128::coreIORead(uint16_t address)
         if ( (address & 0x8002) == 0)
         {
             uint8_t floatingBusData = ULAFloatingBus();
-            uint32_t currentTStates = z80Core.GetTStates();
+            uint32_t currentTStates = z80_core.GetTStates();
             UpdatePort7FFD(floatingBusData);
-            z80Core.ResetTStates(z80Core.GetTStates() - currentTStates);
+            z80_core.ResetTStates(z80_core.GetTStates() - currentTStates);
         }
 
         // Getting here means that nothing has handled that port read so based on a real Spectrum
@@ -123,12 +123,12 @@ uint8_t ZXSpectrum128::coreIORead(uint16_t address)
         {
             if (!(address & (0x100 << i)))
             {
-                result &= keyboardMap[i];
+                result &= keyboard_map[i];
             }
         }
     }
 
-    result = static_cast<uint8_t>((result & 191) | (audioEarBit << 6) | (tape->inputBit << 6));
+    result = static_cast<uint8_t>((result & 191) | (audio_ear_bit << 6) | (virtual_tape->input_bit << 6));
     
     return result;
 }
@@ -138,9 +138,9 @@ uint8_t ZXSpectrum128::coreIORead(uint16_t address)
 void ZXSpectrum128::coreIOWrite(uint16_t address, uint8_t data)
 {
     bool contended = false;
-    int memoryPage = address / cMEMORY_PAGE_SIZE;
+    int memory_page = address / kMemoryPageSize;
     
-    if (machineInfo.hasPaging && (memoryPage == 1 || (memoryPage == 3 && (emuRAMPage == 1 || emuRAMPage == 3 || emuRAMPage == 5 || emuRAMPage == 7))))
+    if (machine_info.has_paging && (memory_page == 1 || (memory_page == 3 && (emu_ram_page == 1 || emu_ram_page == 3 || emu_ram_page == 5 || emu_ram_page == 7))))
     {
         contended = true;
     }
@@ -154,26 +154,26 @@ void ZXSpectrum128::coreIOWrite(uint16_t address, uint8_t data)
     // +---+---+---+---+---+-----------+
     if (!(address & 0x01))
     {
-        displayUpdateWithTs((z80Core.GetTStates() - emuCurrentDisplayTs) + machineInfo.borderDrawingOffset);
-        audioEarBit = (data & 0x10) ? 1 : 0;
-        audioMicBit = (data & 0x08) ? 1 : 0;
-        displayBorderColor = data & 0x07;
+        displayUpdateWithTs((z80_core.GetTStates() - emu_current_display_ts) + machine_info.border_drawing_offset);
+        audio_ear_bit = (data & 0x10) ? 1 : 0;
+        audio_mic_bit = (data & 0x08) ? 1 : 0;
+        display_border_color = data & 0x07;
     }
     
     // AY-3-8912 ports
-    if((address & 0xc002) == 0xc000 && machineInfo.hasAY)
+    if((address & 0xc002) == 0xc000 && machine_info.has_ay)
     {
-        ULAPortnnFDValue = data;
+        ula_port_nnfd_value = data;
         audioAYSetRegister(data);
     }
     
-    if ((address & 0xc002) == 0x8000 && machineInfo.hasAY)
+    if ((address & 0xc002) == 0x8000 && machine_info.has_ay)
     {
         audioAYWriteData(data);
     }
     
     // Memory paging port
-    if ( (address & 0x8002) == 0 && emuDisablePaging == false)
+    if ( (address & 0x8002) == 0 && emu_disable_paging == false)
     {
         UpdatePort7FFD(data);
     }
@@ -184,22 +184,22 @@ void ZXSpectrum128::coreIOWrite(uint16_t address, uint8_t data)
 void ZXSpectrum128::UpdatePort7FFD(uint8_t data)
 {
     // Save the last byte set, used when generating a Z80 snapshot
-    ULAPortnnFDValue = data;
+    ula_port_nnfd_value = data;
     
-    if (emuDisplayPage != (((data & 0x08ul) == 0x08ul) ? 7ul : 5ul))
+    if (emu_display_page != (((data & 0x08ul) == 0x08ul) ? 7ul : 5ul))
     {
-        displayUpdateWithTs((z80Core.GetTStates() - emuCurrentDisplayTs) + machineInfo.borderDrawingOffset);
+        displayUpdateWithTs((z80_core.GetTStates() - emu_current_display_ts) + machine_info.border_drawing_offset);
     }
     
     // You should only be able to disable paging once. To enable paging again then a reset is necessary.
-    if (data & 0x20 && emuDisablePaging != true)
+    if (data & 0x20 && emu_disable_paging != true)
     {
-        emuDisablePaging = true;
+        emu_disable_paging = true;
     }
     
-    emuROMPage = ((data & 0x10) == 0x10) ? 1 : 0;
-    emuRAMPage = (data & 0x07);
-    emuDisplayPage = ((data & 0x08) == 0x08) ? 7 : 5;
+    emu_rom_page = ((data & 0x10) == 0x10) ? 1 : 0;
+    emu_ram_page = (data & 0x07);
+    emu_display_page = ((data & 0x08) == 0x08) ? 7 : 5;
     
 }
 
@@ -207,25 +207,25 @@ void ZXSpectrum128::UpdatePort7FFD(uint8_t data)
 
 void ZXSpectrum128::coreMemoryWrite(uint16_t address, uint8_t data)
 {
-    const uint32_t memoryPage = address / cMEMORY_PAGE_SIZE;
+    const int page = address / kMemoryPageSize;
     address &= 16383;
 
-    if (memoryPage == 0)
+    if (page == 0)
     {
         return;
     }
-    else if (memoryPage == 1)
+    else if (page == 1)
     {
-        displayUpdateWithTs((z80Core.GetTStates() - emuCurrentDisplayTs) + machineInfo.paperDrawingOffset);
-        memoryRam[(5 * cMEMORY_PAGE_SIZE) + address] = data;
+        displayUpdateWithTs((z80_core.GetTStates() - emu_current_display_ts) + machine_info.paper_drawing_offset);
+        memory_ram[(5 * kMemoryPageSize) + address] = data;
     }
-    else if (memoryPage == 2)
+    else if (page == 2)
     {
-        memoryRam[(2 * cMEMORY_PAGE_SIZE) + address] = data;
+        memory_ram[(2 * kMemoryPageSize) + address] = data;
     }
-    else if (memoryPage == 3)
+    else if (page == 3)
     {
-        memoryRam[(emuRAMPage * cMEMORY_PAGE_SIZE) + address] = data;
+        memory_ram[(emu_ram_page * kMemoryPageSize) + address] = data;
     }
 }
 
@@ -233,24 +233,24 @@ void ZXSpectrum128::coreMemoryWrite(uint16_t address, uint8_t data)
 
 uint8_t ZXSpectrum128::coreMemoryRead(uint16_t address)
 {
-    const uint32_t page = address / cMEMORY_PAGE_SIZE;
+    const int page = address / kMemoryPageSize;
     address &= 16383;
 
     if (page == 0)
     {
-        return (memoryRom[(emuROMPage * cMEMORY_PAGE_SIZE) + address]);
+        return (memory_rom[(emu_rom_page * kMemoryPageSize) + address]);
     }
     else if (page == 1)
     {
-        return (memoryRam[(5 * cMEMORY_PAGE_SIZE) + address]);
+        return (memory_ram[(5 * kMemoryPageSize) + address]);
     }
     else if (page == 2)
     {
-        return (memoryRam[(2 * cMEMORY_PAGE_SIZE) + address]);
+        return (memory_ram[(2 * kMemoryPageSize) + address]);
     }
     else if (page == 3)
     {
-        return (memoryRam[(emuRAMPage * cMEMORY_PAGE_SIZE) + address]);
+        return (memory_ram[(emu_ram_page * kMemoryPageSize) + address]);
     }
     
     return 0;
@@ -261,24 +261,24 @@ uint8_t ZXSpectrum128::coreMemoryRead(uint16_t address)
 
 void ZXSpectrum128::coreDebugWrite(uint16_t address, uint8_t byte, void *)
 {
-    const uint32_t memoryPage = address / cMEMORY_PAGE_SIZE;
+    const int page = address / kMemoryPageSize;
     address &= 16383;
     
-    if (memoryPage == 0)
+    if (page == 0)
     {
         return;
     }
-    else if (memoryPage == 1)
+    else if (page == 1)
     {
-        memoryRam[(5 * cMEMORY_PAGE_SIZE) + address] = byte;
+        memory_ram[(5 * kMemoryPageSize) + address] = byte;
     }
-    else if (memoryPage == 2)
+    else if (page == 2)
     {
-        memoryRam[(2 * cMEMORY_PAGE_SIZE) + address] = byte;
+        memory_ram[(2 * kMemoryPageSize) + address] = byte;
     }
-    else if (memoryPage == 3)
+    else if (page == 3)
     {
-        memoryRam[(emuRAMPage * cMEMORY_PAGE_SIZE) + address] = byte;
+        memory_ram[(emu_ram_page * kMemoryPageSize) + address] = byte;
     }
 }
 
@@ -286,24 +286,24 @@ void ZXSpectrum128::coreDebugWrite(uint16_t address, uint8_t byte, void *)
 
 uint8_t ZXSpectrum128::coreDebugRead(uint16_t address, void *)
 {
-    const uint32_t page = address / cMEMORY_PAGE_SIZE;
+    const int page = address / kMemoryPageSize;
     address &= 16383;
     
     if (page == 0)
     {
-        return (memoryRom[(emuROMPage * cMEMORY_PAGE_SIZE) + address]);
+        return (memory_rom[(emu_rom_page * kMemoryPageSize) + address]);
     }
     else if (page == 1)
     {
-        return (memoryRam[(5 * cMEMORY_PAGE_SIZE) + address]);
+        return (memory_ram[(5 * kMemoryPageSize) + address]);
     }
     else if (page == 2)
     {
-        return (memoryRam[(2 * cMEMORY_PAGE_SIZE) + address]);
+        return (memory_ram[(2 * kMemoryPageSize) + address]);
     }
     else if (page == 3)
     {
-        return (memoryRam[(emuRAMPage * cMEMORY_PAGE_SIZE) + address]);
+        return (memory_ram[(emu_ram_page * kMemoryPageSize) + address]);
     }
     
     return 0;
@@ -314,13 +314,13 @@ uint8_t ZXSpectrum128::coreDebugRead(uint16_t address, void *)
 
 void ZXSpectrum128::coreMemoryContention(uint16_t address, uint32_t)
 {
-    const uint32_t memoryPage = address / cMEMORY_PAGE_SIZE;
+    const int page = address / kMemoryPageSize;
     
-    if (memoryPage == 1 ||
-        (memoryPage == 3 &&
-          (emuRAMPage == 1 || emuRAMPage == 3 || emuRAMPage == 5 || emuRAMPage == 7)))
+    if (page == 1 ||
+        (page == 3 &&
+          (emu_ram_page == 1 || emu_ram_page == 3 || emu_ram_page == 5 || emu_ram_page == 7)))
     {
-        z80Core.AddContentionTStates( ULAMemoryContentionTable[z80Core.GetTStates() % machineInfo.tsPerFrame] );
+        z80_core.AddContentionTStates( ula_memory_contention_table[z80_core.GetTStates() % machine_info.ts_per_frame] );
     }
 }
 
@@ -334,11 +334,11 @@ void ZXSpectrum128::release()
 
 void ZXSpectrum128::resetMachine(bool hard)
 {
-    emuROMPage = 0;
-    emuRAMPage = 0;
-    emuDisplayPage = 5;
-    emuDisablePaging = false;
-    ULAPortnnFDValue = 0;
+    emu_rom_page = 0;
+    emu_ram_page = 0;
+    emu_display_page = 5;
+    emu_disable_paging = false;
+    ula_port_nnfd_value = 0;
     ZXSpectrum::resetMachine(hard);
 }
 
@@ -349,15 +349,15 @@ bool ZXSpectrum128::opcodeCallback(uint8_t opcode, uint16_t address, void *param
 {
     ZXSpectrum128 *machine = static_cast<ZXSpectrum128*>(param);
     
-    if (machine->emuTapeInstantLoad)
+    if (machine->emu_tape_instant_load)
     {
         // Trap ROM tap LOADING
         if (address == 0x056b || address == 0x0111)
         {
             if (opcode == 0xc0)
             {
-                machine->emuLoadTrapTriggered = true;
-                machine->tape->updateStatus();
+                machine->emu_load_trap_triggered = true;
+                machine->virtual_tape->updateStatus();
                 return true;
             }
         }
@@ -368,14 +368,14 @@ bool ZXSpectrum128::opcodeCallback(uint8_t opcode, uint16_t address, void *param
     {
         if (opcode == 0x08)
         {
-            machine->emuSaveTrapTriggered = true;
-            machine->tape->updateStatus();
+            machine->emu_save_trap_triggered = true;
+            machine->virtual_tape->updateStatus();
             return true;
         }
     }
     
-    machine->emuSaveTrapTriggered = false;
-    machine->emuLoadTrapTriggered = false;
+    machine->emu_save_trap_triggered = false;
+    machine->emu_load_trap_triggered = false;
     
     return false;
 }

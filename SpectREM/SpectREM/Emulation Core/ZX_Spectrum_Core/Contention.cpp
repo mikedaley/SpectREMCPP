@@ -8,7 +8,7 @@
 
 #include "ZXSpectrum.hpp"
 
-const uint32_t ZXSpectrum::ULAConentionValues[] = { 6, 5, 4, 3, 2, 1, 0, 0 };
+const uint32_t ZXSpectrum::ula_contention_values[] = { 6, 5, 4, 3, 2, 1, 0, 0 };
 
 // ------------------------------------------------------------------------------------------------------------
 // - IO Contention
@@ -32,32 +32,32 @@ void ZXSpectrum::ULAApplyIOContention(uint16_t address, bool contended)
     {
         if ((address & 0x01) == 0)
         {
-            z80Core.AddContentionTStates( ULAMemoryContentionTable[z80Core.GetTStates() % machineInfo.tsPerFrame] );
-            z80Core.AddTStates(1);
-            z80Core.AddContentionTStates( ULAMemoryContentionTable[z80Core.GetTStates() % machineInfo.tsPerFrame] );
-            z80Core.AddTStates(3);
+            z80_core.AddContentionTStates( ula_memory_contention_table[z80_core.GetTStates() % machine_info.ts_per_frame] );
+            z80_core.AddTStates(1);
+            z80_core.AddContentionTStates( ula_memory_contention_table[z80_core.GetTStates() % machine_info.ts_per_frame] );
+            z80_core.AddTStates(3);
         }
         else
         {
-            z80Core.AddContentionTStates( ULAMemoryContentionTable[z80Core.GetTStates() % machineInfo.tsPerFrame] );
-            z80Core.AddTStates(1);
-            z80Core.AddContentionTStates( ULAMemoryContentionTable[z80Core.GetTStates() % machineInfo.tsPerFrame] );
-            z80Core.AddTStates(1);
-            z80Core.AddContentionTStates( ULAMemoryContentionTable[z80Core.GetTStates() % machineInfo.tsPerFrame] );
-            z80Core.AddTStates(1);
-            z80Core.AddContentionTStates( ULAMemoryContentionTable[z80Core.GetTStates() % machineInfo.tsPerFrame] );
-            z80Core.AddTStates(1);
+            z80_core.AddContentionTStates( ula_memory_contention_table[z80_core.GetTStates() % machine_info.ts_per_frame] );
+            z80_core.AddTStates(1);
+            z80_core.AddContentionTStates( ula_memory_contention_table[z80_core.GetTStates() % machine_info.ts_per_frame] );
+            z80_core.AddTStates(1);
+            z80_core.AddContentionTStates( ula_memory_contention_table[z80_core.GetTStates() % machine_info.ts_per_frame] );
+            z80_core.AddTStates(1);
+            z80_core.AddContentionTStates( ula_memory_contention_table[z80_core.GetTStates() % machine_info.ts_per_frame] );
+            z80_core.AddTStates(1);
         }
     } else {
         if ((address & 0x01) == 0)
         {
-            z80Core.AddTStates(1);
-            z80Core.AddContentionTStates( ULAMemoryContentionTable[z80Core.GetTStates() % machineInfo.tsPerFrame] );
-            z80Core.AddTStates(3);
+            z80_core.AddTStates(1);
+            z80_core.AddContentionTStates( ula_memory_contention_table[z80_core.GetTStates() % machine_info.ts_per_frame] );
+            z80_core.AddTStates(3);
         }
         else
         {
-            z80Core.AddTStates(4);
+            z80_core.AddTStates(4);
         }
     }
 }
@@ -67,20 +67,20 @@ void ZXSpectrum::ULAApplyIOContention(uint16_t address, bool contended)
 
 void ZXSpectrum::ULABuildContentionTable()
 {
-    for (uint32_t i = 0; i < machineInfo.tsPerFrame; i++)
+    for (uint32_t i = 0; i < machine_info.ts_per_frame; i++)
     {
-        ULAMemoryContentionTable[i] = 0;
-        ULAIOContentionTable[i] = 0;
+        ula_memory_contention_table[i] = 0;
+        ula_io_contention_table[i] = 0;
         
-        if (i >= machineInfo.tsToOrigin)
+        if (i >= machine_info.ts_to_origin)
         {
-            uint32_t line = (i - machineInfo.tsToOrigin) / machineInfo.tsPerLine;
-            uint32_t ts = (i - machineInfo.tsToOrigin) % machineInfo.tsPerLine;
+            uint32_t line = (i - machine_info.ts_to_origin) / machine_info.ts_per_line;
+            uint32_t ts = (i - machine_info.ts_to_origin) % machine_info.ts_per_line;
             
-            if (line < machineInfo.pxVerticalDisplay && ts < 128)
+            if (line < machine_info.pixel_vertical_display && ts < 128)
             {
-                ULAMemoryContentionTable[i] = ULAConentionValues[ ts & 0x07 ];
-                ULAIOContentionTable[i] = ULAConentionValues[ ts & 0x07 ];
+                ula_memory_contention_table[i] = ula_contention_values[ ts & 0x07 ];
+                ula_io_contention_table[i] = ula_contention_values[ ts & 0x07 ];
             }
         }
     }

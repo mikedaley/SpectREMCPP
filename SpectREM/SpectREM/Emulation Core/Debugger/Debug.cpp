@@ -14,7 +14,7 @@
 Debug::Debug()
 {
     std::cout << "Debugger::Constructor" << "\n";
-    m_byteRegisters = {
+    m_byte_registers = {
         {"A" , CZ80Core::eREG_A},
         {"F" , CZ80Core::eREG_F},
         {"B" , CZ80Core::eREG_B},
@@ -35,7 +35,7 @@ Debug::Debug()
         {"R" , CZ80Core::eREG_R}
     };
 
-    m_wordRegisters = {
+    m_word_registers = {
         {"AF" , CZ80Core::eREG_AF},
         {"BC" , CZ80Core::eREG_BC},
         {"DE" , CZ80Core::eREG_DE},
@@ -166,12 +166,12 @@ void Debug::disassemble(uint16_t fromAddress, uint16_t bytes, bool hexFormat)
     {
         DisassembledOpcode dop;
         char opcode[128];
-        uint16_t length = machine->z80Core.Debug_Disassemble(opcode, 128, pc, hexFormat, nullptr);
+        uint16_t length = machine->z80_core.Debug_Disassemble(opcode, 128, pc, hexFormat, nullptr);
 
         if (length == 0)
         {
             dop.address = pc;
-            dop.bytes = std::to_string(machine->z80Core.Z80CoreDebugMemRead(pc, nullptr));
+            dop.bytes = std::to_string(machine->z80_core.Z80CoreDebugMemRead(pc, nullptr));
             dop.mnemonic = "DB " + dop.bytes;
             pc++;
         }
@@ -181,7 +181,7 @@ void Debug::disassemble(uint16_t fromAddress, uint16_t bytes, bool hexFormat)
 
             for (uint32_t i = 0; i < length; i++)
             {
-                dop.bytes += std::to_string(machine->z80Core.Z80CoreDebugMemRead(static_cast<uint16_t>(pc + i), nullptr));
+                dop.bytes += std::to_string(machine->z80_core.Z80CoreDebugMemRead(static_cast<uint16_t>(pc + i), nullptr));
                 dop.bytes += " ";
             }
 
@@ -228,10 +228,10 @@ size_t Debug::numberOfStackEntries()
 void Debug::stackTableUpdate()
 {
     m_stack.clear();
-    for (uint32_t i = machine->z80Core.GetRegister(CZ80Core::eREG_SP); i <= 0xfffe; i += 2)
+    for (uint32_t i = machine->z80_core.GetRegister(CZ80Core::eREG_SP); i <= 0xfffe; i += 2)
     {
-        uint16_t value = static_cast<uint16_t>(machine->z80Core.Z80CoreDebugMemRead(i + 1, nullptr) << 8);
-        value |= machine->z80Core.Z80CoreDebugMemRead(i, nullptr);
+        uint16_t value = static_cast<uint16_t>(machine->z80_core.Z80CoreDebugMemRead(i + 1, nullptr) << 8);
+        value |= machine->z80_core.Z80CoreDebugMemRead(i, nullptr);
 
         Stack sp;
         sp.address = i;
@@ -254,21 +254,21 @@ Debug::Stack Debug::stackAddress(uint32_t index)
 bool Debug::setRegister(std::string reg, uint8_t value)
 {
     std::map<std::string, CZ80Core::eZ80BYTEREGISTERS>::iterator byteit;
-    for (byteit = m_byteRegisters.begin(); byteit != m_byteRegisters.end(); byteit++)
+    for (byteit = m_byte_registers.begin(); byteit != m_byte_registers.end(); byteit++)
     {
         if (byteit->first == reg)
         {
-            machine->z80Core.SetRegister(byteit->second, value);
+            machine->z80_core.SetRegister(byteit->second, value);
             return true;
         }
     }
 
     std::map<std::string, CZ80Core::eZ80WORDREGISTERS>::iterator wordit;
-    for (wordit = m_wordRegisters.begin(); wordit != m_wordRegisters.end(); wordit++)
+    for (wordit = m_word_registers.begin(); wordit != m_word_registers.end(); wordit++)
     {
         if (wordit->first == reg)
         {
-            machine->z80Core.SetRegister(wordit->second, value);
+            machine->z80_core.SetRegister(wordit->second, value);
             return true;
         }
     }
