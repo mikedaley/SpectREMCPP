@@ -25,12 +25,12 @@ class ZXSpectrum
 {
 
 public:
-    static constexpr uint16_t    kDisplayBitmapAddress    = 16384;
-    static constexpr uint16_t    kDisplayBitmapSize       = 6144;
-    static constexpr uint16_t    kAttributeMemorySize     = 768;
-    static constexpr uint16_t    kMemoryPageSize          = 16384;
+    static const uint16_t    cBITMAP_ADDRESS    = 16384;
+    static const uint16_t    cBITMAP_SIZE       = 6144;
+    static const uint16_t    cATTR_SIZE         = 768;
+    static const uint16_t    cMEMORY_PAGE_SIZE  = 16384;
     
-    enum AyRegister
+    enum eAYREGISTER
     {
         A_FINE = 0,
         A_COARSE,
@@ -57,15 +57,15 @@ public:
         MAX_REGISTERS
     };
     
-//    // ULAPlus mode values
-//    enum eULAPLUS
-//    {
-//        PALLETTEGROUP,
-//        MODEGROUP
-//    };
+    // ULAPlus mode values
+    enum eULAPLUS
+    {
+        PALLETTEGROUP,
+        MODEGROUP
+    };
     
     // Debug operation type
-    enum DebugOperation
+    enum eDEBUGOPERATION
     {
         READ = 0x01,
         WRITE = 0x02,
@@ -73,7 +73,7 @@ public:
     };
     
     // Spectrum keyboard
-    enum class ZXSpectrumKey
+    enum class eZXSpectrumKey
     {
         __NoKey,
         Key_0,
@@ -140,7 +140,7 @@ private:
     // Holds details of the host platforms key codes and how they map to the spectrum keyboard matrix
     typedef struct
     {
-        ZXSpectrumKey      key;
+        eZXSpectrumKey      key;
         int                 mapEntry1;
         int                 mapBit1;
         int                 mapEntry2;
@@ -149,7 +149,7 @@ private:
     
 public:
     // Holds the data returned when creating a Snapshot or Z80 snapshot
-    struct snapshot_data {
+    struct SnapshotData {
         int32_t             length = 0;
         uint8_t             *data = nullptr;
     };
@@ -190,17 +190,17 @@ public:
     // On completion the displayBuffer member variable will contain RGBA formatted image data that can then be used to build a display image
     void                    generateFrame();
     
-    void                    keyboardKeyDown(ZXSpectrumKey key);
-    void                    keyboardKeyUp(ZXSpectrumKey key);
-    void                    keyboardFlagsChanged(uint64_t flags, ZXSpectrumKey key);
+    void                    keyboardKeyDown(eZXSpectrumKey key);
+    void                    keyboardKeyUp(eZXSpectrumKey key);
+    void                    keyboardFlagsChanged(uint64_t flags, eZXSpectrumKey key);
     
     FileResponse            snapshotZ80LoadWithPath(const std::string path);
     FileResponse            snapshotZ80LoadWithBuffer(const char *buffer, size_t size);
     FileResponse            snapshotSNALoadWithPath(const std::string path);
     FileResponse            snapshotSNALoadWithBuffer(const char *buffer, size_t size);
     int                     snapshotMachineInSnapshotWithPath(const char *path);
-    snapshot_data            snapshotCreateSNA();
-    snapshot_data            snapshotCreateZ80();
+    SnapshotData            snapshotCreateSNA();
+    SnapshotData            snapshotCreateZ80();
     
     FileResponse            scrLoadWithPath(const std::string path);
     
@@ -211,7 +211,7 @@ public:
     std::function<bool(uint16_t, uint8_t)> debugOpCallbackBlock = nullptr;
     
     void                    *getScreenBuffer();
-    uint32_t                getLastAudioBufferIndex() { return audio_last_index; }
+    uint32_t                getLastAudioBufferIndex() { return audioLastIndex; }
 
 protected:
     void                    emuReset();
@@ -268,103 +268,115 @@ public:
     void                    coreMemoryWriteWithBuffer(const char *buffer, size_t size, uint16_t address);
         
     // Machine hardware
-    CZ80Core                z80_core;
-    std::vector<char>       memory_rom;
-    std::vector<char>       memory_ram;
-    uint8_t                 keyboard_map[8]{0};
-    static KEYBOARD_ENTRY   keyboard_lookup[];
-    uint32_t                keyboard_capslock_frames = 0;
+    CZ80Core                z80Core;
+    std::vector<char>       memoryRom;
+    std::vector<char>       memoryRam;
+    uint8_t                 keyboardMap[8]{0};
+    static KEYBOARD_ENTRY   keyboardLookup[];
+    uint32_t                keyboardCapsLockFrames = 0;
       
     // Emulation
-    MachineInfo             machine_info;
-    uint32_t                emu_current_display_ts = 0;
-    uint32_t                emu_frame_counter = 0;
-    bool                    emu_paused = true;
-    uint8_t                 emu_ram_page = 0;
-    uint8_t                 emu_rom_page = 0;
-    uint8_t                 emu_display_page = 0;
-    bool                    emu_disable_paging = true;
-    std::string             emu_rom_path;
-    std::string             emu_base_path;
-    bool                    emu_tape_instant_load = false;
-    bool                    emu_use_ay_sound = false;
-    bool                    emu_load_trap_triggered = false;
-    bool                    emu_save_trap_triggered = false;
-    bool                    emu_use_specdrum = false;
+    MachineInfo             machineInfo;
+    uint32_t                emuCurrentDisplayTs = 0;
+    uint32_t                emuFrameCounter = 0;
+    bool                    emuPaused = true;
+    uint8_t                 emuRAMPage = 0;
+    uint8_t                 emuROMPage = 0;
+    uint8_t                 emuDisplayPage = 0;
+    bool                    emuDisablePaging = true;
+    std::string             emuROMPath;
+    std::string             emuBasePath;
+    bool                    emuTapeInstantLoad = false;
+    bool                    emuUseAYSound = false;
+    bool                    emuLoadTrapTriggered = false;
+    bool                    emuSaveTrapTriggered = false;
+    bool                    emuUseSpecDRUM = false;
 
     // Display
-    uint8_t *               display_buffer;
-    uint32_t                display_buffer_index = 0;
-    uint32_t                display_screen_width = 48 + 256 + 48;
-    uint32_t                display_screen_height = 48 + 192 + 48;
-    uint32_t                display_screen_buffer_size = 0;
-    uint32_t                display_ts_state_table[312][228]{{0}};
-    uint16_t                display_line_addr_table[192]{0};
-    uint64_t *              display_clut = nullptr;
-    uint8_t *               display_alut = nullptr;
-    uint32_t                display_border_color = 0;
-    bool                    display_ready = false;
-    Color                   display_clut_buffer[64];
+    uint8_t                 *displayBuffer;
+    uint32_t                displayBufferIndex = 0;
+    uint32_t                screenWidth = 48 + 256 + 48;
+    uint32_t                screenHeight = 48 + 192 + 48;
+    uint32_t                screenBufferSize = 0;
+    uint32_t                displayTstateTable[312][228]{{0}};
+    uint16_t                displayLineAddrTable[192]{0};
+    uint64_t                *displayCLUT = nullptr;
+    uint8_t                 *displayALUT = nullptr;
+    uint32_t                displayBorderColor = 0;
+    bool                    displayReady = false;
+    Color                   clutBuffer[64];
     
-    // Audio
-    int16_t *               audio_buffer = nullptr;
-    int8_t                  audio_ear_bit = 0;
-    int8_t                  audio_mic_bit = 0;
-    uint32_t                audio_buffer_size = 0;
-    uint32_t                audio_buffer_index = 0;
-    float                   audio_ts_counter = 0;
-    float                   audio_ts_step_counter = 0;
-    uint32_t                audio_last_index = 0;
+    // ULAPlus
+    uint8_t                 ulaPlusMode = 0;
+    uint8_t                 ulaPlusPaletteOn = 0;
+    uint8_t                 ulaPlusCurrentReg = 0;
 
-    float                   audio_beeper_ts_step = 0;
-    float                   audio_output_level_left = 0;
-    float                   audio_output_level_right = 0;
-	float                   audio_ay_level_left = 0;
-	float                   audio_ay_level_right = 0;
+    // Audio
+    int16_t                 *audioBuffer = nullptr;
+    int8_t                  audioEarBit = 0;
+    int8_t                  audioMicBit = 0;
+    uint32_t                audioBufferSize = 0;
+    uint32_t                audioBufferIndex = 0;
+    float                   audioTsCounter = 0;
+    float                   audioTsStepCounter = 0;
+    uint32_t                audioLastIndex = 0;
+
+    float                   audioBeeperTsStep = 0;
+    float                   audioOutputLevelLeft = 0;
+    float                   audioOutputLevelRight = 0;
+	float                   audioAYLevelLeft = 0;
+	float                   audioAYLevelRight = 0;
     
-    float                   audio_ay_channel_output[3]{0};
-    uint32_t                audio_ay_channel_count[3]{0};
-    uint16_t                audio_ay_volumes[16]{0};
-    uint32_t                audio_ay_random = 0;
-    uint32_t                audio_ay_output = 0;
-    uint32_t                audio_ay_noise_count = 0;
-    uint16_t                audio_ay_envelope_count = 0;
+    float                   audioAYChannelOutput[3]{0};
+    uint32_t                audioAYChannelCount[3]{0};
+    uint16_t                audioAYVolumes[16]{0};
+    uint32_t                audioAYrandom = 0;
+    uint32_t                audioAYOutput = 0;
+    uint32_t                audioAYNoiseCount = 0;
+    uint16_t                audioAYEnvelopeCount = 0;
     
-    uint8_t                 audio_ay_registers[ AyRegister::MAX_REGISTERS ]{0};
-    uint8_t                 audio_ay_current_register = 0;
-    uint8_t                 audio_ay_floating_register = 0;
-    bool                    audio_ay_envelope_holding = false;
-    bool                    audio_ay_envelope_hold = false;
-    bool                    audio_ay_envelope_alternate = false;
-    bool                    audio_ay_envelope_continue = false;
-    bool                    audio_ay_envelope = false;;
-    bool                    audio_ay_one_shot = false;
-    bool                    audio_ay_envelope_attack = false;
-    uint8_t                 audio_ay_attack_end_volume = 0;
-    float                   audio_ay_ts_step = 0;
-    float                   audio_ay_ts = 0;
+    uint8_t                 audioAYRegisters[ eAYREGISTER::MAX_REGISTERS ]{0};
+    uint8_t                 audioAYCurrentRegister = 0;
+    uint8_t                 audioAYFloatingRegister = 0;
+    bool                    audioAYEnvelopeHolding = false;
+    bool                    audioAYEnvelopeHold = false;
+    bool                    audioAYEnvelopeAlt = false;
+    bool                    audioAYEnvelopeContinue = false;
+    bool                    audioAYEnvelope = false;;
+    bool                    audioAYOneShot = false;
+    bool                    audioAYEnvelopeAttack = false;
+    uint8_t                 audioAYAttackEndVol = 0;
+    float                   audioAYTsStep = 0;
+    float                   audioAYTs = 0;
 
     //Specdrum Peripheral
-    int                     audio_specdrum_dac_value = 0;
+    int                     specdrumDACValue = 0;
     
     // Keyboard
-    bool                    keyboard_capslock_pressed = false;
+    bool                    keyboardCapsLockPressed = false;
     
     // ULA
-    uint32_t                ula_memory_contention_table[80000]{0};
-    uint32_t                ula_io_contention_table[80000]{0};
-    uint32_t                ula_floating_bus_table[80000]{0};
-    const static uint32_t   ula_contention_values[];
-    uint8_t                 ula_port_nnfd_value = 0;
+    uint32_t                ULAMemoryContentionTable[80000]{0};
+    uint32_t                ULAIOContentionTable[80000]{0};
+    uint32_t                ULAFloatingBusTable[80000]{0};
+    const static uint32_t   ULAConentionValues[];
+    uint8_t                 ULAPortnnFDValue = 0;
+    bool                    ULAApplySnow = false;
+    uint8_t                 ULAPlusMode = eULAPLUS::MODEGROUP;
+    uint8_t                 ULAPlusCurrentReg = 0;
+    uint8_t                 ULAPlusPaletteOn = 0;
 
     // Floating bus
-    const static uint32_t   ula_floating_bus_values[];
+    const static uint32_t   ULAFloatingBusValues[];
     
     // Tape object
-    Tape *                  virtual_tape = nullptr;
+    Tape                    *tape = nullptr;
     
+    // SPI port
+    uint16_t                spiPort = 0xfaf7;
+
     // Debugger
-    bool                    debugger_breakpoint_hit = false;
+    bool                    breakpointHit = false;
 
 };
 

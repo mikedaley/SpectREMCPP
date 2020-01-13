@@ -119,7 +119,7 @@ const int cSCREEN_FILL = 1;
                 // Generate another frame
                 _machine->generateFrame();
             }
-            _audioQueue->write(_machine->audio_buffer, b);
+            _audioQueue->write(_machine->audioBuffer, b);
         }
     }
 }
@@ -133,7 +133,7 @@ const int cSCREEN_FILL = 1;
             
             _machine->generateFrame();
             
-            if (!(_machine->emu_frame_counter % static_cast<uint32_t>(_defaults.machineAcceleration)))
+            if (!(_machine->emuFrameCounter % static_cast<uint32_t>(_defaults.machineAcceleration)))
             {
                 [_metalRenderer updateTextureData:_machine->getScreenBuffer()];
             }
@@ -149,7 +149,7 @@ const int cSCREEN_FILL = 1;
 
 - (void)updateDisplay
 {
-    [_metalRenderer updateTextureData:_machine->display_buffer];
+    [_metalRenderer updateTextureData:_machine->displayBuffer];
     
 //    if (_debugger && _debugViewController) {
 //        if (!_debugViewController.view.isHidden) {
@@ -229,7 +229,7 @@ const int cSCREEN_FILL = 1;
 - (void)viewWillAppear
 {
     [super viewWillAppear];
-    [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@", [NSString stringWithCString:_machine->machine_info.machine_name encoding:NSUTF8StringEncoding]]];
+    [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@", [NSString stringWithCString:_machine->machineInfo.machineName encoding:NSUTF8StringEncoding]]];
 }
 
 - (void)viewWillDisappear
@@ -246,7 +246,7 @@ const int cSCREEN_FILL = 1;
         }
         
         supportDirUrl = [supportDirUrl URLByAppendingPathComponent:cSESSION_FILE_NAME];
-        ZXSpectrum::snapshot_data sessionSnapshot = _machine->snapshotCreateZ80();
+        ZXSpectrum::SnapshotData sessionSnapshot = _machine->snapshotCreateZ80();
         NSData *data = [NSData dataWithBytes:sessionSnapshot.data length:sessionSnapshot.length];
         [data writeToURL:supportDirUrl atomically:YES];
     }
@@ -292,15 +292,19 @@ const int cSCREEN_FILL = 1;
     }
     else if ([keyPath isEqualToString:MachineTapeInstantLoad])
     {
-        _machine->emu_tape_instant_load = [change[NSKeyValueChangeNewKey] boolValue];
+        _machine->emuTapeInstantLoad = [change[NSKeyValueChangeNewKey] boolValue];
     }
     else if ([keyPath isEqualToString:MachineUseAYSound])
     {
-        _machine->emu_use_ay_sound = [change[NSKeyValueChangeNewKey] boolValue];
+        _machine->emuUseAYSound = [change[NSKeyValueChangeNewKey] boolValue];
     }
     else if ([keyPath isEqualToString:MachineUseSpecDRUM])
     {
-        _machine->emu_use_specdrum = [change[NSKeyValueChangeNewKey] boolValue];
+        _machine->emuUseSpecDRUM = [change[NSKeyValueChangeNewKey] boolValue];
+    }
+    else if ([keyPath isEqualToString:SPIPort])
+    {
+        _machine->spiPort = [change[NSKeyValueChangeNewKey] unsignedIntegerValue];
     }
     else if ([keyPath isEqualToString:AudioMasterVolume])
     {
@@ -325,7 +329,7 @@ const int cSCREEN_FILL = 1;
 
 - (IBAction)smartlinkSendSnapshot:(id)sender
 {
-     ZXSpectrum::snapshot_data snapshot = _machine->snapshotCreateZ80();
+     ZXSpectrum::SnapshotData snapshot = _machine->snapshotCreateZ80();
     [_smartLink sendSnapshot:snapshot.data ofType:SnapshotTypeZ80];
 }
 
@@ -333,9 +337,9 @@ const int cSCREEN_FILL = 1;
 
 - (void)applyDefaults
 {
-    _machine->emu_tape_instant_load = self.defaults.machineTapeInstantLoad;
-    _machine->emu_use_ay_sound = self.defaults.machineUseAYSound;
-    _machine->emu_use_specdrum = self.defaults.machineUseSpecDRUM;
+    _machine->emuTapeInstantLoad = self.defaults.machineTapeInstantLoad;
+    _machine->emuUseAYSound = self.defaults.machineUseAYSound;
+    _machine->emuUseSpecDRUM = self.defaults.machineUseSpecDRUM;
 }
 
 #pragma mark - View/Controller Setup
@@ -414,7 +418,7 @@ const int cSCREEN_FILL = 1;
     _machine->resume();
     
     [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@",
-                                [NSString stringWithCString:_machine->machine_info.machine_name
+                                [NSString stringWithCString:_machine->machineInfo.machineName
                                                    encoding:NSUTF8StringEncoding]]];
 }
 
@@ -468,74 +472,74 @@ const int cSCREEN_FILL = 1;
 - (void)setupKeyMappings
 {
     _keyMappings = @{
-        @(OSX_KEY_LEFT_SHIFT)   : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Shift), //Left Shift
-        @(OSX_KEY_RIGHT_SHIFT)  : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Shift), //Right Shift
-        @(OSX_KEY_Z)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Z),
-        @(OSX_KEY_X)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_X),
-        @(OSX_KEY_C)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_C),
-        @(OSX_KEY_V)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_V),
+        @(OSX_KEY_LEFT_SHIFT)   : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Shift), //Left Shift
+        @(OSX_KEY_RIGHT_SHIFT)  : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Shift), //Right Shift
+        @(OSX_KEY_Z)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Z),
+        @(OSX_KEY_X)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_X),
+        @(OSX_KEY_C)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_C),
+        @(OSX_KEY_V)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_V),
             
-        @(OSX_KEY_A)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_A),
-        @(OSX_KEY_S)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_S),
-        @(OSX_KEY_D)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_D),
-        @(OSX_KEY_F)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_F),
-        @(OSX_KEY_G)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_G),
+        @(OSX_KEY_A)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_A),
+        @(OSX_KEY_S)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_S),
+        @(OSX_KEY_D)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_D),
+        @(OSX_KEY_F)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_F),
+        @(OSX_KEY_G)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_G),
             
-        @(OSX_KEY_Q)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Q),
-        @(OSX_KEY_W)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_W),
-        @(OSX_KEY_E)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_E),
-        @(OSX_KEY_R)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_R),
-        @(OSX_KEY_T)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_T),
+        @(OSX_KEY_Q)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Q),
+        @(OSX_KEY_W)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_W),
+        @(OSX_KEY_E)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_E),
+        @(OSX_KEY_R)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_R),
+        @(OSX_KEY_T)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_T),
             
-        @(OSX_KEY_1)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_1),
-        @(OSX_KEY_2)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_2),
-        @(OSX_KEY_3)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_3),
-        @(OSX_KEY_4)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_4),
-        @(OSX_KEY_5)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_5),
+        @(OSX_KEY_1)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_1),
+        @(OSX_KEY_2)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_2),
+        @(OSX_KEY_3)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_3),
+        @(OSX_KEY_4)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_4),
+        @(OSX_KEY_5)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_5),
             
-        @(OSX_KEY_0)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_0),
-        @(OSX_KEY_9)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_9),
-        @(OSX_KEY_8)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_8),
-        @(OSX_KEY_7)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_7),
-        @(OSX_KEY_6)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_6),
+        @(OSX_KEY_0)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_0),
+        @(OSX_KEY_9)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_9),
+        @(OSX_KEY_8)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_8),
+        @(OSX_KEY_7)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_7),
+        @(OSX_KEY_6)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_6),
             
-        @(OSX_KEY_P)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_P),
-        @(OSX_KEY_O)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_O),
-        @(OSX_KEY_I)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_I),
-        @(OSX_KEY_U)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_U),
-        @(OSX_KEY_Y)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Y),
+        @(OSX_KEY_P)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_P),
+        @(OSX_KEY_O)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_O),
+        @(OSX_KEY_I)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_I),
+        @(OSX_KEY_U)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_U),
+        @(OSX_KEY_Y)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Y),
 
-        @(OSX_KEY_ENTER)        : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Enter),
-        @(OSX_KEY_L)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_L),
-        @(OSX_KEY_K)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_K),
-        @(OSX_KEY_J)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_J),
-        @(OSX_KEY_H)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_H),
+        @(OSX_KEY_ENTER)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Enter),
+        @(OSX_KEY_L)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_L),
+        @(OSX_KEY_K)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_K),
+        @(OSX_KEY_J)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_J),
+        @(OSX_KEY_H)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_H),
     
-        @(OSX_KEY_SPACE)        : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Space),
-        @(OSX_KEY_CONTROL)      : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_SymbolShift), // Control key
-        @(OSX_KEY_M)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_M),
-        @(OSX_KEY_N)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_N),
-        @(OSX_KEY_B)            : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_B),
+        @(OSX_KEY_SPACE)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Space),
+        @(OSX_KEY_CONTROL)      : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_SymbolShift), // Control key
+        @(OSX_KEY_M)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_M),
+        @(OSX_KEY_N)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_N),
+        @(OSX_KEY_B)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_B),
 
-        @(OSX_KEY_RIGHT_SQUARE) : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_InvVideo),
-        @(OSX_KEY_LEFT_SQUARE)  : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_TrueVideo),
-        @(OSX_KEY_QUOTE)        : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Quote),
-        @(OSX_KEY_SEMI_COLON)   : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_SemiColon),
-        @(OSX_KEY_COMMA)        : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Comma),
-        @(OSX_KEY_MINUS)        : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Minus),
-        @(OSX_KEY_PLUS)         : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Plus),
-        @(OSX_KEY_PERIOD)       : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Period),
-        @(OSX_KEY_TAB)          : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Edit),
-        @(OSX_KEY_TILDA)        : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Graph),
-        @(OSX_KEY_ESC)          : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Break), // ESC key
-        @(OSX_KEY_BACKSPACE)    : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_Backspace),
-        @(OSX_KEY_ARROW_UP)     : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_ArrowUp),
-        @(OSX_KEY_ARROW_DOWN)   : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_ArrowDown),
-        @(OSX_KEY_ARROW_LEFT)   : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_ArrowLeft),
-        @(OSX_KEY_ARROW_RIGHT)  : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_ArrowRight),
-        @(OSX_KEY_LEFT_ALT)     : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_ExtendMode), // Left Alt
-        @(OSX_KEY_RIGHT_ALT)    : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_ExtendMode), // Right Alt
-        @(OSX_KEY_CAPSLOCK)     : @((uint32_t)ZXSpectrum::ZXSpectrumKey::Key_CapsLock)
+        @(OSX_KEY_RIGHT_SQUARE) : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_InvVideo),
+        @(OSX_KEY_LEFT_SQUARE)  : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_TrueVideo),
+        @(OSX_KEY_QUOTE)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Quote),
+        @(OSX_KEY_SEMI_COLON)   : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_SemiColon),
+        @(OSX_KEY_COMMA)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Comma),
+        @(OSX_KEY_MINUS)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Minus),
+        @(OSX_KEY_PLUS)         : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Plus),
+        @(OSX_KEY_PERIOD)       : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Period),
+        @(OSX_KEY_TAB)          : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Edit),
+        @(OSX_KEY_TILDA)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Graph),
+        @(OSX_KEY_ESC)          : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Break), // ESC key
+        @(OSX_KEY_BACKSPACE)    : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Backspace),
+        @(OSX_KEY_ARROW_UP)     : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ArrowUp),
+        @(OSX_KEY_ARROW_DOWN)   : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ArrowDown),
+        @(OSX_KEY_ARROW_LEFT)   : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ArrowLeft),
+        @(OSX_KEY_ARROW_RIGHT)  : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ArrowRight),
+        @(OSX_KEY_LEFT_ALT)     : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ExtendMode), // Left Alt
+        @(OSX_KEY_RIGHT_ALT)    : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ExtendMode), // Right Alt
+        @(OSX_KEY_CAPSLOCK)     : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_CapsLock)
     };
 }
 
@@ -543,7 +547,7 @@ const int cSCREEN_FILL = 1;
 {
     if (!event.isARepeat && !(event.modifierFlags & NSEventModifierFlagCommand) && event.keyCode != 96)
     {
-        _machine->keyboardKeyDown((ZXSpectrum::ZXSpectrumKey)[[_keyMappings objectForKey:@(event.keyCode)] unsignedIntValue]);
+        _machine->keyboardKeyDown((ZXSpectrum::eZXSpectrumKey)[[_keyMappings objectForKey:@(event.keyCode)] unsignedIntValue]);
     }
 }
 
@@ -557,7 +561,7 @@ const int cSCREEN_FILL = 1;
         
     if (!event.isARepeat && !(event.modifierFlags & NSEventModifierFlagCommand))
     {
-        _machine->keyboardKeyUp((ZXSpectrum::ZXSpectrumKey)[[_keyMappings objectForKey:@(event.keyCode)] unsignedIntValue]);
+        _machine->keyboardKeyUp((ZXSpectrum::eZXSpectrumKey)[[_keyMappings objectForKey:@(event.keyCode)] unsignedIntValue]);
     }
 }
 
@@ -571,34 +575,34 @@ const int cSCREEN_FILL = 1;
             case 61:
                 if (event.modifierFlags & NSEventModifierFlagOption)
                 {
-                    _machine->keyboardKeyDown(ZXSpectrum::ZXSpectrumKey::Key_ExtendMode);
+                    _machine->keyboardKeyDown(ZXSpectrum::eZXSpectrumKey::Key_ExtendMode);
                 } else {
-                    _machine->keyboardKeyUp(ZXSpectrum::ZXSpectrumKey::Key_ExtendMode);
+                    _machine->keyboardKeyUp(ZXSpectrum::eZXSpectrumKey::Key_ExtendMode);
                 }
                 break;
             case 57:
                 if ((event.modifierFlags & NSEventModifierFlagCapsLock) || !(event.modifierFlags & NSEventModifierFlagCapsLock))
                 {
-                    _machine->keyboardKeyDown(ZXSpectrum::ZXSpectrumKey::Key_CapsLock);
+                    _machine->keyboardKeyDown(ZXSpectrum::eZXSpectrumKey::Key_CapsLock);
                 } else {
-                    _machine->keyboardKeyUp(ZXSpectrum::ZXSpectrumKey::Key_CapsLock);
+                    _machine->keyboardKeyUp(ZXSpectrum::eZXSpectrumKey::Key_CapsLock);
                 }
                 break;
             case 56:
             case 60:
                 if (event.modifierFlags & NSEventModifierFlagShift)
                 {
-                    _machine->keyboardKeyDown(ZXSpectrum::ZXSpectrumKey::Key_Shift);
+                    _machine->keyboardKeyDown(ZXSpectrum::eZXSpectrumKey::Key_Shift);
                 } else {
-                    _machine->keyboardKeyUp(ZXSpectrum::ZXSpectrumKey::Key_Shift);
+                    _machine->keyboardKeyUp(ZXSpectrum::eZXSpectrumKey::Key_Shift);
                 }
                 break;
             case 59:
                 if (event.modifierFlags & NSEventModifierFlagControl)
                 {
-                    _machine->keyboardKeyDown(ZXSpectrum::ZXSpectrumKey::Key_SymbolShift);
+                    _machine->keyboardKeyDown(ZXSpectrum::eZXSpectrumKey::Key_SymbolShift);
                 } else {
-                    _machine->keyboardKeyUp(ZXSpectrum::ZXSpectrumKey::Key_SymbolShift);
+                    _machine->keyboardKeyUp(ZXSpectrum::eZXSpectrumKey::Key_SymbolShift);
                 }
             default:
                 break;
@@ -619,7 +623,7 @@ const int cSCREEN_FILL = 1;
     if (([extension isEqualToString:cZ80_EXTENSION] || [extension isEqualToString:cSNA_EXTENSION]))
     {
         int snapshotMachineType = _machine->snapshotMachineInSnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
-        if (_machine->machine_info.machine_type != snapshotMachineType)
+        if (_machine->machineInfo.machineType != snapshotMachineType)
         {
             self.defaults.machineSelectedModel = snapshotMachineType;
         }
@@ -734,7 +738,7 @@ const int cSCREEN_FILL = 1;
 
 - (NSInteger)tapeCurrentBlock
 {
-    return _tape->current_block_index;
+    return _tape->currentBlockIndex;
 }
 
 - (BOOL)tapeIsplaying
@@ -777,7 +781,7 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 {
     NSSavePanel *savePanel = [NSSavePanel new];
     
-    if (_machine->machine_info.machine_type == eZXSpectrum48)
+    if (_machine->machineInfo.machineType == eZXSpectrum48)
     {
         [[_saveAccessoryController.exportPopup itemAtIndex:cSNA_SNAPSHOT_TYPE] setEnabled:YES];
         savePanel.allowedFileTypes = @[cZ80_EXTENSION, cSNA_EXTENSION];
@@ -794,7 +798,7 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     [savePanel beginWithCompletionHandler:^(NSInteger result) {
         if (result == NSModalResponseOK)
         {
-            ZXSpectrum::snapshot_data snapshot;
+            ZXSpectrum::SnapshotData snapshot;
             NSURL *url = savePanel.URL;
             
             switch (_saveAccessoryController.exportType) {
@@ -927,7 +931,7 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 {
     if (_machine)
     {
-        _machine->emu_paused = true;
+        _machine->emuPaused = true;
         [self.audioCore stop];
     }
 }
@@ -936,7 +940,7 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 {
     if (_machine)
     {
-        _machine->emu_paused = false;
+        _machine->emuPaused = false;
         [self.audioCore start];
     }
 }
@@ -987,12 +991,12 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 
 - (void *)getDisplayBuffer
 {
-    return _machine->display_buffer;
+    return _machine->displayBuffer;
 }
 
 - (BOOL)getDisplayReady
 {
-    return _machine->display_ready;
+    return _machine->displayReady;
 }
 
 - (void *)getCurrentMachine
@@ -1007,7 +1011,7 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 
 - (BOOL)isEmulatorPaused
 {
-    return _machine->emu_paused;
+    return _machine->emuPaused;
 }
 
 @end

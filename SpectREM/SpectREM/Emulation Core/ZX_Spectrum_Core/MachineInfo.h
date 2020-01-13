@@ -19,39 +19,39 @@ enum
 // Details for each machine type being emulated
 typedef struct
 {
-    uint32_t interrupt_length;             // 1
+    uint32_t intLength;             // 1
     
-    uint32_t ts_per_frame;            // 2
-    uint32_t ts_to_origin;            // 3
-    uint32_t ts_per_line;             // 4
-    uint32_t ts_top_border;           // 5
-    uint32_t ts_vertical_blank;       // 6
-    uint32_t ts_vertical_display;     // 7
-    uint32_t ts_horizontal_display;   // 8
-    uint32_t ts_per_char;             // 9
+    uint32_t tsPerFrame;            // 2
+    uint32_t tsToOrigin;            // 3
+    uint32_t tsPerLine;             // 4
+    uint32_t tsTopBorder;           // 5
+    uint32_t tsVerticalBlank;       // 6
+    uint32_t tsVerticalDisplay;     // 7
+    uint32_t tsHorizontalDisplay;   // 8
+    uint32_t tsPerChar;             // 9
     
-    uint32_t pixel_vertical_border;          // 10
-    uint32_t pixel_vertical_blank;       // 11
-    uint32_t pixel_horizontal_display;   // 12
-    uint32_t pixel_vertical_display;     // 13
-    uint32_t pixel_horizontal_total;     // 14
-    uint32_t pixel_vertical_total;       // 15
-    uint32_t pixel_emulator_border;           // 16
+    uint32_t pxVertBorder;          // 10
+    uint32_t pxVerticalBlank;       // 11
+    uint32_t pxHorizontalDisplay;   // 12
+    uint32_t pxVerticalDisplay;     // 13
+    uint32_t pxHorizontalTotal;     // 14
+    uint32_t pxVerticalTotal;       // 15
+    uint32_t pxEmuBorder;           // 16
     
-    bool has_ay;                     // 17
-    bool has_paging;                 // 18
+    bool hasAY;                     // 17
+    bool hasPaging;                 // 18
     
     // Offsets used during border and screen drawing. Calculated using trial and error!!!
-    uint32_t border_drawing_offset;   // 19
-    uint32_t paper_drawing_offset;    // 20
+    uint32_t borderDrawingOffset;   // 19
+    uint32_t paperDrawingOffset;    // 20
     
-    uint32_t rom_size;               // 21
-    uint32_t ram_size;               // 22
-    int32_t floating_bus_adjustment;         // 23
+    uint32_t romSize;               // 21
+    uint32_t ramSize;               // 22
+    int32_t floatBusAdjust;         // 23
     
-    const char *machine_name ;       // 24
+    const char *machineName ;       // 24
     
-    uint32_t machine_type;           // 25
+    uint32_t machineType;           // 25
     
 } MachineInfo;
 

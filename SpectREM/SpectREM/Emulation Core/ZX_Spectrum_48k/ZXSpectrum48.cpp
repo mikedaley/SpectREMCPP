@@ -14,17 +14,17 @@
 // ------------------------------------------------------------------------------------------------------------
 // - Constants
 
-static const int kROM_SIZE = 16384;
-static const char *kDEFAULT_ROM = "48.ROM";
+static const int cROM_SIZE = 16384;
+static const char *cDEFAULT_ROM = "48.ROM";
 //static const char *cSMART_ROM = "snapload.v31";
 
 // SmartCard ROM and sundries
-static const uint8_t kFAFB_ROM_SWITCHOUT = 0x40;
-static const uint8_t kFAF3_SRAM_ENABLE = 0x80;
+static const uint8_t cFAFB_ROM_SWITCHOUT = 0x40;
+static const uint8_t cFAF3_SRAM_ENABLE = 0x80;
 
-static uint8_t smart_card_port_faf3 = 0;
-static uint8_t smart_card_port_fafb = 0;
-static uint8_t smart_card_sram[8 * 64 * 1024];		// 8 * 8k banks, mapped @ $2000-$3FFF
+static uint8_t smartCardPortFAF3 = 0;
+static uint8_t smartCardPortFAFB = 0;
+static uint8_t smartCardSRAM[8 * 64 * 1024];		// 8 * 8k banks, mapped @ $2000-$3FFF
 
 // ------------------------------------------------------------------------------------------------------------
 // - Constructor/Destructor
@@ -34,11 +34,11 @@ ZXSpectrum48::ZXSpectrum48(Tape *t) : ZXSpectrum()
     std::cout << "ZXSpectrum48::Constructor" << "\n";
     if (t)
     {
-        virtual_tape = t;
+        tape = t;
     }
     else
     {
-        virtual_tape = nullptr;
+        tape = nullptr;
     }
 }
 
@@ -57,14 +57,14 @@ void ZXSpectrum48::initialise(std::string romPath)
 {
     std::cout << "ZXSpectrum48::initialise(char *rom)" << "\n";
     
-    machine_info = machines[ eZXSpectrum48 ];
+    machineInfo = machines[ eZXSpectrum48 ];
     ZXSpectrum::initialise( romPath );
 
     // Register an opcode callback function with the Z80 core so that opcodes can be intercepted
     // when handling things like ROM saving and loading
-    z80_core.RegisterOpcodeCallback( ZXSpectrum48::opcodeCallback );
+    z80Core.RegisterOpcodeCallback( ZXSpectrum48::opcodeCallback );
     
-    loadROM( kDEFAULT_ROM, 0 );
+    loadROM( cDEFAULT_ROM, 0 );
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -73,7 +73,7 @@ void ZXSpectrum48::initialise(std::string romPath)
 uint8_t ZXSpectrum48::coreIORead(uint16_t address)
 {
     bool contended = false;
-    int memoryPage = address / kMemoryPageSize;
+    int memoryPage = address / cMEMORY_PAGE_SIZE;
     if (memoryPage == 1)
     {
         contended = true;
@@ -94,7 +94,7 @@ uint8_t ZXSpectrum48::coreIORead(uint16_t address)
         }
         
         // AY-3-8912 ports
-        else if ((address & 0xc002) == 0xc000 && (machine_info.has_ay || emu_use_ay_sound) )
+        else if ((address & 0xc002) == 0xc000 && (machineInfo.hasAY || emuUseAYSound) )
         {
             return audioAYReadData();
         }
@@ -104,11 +104,11 @@ uint8_t ZXSpectrum48::coreIORead(uint16_t address)
 		{
 			if(address == 0xfaf3)
 			{
-				return smart_card_port_faf3;
+				return smartCardPortFAF3;
 			}
 			else if(address == 0xfafb)
 			{
-				return smart_card_port_fafb & 0x7f;
+				return smartCardPortFAFB & 0x7f;
 			}
 		}
 		
@@ -126,12 +126,12 @@ uint8_t ZXSpectrum48::coreIORead(uint16_t address)
         {
             if (!(address & (0x100 << i)))
             {
-                result &= keyboard_map[i];
+                result &= keyboardMap[i];
             }
         }
     }
     
-    result = static_cast<uint8_t>((result & 191) | (audio_ear_bit << 6) | (virtual_tape->input_bit << 6));
+    result = static_cast<uint8_t>((result & 191) | (audioEarBit << 6) | (tape->inputBit << 6));
     
     return result;
 }
@@ -141,7 +141,7 @@ uint8_t ZXSpectrum48::coreIORead(uint16_t address)
 void ZXSpectrum48::coreIOWrite(uint16_t address, uint8_t data)
 {
     bool contended = false;
-    int memoryPage = address / kMemoryPageSize;
+    int memoryPage = address / cMEMORY_PAGE_SIZE;
     if (memoryPage == 1)
     {
         contended = true;
@@ -152,35 +152,35 @@ void ZXSpectrum48::coreIOWrite(uint16_t address, uint8_t data)
     // ULA owned ports
     if (!(address & 0x01))
     {
-        displayUpdateWithTs(static_cast<int32_t>((z80_core.GetTStates() - emu_current_display_ts) + machine_info.border_drawing_offset));
+        displayUpdateWithTs(static_cast<int32_t>((z80Core.GetTStates() - emuCurrentDisplayTs) + machineInfo.borderDrawingOffset));
 
         // Port: 0xFE
         //   7   6   5   4   3   2   1   0
         // +---+---+---+---+---+-----------+
         // |   |   |   | E | M |  BORDER   |
         // +---+---+---+---+---+-----------+
-        audio_ear_bit = (data & 0x10) ? 1 : 0;
-        audio_mic_bit = (data & 0x08) ? 1 : 0;
-        display_border_color = data & 0x07;
+        audioEarBit = (data & 0x10) ? 1 : 0;
+        audioMicBit = (data & 0x08) ? 1 : 0;
+        displayBorderColor = data & 0x07;
     }
     
     // AY-3-8912 ports
-    if(address == 0xfffd && (machine_info.has_ay || emu_use_ay_sound))
+    if(address == 0xfffd && (machineInfo.hasAY || emuUseAYSound))
     {
-        ula_port_nnfd_value = data;
+        ULAPortnnFDValue = data;
         audioAYSetRegister(data);
     }
     
-    if ((address & 0xc002) == 0x8000 && (machine_info.has_ay || emu_use_ay_sound))
+    if ((address & 0xc002) == 0x8000 && (machineInfo.hasAY || emuUseAYSound))
     {
         audioAYWriteData(data);
     }
 
     // SPECDRUM port, all ports ending in 0xdf
-    if ((address & 0xff) == 0xdf && emu_use_specdrum)
+    if ((address & 0xff) == 0xdf && emuUseSpecDRUM)
     {
         // Adjust the output from SpecDrum to get the right volume
-        audio_specdrum_dac_value = (data * 256) - 32768;
+        specdrumDACValue = (data * 256) - 32768;
     }
     
 	// Retroleum Smart Card - HexTank
@@ -188,11 +188,11 @@ void ZXSpectrum48::coreIOWrite(uint16_t address, uint8_t data)
 	{
 		if(address == 0xfaf3)
 		{
-			smart_card_port_faf3 = data;
+			smartCardPortFAF3 = data;
 		}
 		else if(address == 0xfafb)
 		{
-			smart_card_port_fafb = data;
+			smartCardPortFAFB = data;
 		}
 	}
 }
@@ -202,73 +202,73 @@ void ZXSpectrum48::coreIOWrite(uint16_t address, uint8_t data)
 
 void ZXSpectrum48::coreMemoryWrite(uint16_t address, uint8_t data)
 {
-    if (address < kROM_SIZE)
+    if (address < cROM_SIZE)
     {
-		if ((smart_card_port_faf3 & 0x80) && address >= 8192 && address < 16384)
+		if ((smartCardPortFAF3 & 0x80) && address >= 8192 && address < 16384)
 		{
-			smart_card_sram[ (address - 8192) + ((smart_card_port_faf3 & 0x07) * 8192) ] = data;
+			smartCardSRAM[ (address - 8192) + ((smartCardPortFAF3 & 0x07) * 8192) ] = data;
 		}
 		
         return;
     }
     
-    if (address >= kROM_SIZE && address < kDisplayBitmapAddress + kDisplayBitmapSize + kAttributeMemorySize){
-        displayUpdateWithTs(static_cast<int32_t>((z80_core.GetTStates() - emu_current_display_ts) + machine_info.paper_drawing_offset));
+    if (address >= cROM_SIZE && address < cBITMAP_ADDRESS + cBITMAP_SIZE + cATTR_SIZE){
+        displayUpdateWithTs(static_cast<int32_t>((z80Core.GetTStates() - emuCurrentDisplayTs) + machineInfo.paperDrawingOffset));
     }
 
     if (debugOpCallbackBlock != nullptr)
     {
-        if (debugOpCallbackBlock( address, DebugOperation::WRITE ))
+        if (debugOpCallbackBlock( address, eDEBUGOPERATION::WRITE ))
         {
-            debugger_breakpoint_hit = true;
+            breakpointHit = true;
         }
     }
     
-    debugger_breakpoint_hit = false;
+    breakpointHit = false;
 
-    memory_ram[ address ] = static_cast<char>(data);
+    memoryRam[ address ] = static_cast<char>(data);
 }
 
 // ------------------------------------------------------------------------------------------------------------
 
 uint8_t ZXSpectrum48::coreMemoryRead(uint16_t address)
 {
-    if (address < kROM_SIZE)
+    if (address < cROM_SIZE)
     {
-		if ((smart_card_port_faf3 & 0x80) && address >= 8192 && address < 16384)
+		if ((smartCardPortFAF3 & 0x80) && address >= 8192 && address < 16384)
 		{
-			return smart_card_sram[  (address - 8192) + ((smart_card_port_faf3 & 0x07) * 8192) ];
+			return smartCardSRAM[  (address - 8192) + ((smartCardPortFAF3 & 0x07) * 8192) ];
 		}
 		if((address & 0xff) == 0x72)
 		{
-			if (smart_card_port_fafb & 0x40)
+			if (smartCardPortFAFB & 0x40)
 			{
-                smart_card_port_fafb &= ~kFAFB_ROM_SWITCHOUT;
-                smart_card_port_faf3 &= ~kFAF3_SRAM_ENABLE;
-                uint8_t retOpCode = static_cast<uint8_t>(memory_rom[ address ]);
-                loadROM( kDEFAULT_ROM, 0 );
+                smartCardPortFAFB &= ~cFAFB_ROM_SWITCHOUT;
+                smartCardPortFAF3 &= ~cFAF3_SRAM_ENABLE;
+                uint8_t retOpCode = static_cast<uint8_t>(memoryRom[ address ]);
+                loadROM( cDEFAULT_ROM, 0 );
 				return retOpCode;
 			}
 		}
 		
         if (debugOpCallbackBlock != nullptr)
         {
-            if (debugOpCallbackBlock( address, DebugOperation::READ ))
+            if (debugOpCallbackBlock( address, eDEBUGOPERATION::READ ))
             {
-                debugger_breakpoint_hit = true;
+                breakpointHit = true;
             }
         }
 
-        debugger_breakpoint_hit = false;
-        return static_cast<uint8_t>(memory_rom[address]);
+        breakpointHit = false;
+        return static_cast<uint8_t>(memoryRom[address]);
     }
 
     if (debugOpCallbackBlock != nullptr)
     {
-        debugOpCallbackBlock( address, DebugOperation::READ );
+        debugOpCallbackBlock( address, eDEBUGOPERATION::READ );
     }
 
-    return static_cast<uint8_t>(memory_ram[ address ]);
+    return static_cast<uint8_t>(memoryRam[ address ]);
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -276,25 +276,25 @@ uint8_t ZXSpectrum48::coreMemoryRead(uint16_t address)
 
 uint8_t ZXSpectrum48::coreDebugRead(uint16_t address, void *)
 {
-    if (address < kROM_SIZE)
+    if (address < cROM_SIZE)
     {
-        return static_cast<uint8_t>(memory_rom[address]);
+        return static_cast<uint8_t>(memoryRom[address]);
     }
     
-    return static_cast<uint8_t>(memory_ram[address]);
+    return static_cast<uint8_t>(memoryRam[address]);
 }
 
 // ------------------------------------------------------------------------------------------------------------
 
 void ZXSpectrum48::coreDebugWrite(uint16_t address, uint8_t byte, void *)
 {
-    if (address < kROM_SIZE)
+    if (address < cROM_SIZE)
     {
-        memory_rom[address] = static_cast<char>(byte);
+        memoryRom[address] = static_cast<char>(byte);
     }
     else
     {
-        memory_ram[address] = static_cast<char>(byte);
+        memoryRam[address] = static_cast<char>(byte);
     }
 }
 
@@ -305,7 +305,7 @@ void ZXSpectrum48::coreMemoryContention(uint16_t address, uint32_t)
 {
     if (address >= 16384 && address <= 32767)
     {
-        z80_core.AddContentionTStates( ula_memory_contention_table[z80_core.GetTStates() % machine_info.ts_per_frame] );
+        z80Core.AddContentionTStates( ULAMemoryContentionTable[z80Core.GetTStates() % machineInfo.tsPerFrame] );
     }
 }
 
@@ -325,12 +325,12 @@ void ZXSpectrum48::resetMachine(bool hard)
     {
         // If a hard reset is requested, reload the default ROM and make sure that the smart card
         // ROM switch is disabled along with the smart card SRAM
-        loadROM( kDEFAULT_ROM, 0 );
-        smart_card_port_fafb &= ~kFAFB_ROM_SWITCHOUT;
-        smart_card_port_faf3 &= ~kFAF3_SRAM_ENABLE;
+        loadROM( cDEFAULT_ROM, 0 );
+        smartCardPortFAFB &= ~cFAFB_ROM_SWITCHOUT;
+        smartCardPortFAF3 &= ~cFAF3_SRAM_ENABLE;
     }
 
-    emu_display_page = 1;
+    emuDisplayPage = 1;
     ZXSpectrum::resetMachine(hard);
 }
 
@@ -341,15 +341,15 @@ bool ZXSpectrum48::opcodeCallback(uint8_t opcode, uint16_t address, void *param)
 {
     ZXSpectrum48 *machine = static_cast<ZXSpectrum48*>(param);
     
-    if (machine->emu_tape_instant_load)
+    if (machine->emuTapeInstantLoad)
     {
         // Trap ROM tap LOADING
         if (address == 0x056b || address == 0x0111)
         {
             if (opcode == 0xc0)
             {
-                machine->emu_load_trap_triggered = true;
-                machine->virtual_tape->updateStatus();
+                machine->emuLoadTrapTriggered = true;
+                machine->tape->updateStatus();
                 return true;
             }
         }
@@ -360,14 +360,14 @@ bool ZXSpectrum48::opcodeCallback(uint8_t opcode, uint16_t address, void *param)
     {
         if (opcode == 0x08)
         {
-            machine->emu_save_trap_triggered = true;
-            machine->virtual_tape->updateStatus();
+            machine->emuSaveTrapTriggered = true;
+            machine->tape->updateStatus();
             return true;
         }
     }
 
-    machine->emu_save_trap_triggered = false;
-    machine->emu_load_trap_triggered = false;
+    machine->emuSaveTrapTriggered = false;
+    machine->emuLoadTrapTriggered = false;
 
     return false;
 }

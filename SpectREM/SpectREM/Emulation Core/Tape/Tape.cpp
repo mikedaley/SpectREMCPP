@@ -252,17 +252,17 @@ void Tape::clearStatusCallback(void)
 
 void Tape::resetAndClearBlocks(bool clearBlocks)
 {
-   input_bit = 0;
-   current_byte_pointer = 0;
-   current_data_bit = 0;
-   pilot_pulse_ts = 0;
-   pilot_pulses = 0;
-   data_pulse_ts = 0;
-   flip_tape_bit = true;
+   inputBit = 0;
+   currentBytePtr = 0;
+   currentDataBit = 0;
+   pilotPulseTStates = 0;
+   pilotPulses = 0;
+   dataPulseTStates = 0;
+   flipTapeBit = true;
    playing = false;
-   new_block = true;
-   current_byte_pointer = 0;
-   current_block_index = 0;
+   newBlock = true;
+   currentBytePtr = 0;
+   currentBlockIndex = 0;
 
    if (clearBlocks)
    {
@@ -271,7 +271,7 @@ void Tape::resetAndClearBlocks(bool clearBlocks)
 
    if (updateStatusCallback)
    {
-       updateStatusCallback(static_cast<int>(current_block_index), 0);
+       updateStatusCallback(static_cast<int>(currentBlockIndex), 0);
    }
 }
 
@@ -296,9 +296,9 @@ Tape::TapResponse Tape::loadWithPath(const std::string path)
     }
     else
     {
-        char* error_string = strerror(errno);
-        std::cout << "ERROR LOADING TAPE: " << error_string << "\n";
-        return Tape::TapResponse{false, error_string};
+        char* errorstring = strerror(errno);
+        std::cout << "ERROR LOADING TAPE: " << errorstring << "\n";
+        return Tape::TapResponse{false, errorstring};
     }
     loaded = success;
     return Tape::TapResponse{true, "Loaded successfully"};
@@ -308,78 +308,78 @@ Tape::TapResponse Tape::loadWithPath(const std::string path)
 
 void Tape::updateWithTs(uint32_t tStates)
 {
-   if (current_block_index > static_cast<uint32_t>(blocks.size() - 1))
+   if (currentBlockIndex > static_cast<uint32_t>(blocks.size() - 1))
    {
        std::cout << "TAPE STOPPED" << "\n";
        playing = false;
-       input_bit = 0;
+       inputBit = 0;
        rewindTape();
 
        if (updateStatusCallback)
        {
-           updateStatusCallback(static_cast<int>(current_block_index), 0);
+           updateStatusCallback(static_cast<int>(currentBlockIndex), 0);
        }
 
        return;
    }
 
-   if (new_block)
+   if (newBlock)
    {
        if (updateStatusCallback)
        {
-           updateStatusCallback(static_cast<int>(current_block_index), 0);
+           updateStatusCallback(static_cast<int>(currentBlockIndex), 0);
        }
 
-       new_block = false;
+       newBlock = false;
 
-       current_tape_block = blocks[ current_block_index ];
+       tapeCurrentBlock = blocks[ currentBlockIndex ];
 
-       if (current_tape_block->blockType == BlockType::PROGRAM_HEADER ||
-           current_tape_block->blockType == BlockType::NUMERIC_DATA_HEADER ||
-           current_tape_block->blockType == BlockType::ALPHANUMERIC_DATA_HEADER ||
-           current_tape_block->blockType == BlockType::BYTE_HEADER)
+       if (tapeCurrentBlock->blockType == ePROGRAM_HEADER ||
+           tapeCurrentBlock->blockType == eNUMERIC_DATA_HEADER ||
+           tapeCurrentBlock->blockType == eALPHANUMERIC_DATA_HEADER ||
+           tapeCurrentBlock->blockType == eBYTE_HEADER)
        {
-           processing_state = ProcessingState::HEADER_PILOT;
-           next_processing_state = ProcessingState::HEADER_DATA_STREAM;
+           processingState = eHEADER_PILOT;
+           nextProcessingState = eHEADER_DATA_STREAM;
        }
-       else if (current_tape_block->blockType == BlockType::DATA_BLOCK)
+       else if (tapeCurrentBlock->blockType == eDATA_PILOT)
        {
-           processing_state = ProcessingState::DATA_PILOT;
-           next_processing_state = ProcessingState::DATA_STREAM;
+           processingState = eDATA_PILOT;
+           nextProcessingState = eDATA_STREAM;
        }
 
-       current_byte_pointer = 0;
-       current_data_bit = 0;
-       pilot_pulse_ts = 0;
-       pilot_pulses = 0;
-       data_pulse_ts = 0;
-       flip_tape_bit = true;
+       currentBytePtr = 0;
+       currentDataBit = 0;
+       pilotPulseTStates = 0;
+       pilotPulses = 0;
+       dataPulseTStates = 0;
+       flipTapeBit = true;
    }
 
-   switch (processing_state)
+   switch (processingState)
    {
-       case ProcessingState::HEADER_PILOT:
+       case eHEADER_PILOT:
            generateHeaderPilotWithTs(tStates);
            break;
-       case ProcessingState::SYNC1:
+       case eSYNC1:
            generateSync1WithTs(tStates);
            break;
-       case ProcessingState::SYNC2:
+       case eSYNC2:
            generateSync2WithTs(tStates);
            break;
-       case ProcessingState::DATA_PILOT:
+       case eDATA_PILOT:
            generateDataPilotWithTs(tStates);
            break;
-       case ProcessingState::DATA_STREAM:
+       case eDATA_STREAM:
            tapeGenerateDataStreamWithTs(tStates);
            break;
-       case ProcessingState::HEADER_DATA_STREAM:
+       case eHEADER_DATA_STREAM:
            generateHeaderDataStreamWithTs(tStates);
            break;
-       case ProcessingState::DATA_BIT:
+       case eDATA_BIT:
            generateDataBitWithTs(tStates);
            break;
-       case ProcessingState::BLOCK_PAUSE:
+       case eBLOCK_PAUSE:
            tapeBlockPauseWithTs(tStates);
            break;
    }
@@ -390,77 +390,77 @@ void Tape::updateWithTs(uint32_t tStates)
 
 void Tape::generateHeaderPilotWithTs(uint32_t tStates)
 {
-   if (pilot_pulses < cPILOT_HEADER_PULSES)
+   if (pilotPulses < cPILOT_HEADER_PULSES)
    {
-       if (flip_tape_bit)
+       if (flipTapeBit)
        {
-           input_bit ^= 1;
-           flip_tape_bit = false;
+           inputBit ^= 1;
+           flipTapeBit = false;
        }
 
-       if (pilot_pulse_ts >= cPILOT_PULSE_TSTATE_LENGTH)
+       if (pilotPulseTStates >= cPILOT_PULSE_TSTATE_LENGTH)
        {
-           pilot_pulses += 1;
-           pilot_pulse_ts = 0;
-           flip_tape_bit = true;
+           pilotPulses += 1;
+           pilotPulseTStates = 0;
+           flipTapeBit = true;
        }
    }
    else
    {
-       sync_pulse_ts = 0;
-       processing_state = ProcessingState::SYNC1;
+       syncPulseTStates = 0;
+       processingState = eSYNC1;
    }
 
-   pilot_pulse_ts += tStates;
+   pilotPulseTStates += tStates;
 }
 
 // ------------------------------------------------------------------------------------------------------------
 
 void Tape::generateDataPilotWithTs(uint32_t tStates)
 {
-   if (pilot_pulses < cPILOT_DATA_PULSES)
+   if (pilotPulses < cPILOT_DATA_PULSES)
    {
-       if (flip_tape_bit)
+       if (flipTapeBit)
        {
-           input_bit ^= 1;
-           flip_tape_bit = false;
+           inputBit ^= 1;
+           flipTapeBit = false;
        }
 
-       if (pilot_pulse_ts >= cPILOT_PULSE_TSTATE_LENGTH)
+       if (pilotPulseTStates >= cPILOT_PULSE_TSTATE_LENGTH)
        {
-           pilot_pulses += 1;
-           pilot_pulse_ts = 0;
-           flip_tape_bit = true;;
+           pilotPulses += 1;
+           pilotPulseTStates = 0;
+           flipTapeBit = true;;
        }
    }
    else
    {
-       sync_pulse_ts = 0;
-       processing_state = ProcessingState::SYNC1;
+       syncPulseTStates = 0;
+       processingState = eSYNC1;
    }
 
-   pilot_pulse_ts += tStates;
+   pilotPulseTStates += tStates;
 }
 
 // ------------------------------------------------------------------------------------------------------------
 
 void Tape::generateSync1WithTs(uint32_t tStates)
 {
-   if (flip_tape_bit)
+   if (flipTapeBit)
    {
-       input_bit ^= 1;
-       flip_tape_bit = false;
+       inputBit ^= 1;
+       flipTapeBit = false;
    }
 
-   if (sync_pulse_ts >= cFIRST_SYNC_PULSE_TSTATE_DELAY)
+   if (syncPulseTStates >= cFIRST_SYNC_PULSE_TSTATE_DELAY)
    {
-       sync_pulse_ts = 0;
-       flip_tape_bit = true;
-       processing_state = ProcessingState::SYNC2;
+       syncPulseTStates = 0;
+       flipTapeBit = true;
+       processingState = eSYNC2;
    }
    else
    {
-       sync_pulse_ts += tStates;
+       syncPulseTStates += tStates;
    }
 }
 
@@ -468,22 +468,22 @@ void Tape::generateSync1WithTs(uint32_t tStates)
 
 void Tape::generateSync2WithTs(uint32_t tStates)
 {
-   if (flip_tape_bit)
+   if (flipTapeBit)
    {
-       input_bit ^= 1;
-       flip_tape_bit = false;
+       inputBit ^= 1;
+       flipTapeBit = false;
    }
 
-   if (sync_pulse_ts >= cSECOND_SYNC_PULSE_TSTATE_DELAY)
+   if (syncPulseTStates >= cSECOND_SYNC_PULSE_TSTATE_DELAY)
    {
-       sync_pulse_ts = 0;
-       current_byte_pointer = 0;
-       flip_tape_bit = true;
-       processing_state = next_processing_state;
+       syncPulseTStates = 0;
+       currentBytePtr = 0;
+       flipTapeBit = true;
+       processingState = nextProcessingState;
    }
    else
    {
-       sync_pulse_ts += tStates;
+       syncPulseTStates += tStates;
    }
 }
 
@@ -491,35 +491,35 @@ void Tape::generateSync2WithTs(uint32_t tStates)
 
 void Tape::tapeGenerateDataStreamWithTs(uint32_t)
 {
-   size_t currentBlockLength = blocks[ current_block_index ]->getDataLength();
-   uint8_t byte = blocks[ current_block_index ]->blockData[ current_byte_pointer ];
-   uint8_t bit = (byte << current_data_bit) & 128;
+   size_t currentBlockLength = blocks[ currentBlockIndex ]->getDataLength();
+   uint8_t byte = blocks[ currentBlockIndex ]->blockData[ currentBytePtr ];
+   uint8_t bit = (byte << currentDataBit) & 128;
 
-   current_data_bit += 1;
-   if (current_data_bit > 7)
+   currentDataBit += 1;
+   if (currentDataBit > 7)
    {
-       current_data_bit = 0;
-       current_byte_pointer += 1;
-       if (current_byte_pointer > currentBlockLength)
+       currentDataBit = 0;
+       currentBytePtr += 1;
+       if (currentBytePtr > currentBlockLength)
        {
-           processing_state = ProcessingState::BLOCK_PAUSE;
-           block_pause_ts = 0;
+           processingState = eBLOCK_PAUSE;
+           blockPauseTStates = 0;
            return;
        }
    }
 
    if (bit)
    {
-       data_pulse_ts = cDATA_BIT_ONE_PULSE_TSTATE_DELAY;
+       dataPulseTStates = cDATA_BIT_ONE_PULSE_TSTATE_DELAY;
    }
    else
    {
-       data_pulse_ts = cDATA_BIT_ZERO_PULSE_TSTATE_DELAY;
+       dataPulseTStates = cDATA_BIT_ZERO_PULSE_TSTATE_DELAY;
    }
-   flip_tape_bit = true;
-   data_bit_ts = 0;
-   data_pulse_count = 0;
-   processing_state = ProcessingState::DATA_BIT;
+   flipTapeBit = true;
+   dataBitTStates = 0;
+   dataPulseCount = 0;
+   processingState = eDATA_BIT;
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -527,63 +527,63 @@ void Tape::tapeGenerateDataStreamWithTs(uint32_t)
 void Tape::generateHeaderDataStreamWithTs(uint32_t)
 {
    size_t currentBlockLength = cHEADER_BLOCK_LENGTH;
-   uint8_t byte = blocks[ current_block_index ]->blockData[ current_byte_pointer ];
-   uint8_t bit = (byte << current_data_bit) & 128;
+   uint8_t byte = blocks[ currentBlockIndex ]->blockData[ currentBytePtr ];
+   uint8_t bit = (byte << currentDataBit) & 128;
 
-   current_data_bit += 1;
-   if (current_data_bit > 7)
+   currentDataBit += 1;
+   if (currentDataBit > 7)
    {
-       current_data_bit = 0;
-       current_byte_pointer += 1;
-       current_tape_block->currentByte += 1;
-       if (current_byte_pointer > currentBlockLength)
+       currentDataBit = 0;
+       currentBytePtr += 1;
+       tapeCurrentBlock->currentByte += 1;
+       if (currentBytePtr > currentBlockLength)
        {
-           processing_state = ProcessingState::BLOCK_PAUSE;
-           block_pause_ts = 0;
+           processingState = eBLOCK_PAUSE;
+           blockPauseTStates = 0;
            return;
        }
    }
 
    if (bit)
    {
-       data_pulse_ts = cDATA_BIT_ONE_PULSE_TSTATE_DELAY;
+       dataPulseTStates = cDATA_BIT_ONE_PULSE_TSTATE_DELAY;
    }
    else
    {
-       data_pulse_ts = cDATA_BIT_ZERO_PULSE_TSTATE_DELAY;
+       dataPulseTStates = cDATA_BIT_ZERO_PULSE_TSTATE_DELAY;
    }
-   flip_tape_bit = true;
-   data_bit_ts = 0;
-   data_pulse_count = 0;
-   processing_state = ProcessingState::DATA_BIT;
+   flipTapeBit = true;
+   dataBitTStates = 0;
+   dataPulseCount = 0;
+   processingState = eDATA_BIT;
 }
 
 // ------------------------------------------------------------------------------------------------------------
 
 void Tape::generateDataBitWithTs(uint32_t tStates)
 {
-   if (flip_tape_bit)
+   if (flipTapeBit)
    {
-       input_bit ^= 1;
-       flip_tape_bit = false;
+       inputBit ^= 1;
+       flipTapeBit = false;
    }
 
-   if (data_bit_ts >= data_pulse_ts)
+   if (dataBitTStates >= dataPulseTStates)
    {
-       data_pulse_count += 1;
-       if (data_pulse_count < 2)
+       dataPulseCount += 1;
+       if (dataPulseCount < 2)
        {
-           flip_tape_bit = true;
-           data_bit_ts = 0;
+           flipTapeBit = true;
+           dataBitTStates = 0;
        }
        else
        {
-           processing_state = next_processing_state;
+           processingState = nextProcessingState;
        }
    }
    else
    {
-       data_bit_ts += tStates;
+       dataBitTStates += tStates;
    }
 }
 
@@ -591,18 +591,18 @@ void Tape::generateDataBitWithTs(uint32_t tStates)
 
 void Tape::tapeBlockPauseWithTs(uint32_t tStates)
 {
-   block_pause_ts += tStates;
-   if (block_pause_ts > 3500000 * 3)
+   blockPauseTStates += tStates;
+   if (blockPauseTStates > 3500000 * 3)
    {
-       current_block_index += 1;
-       new_block = true;
+       currentBlockIndex += 1;
+       newBlock = true;
    }
 
    // Introduce a random crackle in between blocks to produce a similar experience as loading from a real tape
    // on a ZX Spectrum.
    if (std::rand() == 1)
    {
-       input_bit ^= 1;
+       inputBit ^= 1;
    }
 }
 
@@ -614,44 +614,44 @@ bool Tape::processData(uint8_t *dataBytes, uint32_t size)
    uint16_t blockLength = 0;
    uint8_t flag = 0;
    uint8_t dataType = 0;
-   current_byte_pointer = 0;
+   currentBytePtr = 0;
 
-   while (current_byte_pointer < size)
+   while (currentBytePtr < size)
    {
-       blockLength = (reinterpret_cast<uint16_t*>(&dataBytes[ current_byte_pointer ])[0]);
+       blockLength = (reinterpret_cast<uint16_t*>(&dataBytes[ currentBytePtr ])[0]);
 
        // Move the byte pointer to the top of the actual TAP block
-       current_byte_pointer += 2;
+       currentBytePtr += 2;
 
-       flag = dataBytes[ current_byte_pointer  + cHEADER_FLAG_OFFSET ];
-       dataType = dataBytes[ current_byte_pointer + cHEADER_DATA_TYPE_OFFSET ];
+       flag = dataBytes[ currentBytePtr  + cHEADER_FLAG_OFFSET ];
+       dataType = dataBytes[ currentBytePtr + cHEADER_DATA_TYPE_OFFSET ];
 
        TapeBlock *newTapeBlock;
 
-       if (dataType == BlockType::PROGRAM_HEADER && flag != 0xff)
+       if (dataType == ePROGRAM_HEADER && flag != 0xff)
        {
            newTapeBlock = new ProgramHeader;
-           newTapeBlock->blockType = BlockType::PROGRAM_HEADER;
+           newTapeBlock->blockType = ePROGRAM_HEADER;
        }
-       else if (dataType == BlockType::NUMERIC_DATA_HEADER && flag != 0xff)
+       else if (dataType == eNUMERIC_DATA_HEADER && flag != 0xff)
        {
            newTapeBlock = new NumericDataHeader;
-           newTapeBlock->blockType = BlockType::NUMERIC_DATA_HEADER;
+           newTapeBlock->blockType = eNUMERIC_DATA_HEADER;
        }
-       else if (dataType == BlockType::ALPHANUMERIC_DATA_HEADER && flag != 0xff)
+       else if (dataType == eALPHANUMERIC_DATA_HEADER && flag != 0xff)
        {
            newTapeBlock = new AlphanumericDataHeader;
-           newTapeBlock->blockType = BlockType::ALPHANUMERIC_DATA_HEADER;
+           newTapeBlock->blockType = eALPHANUMERIC_DATA_HEADER;
        }
-       else if (dataType == BlockType::BYTE_HEADER && flag != 0xff)
+       else if (dataType == eBYTE_HEADER && flag != 0xff)
        {
            newTapeBlock = new ByteHeader;
-           newTapeBlock->blockType = BlockType::BYTE_HEADER;
+           newTapeBlock->blockType = eBYTE_HEADER;
        }
        else
        {
            newTapeBlock = new DataBlock;
-           newTapeBlock->blockType = BlockType::DATA_BLOCK;
+           newTapeBlock->blockType = eDATA_BLOCK;
        }
 
        if (!newTapeBlock)
@@ -662,11 +662,11 @@ bool Tape::processData(uint8_t *dataBytes, uint32_t size)
 
        newTapeBlock->blockLength = blockLength;
        newTapeBlock->blockData = new uint8_t[blockLength];
-       memcpy(newTapeBlock->blockData, &dataBytes[ current_byte_pointer ], blockLength);
+       memcpy(newTapeBlock->blockData, &dataBytes[ currentBytePtr ], blockLength);
 
        blocks.push_back(newTapeBlock);
 
-       current_byte_pointer += blockLength;
+       currentBytePtr += blockLength;
    }
 
    return true;
@@ -680,37 +680,37 @@ void Tape::loadBlock(void *m)
    ZXSpectrum *machine = static_cast<ZXSpectrum *>(m);
 
    // Stops us trying to read past the avaiable blocks. This is a hack and should be fixed properly at source
-   if (current_block_index >= blocks.size())
+   if (currentBlockIndex >= blocks.size())
    {
-       current_block_index = 0;
+       currentBlockIndex = 0;
    }
 
-   uint32_t expectedBlockType = machine->z80_core.GetRegister(CZ80Core::eREG_ALT_A);
-   uint16_t startAddress = machine->z80_core.GetRegister(CZ80Core::eREG_IX);
+   uint32_t expectedBlockType = machine->z80Core.GetRegister(CZ80Core::eREG_ALT_A);
+   uint16_t startAddress = machine->z80Core.GetRegister(CZ80Core::eREG_IX);
 
    // Some TAP files have blocks which are shorter than what is expected in DE (Chuckie Egg 2)
    // so just take the smallest value
-   uint32_t blockLength = machine->z80_core.GetRegister(CZ80Core::eREG_DE);
-   uint32_t tapBlockLength = blocks[ current_block_index ]->getDataLength();
+   uint32_t blockLength = machine->z80Core.GetRegister(CZ80Core::eREG_DE);
+   uint32_t tapBlockLength = blocks[ currentBlockIndex ]->getDataLength();
    blockLength = (blockLength < tapBlockLength) ? blockLength : tapBlockLength;
    uint32_t success = 1;
 
-   if (blocks[ current_block_index ]->getFlag() == expectedBlockType)
+   if (blocks[ currentBlockIndex ]->getFlag() == expectedBlockType)
    {
-       if (machine->z80_core.GetRegister(CZ80Core::eREG_ALT_F) & CZ80Core::FLAG_C)
+       if (machine->z80Core.GetRegister(CZ80Core::eREG_ALT_F) & CZ80Core::FLAG_C)
        {
-           current_byte_pointer = cHEADER_DATA_TYPE_OFFSET;
+           currentBytePtr = cHEADER_DATA_TYPE_OFFSET;
            uint32_t checksum = expectedBlockType;
 
            for (uint16_t i = 0; i < blockLength; i++)
            {
-               uint8_t tapByte = blocks[ current_block_index ]->blockData[ current_byte_pointer ];
-               machine->z80_core.Z80CoreDebugMemWrite(startAddress + i, tapByte, nullptr);
+               uint8_t tapByte = blocks[ currentBlockIndex ]->blockData[ currentBytePtr ];
+               machine->z80Core.Z80CoreDebugMemWrite(startAddress + i, tapByte, nullptr);
                checksum ^= tapByte;
-               current_byte_pointer++;
+               currentBytePtr++;
            }
 
-           size_t expectedChecksum = blocks[ current_block_index ]->getChecksum();
+           size_t expectedChecksum = blocks[ currentBlockIndex ]->getChecksum();
            if (expectedChecksum != checksum)
            {
                success = 0;
@@ -724,19 +724,19 @@ void Tape::loadBlock(void *m)
 
    if (success)
    {
-       machine->z80_core.SetRegister(CZ80Core::eREG_F, (machine->z80_core.GetRegister(CZ80Core::eREG_F) | CZ80Core::FLAG_C));
+       machine->z80Core.SetRegister(CZ80Core::eREG_F, (machine->z80Core.GetRegister(CZ80Core::eREG_F) | CZ80Core::FLAG_C));
    }
    else
    {
-       machine->z80_core.SetRegister(CZ80Core::eREG_F, (machine->z80_core.GetRegister(CZ80Core::eREG_F) & ~CZ80Core::FLAG_C));
+       machine->z80Core.SetRegister(CZ80Core::eREG_F, (machine->z80Core.GetRegister(CZ80Core::eREG_F) & ~CZ80Core::FLAG_C));
    }
 
-   current_block_index++;
-   machine->z80_core.SetRegister(CZ80Core::eREG_PC, 0x05e2);
+   currentBlockIndex++;
+   machine->z80Core.SetRegister(CZ80Core::eREG_PC, 0x05e2);
 
    if (updateStatusCallback)
    {
-       updateStatusCallback(static_cast<int>(current_block_index), 0);
+       updateStatusCallback(static_cast<int>(currentBlockIndex), 0);
    }
 }
 
@@ -748,7 +748,7 @@ void Tape::saveBlock(void *m)
    ZXSpectrum *machine = static_cast<ZXSpectrum *>(m);
 
    uint8_t parity = 0;
-   uint16_t length = machine->z80_core.GetRegister(CZ80Core::eREG_DE) + 2;
+   uint16_t length = machine->z80Core.GetRegister(CZ80Core::eREG_DE) + 2;
    uint16_t dataIndex = 0;
    loaded = true;
 
@@ -759,15 +759,15 @@ void Tape::saveBlock(void *m)
        pData[dataIndex++] = length & 255;
        pData[dataIndex++] = length >> 8;
 
-       parity = machine->z80_core.GetRegister(CZ80Core::eREG_A);
+       parity = machine->z80Core.GetRegister(CZ80Core::eREG_A);
 
        pData[dataIndex++] = parity;
 
-       for (uint16_t i = 0; i < machine->z80_core.GetRegister(CZ80Core::eREG_DE); i++)
+       for (uint16_t i = 0; i < machine->z80Core.GetRegister(CZ80Core::eREG_DE); i++)
        {
            // Read memory using the debug read from the core which takes into account any paging
            // on the 128k Spectrum
-           uint8_t byte = static_cast<uint8_t>(machine->z80_core.Z80CoreDebugMemRead(machine->z80_core.GetRegister(CZ80Core::eREG_IX) + i, nullptr));
+           uint8_t byte = static_cast<uint8_t>(machine->z80Core.Z80CoreDebugMemRead(machine->z80Core.GetRegister(CZ80Core::eREG_IX) + i, nullptr));
            parity ^= byte;
            pData[dataIndex++] = byte;
        }
@@ -777,12 +777,12 @@ void Tape::saveBlock(void *m)
        processData(pData, length);
 
        // Once a block has been saved this is the RET address
-       machine->z80_core.SetRegister(CZ80Core::eREG_PC, 0x053e);
+       machine->z80Core.SetRegister(CZ80Core::eREG_PC, 0x053e);
 
        delete[] pData;
    }
 
-   new_block = true;
+   newBlock = true;
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -795,7 +795,7 @@ void Tape::startPlaying()
        playing = true;
        if (updateStatusCallback)
        {
-           updateStatusCallback(static_cast<int>(current_block_index), 0);
+           updateStatusCallback(static_cast<int>(currentBlockIndex), 0);
        }
    }
 }
@@ -807,10 +807,10 @@ void Tape::stopPlaying()
    if (loaded)
    {
        playing = false;
-       input_bit = 0;
+       inputBit = 0;
        if (updateStatusCallback)
        {
-           updateStatusCallback(static_cast<int>(current_block_index), 0);
+           updateStatusCallback(static_cast<int>(currentBlockIndex), 0);
        }
    }
 }
@@ -825,7 +825,7 @@ void Tape::rewindTape()
    }
    if (updateStatusCallback)
    {
-       updateStatusCallback(static_cast<int>(current_block_index), 0);
+       updateStatusCallback(static_cast<int>(currentBlockIndex), 0);
    }
 }
 
@@ -835,13 +835,13 @@ void Tape::rewindBlock()
 {
    if (loaded)
    {
-       input_bit = 0;
-       current_byte_pointer = 0;
-       current_data_bit = 0;
-       pilot_pulse_ts = 0;
-       pilot_pulses = 0;
-       data_pulse_ts = 0;
-       flip_tape_bit = true;
+       inputBit = 0;
+       currentBytePtr = 0;
+       currentDataBit = 0;
+       pilotPulseTStates = 0;
+       pilotPulses = 0;
+       dataPulseTStates = 0;
+       flipTapeBit = true;
    }
 }
 
@@ -883,7 +883,7 @@ size_t Tape::numberOfTapeBlocks()
 
 void  Tape::setSelectedBlock(uint32_t blockIndex)
 {
-   current_block_index = blockIndex;
+   currentBlockIndex = blockIndex;
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -893,7 +893,7 @@ void Tape::updateStatus()
 {
    if (updateStatusCallback)
    {
-       updateStatusCallback(static_cast<int>(current_block_index), 0);
+       updateStatusCallback(static_cast<int>(currentBlockIndex), 0);
    }
 }
 
