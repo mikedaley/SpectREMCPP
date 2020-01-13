@@ -74,11 +74,11 @@ public:
 
 protected:
 
-    std::vector<DisassembledOpcode>                  m_disassembly;
-    std::vector<Breakpoint>                          m_breakpoints;
-    std::vector<Stack>                               m_stack;
-    std::map<std::string, CZ80Core::eZ80BYTEREGISTERS>    m_byteRegisters;
-    std::map<std::string, CZ80Core::eZ80WORDREGISTERS>    m_wordRegisters;
+    std::vector<DisassembledOpcode>                     disassembly_;
+    std::vector<Breakpoint>                             breakpoints_;
+    std::vector<Stack>                                  stack_;
+    std::map<std::string, CZ80Core::eZ80BYTEREGISTERS>  byteRegisters_;
+    std::map<std::string, CZ80Core::eZ80WORDREGISTERS>  wordRegisters_;
 
 public:
     ZXSpectrum *                machine;

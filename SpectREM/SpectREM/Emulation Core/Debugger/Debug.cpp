@@ -14,7 +14,7 @@
 Debug::Debug()
 {
     std::cout << "Debugger::Constructor" << "\n";
-    m_byteRegisters = {
+    byteRegisters_ = {
         {"A" , CZ80Core::eREG_A},
         {"F" , CZ80Core::eREG_F},
         {"B" , CZ80Core::eREG_B},
@@ -35,7 +35,7 @@ Debug::Debug()
         {"R" , CZ80Core::eREG_R}
     };
 
-    m_wordRegisters = {
+    wordRegisters_ = {
         {"AF" , CZ80Core::eREG_AF},
         {"BC" , CZ80Core::eREG_BC},
         {"DE" , CZ80Core::eREG_DE},
@@ -69,9 +69,9 @@ void Debug::attachMachine(ZXSpectrum * new_machine)
 
 bool Debug::checkForBreakpoint(uint16_t address, uint8_t bpType)
 {
-    for (std::vector<uint32_t>::size_type i = 0; i != m_breakpoints.size(); i++)
+    for (std::vector<uint32_t>::size_type i = 0; i != breakpoints_.size(); i++)
     {
-        if (m_breakpoints[ i ].address == address &&  m_breakpoints[ i ].type & bpType)
+        if (breakpoints_[ i ].address == address &&  breakpoints_[ i ].type & bpType)
         {
             std::cout << "BREAK ON " << bpType << " at address " << address << "\n";
             return true;
@@ -85,11 +85,11 @@ bool Debug::checkForBreakpoint(uint16_t address, uint8_t bpType)
 
 void Debug::addBreakpoint(uint16_t address, uint8_t type)
 {
-    for (std::vector<uint32_t>::size_type i = 0; i != m_breakpoints.size(); i++)
+    for (std::vector<uint32_t>::size_type i = 0; i != breakpoints_.size(); i++)
     {
-        if (m_breakpoints[ i ].address == address)
+        if (breakpoints_[ i ].address == address)
         {
-            m_breakpoints[ i ].type |= type;
+            breakpoints_[ i ].type |= type;
             return;
         }
     }
@@ -97,22 +97,22 @@ void Debug::addBreakpoint(uint16_t address, uint8_t type)
     Breakpoint bp;
     bp.address = address;
     bp.type = type;
-    m_breakpoints.push_back(bp);
+    breakpoints_.push_back(bp);
 }
 
 // ------------------------------------------------------------------------------------------------------------
 
 void Debug::removeBreakpoint(uint16_t address, uint8_t type)
 {
-    for (std::vector<long>::size_type i = 0; i != m_breakpoints.size(); i++)
+    for (std::vector<long>::size_type i = 0; i != breakpoints_.size(); i++)
     {
-        if (m_breakpoints[ i ].address == address && (m_breakpoints[ i ].type - type))
+        if (breakpoints_[ i ].address == address && (breakpoints_[ i ].type - type))
         {
-            m_breakpoints[ i ].type = m_breakpoints[ i ].type - type;
+            breakpoints_[ i ].type = breakpoints_[ i ].type - type;
         }
-        else if (m_breakpoints[ i ].address == address)
+        else if (breakpoints_[ i ].address == address)
         {
-            m_breakpoints.erase( m_breakpoints.begin() + static_cast<long>(i) );
+            breakpoints_.erase( breakpoints_.begin() + static_cast<long>(i) );
             break;
         }
     }
@@ -122,16 +122,16 @@ void Debug::removeBreakpoint(uint16_t address, uint8_t type)
 
 size_t Debug::numberOfBreakpoints()
 {
-    return m_breakpoints.size();
+    return breakpoints_.size();
 }
 
 // ------------------------------------------------------------------------------------------------------------
 
 Debug::Breakpoint Debug::breakpoint(uint32_t index)
 {
-    if (index < m_breakpoints.size())
+    if (index < breakpoints_.size())
     {
-        return m_breakpoints[ index ];
+        return breakpoints_[ index ];
     }
     Breakpoint bp;
     bp.type = 0xff;
@@ -142,11 +142,11 @@ Debug::Breakpoint Debug::breakpoint(uint32_t index)
 
 uint8_t Debug::breakpointAtAddress(uint16_t address)
 {
-    for (size_t i = 0; i < m_breakpoints.size(); i++)
+    for (size_t i = 0; i < breakpoints_.size(); i++)
     {
-        if (m_breakpoints[ i ].address == address)
+        if (breakpoints_[ i ].address == address)
         {
-            return m_breakpoints[ i ].type;
+            return breakpoints_[ i ].type;
         }
     }
 
@@ -158,7 +158,7 @@ uint8_t Debug::breakpointAtAddress(uint16_t address)
 
 void Debug::disassemble(uint16_t fromAddress, uint16_t bytes, bool hexFormat)
 {
-    m_disassembly.clear();
+    disassembly_.clear();
 
     uint32_t  pc = fromAddress;
 
@@ -191,7 +191,7 @@ void Debug::disassemble(uint16_t fromAddress, uint16_t bytes, bool hexFormat)
         }
 
 
-        m_disassembly.push_back(dop);
+        disassembly_.push_back(dop);
     }
 }
 
@@ -199,9 +199,9 @@ void Debug::disassemble(uint16_t fromAddress, uint16_t bytes, bool hexFormat)
 
 Debug::DisassembledOpcode Debug::disassembly(uint32_t index)
 {
-    if (index < m_disassembly.size())
+    if (index < disassembly_.size())
     {
-        return m_disassembly[ index ];
+        return disassembly_[ index ];
     }
 
     DisassembledOpcode dop;
@@ -212,7 +212,7 @@ Debug::DisassembledOpcode Debug::disassembly(uint32_t index)
 
 size_t Debug::numberOfMnemonics()
 {
-    return m_disassembly.size();
+    return disassembly_.size();
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -220,14 +220,14 @@ size_t Debug::numberOfMnemonics()
 
 size_t Debug::numberOfStackEntries()
 {
-    return m_stack.size();
+    return stack_.size();
 }
 
 // ------------------------------------------------------------------------------------------------------------
 
 void Debug::stackTableUpdate()
 {
-    m_stack.clear();
+    stack_.clear();
     for (uint32_t i = machine->z80Core.GetRegister(CZ80Core::eREG_SP); i <= 0xfffe; i += 2)
     {
         uint16_t value = static_cast<uint16_t>(machine->z80Core.Z80CoreDebugMemRead(i + 1, nullptr) << 8);
@@ -237,7 +237,7 @@ void Debug::stackTableUpdate()
         sp.address = i;
         sp.value = value;
 
-        m_stack.push_back(sp);
+        stack_.push_back(sp);
     }
 }
 
@@ -245,7 +245,7 @@ void Debug::stackTableUpdate()
 
 Debug::Stack Debug::stackAddress(uint32_t index)
 {
-    return m_stack[ index ];
+    return stack_[ index ];
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -254,7 +254,7 @@ Debug::Stack Debug::stackAddress(uint32_t index)
 bool Debug::setRegister(std::string reg, uint8_t value)
 {
     std::map<std::string, CZ80Core::eZ80BYTEREGISTERS>::iterator byteit;
-    for (byteit = m_byteRegisters.begin(); byteit != m_byteRegisters.end(); byteit++)
+    for (byteit = byteRegisters_.begin(); byteit != byteRegisters_.end(); byteit++)
     {
         if (byteit->first == reg)
         {
@@ -264,7 +264,7 @@ bool Debug::setRegister(std::string reg, uint8_t value)
     }
 
     std::map<std::string, CZ80Core::eZ80WORDREGISTERS>::iterator wordit;
-    for (wordit = m_wordRegisters.begin(); wordit != m_wordRegisters.end(); wordit++)
+    for (wordit = wordRegisters_.begin(); wordit != wordRegisters_.end(); wordit++)
     {
         if (wordit->first == reg)
         {
