@@ -509,9 +509,9 @@ ZXSpectrum::FileResponse ZXSpectrum::snapshotZ80LoadWithBuffer(const char *buffe
 
                 uint32_t pageId = buffer[offset + 2];
                 
-                std::cout << "Snapshot Page:" << pageId;
-                std::cout << ((pageId > 9) ? "\t" : "\t\t");
-                std::cout << "Mem Page:" << pageId - 3 << "\tCompressed Length:" << compressedLength << "\tIsCompressed:" << isCompressed;
+                std::cout << "Snap Page: " << pageId << "\t\t";
+//                std::cout << ((pageId > 9) ? "\t" : "\t\t");
+                std::cout << "Mem Page: " << pageId - 3 << "\tCompressed Length: " << compressedLength << "\tIsCompressed: " << isCompressed;
                 std::cout << "\tHardware Type: " << snapshotHardwareTypeForVersion(version, hardwareType) << "\n";
 
                 if (version == 1 || ((version == 2 || version == 3) && (hardwareType == cZ80_V2_MACHINE_TYPE_48 ||
@@ -709,6 +709,7 @@ int32_t ZXSpectrum::snapshotMachineInSnapshotWithPath(const char *path)
                     case 3:
                     case 4:
                         machineType = eZXSpectrum128;
+                        break;
                         
                     default:
                         machineType = eZXSpectrum48;
