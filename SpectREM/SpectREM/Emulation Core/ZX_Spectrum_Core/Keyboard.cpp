@@ -14,16 +14,16 @@
 ZXSpectrum::KEYBOARD_ENTRY ZXSpectrum::keyboardLookup[] =
 {
     { eZXSpectrumKey::Key_Shift,         0,  0, -1, -1 },    // CAPS SHIFT
-    { eZXSpectrumKey::Key_Z,             0,	1, -1, -1 },    // Z
-    { eZXSpectrumKey::Key_X,             0,	2, -1, -1 },    // X
-    { eZXSpectrumKey::Key_C,             0,	3, -1, -1 },    // C
-    { eZXSpectrumKey::Key_V,             0,	4, -1, -1 },    // V
+    { eZXSpectrumKey::Key_Z,             0,	1, -1, -1 },     // Z
+    { eZXSpectrumKey::Key_X,             0,	2, -1, -1 },     // X
+    { eZXSpectrumKey::Key_C,             0,	3, -1, -1 },     // C
+    { eZXSpectrumKey::Key_V,             0,	4, -1, -1 },     // V
     
-    { eZXSpectrumKey::Key_A,             1,	0, -1, -1 },    // A
-    { eZXSpectrumKey::Key_S,             1,	1, -1, -1 },    // S
-    { eZXSpectrumKey::Key_D,             1,	2, -1, -1 },    // D
-    { eZXSpectrumKey::Key_F,             1,	3, -1, -1 },    // F
-    { eZXSpectrumKey::Key_G,             1,	4, -1, -1 },    // G
+    { eZXSpectrumKey::Key_A,             1,	0, -1, -1 },     // A
+    { eZXSpectrumKey::Key_S,             1,	1, -1, -1 },     // S
+    { eZXSpectrumKey::Key_D,             1,	2, -1, -1 },     // D
+    { eZXSpectrumKey::Key_F,             1,	3, -1, -1 },     // F
+    { eZXSpectrumKey::Key_G,             1,	4, -1, -1 },     // G
     
     { eZXSpectrumKey::Key_Q,             2, 0, -1, -1 },     // Q
     { eZXSpectrumKey::Key_W,             2, 1, -1, -1 },     // W
