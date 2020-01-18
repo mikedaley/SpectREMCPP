@@ -16,6 +16,8 @@
 #include <CommCtrl.h>
 #include <vector>
 
+#define PM_TAPE_PAUSED              60
+#define PM_TAPE_PLAYING             61
 
 #define PM_TAPEDATA_FULL            77
 #define PM_TAPE_COMMAND             79
@@ -34,6 +36,8 @@
 HWND TapeViewer::tapeViewerWindowInternal = nullptr;
 HWND mHandle;
 static std::vector<PMDawn::gTAPEBLOCK>* myP;
+static uint16_t currentActiveBlock;
+static bool bIsPlaying = false; // false is paused, true is playing
 
 TapeViewer::~TapeViewer()
 {
@@ -175,6 +179,8 @@ LRESULT CALLBACK TapeViewer::WndProcTV(HWND hwnd, UINT msg, WPARAM wParam, LPARA
                 }
 
                 ListView_SetExtendedListViewStyle(hwndListView, LVS_EX_FULLROWSELECT);
+                currentActiveBlock = 0;
+                ListView_SetItemText(hwndListView, currentActiveBlock, 0, TEXT("PAUSED"));
                 return 0;
             }
         }
@@ -182,6 +188,7 @@ LRESULT CALLBACK TapeViewer::WndProcTV(HWND hwnd, UINT msg, WPARAM wParam, LPARA
         {
             if (hwndListView != nullptr) {
                 ListView_DeleteAllItems(hwndListView);
+                currentActiveBlock = -1;
                 return 0;
             }
         }
@@ -189,8 +196,19 @@ LRESULT CALLBACK TapeViewer::WndProcTV(HWND hwnd, UINT msg, WPARAM wParam, LPARA
         {
             if (hwndListView != nullptr) {
                 uint16_t blockNumber = (uint16_t)lParam;
-
-                //ListView_DeleteAllItems(hwndListView);
+                if (currentActiveBlock >= 0)
+                {
+                    ListView_SetItemText(hwndListView, currentActiveBlock, 0, TEXT(""));
+                    if (bIsPlaying)
+                    {
+                        ListView_SetItemText(hwndListView, blockNumber, 0, TEXT("PLAYING"));
+                    }
+                    else
+                    {
+                        ListView_SetItemText(hwndListView, blockNumber, 0, TEXT("PAUSED"));
+                    }
+                    currentActiveBlock = blockNumber;
+                }
                 return 0;
             }
         }
@@ -206,18 +224,26 @@ LRESULT CALLBACK TapeViewer::WndProcTV(HWND hwnd, UINT msg, WPARAM wParam, LPARA
         {
         case IDC_BUTTON_PLAY:
             PostMessage(mHandle, WM_USER + 2, PM_TAPE_COMMAND, (LPARAM)PM_TAPE_PLAY);
+            ListView_SetItemText(hwndListView, currentActiveBlock, 0, TEXT("PLAYING"));
+            bIsPlaying = true;
             break;
         case IDC_BUTTON_PAUSE:
             PostMessage(mHandle, WM_USER + 2, PM_TAPE_COMMAND, (LPARAM)PM_TAPE_PAUSE);
+            ListView_SetItemText(hwndListView, currentActiveBlock, 0, TEXT("PAUSED"));
+            bIsPlaying = false;
             break;
         case IDC_BUTTON_REWIND:
             PostMessage(mHandle, WM_USER + 2, PM_TAPE_COMMAND, (LPARAM)PM_TAPE_REWIND);
+            ListView_SetItemText(hwndListView, currentActiveBlock, 0, TEXT(""));
+            ListView_SetItemText(hwndListView, 0, 0, TEXT("PAUSED"));
             break;
         case IDC_BUTTON_INSERT:
             PostMessage(mHandle, WM_USER + 2, PM_TAPE_COMMAND, (LPARAM)PM_TAPE_INSERT);
+            bIsPlaying = false;
             break;
         case IDC_BUTTON_EJECT:
             PostMessage(mHandle, WM_USER + 2, PM_TAPE_COMMAND, (LPARAM)PM_TAPE_EJECT);
+            bIsPlaying = false;
             break;
         case IDC_BUTTON_SAVE:
             MessageBox(hwnd, TEXT("SAVE"), TEXT("BUTTON"), MB_OK | MB_ICONINFORMATION | MB_APPLMODAL);
