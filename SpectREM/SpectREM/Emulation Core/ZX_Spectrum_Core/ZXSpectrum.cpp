@@ -9,6 +9,9 @@
 #include "ZXSpectrum.hpp"
 #include <cstring>
 
+// ------------------------------------------------------------------------------------------------------------
+// - Constants
+
 const uint32_t cSAMPLE_RATE = 44100;
 const uint32_t cFPS = 50;
 const uint32_t cROM_SIZE = 16384;

@@ -10,6 +10,7 @@
 #define ZXSpectrum48_h
 
 #include "../ZX_Spectrum_Core/ZXSpectrum.hpp"
+
 class ZXSpectrum48 : public ZXSpectrum
 {
     

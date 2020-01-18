@@ -10,7 +10,7 @@
 #include <math.h>
 #include <iomanip>
 
-const float cBEEPER_VOLUME_MULTIPLIER = 8192;
+static const float cBEEPER_VOLUME_MULTIPLIER = 8192;
 
 // AY chip envelope flag type
 enum
@@ -30,7 +30,7 @@ static const double fAYVolBase[] = {
 
 void ZXSpectrum::audioBuildAYVolumesTable()
 {
-    for (int i = 0; i < 16; i++)
+    for (uint32_t i = 0; i < 16; i++)
     {
         audioAYVolumes[ i ] = static_cast<uint16_t>(fAYVolBase[ i ] * 8192);
     }

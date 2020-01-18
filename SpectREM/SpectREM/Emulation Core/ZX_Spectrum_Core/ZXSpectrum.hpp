@@ -25,10 +25,10 @@ class ZXSpectrum
 {
 
 public:
-    static const uint16_t    cBITMAP_ADDRESS    = 16384;
-    static const uint16_t    cBITMAP_SIZE       = 6144;
-    static const uint16_t    cATTR_SIZE         = 768;
-    static const uint16_t    cMEMORY_PAGE_SIZE  = 16384;
+    static const uint16_t    cBITMAP_ADDRESS   = 16384;
+    static const uint16_t    cBITMAP_SIZE      = 6144;
+    static const uint16_t    cATTR_SIZE        = 768;
+    static const uint16_t    cMEMORY_PAGE_SIZE = 16384;
     
     enum eAYREGISTER
     {
@@ -273,84 +273,84 @@ public:
     std::vector<char>       memoryRam;
     uint8_t                 keyboardMap[8]{0};
     static KEYBOARD_ENTRY   keyboardLookup[];
-    uint32_t                keyboardCapsLockFrames = 0;
+    uint32_t                keyboardCapsLockFrames  = 0;
       
     // Emulation
     MachineInfo             machineInfo;
-    uint32_t                emuCurrentDisplayTs = 0;
-    uint32_t                emuFrameCounter = 0;
-    bool                    emuPaused = true;
-    uint8_t                 emuRAMPage = 0;
-    uint8_t                 emuROMPage = 0;
-    uint8_t                 emuDisplayPage = 0;
-    bool                    emuDisablePaging = true;
+    uint32_t                emuCurrentDisplayTs     = 0;
+    uint32_t                emuFrameCounter         = 0;
+    bool                    emuPaused               = true;
+    uint8_t                 emuRAMPage              = 0;
+    uint8_t                 emuROMPage              = 0;
+    uint8_t                 emuDisplayPage          = 0;
+    bool                    emuDisablePaging        = true;
     std::string             emuROMPath;
     std::string             emuBasePath;
-    bool                    emuTapeInstantLoad = false;
-    bool                    emuUseAYSound = false;
-    bool                    emuLoadTrapTriggered = false;
-    bool                    emuSaveTrapTriggered = false;
-    bool                    emuUseSpecDRUM = false;
+    bool                    emuTapeInstantLoad      = false;
+    bool                    emuUseAYSound           = false;
+    bool                    emuLoadTrapTriggered    = false;
+    bool                    emuSaveTrapTriggered    = false;
+    bool                    emuUseSpecDRUM          = false;
 
     // Display
     uint8_t                 *displayBuffer;
-    uint32_t                displayBufferIndex = 0;
-    uint32_t                screenWidth = 48 + 256 + 48;
-    uint32_t                screenHeight = 48 + 192 + 48;
-    uint32_t                screenBufferSize = 0;
+    uint32_t                displayBufferIndex      = 0;
+    uint32_t                screenWidth             = 48 + 256 + 48;
+    uint32_t                screenHeight            = 48 + 192 + 48;
+    uint32_t                screenBufferSize        = 0;
     uint32_t                displayTstateTable[312][228]{{0}};
     uint16_t                displayLineAddrTable[192]{0};
-    uint64_t                *displayCLUT = nullptr;
-    uint8_t                 *displayALUT = nullptr;
-    uint32_t                displayBorderColor = 0;
-    bool                    displayReady = false;
+    uint64_t                *displayCLUT            = nullptr;
+    uint8_t                 *displayALUT            = nullptr;
+    uint32_t                displayBorderColor      = 0;
+    bool                    displayReady            = false;
     Color                   clutBuffer[64];
     
     // ULAPlus
-    uint8_t                 ulaPlusMode = 0;
-    uint8_t                 ulaPlusPaletteOn = 0;
-    uint8_t                 ulaPlusCurrentReg = 0;
+    uint8_t                 ulaPlusMode             = 0;
+    uint8_t                 ulaPlusPaletteOn        = 0;
+    uint8_t                 ulaPlusCurrentReg       = 0;
 
     // Audio
-    int16_t                 *audioBuffer = nullptr;
-    int8_t                  audioEarBit = 0;
-    int8_t                  audioMicBit = 0;
-    uint32_t                audioBufferSize = 0;
-    uint32_t                audioBufferIndex = 0;
-    float                   audioTsCounter = 0;
-    float                   audioTsStepCounter = 0;
-    uint32_t                audioLastIndex = 0;
+    int16_t                 *audioBuffer            = nullptr;
+    int8_t                  audioEarBit             = 0;
+    int8_t                  audioMicBit             = 0;
+    uint32_t                audioBufferSize         = 0;
+    uint32_t                audioBufferIndex        = 0;
+    float                   audioTsCounter          = 0;
+    float                   audioTsStepCounter      = 0;
+    uint32_t                audioLastIndex          = 0;
 
-    float                   audioBeeperTsStep = 0;
-    float                   audioOutputLevelLeft = 0;
-    float                   audioOutputLevelRight = 0;
-	float                   audioAYLevelLeft = 0;
-	float                   audioAYLevelRight = 0;
+    float                   audioBeeperTsStep       = 0;
+    float                   audioOutputLevelLeft    = 0;
+    float                   audioOutputLevelRight   = 0;
+    float                   audioAYLevelLeft           = 0;
+    float                   audioAYLevelRight          = 0;
     
     float                   audioAYChannelOutput[3]{0};
     uint32_t                audioAYChannelCount[3]{0};
     uint16_t                audioAYVolumes[16]{0};
-    uint32_t                audioAYrandom = 0;
-    uint32_t                audioAYOutput = 0;
-    uint32_t                audioAYNoiseCount = 0;
-    uint16_t                audioAYEnvelopeCount = 0;
+    uint32_t                audioAYrandom           = 0;
+    uint32_t                audioAYOutput           = 0;
+    uint32_t                audioAYNoiseCount       = 0;
+    uint16_t                audioAYEnvelopeCount    = 0;
     
     uint8_t                 audioAYRegisters[ eAYREGISTER::MAX_REGISTERS ]{0};
-    uint8_t                 audioAYCurrentRegister = 0;
+    uint8_t                 audioAYCurrentRegister  = 0;
     uint8_t                 audioAYFloatingRegister = 0;
-    bool                    audioAYEnvelopeHolding = false;
-    bool                    audioAYEnvelopeHold = false;
-    bool                    audioAYEnvelopeAlt = false;
+    bool                    audioAYEnvelopeHolding  = false;
+    bool                    audioAYEnvelopeHold     = false;
+    bool                    audioAYEnvelopeAlt      = false;
     bool                    audioAYEnvelopeContinue = false;
-    bool                    audioAYEnvelope = false;;
-    bool                    audioAYOneShot = false;
-    bool                    audioAYEnvelopeAttack = false;
-    uint8_t                 audioAYAttackEndVol = 0;
-    float                   audioAYTsStep = 0;
-    float                   audioAYTs = 0;
+    bool                    audioAYEnvelope         = false;;
+    bool                    audioAYOneShot          = false;
+    bool                    audioAYEnvelopeAttack   = false;
+    uint8_t                 audioAYAttackEndVol     = 0;
+    float                   audioAYTsStep           = 0;
+    float                   audioAYTs               = 0;
 
     //Specdrum Peripheral
-    int                     specdrumDACValue = 0;
+    int                     specdrumDACValue        = 0;
     
     // Keyboard
     bool                    keyboardCapsLockPressed = false;
@@ -360,23 +360,23 @@ public:
     uint32_t                ULAIOContentionTable[80000]{0};
     uint32_t                ULAFloatingBusTable[80000]{0};
     const static uint32_t   ULAConentionValues[];
-    uint8_t                 ULAPortnnFDValue = 0;
-    bool                    ULAApplySnow = false;
-    uint8_t                 ULAPlusMode = eULAPLUS::MODEGROUP;
-    uint8_t                 ULAPlusCurrentReg = 0;
-    uint8_t                 ULAPlusPaletteOn = 0;
+    uint8_t                 ULAPortnnFDValue        = 0;
+    bool                    ULAApplySnow            = false;
+    uint8_t                 ULAPlusMode             = eULAPLUS::MODEGROUP;
+    uint8_t                 ULAPlusCurrentReg       = 0;
+    uint8_t                 ULAPlusPaletteOn        = 0;
 
     // Floating bus
     const static uint32_t   ULAFloatingBusValues[];
     
     // Tape object
-    Tape                    *tape = nullptr;
+    Tape                    *tape                   = nullptr;
     
     // SPI port
-    uint16_t                spiPort = 0xfaf7;
+    uint16_t                spiPort                 = 0xfaf7;
 
     // Debugger
-    bool                    breakpointHit = false;
+    bool                    breakpointHit           = false;
 
 };
 
