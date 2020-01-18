@@ -32,6 +32,4 @@ public:
     static const uint8_t buttonYBuffer = 12;
     static HWND tapeViewerWindowInternal;
     static HINSTANCE g_hInst;
-
-
 };

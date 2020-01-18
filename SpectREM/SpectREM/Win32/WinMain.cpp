@@ -406,6 +406,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             if (m_pTape->numberOfTapeBlocks() > 0)
             {
                 SendTapeBlockDataToViewer();
+                PostMessage(tvHwnd, WM_USER + 2, PM_TAPE_ACTIVEBLOCK, (LPARAM)0);
             }
             break;
         }

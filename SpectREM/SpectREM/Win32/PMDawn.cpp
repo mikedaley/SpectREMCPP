@@ -19,11 +19,8 @@
 
 namespace PMDawn
 {
-
     //-----------------------------------------------------------------------------------------
     
-
-
     //-----------------------------------------------------------------------------------------
 
     bool PMDawn::fileExists(const std::string& filename)
@@ -299,7 +296,7 @@ namespace PMDawn
     void AddItemToListView(gTAPEBLOCK& theBlock, HWND hwndListView)
     {
         // Status / BlockType / Filename / AutostartLine / Address / Length
-            // TAPE block types
+        // TAPE block types
         /*enum
         {
             ePROGRAM_HEADER = 0,

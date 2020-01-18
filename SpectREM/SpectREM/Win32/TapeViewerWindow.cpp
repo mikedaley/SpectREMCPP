@@ -41,7 +41,7 @@ static bool bIsPlaying = false; // false is paused, true is playing
 
 TapeViewer::~TapeViewer()
 {
-    //PostMessage(mHandle, WM_USER + 2, PM_TAPE_VIEWER_CLOSING, (LPARAM)0);
+    //
 }
 
 LRESULT CALLBACK TapeViewer::WndProcTV(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -55,7 +55,6 @@ LRESULT CALLBACK TapeViewer::WndProcTV(HWND hwnd, UINT msg, WPARAM wParam, LPARA
     static HWND hwndEjectButton;
     static HWND hwndSaveButton;
     static HWND hwndListView;
-    static TCHAR szTempListData[] = TEXT("Temporary listbox data");
 
     switch (msg)
     {
@@ -212,8 +211,6 @@ LRESULT CALLBACK TapeViewer::WndProcTV(HWND hwnd, UINT msg, WPARAM wParam, LPARA
                 return 0;
             }
         }
-
-
         return 0;
         break;
     }
@@ -261,7 +258,6 @@ LRESULT CALLBACK TapeViewer::WndProcTV(HWND hwnd, UINT msg, WPARAM wParam, LPARA
             {
             case NM_DBLCLK:
             {
-                // code here <--
                 LPNMITEMACTIVATE lpNMItem = (LPNMITEMACTIVATE)lParam;
                 return 0;
             }
@@ -361,9 +357,6 @@ TapeViewer::TapeViewer(HINSTANCE mainWindowInst, HWND mainHandle, DWORD dwTlsInd
     WNDCLASSEX wcextv;
 
     mHandle = mainHandle;
-
-    // thread data
-    //PMDawn::pData = (PMDawn::PTHREADDATA)TlsGetValue(dwTlsIndex);
 
     memset(&wcextv, 0, sizeof(WNDCLASSEX));
     wcextv.cbSize = sizeof(WNDCLASSEX);
