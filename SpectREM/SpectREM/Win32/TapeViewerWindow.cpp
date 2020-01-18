@@ -215,7 +215,6 @@ LRESULT CALLBACK TapeViewer::WndProcTV(HWND hwnd, UINT msg, WPARAM wParam, LPARA
         break;
     }
 
-
     case WM_COMMAND:
         switch (LOWORD(wParam))
         {

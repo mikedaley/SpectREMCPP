@@ -85,6 +85,7 @@ AudioCore* m_pAudioCore;
 AudioQueue* m_pAudioQueue;
 OpenGLView* m_pOpenGLView;
 static TapeViewer* tvWindow;
+std::string loadedFile;
 
 enum MachineType
 {
@@ -499,12 +500,15 @@ static void InsertTape()
         if (tR.success)
         {
             PMDawn::Log(PMDawn::LOG_INFO, "Loaded tape - " + std::string(szFile));
+            PathStripPathA(szFile);
+            loadedFile = "TAPE: " + std::string(szFile);
             SendTapeBlockDataToViewer();
         }
         else
         {
             MessageBox(mainWindow, TEXT("Unable to load tape >> "), TEXT("Tape Loader"), MB_OK | MB_ICONINFORMATION | MB_APPLMODAL);
             PMDawn::Log(PMDawn::LOG_INFO, "Failed to load tape - " + std::string(szFile) + " > " + tR.responseMsg);
+            loadedFile = "-empty-";
             return;
         }
     }
@@ -783,16 +787,20 @@ static void LoadSnapshot()
             if (tR.success)
             {
                 PMDawn::Log(PMDawn::LOG_INFO, "Loaded tape - " + std::string(filePath));
+                PathStripPathA(const_cast<char*>(filePath.c_str()));
+                loadedFile = "TAPE: " + filePath;
                 SendTapeBlockDataToViewer();
             }
             else
             {
                 MessageBox(mainWindow, TEXT("Unable to load tape >> "), TEXT("Tape Loader"), MB_OK | MB_ICONINFORMATION | MB_APPLMODAL);
+                loadedFile = "-empty-";
                 PMDawn::Log(PMDawn::LOG_INFO, "Failed to load tape - " + std::string(filePath) + " > " + tR.responseMsg);
             }
         }
         else
         {
+            EjectTape();
             if (mType <= ZX48)
             {
                 // 48 based
@@ -812,10 +820,14 @@ static void LoadSnapshot()
                 if (sR.success)
                 {
                     PMDawn::Log(PMDawn::LOG_INFO, "Snapshot loaded successfully");
+                    PMDawn::Log(PMDawn::LOG_INFO, "Loaded snapshot - " + std::string(filePath));
+                    PathStripPathA(const_cast<char*>(filePath.c_str()));
+                    loadedFile = ".Z80: " + filePath;
                 }
                 else
                 {
                     PMDawn::Log(PMDawn::LOG_INFO, "Snapshot loading failed : " + sR.responseMsg);
+                    loadedFile = "-empty-";
                 }
             }
             else if (_stricmp(extension.c_str(), EXT_SNA.c_str()) == 0)
@@ -825,10 +837,14 @@ static void LoadSnapshot()
                 if (sR.success)
                 {
                     PMDawn::Log(PMDawn::LOG_INFO, "Snapshot loaded successfully");
+                    PMDawn::Log(PMDawn::LOG_INFO, "Loaded snapshot - " + std::string(filePath));
+                    PathStripPathA(const_cast<char*>(filePath.c_str()));
+                    loadedFile = ".SNA: " + filePath;
                 }
                 else
                 {
                     PMDawn::Log(PMDawn::LOG_INFO, "Snapshot loading failed : " + sR.responseMsg);
+                    loadedFile = "-empty";
                 }
             }
         }
@@ -917,7 +933,7 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
 
     SetupThreadLocalStorageForTapeData();
 
-
+    loadedFile = "-empty-";
     slideshowTimerRunning = false;
     slideshowRandom = true;
     //srand((unsigned int)time(NULL));
@@ -1070,8 +1086,26 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
                     sprintf_s(lLevel, sizeof(lLevel), " ");
                 }
 
-                char buff[100];
-                sprintf_s(buff, sizeof(buff), "SpectREM - %4.1f fps - [%s] - %s %s", 1.0f / delta_time, specType, zoom, lLevel);
+                char lfBuff[300];
+                if (m_pTape->playing)
+                {
+                    sprintf_s(lfBuff, sizeof(lfBuff), "%s > Playing", loadedFile.c_str());
+                }
+                else
+                {
+                    if (m_pTape->loaded)
+                    {
+                        sprintf_s(lfBuff, sizeof(lfBuff), "%s > Paused", loadedFile.c_str());
+                    }
+                    else
+                    {
+                        sprintf_s(lfBuff, sizeof(lfBuff), "%s", loadedFile.c_str());
+                    }
+                }
+
+
+                char buff[512];
+                sprintf_s(buff, sizeof(buff), "SpectREM - %4.1f fps - [%s] - %s - [%s] %s", 1.0f / delta_time, specType, zoom, lfBuff, lLevel);
                 SetWindowTextA(mainWindow, buff);
             }
         }
