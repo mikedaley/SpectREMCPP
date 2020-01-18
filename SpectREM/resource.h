@@ -8,6 +8,12 @@
 #define IDR_MENUACCELERATORS            102
 #define IDI_ICON1                       105
 #define IDI_ICON2                       108
+#define IDS_FIRSTCOLUMN                 111
+#define IDS_BLOCKTYPE                   112
+#define IDS_FILENAME                    113
+#define IDS_AUTOSTARTLINE               114
+#define IDS_ADDRESS                     115
+#define IDS_LENGTH                      116
 #define ID_TEXTFILE                     256
 #define IDC_BTN_SETTINGS_SAVE           1001
 #define IDC_BTN_SETTINGS_CLOSE          1002
@@ -58,7 +64,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        110
+#define _APS_NEXT_RESOURCE_VALUE        112
 #define _APS_NEXT_COMMAND_VALUE         40075
 #define _APS_NEXT_CONTROL_VALUE         1002
 #define _APS_NEXT_SYMED_VALUE           101

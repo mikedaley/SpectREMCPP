@@ -156,6 +156,9 @@
     <ClInclude Include="SpectREM\Win32\TapeViewerWindow.hpp">
       <Filter>Win32</Filter>
     </ClInclude>
+    <ClInclude Include="SpectREM\Win32\PMDawn.hpp">
+      <Filter>Win32</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SpectREM\clut.frag" />

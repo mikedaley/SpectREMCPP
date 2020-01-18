@@ -230,6 +230,26 @@ END
 // remains consistent on all systems.
 IDI_ICON2               ICON                    "SpectREM\\Win32\\SpectREM.ico"
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_FIRSTCOLUMN         "Status"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_BLOCKTYPE           "Block Type"
+    IDS_FILENAME            "Filename"
+    IDS_AUTOSTARTLINE       "Autostart"
+    IDS_ADDRESS             "Address"
+    IDS_LENGTH              "Length"
+END
+
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////
 

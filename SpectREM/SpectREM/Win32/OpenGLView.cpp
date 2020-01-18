@@ -356,14 +356,14 @@ void OpenGLView::SetupTexture()
 
 //-----------------------------------------------------------------------------------------
 
-void OpenGLView::UpdateTextureData(unsigned char *pData)
+void OpenGLView::UpdateTextureData(unsigned char *pData, GLint vX, GLint vY)
 {
     glClearColor(0.0f, 1.0f, 1.0f, 0.5f);
     glClear(GL_COLOR_BUFFER_BIT);
 
     // Render the output to a texture which has the default dimensions of the output image
     GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, _clutFrameBuffer));
-    GL_CHECK(glViewport(0, 0, screenWidth, screenHeight));
+    GL_CHECK(glViewport(vX, vY, screenWidth, screenHeight));
     GL_CHECK(glUseProgram(_clutShaderProg));
     GL_CHECK(glActiveTexture(GL_TEXTURE0));
     GL_CHECK(glBindTexture(GL_TEXTURE_2D, _clutInputTexture));

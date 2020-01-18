@@ -107,7 +107,7 @@ public:
 	void								Deinit();
 	bool								Init(HWND hWnd, int width, int height, const uint16_t idClutVert, uint16_t idClutFrag, uint16_t idDisplayVert, uint16_t idDisplayFrag, LPWSTR idType);
 
-	void								UpdateTextureData(unsigned char *pData);
+	void								UpdateTextureData(unsigned char *pData, GLint vX, GLint vY);
 	void								OpenGLView::Resize(int width, int height);
 private:
 	bool								InitialiseExtensions();

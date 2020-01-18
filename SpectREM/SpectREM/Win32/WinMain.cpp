@@ -10,6 +10,17 @@
 #define _CRT_RAND_S
 #define WIN32API_GUI
 
+#define PM_TAPEDATA_FULL            77
+#define PM_TAPE_VIEWER_CLOSED       78
+#define PM_TAPE_COMMAND             79
+#define PM_TAPE_EJECTED             80
+#define PM_TAPE_ACTIVEBLOCK         81
+#define PM_TAPE_PLAY                82
+#define PM_TAPE_PAUSE               83
+#define PM_TAPE_REWIND              84
+#define PM_TAPE_INSERT              85
+#define PM_TAPE_EJECT               86
+#define PM_TAPE_SAVE                87
 
 #include <windows.h>
 #include <stdlib.h>
@@ -30,9 +41,10 @@
 #include "..\OSX\AudioQueue.hpp"
 #include "OpenGLView.hpp"
 #include "../../resource.h"
-#include "PMDawn.cpp"
+#include "PMDawn.hpp"
 #include <CommCtrl.h>
 #include "TapeViewerWindow.hpp"
+#include <process.h>
 
 #pragma comment(lib, "comctl32.lib")
 
@@ -62,12 +74,17 @@ static void OpenTapeViewer();
 static void SetOutputVolume(float vol);
 static void IncreaseApplicationVolume();
 static void DecreaseApplicationVolume();
+unsigned int __stdcall mythread(void* data);
+static void SendTapeBlockDataToViewer();
+static void GetTapeViewerHwnd();
+static void SetupThreadLocalStorageForTapeData();
 
 ZXSpectrum* m_pMachine;
 Tape* m_pTape;
 AudioCore* m_pAudioCore;
 AudioQueue* m_pAudioQueue;
 OpenGLView* m_pOpenGLView;
+static TapeViewer* tvWindow;
 
 enum MachineType
 {
@@ -79,7 +96,10 @@ enum SnapType
     SNA, Z80
 };
 
+// Status / BlockType / Filename / AutostartLine / Address / Length
 
+static DWORD dwTlsIndex;
+static int cxClient, cyClient;
 const UINT PM_UPDATESPECTREM = 7777;
 const std::string EXT_Z80 = "z80";
 const std::string EXT_SNA = "sna";
@@ -90,7 +110,6 @@ HACCEL hAcc;
 bool isResetting = false;
 HWND mainWindow;
 HWND statusWindow;
-//HWND tapeViewerWindow;
 HMENU mainMenu;
 bool TurboMode = false;
 bool menuDisplayed = true;
@@ -104,72 +123,76 @@ bool slideshowTimerRunning = false;
 bool slideshowRandom = true;
 const float volumeStep = 0.1f;
 float applicationVolume = 0.75f;
+GLint viewportX;
+GLint viewportY;
+HANDLE tapeViewerThread;
+HWND tvHwnd;
 
-std::unordered_map<WPARAM, ZXSpectrum::ZXSpectrumKey> KeyMappings
+std::unordered_map<WPARAM, ZXSpectrum::eZXSpectrumKey> KeyMappings
 {
-    { VK_UP, ZXSpectrum::ZXSpectrumKey::Key_ArrowUp },
-    { VK_DOWN, ZXSpectrum::ZXSpectrumKey::Key_ArrowDown },
-    { VK_LEFT, ZXSpectrum::ZXSpectrumKey::Key_ArrowLeft },
-    { VK_RIGHT, ZXSpectrum::ZXSpectrumKey::Key_ArrowRight },
-    { VK_RETURN, ZXSpectrum::ZXSpectrumKey::Key_Enter },
-    { VK_SHIFT, ZXSpectrum::ZXSpectrumKey::Key_Shift },
-    { VK_RSHIFT, ZXSpectrum::ZXSpectrumKey::Key_Shift },
-    { VK_SPACE, ZXSpectrum::ZXSpectrumKey::Key_Space },
-    { VK_CONTROL, ZXSpectrum::ZXSpectrumKey::Key_SymbolShift },
-    { VK_RCONTROL, ZXSpectrum::ZXSpectrumKey::Key_SymbolShift },
+    { VK_UP, ZXSpectrum::eZXSpectrumKey::Key_ArrowUp },
+    { VK_DOWN, ZXSpectrum::eZXSpectrumKey::Key_ArrowDown },
+    { VK_LEFT, ZXSpectrum::eZXSpectrumKey::Key_ArrowLeft },
+    { VK_RIGHT, ZXSpectrum::eZXSpectrumKey::Key_ArrowRight },
+    { VK_RETURN, ZXSpectrum::eZXSpectrumKey::Key_Enter },
+    { VK_SHIFT, ZXSpectrum::eZXSpectrumKey::Key_Shift },
+    { VK_RSHIFT, ZXSpectrum::eZXSpectrumKey::Key_Shift },
+    { VK_SPACE, ZXSpectrum::eZXSpectrumKey::Key_Space },
+    { VK_CONTROL, ZXSpectrum::eZXSpectrumKey::Key_SymbolShift },
+    { VK_RCONTROL, ZXSpectrum::eZXSpectrumKey::Key_SymbolShift },
     //{ VK_SHIFT, ZXSpectrum::ZXSpectrumKey::Key_InvVideo },
     //{ VK_SHIFT, ZXSpectrum::ZXSpectrumKey::Key_TrueVideo },
-    { VK_DELETE, ZXSpectrum::ZXSpectrumKey::Key_Backspace },
-    { VK_BACK, ZXSpectrum::ZXSpectrumKey::Key_Backspace },
+    { VK_DELETE, ZXSpectrum::eZXSpectrumKey::Key_Backspace },
+    { VK_BACK, ZXSpectrum::eZXSpectrumKey::Key_Backspace },
     //{ VK_SHIFT, ZXSpectrum::ZXSpectrumKey::Key_Quote },
-    { VK_OEM_1, ZXSpectrum::ZXSpectrumKey::Key_SemiColon },
-    { VK_OEM_COMMA, ZXSpectrum::ZXSpectrumKey::Key_Comma },
-    { VK_OEM_MINUS, ZXSpectrum::ZXSpectrumKey::Key_Minus },
-    { VK_OEM_PLUS, ZXSpectrum::ZXSpectrumKey::Key_Plus },
-    { VK_OEM_PERIOD, ZXSpectrum::ZXSpectrumKey::Key_Period },
+    { VK_OEM_1, ZXSpectrum::eZXSpectrumKey::Key_SemiColon },
+    { VK_OEM_COMMA, ZXSpectrum::eZXSpectrumKey::Key_Comma },
+    { VK_OEM_MINUS, ZXSpectrum::eZXSpectrumKey::Key_Minus },
+    { VK_OEM_PLUS, ZXSpectrum::eZXSpectrumKey::Key_Plus },
+    { VK_OEM_PERIOD, ZXSpectrum::eZXSpectrumKey::Key_Period },
     //{ VK_SHIFT, ZXSpectrum::ZXSpectrumKey::Key_Edit },
     //{ VK_SHIFT, ZXSpectrum::ZXSpectrumKey::Key_Graph },
     //{ VK_SHIFT, ZXSpectrum::ZXSpectrumKey::Key_Break },
     //{ VK_SHIFT, ZXSpectrum::ZXSpectrumKey::Key_ExtendMode },
-    { VK_CAPITAL, ZXSpectrum::ZXSpectrumKey::Key_CapsLock },
+    { VK_CAPITAL, ZXSpectrum::eZXSpectrumKey::Key_CapsLock },
     // Numbers
-    { 0x30, ZXSpectrum::ZXSpectrumKey::Key_0 },
-    { 0x31, ZXSpectrum::ZXSpectrumKey::Key_1 },
-    { 0x32, ZXSpectrum::ZXSpectrumKey::Key_2 },
-    { 0x33, ZXSpectrum::ZXSpectrumKey::Key_3 },
-    { 0x34, ZXSpectrum::ZXSpectrumKey::Key_4 },
-    { 0x35, ZXSpectrum::ZXSpectrumKey::Key_5 },
-    { 0x36, ZXSpectrum::ZXSpectrumKey::Key_6 },
-    { 0x37, ZXSpectrum::ZXSpectrumKey::Key_7 },
-    { 0x38, ZXSpectrum::ZXSpectrumKey::Key_8 },
-    { 0x39, ZXSpectrum::ZXSpectrumKey::Key_9 },
+    { 0x30, ZXSpectrum::eZXSpectrumKey::Key_0 },
+    { 0x31, ZXSpectrum::eZXSpectrumKey::Key_1 },
+    { 0x32, ZXSpectrum::eZXSpectrumKey::Key_2 },
+    { 0x33, ZXSpectrum::eZXSpectrumKey::Key_3 },
+    { 0x34, ZXSpectrum::eZXSpectrumKey::Key_4 },
+    { 0x35, ZXSpectrum::eZXSpectrumKey::Key_5 },
+    { 0x36, ZXSpectrum::eZXSpectrumKey::Key_6 },
+    { 0x37, ZXSpectrum::eZXSpectrumKey::Key_7 },
+    { 0x38, ZXSpectrum::eZXSpectrumKey::Key_8 },
+    { 0x39, ZXSpectrum::eZXSpectrumKey::Key_9 },
     // Letters
-    { 0x41, ZXSpectrum::ZXSpectrumKey::Key_A },
-    { 0x42, ZXSpectrum::ZXSpectrumKey::Key_B },
-    { 0x43, ZXSpectrum::ZXSpectrumKey::Key_C },
-    { 0x44, ZXSpectrum::ZXSpectrumKey::Key_D },
-    { 0x45, ZXSpectrum::ZXSpectrumKey::Key_E },
-    { 0x46, ZXSpectrum::ZXSpectrumKey::Key_F },
-    { 0x47, ZXSpectrum::ZXSpectrumKey::Key_G },
-    { 0x48, ZXSpectrum::ZXSpectrumKey::Key_H },
-    { 0x49, ZXSpectrum::ZXSpectrumKey::Key_I },
-    { 0x4a, ZXSpectrum::ZXSpectrumKey::Key_J },
-    { 0x4b, ZXSpectrum::ZXSpectrumKey::Key_K },
-    { 0x4c, ZXSpectrum::ZXSpectrumKey::Key_L },
-    { 0x4d, ZXSpectrum::ZXSpectrumKey::Key_M },
-    { 0x4e, ZXSpectrum::ZXSpectrumKey::Key_N },
-    { 0x4f, ZXSpectrum::ZXSpectrumKey::Key_O },
-    { 0x50, ZXSpectrum::ZXSpectrumKey::Key_P },
-    { 0x51, ZXSpectrum::ZXSpectrumKey::Key_Q },
-    { 0x52, ZXSpectrum::ZXSpectrumKey::Key_R },
-    { 0x53, ZXSpectrum::ZXSpectrumKey::Key_S },
-    { 0x54, ZXSpectrum::ZXSpectrumKey::Key_T },
-    { 0x55, ZXSpectrum::ZXSpectrumKey::Key_U },
-    { 0x56, ZXSpectrum::ZXSpectrumKey::Key_V },
-    { 0x57, ZXSpectrum::ZXSpectrumKey::Key_W },
-    { 0x58, ZXSpectrum::ZXSpectrumKey::Key_X },
-    { 0x59, ZXSpectrum::ZXSpectrumKey::Key_Y },
-    { 0x5a, ZXSpectrum::ZXSpectrumKey::Key_Z },
+    { 0x41, ZXSpectrum::eZXSpectrumKey::Key_A },
+    { 0x42, ZXSpectrum::eZXSpectrumKey::Key_B },
+    { 0x43, ZXSpectrum::eZXSpectrumKey::Key_C },
+    { 0x44, ZXSpectrum::eZXSpectrumKey::Key_D },
+    { 0x45, ZXSpectrum::eZXSpectrumKey::Key_E },
+    { 0x46, ZXSpectrum::eZXSpectrumKey::Key_F },
+    { 0x47, ZXSpectrum::eZXSpectrumKey::Key_G },
+    { 0x48, ZXSpectrum::eZXSpectrumKey::Key_H },
+    { 0x49, ZXSpectrum::eZXSpectrumKey::Key_I },
+    { 0x4a, ZXSpectrum::eZXSpectrumKey::Key_J },
+    { 0x4b, ZXSpectrum::eZXSpectrumKey::Key_K },
+    { 0x4c, ZXSpectrum::eZXSpectrumKey::Key_L },
+    { 0x4d, ZXSpectrum::eZXSpectrumKey::Key_M },
+    { 0x4e, ZXSpectrum::eZXSpectrumKey::Key_N },
+    { 0x4f, ZXSpectrum::eZXSpectrumKey::Key_O },
+    { 0x50, ZXSpectrum::eZXSpectrumKey::Key_P },
+    { 0x51, ZXSpectrum::eZXSpectrumKey::Key_Q },
+    { 0x52, ZXSpectrum::eZXSpectrumKey::Key_R },
+    { 0x53, ZXSpectrum::eZXSpectrumKey::Key_S },
+    { 0x54, ZXSpectrum::eZXSpectrumKey::Key_T },
+    { 0x55, ZXSpectrum::eZXSpectrumKey::Key_U },
+    { 0x56, ZXSpectrum::eZXSpectrumKey::Key_V },
+    { 0x57, ZXSpectrum::eZXSpectrumKey::Key_W },
+    { 0x58, ZXSpectrum::eZXSpectrumKey::Key_X },
+    { 0x59, ZXSpectrum::eZXSpectrumKey::Key_Y },
+    { 0x5a, ZXSpectrum::eZXSpectrumKey::Key_Z },
 
 };
 
@@ -193,7 +216,6 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 {
     switch (msg)
     {
-
 #ifdef WIN32API_GUI
     case WM_COMMAND:
         switch (LOWORD(wparam))
@@ -286,6 +308,8 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         break;
 #endif
 
+
+
     case WM_CLOSE:
         PostQuitMessage(0);
         return 0;
@@ -349,7 +373,18 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         break;
 
     case WM_SIZE:
-        glViewport(0, 0, LOWORD(lparam), HIWORD(lparam));
+        //cxClient = LOWORD(lparam);
+        //cyClient = HIWORD(lparam);
+        //if (menuDisplayed)
+        //{
+        //    viewportY += 20;
+        //}
+        //else
+        //{
+        //    viewportY -= 20;
+        //}
+        //glViewport(viewportX, viewportY, LOWORD(lparam), HIWORD(lparam));
+        return 0;
         break;
 
     case WM_USER:
@@ -357,11 +392,72 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         {
         case PM_UPDATESPECTREM:
             Sleep(50);
-            m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer);
+            m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer, viewportX, viewportY);
             PMDawn::Log(PMDawn::LOG_DEBUG, "Changed slideshow image");
             break;
         }
         break;
+
+    case WM_USER+1:
+        switch (LOWORD(wparam))
+        {
+        case 1:
+            GetTapeViewerHwnd();
+            break;
+        }
+        break;
+
+    case WM_USER+2:
+        switch (LOWORD(wparam))
+        {
+        case PM_TAPE_VIEWER_CLOSED:
+            if (tapeViewerThread)
+            {
+                CloseHandle(tapeViewerThread);
+                tapeViewerThread = nullptr;
+            }
+            break;
+        case PM_TAPE_COMMAND:
+            // The tape window is sending a command to do something with the tape
+            switch (lparam)
+            {
+            case PM_TAPE_PLAY:
+                m_pTape->startPlaying();
+                break;
+
+            case PM_TAPE_PAUSE:
+                m_pTape->stopPlaying();
+                break;
+
+            case PM_TAPE_REWIND:
+                RewindTape();
+                break;
+
+            case PM_TAPE_INSERT:
+                InsertTape();
+                break;
+
+            case PM_TAPE_EJECT:
+                EjectTape();
+                break;
+
+            }
+            break;
+         }
+        break;
+
+    case WM_PAINT:
+    {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(mainWindow, &ps);
+        //if (m_pMachine)
+        //{
+        //    m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer, viewportX, viewportY);
+        //}
+        EndPaint(mainWindow, &ps);
+        return 0;
+        break;
+    }
 
     default:
         return DefWindowProc(hwnd, msg, wparam, lparam);
@@ -398,6 +494,7 @@ static void InsertTape()
         if (tR.success)
         {
             PMDawn::Log(PMDawn::LOG_INFO, "Loaded tape - " + std::string(szFile));
+            SendTapeBlockDataToViewer();
         }
         else
         {
@@ -433,6 +530,7 @@ static void EjectTape()
     {
         m_pTape->stopPlaying();
         m_pTape->eject();
+        PostMessage(tvHwnd, WM_USER + 2, PM_TAPE_EJECTED, (LPARAM)0);
     }
 }
 
@@ -457,11 +555,11 @@ static void OpenSCR()
 
     if (scrPath != "")
     {
-        ZXSpectrum::Response sR = m_pMachine->scrLoadWithPath(scrPath);
+        ZXSpectrum::FileResponse sR = m_pMachine->scrLoadWithPath(scrPath);
         if (sR.success)
         {
             Sleep(1);
-            m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer);
+            m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer, viewportX, viewportY);
             PMDawn::Log(PMDawn::LOG_INFO, "Loaded .scr file - " + std::string(scrPath));
         }
         else
@@ -519,15 +617,15 @@ static void IterateSCRImagesOnTimerCallback()
     if (slideshowRandom)
     {
         int randomIndex = (int)rand() % fileList.size();
-        ZXSpectrum::Response sR = m_pMachine->scrLoadWithPath(PMDawn::GetApplicationBasePath() + slideshowDirectory + fileList[randomIndex]);
+        ZXSpectrum::FileResponse sR = m_pMachine->scrLoadWithPath(PMDawn::GetApplicationBasePath() + slideshowDirectory + fileList[randomIndex]);
         Sleep(1);
-        m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer);
+        m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer, viewportX, viewportY);
     }
     else
     {
-        ZXSpectrum::Response sR = m_pMachine->scrLoadWithPath(PMDawn::GetApplicationBasePath() + slideshowDirectory + fileList[fileListIndex]);
+        ZXSpectrum::FileResponse sR = m_pMachine->scrLoadWithPath(PMDawn::GetApplicationBasePath() + slideshowDirectory + fileList[fileListIndex]);
         Sleep(1);
-        m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer);
+        m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer, viewportX, viewportY);
         fileListIndex++;
         if (fileListIndex >= fileList.size())
         {
@@ -549,7 +647,7 @@ static void IterateSCRImages(HWND mWindow, std::vector<std::string> fileList, ZX
         std::chrono::milliseconds msecs(delaysecs * 1000);
         for (std::size_t i = 0; i < 10; i++)//< fileList.size(); i++)
         {
-            ZXSpectrum::Response sR = machine->scrLoadWithPath(PMDawn::GetApplicationBasePath() + slideshowDirectory + fileList[i]);
+            ZXSpectrum::FileResponse sR = machine->scrLoadWithPath(PMDawn::GetApplicationBasePath() + slideshowDirectory + fileList[i]);
             //SendMessageCallback(mWindow, WM_USER, PM_UPDATESPECTREM, PM_UPDATESPECTREM, nullptr, 0);
             PostMessage(mWindow, WM_USER, PM_UPDATESPECTREM, PM_UPDATESPECTREM);
             std::this_thread::sleep_for(msecs);
@@ -589,10 +687,10 @@ static void ShowHideUI(HWND hWnd = mainWindow)
 static void ShowUI(HWND hWnd = mainWindow)
 {
     PMDawn::Log(PMDawn::LOG_DEBUG, "ShowUI()");
-    SetMenu(hWnd, mainMenu);
     menuDisplayed = true;
-    ShowWindow(statusWindow, SW_SHOW);
     statusDisplayed = true;
+    SetMenu(hWnd, mainMenu);
+    ShowWindow(statusWindow, SW_SHOW);
 }
 
 //-----------------------------------------------------------------------------------------
@@ -600,10 +698,10 @@ static void ShowUI(HWND hWnd = mainWindow)
 static void HideUI(HWND hWnd = mainWindow)
 {
     PMDawn::Log(PMDawn::LOG_DEBUG, "HideUI()");
-    SetMenu(hWnd, NULL);
     menuDisplayed = false;
-    ShowWindow(statusWindow, SW_HIDE);
     statusDisplayed = false;
+    SetMenu(hWnd, NULL);
+    ShowWindow(statusWindow, SW_HIDE);
 }
 
 //-----------------------------------------------------------------------------------------
@@ -680,6 +778,7 @@ static void LoadSnapshot()
             if (tR.success)
             {
                 PMDawn::Log(PMDawn::LOG_INFO, "Loaded tape - " + std::string(filePath));
+                SendTapeBlockDataToViewer();
             }
             else
             {
@@ -704,7 +803,7 @@ static void LoadSnapshot()
             if (_stricmp(extension.c_str(), EXT_Z80.c_str()) == 0)
             {
                 PMDawn::Log(PMDawn::LOG_INFO, "Loading Z80 Snapshot - " + s);
-                ZXSpectrum::Response sR = m_pMachine->snapshotZ80LoadWithPath(filePath);
+                ZXSpectrum::FileResponse sR = m_pMachine->snapshotZ80LoadWithPath(filePath);
                 if (sR.success)
                 {
                     PMDawn::Log(PMDawn::LOG_INFO, "Snapshot loaded successfully");
@@ -717,7 +816,7 @@ static void LoadSnapshot()
             else if (_stricmp(extension.c_str(), EXT_SNA.c_str()) == 0)
             {
                 PMDawn::Log(PMDawn::LOG_DEBUG, "Loading SNA Snapshot - " + s);
-                ZXSpectrum::Response sR = m_pMachine->snapshotSNALoadWithPath(filePath);
+                ZXSpectrum::FileResponse sR = m_pMachine->snapshotSNALoadWithPath(filePath);
                 if (sR.success)
                 {
                     PMDawn::Log(PMDawn::LOG_INFO, "Snapshot loaded successfully");
@@ -736,6 +835,8 @@ static void LoadSnapshot()
 static void tapeStatusCallback(int blockIndex, int bytes)
 {
     if (blockIndex < 1 && m_pTape->playing ==false) return;
+    PostMessage(tvHwnd, WM_USER + 2, PM_TAPE_ACTIVEBLOCK, (LPARAM)blockIndex);
+    //SendTapeBlockDataToViewer();
     //TapeBlock* currentTBI = m_pTape->blocks[blockIndex];
     //PMDawn::Log(PMDawn::LOG_DEBUG, "Tape block       : " + std::to_string(blockIndex));
     //PMDawn::Log(PMDawn::LOG_DEBUG, "  Block name     : " + currentTBI->getBlockName());
@@ -809,9 +910,14 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
     unsigned int cThreads = std::thread::hardware_concurrency();
     PMDawn::Log(PMDawn::LOG_INFO, "Maximum available threads = " + std::to_string(cThreads));
 
+    SetupThreadLocalStorageForTapeData();
+
+
     slideshowTimerRunning = false;
     slideshowRandom = true;
     //srand((unsigned int)time(NULL));
+    viewportX = 0;
+    viewportY = 0;
 
     bool exit_emulator = false;
     LARGE_INTEGER  perf_freq, time, last_time;
@@ -849,7 +955,9 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
     Log(PMDawn::LOG_INFO, "Current zoom level is " + std::to_string(zoomLevel));
 
 
-    mainWindow = CreateWindowEx(WS_EX_APPWINDOW, TEXT("SpectREM"), TEXT("SpectREM"), WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME ^ WS_MAXIMIZEBOX, 0, 0, wr.right - wr.left, wr.bottom - wr.top, 0, 0, inst, 0);
+    mainWindow = CreateWindowEx(WS_EX_APPWINDOW, TEXT("SpectREM"), TEXT("SpectREM"), 
+        WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME ^ WS_MAXIMIZEBOX, 
+        CW_USEDEFAULT, CW_USEDEFAULT, wr.right - wr.left, wr.bottom - wr.top, 0, 0, inst, 0);
 #ifdef WIN32API_GUI
     statusWindow = CreateStatusWindow(WS_CHILD | WS_VISIBLE | WS_OVERLAPPEDWINDOW, TEXT("Welcome to SpyWindows"), mainWindow, 9000);
 #endif
@@ -858,6 +966,7 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
     mainMenu = GetMenu(mainWindow);
     menuDisplayed = true;
     statusDisplayed = true;
+
 
     QueryPerformanceFrequency(&perf_freq);
     QueryPerformanceCounter(&last_time);
@@ -912,7 +1021,7 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
             {
                 last_time = time;
 
-                m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer);
+                m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer, viewportX, viewportY);
 
                 // Set the time
                 char specType[20];
@@ -961,6 +1070,12 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
                 SetWindowTextA(mainWindow, buff);
             }
         }
+    }
+    // if tape viewer is running on it's thread then wait before closing
+    if (tapeViewerThread != nullptr)
+    {
+        WaitForSingleObject(tapeViewerThread, INFINITE);
+        CloseHandle(tapeViewerThread);
     }
     return 0;
 }
@@ -1063,18 +1178,109 @@ static void DecreaseApplicationVolume()
 
 static void OpenTapeViewer()
 {
-    TapeViewer* tvWindow = new TapeViewer(GetModuleHandle(NULL), mainWindow);
-    //int retval = TapeViewer::OpenTapeViewerWindow(GetModuleHandle(NULL), mainWindow);
+    if (tapeViewerThread) return;
+
+    tapeViewerThread = (HANDLE)_beginthreadex(0, 0, &mythread, 0, 0, 0);    
+}
+
+unsigned int __stdcall mythread(void* data)
+{
+
+    tvWindow = new TapeViewer(GetModuleHandle(NULL), mainWindow, dwTlsIndex);
+    tvWindow = nullptr;
+    PostMessage(mainWindow, WM_USER + 2, PM_TAPE_VIEWER_CLOSED, (LPARAM)0);
+    return 0;
+}
+//-----------------------------------------------------------------------------------------
+static void SendTapeBlockDataToViewer()
+{
+    size_t numBlocks = m_pTape->numberOfTapeBlocks();
+
+    PMDawn::pData.clear();
+    for (int i = 0; i < numBlocks; i++)
+    {
+        PMDawn::gTAPEBLOCK gT;
+
+        gT.status = " ";
+        switch (m_pTape->blocks[i]->getDataType())
+        {
+        case 0: // ePROGRAM_HEADER
+            gT.blocktype = "PROGRAM:";
+            break;
+
+        case 1: // eNUMERIC_DATA_HEADER
+            gT.blocktype = "DATA():";
+            break;
+
+        case 2: // eALPHANUMERIC_DATA_HEADER
+            gT.blocktype = "STRING():";
+            break;
+
+        case 3: // eBYTE_HEADER
+            gT.blocktype = "CODE:";
+            break;
+
+        case 4: // eDATA_BLOCK
+            gT.blocktype = "DATA:";
+            break;
+
+        case 5: // eFRAGMENTED_DATA_BLOCK
+            gT.blocktype = "FRAGMENTED:";
+            break;
+
+        case 99: // eUNKNOWN_BLOCK
+            gT.blocktype = "UNKNOWN:";
+            break;
+
+        default: // Uh oh...
+            gT.blocktype = "  DATA:";
+            break;
+        }
+        
+        if (m_pTape->blocks[i]->getDataType() < 4)
+        {
+            gT.filename = m_pTape->blocks[i]->getFilename();
+            gT.autostartline = m_pTape->blocks[i]->getAutoStartLine();
+        }
+        else
+        {
+            gT.filename = "";
+            gT.autostartline = 0;
+        }
+        gT.address = m_pTape->blocks[i]->getStartAddress();
+        gT.length = m_pTape->blocks[i]->getDataLength();
+
+        PMDawn::pData.push_back(gT);
+    }
+
+    size_t num = PMDawn::pData.size();
+
+    if (tvHwnd != nullptr)
+    {
+        //PostMessage(tvHwnd, WM_USER + 2, reinterpret_cast<WPARAM>(&tBlocks), static_cast < LPARAM>(numBlocks));
+        //PostMessage(tvHwnd, WM_USER + 2, PM_TAPEDATA_FULL, numBlocks);
+        PostMessage(tvHwnd, WM_USER + 2, PM_TAPEDATA_FULL, (LPARAM)&PMDawn::pData);
+    }
 }
 
 //-----------------------------------------------------------------------------------------
 
+static void GetTapeViewerHwnd()
+{
+    tvHwnd = TapeViewer::tapeViewerWindowInternal;
+}
 
 //-----------------------------------------------------------------------------------------
 
-
-//-----------------------------------------------------------------------------------------
-
+static void SetupThreadLocalStorageForTapeData()
+{
+    return;
+    //// Setup the thread local storage
+    //dwTlsIndex = TlsAlloc();
+    //TlsSetValue(dwTlsIndex, GlobalAlloc(GPTR, sizeof(PMDawn::THREADDATA)));
+    //PMDawn::pData = (PMDawn::PTHREADDATA)TlsGetValue(dwTlsIndex);
+    //PMDawn::pData->filename = "POLO2";
+}
 
 //-----------------------------------------------------------------------------------------
 

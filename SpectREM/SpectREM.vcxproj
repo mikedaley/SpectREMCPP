@@ -91,6 +91,7 @@
       <AdditionalIncludeDirectories>SpectREM\Emulator Core\Base;SpectREM\Emulator Core\Z80 Core;SpectREM\Emulator Core\Tape;SpectREM\Win32;SpectREM\Emulator Core\ZX Spectrum +2;SpectREM\Emulator Core\ZX Spectrum 48k;SpectREM\Emulator Core\ZX Spectrum 128k;SpectREM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4068</DisableSpecificWarnings>
       <TreatWarningAsError>false</TreatWarningAsError>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -112,6 +113,7 @@ copy "$(ProjectDir)SpectREM\Emulation Core\ROMS\*.*" $(TargetDir)ROMS\*.*
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWarningAsError>false</TreatWarningAsError>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -135,6 +137,7 @@ copy "$(ProjectDir)SpectREM\Emulation Core\ROMS\*.*" $(TargetDir)ROMS\*.*
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWarningAsError>false</TreatWarningAsError>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -160,6 +163,7 @@ copy "$(ProjectDir)SpectREM\Emulation Core\ROMS\*.*" $(TargetDir)ROMS\*.*
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWarningAsError>false</TreatWarningAsError>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -220,6 +224,7 @@ copy "$(ProjectDir)SpectREM\Emulation Core\ROMS\*.*" $(TargetDir)ROMS\*.*
     <ClInclude Include="SpectREM\OSX\AudioQueue.hpp" />
     <ClInclude Include="SpectREM\Win32\AudioCore.hpp" />
     <ClInclude Include="SpectREM\Win32\OpenGLView.hpp" />
+    <ClInclude Include="SpectREM\Win32\PMDawn.hpp" />
     <ClInclude Include="SpectREM\Win32\TapeViewerWindow.hpp" />
   </ItemGroup>
   <ItemGroup>
