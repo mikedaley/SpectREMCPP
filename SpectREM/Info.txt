@@ -24,6 +24,13 @@ PAGEDOWN		: Decrease volume
 
 
 
+2020-01-18
+-----------
+ADDED	: Tape viewer window with controls and updates (minor bug found, https://github.com/polomint/SpectREMCPP/issues/28)
+FIXED	: Forgot to resend the currently inserted .tap data to the tape viewer in between invocations :/
+ADDED	: File loaded now displays in title bar, shows Playing/Paused if it is a .tap file
+UPDATED	: File loading and folder choosing now uses the new updated file open dialog
+
 2020-01-05
 -----------
 ADDED	: Volume control using PageUp/PageDown
