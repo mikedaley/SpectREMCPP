@@ -101,14 +101,13 @@ ZXSpectrum::SnapshotData ZXSpectrum::snapshotCreateSNA()
 
 // ------------------------------------------------------------------------------------------------------------
 
-ZXSpectrum::FileResponse ZXSpectrum::snapshotSNALoadWithPath(const std::string path)
+Tape::FileResponse ZXSpectrum::snapshotSNALoadWithPath(const std::string path)
 {
     
     std::ifstream stream(path, std::ios::binary | std::ios::ate);
     if (!stream.ios_base::good()) {
         char* errorstring = strerror(errno);
-        FileResponse response;
-        return FileResponse{false, errorstring};
+        return Tape::FileResponse{false, errorstring};
     }
     
     std::vector<char> pFileBytes(stream.tellg());
@@ -122,7 +121,7 @@ ZXSpectrum::FileResponse ZXSpectrum::snapshotSNALoadWithPath(const std::string p
 
 // ------------------------------------------------------------------------------------------------------------
 
-ZXSpectrum::FileResponse ZXSpectrum::snapshotSNALoadWithBuffer(const char *buffer, size_t size)
+Tape::FileResponse ZXSpectrum::snapshotSNALoadWithBuffer(const char *buffer, size_t size)
 {
     pause();
     displayFrameReset();
@@ -176,7 +175,7 @@ ZXSpectrum::FileResponse ZXSpectrum::snapshotSNALoadWithBuffer(const char *buffe
 
     resume();
 
-    return FileResponse{true, "Loaded successfully"};
+    return Tape::FileResponse{true, "Loaded successfully"};
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -362,13 +361,12 @@ ZXSpectrum::SnapshotData ZXSpectrum::snapshotCreateZ80()
 
 // ------------------------------------------------------------------------------------------------------------
 
-ZXSpectrum::FileResponse ZXSpectrum::snapshotZ80LoadWithPath(const std::string path)
+Tape::FileResponse ZXSpectrum::snapshotZ80LoadWithPath(const std::string path)
 {
     std::ifstream stream(path, std::ios::binary | std::ios::ate);
     if (!stream.ios_base::good()) {
         char* errorstring = strerror(errno);
-        FileResponse response;
-        return FileResponse{false, errorstring};
+        return Tape::FileResponse{ false, errorstring };
     }
     
     std::vector<char> pFileBytes(stream.tellg());
@@ -380,7 +378,7 @@ ZXSpectrum::FileResponse ZXSpectrum::snapshotZ80LoadWithPath(const std::string p
 
 // ------------------------------------------------------------------------------------------------------------
 
-ZXSpectrum::FileResponse ZXSpectrum::snapshotZ80LoadWithBuffer(const char *buffer, size_t size)
+Tape::FileResponse ZXSpectrum::snapshotZ80LoadWithBuffer(const char *buffer, size_t size)
 {
     pause();
     displayFrameReset();
@@ -549,7 +547,7 @@ ZXSpectrum::FileResponse ZXSpectrum::snapshotZ80LoadWithBuffer(const char *buffe
 
     resume();
     
-    return FileResponse{true, "Loaded successfully"};
+    return Tape::FileResponse{true, "Loaded successfully"};
 }
 
 // ------------------------------------------------------------------------------------------------------------

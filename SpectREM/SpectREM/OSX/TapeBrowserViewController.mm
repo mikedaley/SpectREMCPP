@@ -7,8 +7,9 @@
 //
 
 #import "TapeBrowserViewController.h"
-#import "EmulationViewController.h"
 #import "TapeCellView.h"
+#import "EmulationController.hpp"
+#import "SharedConstants.h"
 
 @interface TapeBrowserViewController ()
 
@@ -44,7 +45,11 @@
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView
 {
-    return [self.emulationViewController tapeNumberOfblocks];
+    if (self.emulationController)
+    {
+        return self.emulationController->getNumberOfTapeBlocks();
+    }
+    return 0;
 }
 
 -(NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
@@ -54,9 +59,9 @@
     if ([tableColumn.identifier isEqualToString:@"StatusColID"])
     {
         view = [tableView makeViewWithIdentifier:@"StatusCellID" owner:nil];
-        if (row == [self.emulationViewController tapeCurrentBlock])
+        if (row == self.emulationController->getCurrentTapeBlock())
         {
-            if ([self.emulationViewController tapeIsplaying])
+            if (self.emulationController->isTapePlaying())
             {
                 view.imageView.image = [NSImage imageNamed:NSImageNameStatusAvailable];
             }
@@ -73,15 +78,15 @@
     else if ([tableColumn.identifier isEqualToString:@"BlockTypeColID"])
     {
         view = [tableView makeViewWithIdentifier:@"BlockTypeCellID" owner:nil];
-        view.textField.stringValue = [self.emulationViewController tapeBlockTypeForIndex:row];
+        view.textField.stringValue = [NSString stringWithCString:self.emulationController->tapeBlockTypeForIndex(static_cast<int>(row)).c_str() encoding:NSUTF8StringEncoding] ;
     }
     else if ([tableColumn.identifier isEqualToString:@"FilenameColID"])
     {
         view = [tableView makeViewWithIdentifier:@"FilenameCellID" owner:nil];
-        NSString *blockType = [self.emulationViewController tapeBlockTypeForIndex:row];
+        NSString *blockType = [NSString stringWithCString:self.emulationController->tapeBlockTypeForIndex(static_cast<int>(row)).c_str() encoding:NSUTF8StringEncoding] ;
         if ([blockType isEqualToString:@"Program Header"] || [blockType isEqualToString:@"Byte Header"])
         {
-            view.textField.stringValue = [self.emulationViewController tapeFilenameForIndex:row];
+            view.textField.stringValue = [NSString stringWithCString:self.emulationController->tapeFilenameForIndex(static_cast<int>(row)).c_str() encoding:NSUTF8StringEncoding] ;
         }
         else
         {
@@ -91,9 +96,9 @@
     else if ([tableColumn.identifier isEqualToString:@"AutostartColID"])
     {
         view = [tableView makeViewWithIdentifier:@"AutostartCellID" owner:nil];
-        if ([self.emulationViewController tapeAutostartLineForIndex:row] != 0)
+        if (self.emulationController->tapeAutostartLineForIndex(static_cast<int>(row)) != 0)
         {
-            view.textField.stringValue = [NSString stringWithFormat:@"%i", [self.emulationViewController tapeAutostartLineForIndex:row]];
+            view.textField.stringValue = [NSString stringWithFormat:@"%i", self.emulationController->tapeAutostartLineForIndex(static_cast<int>(row))];
         }
         else
         {
@@ -103,9 +108,9 @@
     else if ([tableColumn.identifier isEqualToString:@"AddressColID"])
     {
         view = [tableView makeViewWithIdentifier:@"AddressCellID" owner:nil];
-        if ([self.emulationViewController tapeBlockStartAddressForIndex:row] != 0)
+        if (self.emulationController->tapeBlockStartAddressForIndex(static_cast<int>(row)) != 0)
         {
-            view.textField.stringValue = [NSString stringWithFormat:@"%i", [self.emulationViewController tapeBlockStartAddressForIndex:row]];
+            view.textField.stringValue = [NSString stringWithFormat:@"%i", self.emulationController->tapeBlockStartAddressForIndex(static_cast<int>(row))];
         }
         else
         {
@@ -115,14 +120,14 @@
     else if ([tableColumn.identifier isEqualToString:@"LengthColID"])
     {
         view = [tableView makeViewWithIdentifier:@"LengthCellID" owner:nil];
-        view.textField.stringValue = [NSString stringWithFormat:@"%i", [self.emulationViewController tapeBlockLengthForIndex:row]];
+        view.textField.stringValue = [NSString stringWithFormat:@"%i", self.emulationController->tapeBlockLengthForIndex(static_cast<int>(row))];
     }
     return view;
 }
 
 - (void)tableViewSelectionDidChange:(NSNotification *)notification
 {
-    [self.emulationViewController tapeSetCurrentBlock:self.tableView.selectedRow];
+    self.emulationController->setCurrentTapeBlockIndex(static_cast<int>(self.tableView.selectedRow));
     [self.tableView reloadData];
 }
 
@@ -134,29 +139,39 @@
 
 #pragma mark - Button Methods
 
-- (IBAction)play:(id)sender
+- (IBAction)playTape:(id)sender
 {
-    [self.emulationViewController startPlayingTape:nil];
+    self.emulationController->playTape();
 }
 
-- (IBAction)stop:(id)sender
+- (IBAction)stopTape:(id)sender
 {
-    [self.emulationViewController stopPlayingTape:nil];
+    self.emulationController->stopTape();
 }
 
-- (IBAction)rewind:(id)sender
+- (IBAction)rewindTape:(id)sender
 {
-    [self.emulationViewController rewindTape:nil];
+    self.emulationController->rewindTape();
 }
 
-- (IBAction)eject:(id)sender
+- (IBAction)ejectTape:(id)sender
 {
-    [self.emulationViewController ejectTape:nil];
+    self.emulationController->ejectTape();
 }
 
-- (IBAction)save:(id)sender
+- (IBAction)saveTape:(id)sender
 {
-
+    NSSavePanel *savePanel = [NSSavePanel new];
+    savePanel.allowedFileTypes = @[ cTAP_EXTENSION ];
+    [savePanel beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger result) {
+        if (result == NSModalResponseOK)
+        {
+            std::vector<unsigned char> tapeData = self.emulationController->tapePlayer->getTapeData();
+            NSMutableData *saveData = [NSMutableData new];
+            [saveData appendBytes:tapeData.data() length:tapeData.size()];
+            [saveData writeToURL:savePanel.URL atomically:YES];
+        }
+    }];
 }
 
 

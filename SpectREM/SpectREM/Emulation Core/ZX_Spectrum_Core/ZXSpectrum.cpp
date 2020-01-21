@@ -91,7 +91,7 @@ void ZXSpectrum::generateFrame()
 	{
 		if (debugOpCallbackBlock)
 		{
-			if (debugOpCallbackBlock(z80Core.GetRegister(CZ80Core::eREG_PC), eDEBUGOPERATION::EXECUTE) || emuPaused)
+			if (debugOpCallbackBlock(z80Core.GetRegister(CZ80Core::eREG_PC), E_DEBUGOPERATION::EXECUTE) || emuPaused)
 			{
 				return;
 			}
@@ -99,18 +99,18 @@ void ZXSpectrum::generateFrame()
 
 		uint32_t tStates = z80Core.Execute(1, machineInfo.intLength);
 
-		if (tape && tape->playing)
+		if (tapePlayer && tapePlayer->playing)
 		{
-			tape->updateWithTs(tStates);
+			tapePlayer->updateWithTs(tStates);
 		}
 
-		if (tape && emuSaveTrapTriggered)
+		if (tapePlayer && emuSaveTrapTriggered)
 		{
-			tape->saveBlock(this);
+			tapePlayer->saveBlockWithMachine(this);
 		}
-		else if (emuLoadTrapTriggered && tape && tape->loaded)
+		else if (emuLoadTrapTriggered && tapePlayer && tapePlayer->loaded)
 		{
-			tape->loadBlock(this);
+			tapePlayer->loadBlockWithMachine(this);
 		}
 		else
 		{
@@ -145,18 +145,18 @@ void ZXSpectrum::step()
 {
 	uint32_t tStates = z80Core.Execute(1, machineInfo.intLength);
 
-	if (tape && tape->playing)
+	if (tapePlayer && tapePlayer->playing)
 	{
-		tape->updateWithTs(tStates);
+		tapePlayer->updateWithTs(tStates);
 	}
 
-	if (tape && emuSaveTrapTriggered)
+	if (tapePlayer && emuSaveTrapTriggered)
 	{
-		tape->saveBlock(this);
+		tapePlayer->saveBlockWithMachine(this);
 	}
-	else if (emuLoadTrapTriggered && tape && tape->loaded)
+	else if (emuLoadTrapTriggered && tapePlayer && tapePlayer->loaded)
 	{
-		tape->loadBlock(this);
+		tapePlayer->loadBlockWithMachine(this);
 	}
 	else
 	{
@@ -290,14 +290,14 @@ void ZXSpectrum::emuReset()
 // ------------------------------------------------------------------------------------------------------------
 // - ROM Loading
 
-ZXSpectrum::FileResponse ZXSpectrum::loadROM(const std::string rom, uint32_t page)
+Tape::FileResponse ZXSpectrum::loadROM(const std::string rom, uint32_t page)
 {
 	size_t romAddress = cROM_SIZE * page;
 
 	if (memoryRom.size() < romAddress)
 	{
         std::cout << "ZXSpectrum::loadROM - Unable to load into ROM page " << page << "\n";
-        return ZXSpectrum::FileResponse{false, std::to_string(page) + " is an invalid ROM page" };
+        return Tape::FileResponse{false, std::to_string(page) + " is an invalid ROM page" };
 	}
 
     std::string romPath = emuBasePath + emuROMPath;
@@ -310,18 +310,18 @@ ZXSpectrum::FileResponse ZXSpectrum::loadROM(const std::string rom, uint32_t pag
         romFile.seekg(0, std::ios::beg);
 		romFile.read(memoryRom.data() + romAddress, fileSize);
 		romFile.close();
-        return ZXSpectrum::FileResponse{true, "Loaded successfully"};
+        return Tape::FileResponse{true, "Loaded successfully"};
 	}
 
     char* errorstring = strerror(errno);
     std::cout << "ERROR: Could not read from ROM file: " << errorstring;
-    return ZXSpectrum::FileResponse{false, errorstring};
+    return Tape::FileResponse{ false, errorstring };
 }
 
 // ------------------------------------------------------------------------------------------------------------
 // SCR Loading
 
-ZXSpectrum::FileResponse ZXSpectrum::scrLoadWithPath(const std::string path)
+Tape::FileResponse ZXSpectrum::scrLoadWithPath(const std::string path)
 {
     std::ifstream scrFile(path, std::ios::binary | std::ios::ate | std::ios::in);
     if (scrFile.good())
@@ -342,13 +342,21 @@ ZXSpectrum::FileResponse ZXSpectrum::scrLoadWithPath(const std::string path)
                 break;
         }
         scrFile.close();
-        return ZXSpectrum::FileResponse{true, "Loaded successfully"};
+        return Tape::FileResponse{ true, "Loaded successfully" };
     }
 
     char* errorstring = strerror(errno);
     std::cout << "ERROR: Could not read from file: " << errorstring << "\n";
     
-    return ZXSpectrum::FileResponse{false, errorstring};
+    return Tape::FileResponse{ false, errorstring };
+}
+
+// ------------------------------------------------------------------------------------------------------------
+// - Tape Player
+
+void ZXSpectrum::attachTapePlayer(Tape *tapePlayer)
+{
+    this->tapePlayer = tapePlayer;
 }
 
 // ------------------------------------------------------------------------------------------------------------

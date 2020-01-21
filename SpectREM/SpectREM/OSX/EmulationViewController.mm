@@ -15,6 +15,7 @@
 #import "ConfigurationViewController.h"
 #import "Debug.hpp"
 #import "DebugViewController.h"
+#import "EmulationController.hpp"
 #import "EmulationViewController.h"
 #import "ExportAccessoryViewController.h"
 #import "InfoPanelViewController.h"
@@ -32,7 +33,7 @@
 
 uint32_t const cAUDIO_SAMPLE_RATE   = 44100;
 uint32_t const cFRAMES_PER_SECOND   = 50;
-NSString  *const cSESSION_FILE_NAME = @"session.z80";
+NSString * const cSESSION_FILE_NAME = @"session.z80";
 
 const int cSCREEN_4_3               = 0;
 const int cSCREEN_FILL              = 1;
@@ -42,12 +43,10 @@ const int cSCREEN_FILL              = 1;
 @interface EmulationViewController()
 {
 @public
+    EmulationController                 * emulationController;
+
     NSString                            * mainBundlePath_;
     NSURL                               * lastOpenedURL_;
-    
-    ZXSpectrum                          * machine_;
-    Debug                               * debugger_;
-    Tape                                * virtualTape_;
     
     AudioQueue                          * audioQueue_;
     
@@ -85,10 +84,7 @@ const int cSCREEN_FILL              = 1;
 
 - (void)dealloc
 {
-    if (machine_)
-    {
-        delete machine_;
-    }
+    delete emulationController;
     [self.defaults removeObserver:self forKeyPath:MachineAcceleration];
     [self.defaults removeObserver:self forKeyPath:MachineSelectedModel];
     [self.defaults removeObserver:self forKeyPath:MachineTapeInstantLoad];
@@ -100,7 +96,7 @@ const int cSCREEN_FILL              = 1;
 
 - (void)audioCallback:(int)inNumberFrames buffer:(int16_t *)buffer
 {
-    if (machine_)
+    if (emulationController->machine)
     {
         const uint32_t b = (cAUDIO_SAMPLE_RATE / (cFRAMES_PER_SECOND * _defaults.machineAcceleration)) * 2;
         
@@ -116,14 +112,14 @@ const int cSCREEN_FILL              = 1;
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if (self.view.window.occlusionState & NSApplicationOcclusionStateVisible)
                     {
-                        [metalRenderer_ updateTextureData:machine_->getScreenBuffer()];
+                        [metalRenderer_ updateTextureData:emulationController->getDisplayBuffer()];
                     }
                 });
                 
                 // Generate another frame
-                machine_->generateFrame();
+                emulationController->generateFrame();
             }
-            audioQueue_->write(machine_->audioBuffer, b);
+            audioQueue_->write(emulationController->getAudioBuffer(), b);
         }
     }
 }
@@ -135,11 +131,11 @@ const int cSCREEN_FILL              = 1;
         [accelerationTimer_ invalidate];
         accelerationTimer_ = [NSTimer timerWithTimeInterval:1.0 / (cFRAMES_PER_SECOND * _defaults.machineAcceleration) repeats:YES block:^(NSTimer * _Nonnull timer) {
             
-            machine_->generateFrame();
+            emulationController->generateFrame();
             
-            if (!(machine_->emuFrameCounter % static_cast<uint32_t>(_defaults.machineAcceleration)))
+            if (!(emulationController->getFrameCounter() % static_cast<uint32_t>(_defaults.machineAcceleration)))
             {
-                [metalRenderer_ updateTextureData:machine_->getScreenBuffer()];
+                [metalRenderer_ updateTextureData:emulationController->getDisplayBuffer()];
             }
         }];
         
@@ -153,15 +149,15 @@ const int cSCREEN_FILL              = 1;
 
 - (void)updateDisplay
 {
-    [metalRenderer_ updateTextureData:machine_->displayBuffer];
+    [metalRenderer_ updateTextureData:emulationController->getDisplayBuffer()];
     
-    //    if (_debugger && _debugViewController) {
-    //        if (!_debugViewController.view.isHidden) {
-    //            dispatch_async(dispatch_get_main_queue(), ^{
-    //                [_debugViewController updateViewDetails];
-    //            });
-    //        }
-    //    }
+//    if (_debugger && _debugViewController) {
+//        if (!_debugViewController.view.isHidden) {
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                [_debugViewController updateViewDetails];
+//            });
+//        }
+//    }
 }
 
 #pragma mark - View Methods
@@ -169,12 +165,6 @@ const int cSCREEN_FILL              = 1;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    //    NSURL *supportDir = [self getSupportDirUrl];
-    //    NSURL *output = [supportDir URLByAppendingPathComponent:@"output.txt"];
-    //    const char *outputPath = [output.path cStringUsingEncoding:NSUTF8StringEncoding];
-    //    NSLog(@"%@", output.path);
-    //    freopen(outputPath, "w", stdout);
     
     metalView_ = (MTKView *)self.view;
     metalView_.device = MTLCreateSystemDefaultDevice();
@@ -209,9 +199,9 @@ const int cSCREEN_FILL              = 1;
     audioQueue_ = new AudioQueue();
     self.audioCore = [[AudioCore alloc] initWithSampleRate:cAUDIO_SAMPLE_RATE framesPerSecond:cFRAMES_PER_SECOND callback:(id <EmulationProtocol>)self];
     
-    //Create a tape instance
-    virtualTape_ = new Tape(tapeStatusCallback);
-    
+    emulationController = new EmulationController();
+    [self initMachineWithRomPath:mainBundlePath_ machineType:(int)_defaults.machineSelectedModel];
+
     [self setupConfigView];
     [self setupInfoView];
     [self setupControllers];
@@ -219,9 +209,7 @@ const int cSCREEN_FILL              = 1;
     [self setupNotifications];
     [self setupBindings];
     [self setupKeyMappings];
-    
-    [self initMachineWithRomPath:mainBundlePath_ machineType:(int)_defaults.machineSelectedModel];
-    
+        
     [self restoreSession];
     
     if (_defaults.machineAcceleration > 1)
@@ -233,7 +221,7 @@ const int cSCREEN_FILL              = 1;
 - (void)viewWillAppear
 {
     [super viewWillAppear];
-    [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@", [NSString stringWithCString:machine_->machineInfo.machineName encoding:NSUTF8StringEncoding]]];
+    [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@", [NSString stringWithCString:emulationController->getMachineName() encoding:NSUTF8StringEncoding]]];
 }
 
 - (void)viewWillDisappear
@@ -250,7 +238,7 @@ const int cSCREEN_FILL              = 1;
         }
         
         supportDirUrl = [supportDirUrl URLByAppendingPathComponent:cSESSION_FILE_NAME];
-        ZXSpectrum::SnapshotData sessionSnapshot = machine_->snapshotCreateZ80();
+        ZXSpectrum::SnapshotData sessionSnapshot = emulationController->snapshotCreateZ80();
         NSData *data = [NSData dataWithBytes:sessionSnapshot.data length:sessionSnapshot.length];
         [data writeToURL:supportDirUrl atomically:YES];
     }
@@ -295,19 +283,15 @@ const int cSCREEN_FILL              = 1;
     }
     else if ([keyPath isEqualToString:MachineTapeInstantLoad])
     {
-        machine_->emuTapeInstantLoad = [change[NSKeyValueChangeNewKey] boolValue];
+        emulationController->setInstantTapeLoad([change[NSKeyValueChangeNewKey] boolValue]);
     }
     else if ([keyPath isEqualToString:MachineUseAYSound])
     {
-        machine_->emuUseAYSound = [change[NSKeyValueChangeNewKey] boolValue];
+        emulationController->setUseAySound([change[NSKeyValueChangeNewKey] boolValue]);
     }
     else if ([keyPath isEqualToString:MachineUseSpecDRUM])
     {
-        machine_->emuUseSpecDRUM = [change[NSKeyValueChangeNewKey] boolValue];
-    }
-    else if ([keyPath isEqualToString:SPIPort])
-    {
-        machine_->spiPort = [change[NSKeyValueChangeNewKey] unsignedIntegerValue];
+        emulationController->setUseSpecDrum([change[NSKeyValueChangeNewKey] boolValue]);
     }
     else if ([keyPath isEqualToString:AudioMasterVolume])
     {
@@ -332,7 +316,7 @@ const int cSCREEN_FILL              = 1;
 
 - (IBAction)smartlinkSendSnapshot:(id)sender
 {
-    ZXSpectrum::SnapshotData snapshot = machine_->snapshotCreateZ80();
+    ZXSpectrum::SnapshotData snapshot = emulationController->snapshotCreateZ80();
     [smartLink_ sendSnapshot:snapshot.data ofType:SnapshotTypeZ80];
 }
 
@@ -340,9 +324,9 @@ const int cSCREEN_FILL              = 1;
 
 - (void)applyDefaults
 {
-    machine_->emuTapeInstantLoad = self.defaults.machineTapeInstantLoad;
-    machine_->emuUseAYSound = self.defaults.machineUseAYSound;
-    machine_->emuUseSpecDRUM = self.defaults.machineUseSpecDRUM;
+    emulationController->setInstantTapeLoad(self.defaults.machineTapeInstantLoad);
+    emulationController->setUseAySound(self.defaults.machineUseAYSound);
+    emulationController->setUseSpecDrum(self.defaults.machineUseSpecDRUM);
 }
 
 #pragma mark - View/Controller Setup
@@ -366,7 +350,8 @@ const int cSCREEN_FILL              = 1;
     saveAccessoryController_ = [storyBoard_ instantiateControllerWithIdentifier:@"SAVE_ACCESSORY_VIEW_CONTROLLER"];
     tapeBrowserWindowController_ = [storyBoard_ instantiateControllerWithIdentifier:@"TAPE_BROWSER_WINDOW"];
     tapeBrowserViewController_ = (TapeBrowserViewController *)tapeBrowserWindowController_.contentViewController;
-    tapeBrowserViewController_.emulationViewController = self;
+//    tapeBrowserViewController_.emulationViewController = self;
+    tapeBrowserViewController_.emulationController = emulationController;
     
     debugWindowController_ = [storyBoard_ instantiateControllerWithIdentifier:@"DEBUG_WINDOW"];
     debugViewController_ = (DebugViewController *)debugWindowController_.contentViewController;
@@ -388,40 +373,21 @@ const int cSCREEN_FILL              = 1;
         while (self.audioCore.isRunning) { };
     }
     
-    if (machine_) {
-        machine_->pause();
-        delete machine_;
-    }
-    
-    if (machineType == eZXSpectrum48)
-    {
-        machine_ = new ZXSpectrum48(virtualTape_);
-        [infoPanelViewController_ displayMessage:@"ZX Spectrum 48k" duration:5];
-    }
-    else if (machineType == eZXSpectrum128)
-    {
-        machine_ = new ZXSpectrum128(virtualTape_);
-        [infoPanelViewController_ displayMessage:@"ZX Spectrum 128k" duration:5];
-    }
-    else
-    {
-        NSLog(@"initMachineWithRomPath: Unknown machine type, defaulting to 48K");
-        machine_ = new ZXSpectrum48(virtualTape_);
-        [infoPanelViewController_ displayMessage:@"ZX Spectrum 48k" duration:5];
-    }
-    
-    machine_->initialise((char *)[romPath cStringUsingEncoding:NSUTF8StringEncoding]);
-    
+    emulationController->pauseMachine();
+    emulationController->createMachineOfType(machineType, [romPath cStringUsingEncoding:NSUTF8StringEncoding]);
+    [infoPanelViewController_ displayMessage:[NSString stringWithCString:emulationController->getMachineName() encoding:NSUTF8StringEncoding] duration:5];
+
+    emulationController->setTapeStatusCallback(tapeStatusCallback);
     [self setupDebugger];
     
     // Once a machine instance has been created we need to apply the defaults to that instance
     [self applyDefaults];
     
     [self.audioCore start];
-    machine_->resume();
+    emulationController->resumeMachine();
     
     [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@",
-                                [NSString stringWithCString:machine_->machineInfo.machineName
+                                [NSString stringWithCString:emulationController->getMachineName()
                                                    encoding:NSUTF8StringEncoding]]];
 }
 
@@ -429,21 +395,18 @@ const int cSCREEN_FILL              = 1;
 
 - (void)setupDebugger
 {
-    debugger_ = new Debug;
-    debugger_->attachMachine(machine_);
-    
-    std::function<bool(uint16_t, uint8_t)> debugBlock;
     EmulationViewController *blockSelf = self;
+    std::function<bool(uint16_t, uint8_t)> debugBlock;
     
     debugBlock = ([blockSelf](uint16_t address, uint8_t operation) {
         
-        if (blockSelf->debugger_->checkForBreakpoint(address, operation))
+        if (blockSelf->emulationController->debugger->checkForBreakpoint(address, operation))
         {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [blockSelf sendNotificationsWithTitle:@"EXEC BREAK"
                                              subtitle:nil
                                                  body:[NSString stringWithFormat:@"EXEC BREAK at 0x%04x", address]
-                                                sound:[UNNotificationSound defaultCriticalSound]];
+                                                sound:[UNNotificationSound defaultSound]];
                 [blockSelf->debugViewController_ pauseMachine:nil];
             });
             return true;
@@ -453,7 +416,7 @@ const int cSCREEN_FILL              = 1;
         
     });
     
-    machine_->registerDebugOpCallback( debugBlock );
+    emulationController->setDebugCallback( debugBlock );
 }
 
 
@@ -475,82 +438,82 @@ const int cSCREEN_FILL              = 1;
 - (void)setupKeyMappings
 {
     keyMappings_ = @{
-    @(OSX_KEY_LEFT_SHIFT)   : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Shift), //Left Shift
-    @(OSX_KEY_RIGHT_SHIFT)  : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Shift), //Right Shift
-    @(OSX_KEY_Z)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Z),
-    @(OSX_KEY_X)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_X),
-    @(OSX_KEY_C)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_C),
-    @(OSX_KEY_V)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_V),
-    
-    @(OSX_KEY_A)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_A),
-    @(OSX_KEY_S)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_S),
-    @(OSX_KEY_D)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_D),
-    @(OSX_KEY_F)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_F),
-    @(OSX_KEY_G)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_G),
-    
-    @(OSX_KEY_Q)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Q),
-    @(OSX_KEY_W)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_W),
-    @(OSX_KEY_E)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_E),
-    @(OSX_KEY_R)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_R),
-    @(OSX_KEY_T)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_T),
-    
-    @(OSX_KEY_1)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_1),
-    @(OSX_KEY_2)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_2),
-    @(OSX_KEY_3)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_3),
-    @(OSX_KEY_4)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_4),
-    @(OSX_KEY_5)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_5),
-    
-    @(OSX_KEY_0)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_0),
-    @(OSX_KEY_9)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_9),
-    @(OSX_KEY_8)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_8),
-    @(OSX_KEY_7)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_7),
-    @(OSX_KEY_6)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_6),
-    
-    @(OSX_KEY_P)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_P),
-    @(OSX_KEY_O)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_O),
-    @(OSX_KEY_I)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_I),
-    @(OSX_KEY_U)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_U),
-    @(OSX_KEY_Y)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Y),
-    
-    @(OSX_KEY_ENTER)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Enter),
-    @(OSX_KEY_L)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_L),
-    @(OSX_KEY_K)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_K),
-    @(OSX_KEY_J)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_J),
-    @(OSX_KEY_H)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_H),
-    
-    @(OSX_KEY_SPACE)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Space),
-    @(OSX_KEY_CONTROL)      : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_SymbolShift), // Control key
-    @(OSX_KEY_M)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_M),
-    @(OSX_KEY_N)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_N),
-    @(OSX_KEY_B)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_B),
-    
-    @(OSX_KEY_RIGHT_SQUARE) : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_InvVideo),
-    @(OSX_KEY_LEFT_SQUARE)  : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_TrueVideo),
-    @(OSX_KEY_QUOTE)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Quote),
-    @(OSX_KEY_SEMI_COLON)   : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_SemiColon),
-    @(OSX_KEY_COMMA)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Comma),
-    @(OSX_KEY_MINUS)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Minus),
-    @(OSX_KEY_PLUS)         : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Plus),
-    @(OSX_KEY_PERIOD)       : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Period),
-    @(OSX_KEY_TAB)          : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Edit),
-    @(OSX_KEY_TILDA)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Graph),
-    @(OSX_KEY_ESC)          : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Break), // ESC key
-    @(OSX_KEY_BACKSPACE)    : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Backspace),
-    @(OSX_KEY_ARROW_UP)     : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ArrowUp),
-    @(OSX_KEY_ARROW_DOWN)   : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ArrowDown),
-    @(OSX_KEY_ARROW_LEFT)   : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ArrowLeft),
-    @(OSX_KEY_ARROW_RIGHT)  : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ArrowRight),
-    @(OSX_KEY_LEFT_ALT)     : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ExtendMode), // Left Alt
-    @(OSX_KEY_RIGHT_ALT)    : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ExtendMode), // Right Alt
-    @(OSX_KEY_CAPSLOCK)     : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_CapsLock)
-};
+        @(OSX_KEY_LEFT_SHIFT)   : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Shift), //Left Shift
+        @(OSX_KEY_RIGHT_SHIFT)  : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Shift), //Right Shift
+        @(OSX_KEY_Z)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Z),
+        @(OSX_KEY_X)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_X),
+        @(OSX_KEY_C)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_C),
+        @(OSX_KEY_V)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_V),
+        
+        @(OSX_KEY_A)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_A),
+        @(OSX_KEY_S)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_S),
+        @(OSX_KEY_D)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_D),
+        @(OSX_KEY_F)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_F),
+        @(OSX_KEY_G)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_G),
+        
+        @(OSX_KEY_Q)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Q),
+        @(OSX_KEY_W)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_W),
+        @(OSX_KEY_E)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_E),
+        @(OSX_KEY_R)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_R),
+        @(OSX_KEY_T)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_T),
+        
+        @(OSX_KEY_1)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_1),
+        @(OSX_KEY_2)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_2),
+        @(OSX_KEY_3)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_3),
+        @(OSX_KEY_4)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_4),
+        @(OSX_KEY_5)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_5),
+        
+        @(OSX_KEY_0)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_0),
+        @(OSX_KEY_9)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_9),
+        @(OSX_KEY_8)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_8),
+        @(OSX_KEY_7)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_7),
+        @(OSX_KEY_6)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_6),
+        
+        @(OSX_KEY_P)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_P),
+        @(OSX_KEY_O)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_O),
+        @(OSX_KEY_I)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_I),
+        @(OSX_KEY_U)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_U),
+        @(OSX_KEY_Y)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Y),
+        
+        @(OSX_KEY_ENTER)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Enter),
+        @(OSX_KEY_L)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_L),
+        @(OSX_KEY_K)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_K),
+        @(OSX_KEY_J)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_J),
+        @(OSX_KEY_H)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_H),
+        
+        @(OSX_KEY_SPACE)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Space),
+        @(OSX_KEY_CONTROL)      : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_SymbolShift), // Control key
+        @(OSX_KEY_M)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_M),
+        @(OSX_KEY_N)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_N),
+        @(OSX_KEY_B)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_B),
+        
+        @(OSX_KEY_RIGHT_SQUARE) : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_InvVideo),
+        @(OSX_KEY_LEFT_SQUARE)  : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_TrueVideo),
+        @(OSX_KEY_QUOTE)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Quote),
+        @(OSX_KEY_SEMI_COLON)   : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_SemiColon),
+        @(OSX_KEY_COMMA)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Comma),
+        @(OSX_KEY_MINUS)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Minus),
+        @(OSX_KEY_PLUS)         : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Plus),
+        @(OSX_KEY_PERIOD)       : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Period),
+        @(OSX_KEY_TAB)          : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Edit),
+        @(OSX_KEY_TILDA)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Graph),
+        @(OSX_KEY_ESC)          : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Break), // ESC key
+        @(OSX_KEY_BACKSPACE)    : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Backspace),
+        @(OSX_KEY_ARROW_UP)     : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ArrowUp),
+        @(OSX_KEY_ARROW_DOWN)   : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ArrowDown),
+        @(OSX_KEY_ARROW_LEFT)   : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ArrowLeft),
+        @(OSX_KEY_ARROW_RIGHT)  : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ArrowRight),
+        @(OSX_KEY_LEFT_ALT)     : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ExtendMode), // Left Alt
+        @(OSX_KEY_RIGHT_ALT)    : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ExtendMode), // Right Alt
+        @(OSX_KEY_CAPSLOCK)     : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_CapsLock)
+    };
 }
 
 - (void)keyDown:(NSEvent *)event
 {
     if (!event.isARepeat && !(event.modifierFlags & NSEventModifierFlagCommand) && event.keyCode != 96)
     {
-        machine_->keyboardKeyDown((ZXSpectrum::eZXSpectrumKey)[[keyMappings_ objectForKey:@(event.keyCode)] unsignedIntValue]);
+        emulationController->keyboardKeyDown((ZXSpectrum::eZXSpectrumKey)[[keyMappings_ objectForKey:@(event.keyCode)] unsignedIntValue]);
     }
 }
 
@@ -564,7 +527,7 @@ const int cSCREEN_FILL              = 1;
     
     if (!event.isARepeat && !(event.modifierFlags & NSEventModifierFlagCommand))
     {
-        machine_->keyboardKeyUp((ZXSpectrum::eZXSpectrumKey)[[keyMappings_ objectForKey:@(event.keyCode)] unsignedIntValue]);
+        emulationController->keyboardKeyUp((ZXSpectrum::eZXSpectrumKey)[[keyMappings_ objectForKey:@(event.keyCode)] unsignedIntValue]);
     }
 }
 
@@ -578,34 +541,34 @@ const int cSCREEN_FILL              = 1;
             case 61:
                 if (event.modifierFlags & NSEventModifierFlagOption)
                 {
-                    machine_->keyboardKeyDown(ZXSpectrum::eZXSpectrumKey::Key_ExtendMode);
+                    emulationController->keyboardKeyDown(ZXSpectrum::eZXSpectrumKey::Key_ExtendMode);
                 } else {
-                    machine_->keyboardKeyUp(ZXSpectrum::eZXSpectrumKey::Key_ExtendMode);
+                    emulationController->keyboardKeyUp(ZXSpectrum::eZXSpectrumKey::Key_ExtendMode);
                 }
                 break;
             case 57:
                 if ((event.modifierFlags & NSEventModifierFlagCapsLock) || !(event.modifierFlags & NSEventModifierFlagCapsLock))
                 {
-                    machine_->keyboardKeyDown(ZXSpectrum::eZXSpectrumKey::Key_CapsLock);
+                    emulationController->keyboardKeyDown(ZXSpectrum::eZXSpectrumKey::Key_CapsLock);
                 } else {
-                    machine_->keyboardKeyUp(ZXSpectrum::eZXSpectrumKey::Key_CapsLock);
+                    emulationController->keyboardKeyUp(ZXSpectrum::eZXSpectrumKey::Key_CapsLock);
                 }
                 break;
             case 56:
             case 60:
                 if (event.modifierFlags & NSEventModifierFlagShift)
                 {
-                    machine_->keyboardKeyDown(ZXSpectrum::eZXSpectrumKey::Key_Shift);
+                    emulationController->keyboardKeyDown(ZXSpectrum::eZXSpectrumKey::Key_Shift);
                 } else {
-                    machine_->keyboardKeyUp(ZXSpectrum::eZXSpectrumKey::Key_Shift);
+                    emulationController->keyboardKeyUp(ZXSpectrum::eZXSpectrumKey::Key_Shift);
                 }
                 break;
             case 59:
                 if (event.modifierFlags & NSEventModifierFlagControl)
                 {
-                    machine_->keyboardKeyDown(ZXSpectrum::eZXSpectrumKey::Key_SymbolShift);
+                    emulationController->keyboardKeyDown(ZXSpectrum::eZXSpectrumKey::Key_SymbolShift);
                 } else {
-                    machine_->keyboardKeyUp(ZXSpectrum::eZXSpectrumKey::Key_SymbolShift);
+                    emulationController->keyboardKeyUp(ZXSpectrum::eZXSpectrumKey::Key_SymbolShift);
                 }
             default:
                 break;
@@ -617,54 +580,30 @@ const int cSCREEN_FILL              = 1;
 
 - (void)loadFileWithURL:(NSURL *)url addToRecent:(BOOL)addToRecent
 {
-    ZXSpectrum::FileResponse fileResponse;
-    Tape::TapResponse tapResponse;
+    Tape::FileResponse fileResponse;
     
-    machine_->pause();
+    emulationController->pauseMachine();
     
     NSString *extension = [url.pathExtension uppercaseString];
     if (([extension isEqualToString:cZ80_EXTENSION] || [extension isEqualToString:cSNA_EXTENSION]))
     {
-        int snapshotMachineType = machine_->snapshotMachineInSnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
-        if (machine_->machineInfo.machineType != snapshotMachineType)
+        int snapshotMachineType = emulationController->snapshotMachineInSnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+        if (emulationController->getMachineType() != snapshotMachineType)
         {
             self.defaults.machineSelectedModel = snapshotMachineType;
         }
     }
-    
-    extension = [url.pathExtension uppercaseString];
-    
-    if ([extension isEqualToString:cZ80_EXTENSION])
-    {
-        fileResponse = machine_->snapshotZ80LoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
-    }
-    else if ([extension isEqualToString:cSNA_EXTENSION])
-    {
-        fileResponse = machine_->snapshotSNALoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
-    }
-    else if ([extension isEqualToString:cTAP_EXTENSION])
-    {
-        tapResponse = virtualTape_->loadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"TAPE_CHANGED_NOTIFICATION" object:NULL];
-    }
-    else if ([extension isEqualToString:cSCR_EXTENSION])
-    {
-        machine_->scrLoadWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
-        machine_->resume();
-        return;
-    }
-    
-    if (fileResponse.success || tapResponse.success)
+
+    fileResponse = emulationController->loadFileWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+
+    if (fileResponse.success)
     {
         lastOpenedURL_ = url;
         if (addToRecent)
         {
             [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:url];
         }
-    }
-    
-    if (!fileResponse.success && !tapResponse.success)
-    {
+    } else {
         NSAlert *alert = [NSAlert new];
         alert.informativeText = [NSString stringWithFormat:[NSString stringWithCString:fileResponse.responseMsg.c_str()
                                                                               encoding:[NSString defaultCStringEncoding]], url.path];
@@ -673,7 +612,7 @@ const int cSCREEN_FILL              = 1;
         [alert runModal];
     }
     
-    machine_->resume();
+    emulationController->resumeMachine();
 }
 
 #pragma mark - Restore Session
@@ -684,10 +623,7 @@ const int cSCREEN_FILL              = 1;
     {
         // Load the last session file if it exists
         supportDirUrl = [supportDirUrl URLByAppendingPathComponent:cSESSION_FILE_NAME];
-        //        if ([[NSFileManager defaultManager] fileExistsAtPath:supportDirUrl.path])
-        //        {
         [self loadFileWithURL:supportDirUrl addToRecent:NO];
-        //        }
     }
 }
 
@@ -708,52 +644,11 @@ const int cSCREEN_FILL              = 1;
 
 #pragma mark - Tape Browser Methods
 
-- (NSInteger)tapeNumberOfblocks
-{
-    return virtualTape_->numberOfTapeBlocks();
-}
-
-- (NSString *)tapeBlockTypeForIndex:(NSInteger)blockIndex
-{
-    return @(virtualTape_->blocks[ blockIndex ]->getBlockName().c_str());
-}
-
-- (NSString *)tapeFilenameForIndex:(NSInteger)blockIndex
-{
-    return @(virtualTape_->blocks[ blockIndex ]->getFilename().c_str());
-}
-
-- (int)tapeAutostartLineForIndex:(NSInteger)blockIndex
-{
-    int lineNumber = virtualTape_->blocks [blockIndex ]->getAutoStartLine();
-    return (lineNumber == 32768) ? 0 : lineNumber;
-}
-
-- (unsigned short)tapeBlockStartAddressForIndex:(NSInteger)blockIndex
-{
-    return virtualTape_->blocks[ blockIndex ]->getStartAddress();
-}
-
-- (unsigned short)tapeBlockLengthForIndex:(NSInteger)blockIndex
-{
-    return virtualTape_->blocks[ blockIndex ]->getDataLength();
-}
-
-- (NSInteger)tapeCurrentBlock
-{
-    return virtualTape_->currentBlockIndex;
-}
-
-- (BOOL)tapeIsplaying
-{
-    return virtualTape_->playing;
-}
-
 - (void)tapeSetCurrentBlock:(NSInteger)blockIndex
 {
-    virtualTape_->setSelectedBlock( static_cast<int>(blockIndex) );
-    virtualTape_->rewindBlock();
-    virtualTape_->stopPlaying();
+    emulationController->tapePlayer->setCurrentBlock( static_cast<int>(blockIndex) );
+    emulationController->tapePlayer->rewindBlock();
+    emulationController->tapePlayer->stop();
 }
 
 static void tapeStatusCallback(int blockIndex, int bytes)
@@ -784,7 +679,7 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 {
     NSSavePanel *savePanel = [NSSavePanel new];
     
-    if (machine_->machineInfo.machineType == eZXSpectrum48)
+    if (emulationController->getMachineType() == eZXSpectrum48)
     {
         [[saveAccessoryController_.exportPopup itemAtIndex:cSNA_SNAPSHOT_TYPE] setEnabled:YES];
         savePanel.allowedFileTypes = @[cZ80_EXTENSION, cSNA_EXTENSION];
@@ -806,12 +701,12 @@ static void tapeStatusCallback(int blockIndex, int bytes)
             
             switch (saveAccessoryController_.exportType) {
                 case cZ80_SNAPSHOT_TYPE:
-                    snapshot = machine_->snapshotCreateZ80();
+                    snapshot = emulationController->snapshotCreateZ80();
                     url = [[url URLByDeletingPathExtension] URLByAppendingPathExtension:cZ80_EXTENSION];
                     break;
                     
                 case cSNA_SNAPSHOT_TYPE:
-                    snapshot = machine_->snapshotCreateSNA();
+                    snapshot = emulationController->snapshotCreateSNA();
                     url = [[url URLByDeletingPathExtension] URLByAppendingPathExtension:cSNA_EXTENSION];
                     break;
                     
@@ -862,18 +757,13 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     NSMenuItem *menuItem = (NSMenuItem *)sender;
     if (menuItem.tag == 0)
     {
-        machine_->resetMachine(false);
+        emulationController->resetMachine(false);
     }
     else
     {
-        machine_->resetMachine(true);
+        emulationController->resetMachine(true);
     }
 }
-
-//- (IBAction)resetToSnapLoad:(id)sender
-//{
-//    _machine->resetToSnapLoad();
-//}
 
 - (IBAction)selectMachine:(id)sender
 {
@@ -932,20 +822,14 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 
 - (void)pauseMachine
 {
-    if (machine_)
-    {
-        machine_->emuPaused = true;
-        [self.audioCore stop];
-    }
+    emulationController->pauseMachine();
+    [self.audioCore stop];
 }
 
 - (void)startMachine
 {
-    if (machine_)
-    {
-        machine_->emuPaused = false;
-        [self.audioCore start];
-    }
+    emulationController->resumeMachine();
+    [self.audioCore start];
 }
 
 #pragma mark - Tape Menu Items
@@ -955,66 +839,21 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     [tapeBrowserWindowController_ showWindow:self.view.window];
 }
 
-- (IBAction)startPlayingTape:(id)sender
-{
-    virtualTape_->startPlaying();
-}
-
-- (IBAction)stopPlayingTape:(id)sender
-{
-    virtualTape_->stopPlaying();
-}
-
-- (IBAction)rewindTape:(id)sender
-{
-    virtualTape_->rewindTape();
-}
-
-- (IBAction)ejectTape:(id)sender
-{
-    virtualTape_->eject();
-}
-
-- (IBAction)saveTape:(id)sender
-{
-    NSSavePanel *savePanel = [NSSavePanel new];
-    savePanel.allowedFileTypes = @[ cTAP_EXTENSION ];
-    [savePanel beginSheetModalForWindow:tapeBrowserWindowController_.window completionHandler:^(NSInteger result) {
-        if (result == NSModalResponseOK)
-        {
-            std::vector<unsigned char> tapeData = virtualTape_->getTapeData();
-            NSMutableData *saveData = [NSMutableData new];
-            [saveData appendBytes:tapeData.data() length:tapeData.size()];
-            [saveData writeToURL:savePanel.URL atomically:YES];
-        }
-    }];
-}
-
 #pragma mark - Getters
-
-- (void *)getDisplayBuffer
-{
-    return machine_->displayBuffer;
-}
 
 - (BOOL)getDisplayReady
 {
-    return machine_->displayReady;
-}
-
-- (void *)getCurrentMachine
-{
-    return machine_;
+    return emulationController->isDisplayReady();
 }
 
 - (void *)getDebugger
 {
-    return debugger_;
+    return emulationController->getDebugger();
 }
 
 - (BOOL)isEmulatorPaused
 {
-    return machine_->emuPaused;
+    return emulationController->isMachinePaused();
 }
 
 @end

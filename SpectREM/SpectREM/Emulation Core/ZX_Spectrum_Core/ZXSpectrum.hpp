@@ -30,7 +30,15 @@ public:
     static const uint16_t    cATTR_SIZE        = 768;
     static const uint16_t    cMEMORY_PAGE_SIZE = 16384;
     
-    enum eAYREGISTER
+    enum E_FILETYPE
+    {
+        SNA = 0,
+        Z80,
+        TAP,
+        SCR
+    };
+    
+    enum E_AYREGISTER
     {
         A_FINE = 0,
         A_COARSE,
@@ -57,15 +65,8 @@ public:
         MAX_REGISTERS
     };
     
-    // ULAPlus mode values
-    enum eULAPLUS
-    {
-        PALLETTEGROUP,
-        MODEGROUP
-    };
-    
     // Debug operation type
-    enum eDEBUGOPERATION
+    enum E_DEBUGOPERATION
     {
         READ = 0x01,
         WRITE = 0x02,
@@ -154,12 +155,6 @@ public:
         uint8_t             *data = nullptr;
     };
 
-    // Response from core when you have asked it to deal with a file
-    struct FileResponse {
-        bool                success;
-        std::string         responseMsg;
-    };
-
     // Breakpoint information
     struct DebugBreakpoint {
         uint16_t            address;
@@ -185,6 +180,7 @@ public:
     void                    pause();
     void                    resume();
     virtual void            release();
+    virtual void            attachTapePlayer(Tape *tapePlayer);
 
     // Main function that when called generates an entire frame, which includes processing interrupts, beeper sound and AY Sound.
     // On completion the displayBuffer member variable will contain RGBA formatted image data that can then be used to build a display image
@@ -194,16 +190,15 @@ public:
     void                    keyboardKeyUp(eZXSpectrumKey key);
     void                    keyboardFlagsChanged(uint64_t flags, eZXSpectrumKey key);
     
-    FileResponse            snapshotZ80LoadWithPath(const std::string path);
-    FileResponse            snapshotZ80LoadWithBuffer(const char *buffer, size_t size);
-    FileResponse            snapshotSNALoadWithPath(const std::string path);
-    FileResponse            snapshotSNALoadWithBuffer(const char *buffer, size_t size);
+    Tape::FileResponse      snapshotZ80LoadWithPath(const std::string path);
+    Tape::FileResponse      snapshotZ80LoadWithBuffer(const char *buffer, size_t size);
+    Tape::FileResponse      snapshotSNALoadWithPath(const std::string path);
+    Tape::FileResponse      snapshotSNALoadWithBuffer(const char *buffer, size_t size);
     int                     snapshotMachineInSnapshotWithPath(const char *path);
     SnapshotData            snapshotCreateSNA();
     SnapshotData            snapshotCreateZ80();
     
-    FileResponse            scrLoadWithPath(const std::string path);
-    
+    Tape::FileResponse      scrLoadWithPath(const std::string path);
     
     void                    step();
     
@@ -215,7 +210,7 @@ public:
 
 protected:
     void                    emuReset();
-    FileResponse            loadROM(const std::string rom, uint32_t page);
+    Tape::FileResponse      loadROM(const std::string rom, uint32_t page);
     
     void                    displayFrameReset();
     void                    displayUpdateWithTs(int32_t tStates);
@@ -335,7 +330,7 @@ public:
     uint32_t                audioAYNoiseCount       = 0;
     uint16_t                audioAYEnvelopeCount    = 0;
     
-    uint8_t                 audioAYRegisters[ eAYREGISTER::MAX_REGISTERS ]{0};
+    uint8_t                 audioAYRegisters[ E_AYREGISTER::MAX_REGISTERS ]{0};
     uint8_t                 audioAYCurrentRegister  = 0;
     uint8_t                 audioAYFloatingRegister = 0;
     bool                    audioAYEnvelopeHolding  = false;
@@ -361,19 +356,12 @@ public:
     uint32_t                ULAFloatingBusTable[80000]{0};
     const static uint32_t   ULAConentionValues[];
     uint8_t                 ULAPortnnFDValue        = 0;
-    bool                    ULAApplySnow            = false;
-    uint8_t                 ULAPlusMode             = eULAPLUS::MODEGROUP;
-    uint8_t                 ULAPlusCurrentReg       = 0;
-    uint8_t                 ULAPlusPaletteOn        = 0;
 
     // Floating bus
     const static uint32_t   ULAFloatingBusValues[];
     
     // Tape object
-    Tape                    *tape                   = nullptr;
-    
-    // SPI port
-    uint16_t                spiPort                 = 0xfaf7;
+    Tape                    *tapePlayer              = nullptr;
 
     // Debugger
     bool                    breakpointHit           = false;

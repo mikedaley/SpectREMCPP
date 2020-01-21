@@ -26,11 +26,11 @@ ZXSpectrum128::ZXSpectrum128(Tape *t) : ZXSpectrum()
     std::cout << "ZXSpectrum128::Constructor" << "\n";
     if (t)
     {
-        tape = t;
+        tapePlayer = t;
     }
     else
     {
-        tape = nullptr;
+        tapePlayer = nullptr;
     }
 }
 
@@ -128,7 +128,7 @@ uint8_t ZXSpectrum128::coreIORead(uint16_t address)
         }
     }
 
-    result = static_cast<uint8_t>((result & 191) | (audioEarBit << 6) | (tape->inputBit << 6));
+    result = static_cast<uint8_t>((result & 191) | (audioEarBit << 6) | (tapePlayer->inputBit << 6));
     
     return result;
 }
@@ -357,7 +357,7 @@ bool ZXSpectrum128::opcodeCallback(uint8_t opcode, uint16_t address, void *param
             if (opcode == 0xc0)
             {
                 machine->emuLoadTrapTriggered = true;
-                machine->tape->updateStatus();
+                machine->tapePlayer->updateStatus();
                 return true;
             }
         }
@@ -369,7 +369,7 @@ bool ZXSpectrum128::opcodeCallback(uint8_t opcode, uint16_t address, void *param
         if (opcode == 0x08)
         {
             machine->emuSaveTrapTriggered = true;
-            machine->tape->updateStatus();
+            machine->tapePlayer->updateStatus();
             return true;
         }
     }

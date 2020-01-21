@@ -34,11 +34,11 @@ ZXSpectrum48::ZXSpectrum48(Tape *t) : ZXSpectrum()
     std::cout << "ZXSpectrum48::Constructor" << "\n";
     if (t)
     {
-        tape = t;
+        tapePlayer = t;
     }
     else
     {
-        tape = nullptr;
+        tapePlayer = nullptr;
     }
 }
 
@@ -131,7 +131,7 @@ uint8_t ZXSpectrum48::coreIORead(uint16_t address)
         }
     }
     
-    result = static_cast<uint8_t>((result & 191) | (audioEarBit << 6) | (tape->inputBit << 6));
+    result = static_cast<uint8_t>((result & 191) | (audioEarBit << 6) | (tapePlayer->inputBit << 6));
     
     return result;
 }
@@ -218,7 +218,7 @@ void ZXSpectrum48::coreMemoryWrite(uint16_t address, uint8_t data)
 
     if (debugOpCallbackBlock != nullptr)
     {
-        if (debugOpCallbackBlock( address, eDEBUGOPERATION::WRITE ))
+        if (debugOpCallbackBlock( address, E_DEBUGOPERATION::WRITE ))
         {
             breakpointHit = true;
         }
@@ -253,7 +253,7 @@ uint8_t ZXSpectrum48::coreMemoryRead(uint16_t address)
 		
         if (debugOpCallbackBlock != nullptr)
         {
-            if (debugOpCallbackBlock( address, eDEBUGOPERATION::READ ))
+            if (debugOpCallbackBlock( address, E_DEBUGOPERATION::READ ))
             {
                 breakpointHit = true;
             }
@@ -265,7 +265,7 @@ uint8_t ZXSpectrum48::coreMemoryRead(uint16_t address)
 
     if (debugOpCallbackBlock != nullptr)
     {
-        debugOpCallbackBlock( address, eDEBUGOPERATION::READ );
+        debugOpCallbackBlock( address, E_DEBUGOPERATION::READ );
     }
 
     return static_cast<uint8_t>(memoryRam[ address ]);
@@ -349,7 +349,7 @@ bool ZXSpectrum48::opcodeCallback(uint8_t opcode, uint16_t address, void *param)
             if (opcode == 0xc0)
             {
                 machine->emuLoadTrapTriggered = true;
-                machine->tape->updateStatus();
+                machine->tapePlayer->updateStatus();
                 return true;
             }
         }
@@ -361,7 +361,7 @@ bool ZXSpectrum48::opcodeCallback(uint8_t opcode, uint16_t address, void *param)
         if (opcode == 0x08)
         {
             machine->emuSaveTrapTriggered = true;
-            machine->tape->updateStatus();
+            machine->tapePlayer->updateStatus();
             return true;
         }
     }
