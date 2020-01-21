@@ -59,25 +59,25 @@ static NSString *const cMEMORY_ASCII_COL = @"MemoryASCIIColID";
 
 #pragma mark - Colors
 
-static NSColor *const cHIGHLIGHT_COLOR = [NSColor colorWithRed:0 green:0.6 blue:0 alpha:1.0];
-static NSColor *const cEXEC_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0.0 blue:0 alpha:1.0];
-static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0.0 blue:0.6 alpha:1.0];
+static NSColor * const cHIGHLIGHT_COLOR = [NSColor colorWithRed:0 green:0.6 blue:0 alpha:1.0];
+static NSColor * const cEXEC_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0.0 blue:0 alpha:1.0];
+static NSColor * const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0.0 blue:0.6 alpha:1.0];
 
 #pragma mark - Private Interface
 
 @interface DebugViewController ()
 
-@property (assign) unsigned short disassembleAddress;
-@property (strong) NSMutableArray *disassemblyArray;
-@property (strong) NSMutableArray *stackArray;
-@property (assign) int byteWidth;
-@property (assign) int memoryTableSearchAddress;
-@property (strong) NSDictionary *z80ByteRegisters;
-@property (strong) NSDictionary *z80WordRegisters;
-@property (assign) NSInteger colWidth1;
-@property (assign) NSInteger colWidth2;
-@property (strong) NSTimer *updateTimer;
-@property (weak) IBOutlet NSTextField *commandTextField;
+@property (assign) unsigned short       disassembleAddress;
+@property (strong) NSMutableArray       * disassemblyArray;
+@property (strong) NSMutableArray       * stackArray;
+@property (assign) int                  byteWidth;
+@property (assign) int                  memoryTableSearchAddress;
+@property (strong) NSDictionary         * z80ByteRegisters;
+@property (strong) NSDictionary         * z80WordRegisters;
+@property (assign) NSInteger            colWidth1;
+@property (assign) NSInteger            colWidth2;
+@property (strong) NSTimer              * updateTimer;
+@property (weak) IBOutlet NSTextField   * commandTextField;
 
 @end
 
@@ -280,15 +280,15 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
         {
             NSString *condition = @"";
             uint8_t type = bp.type;
-            if (type & ZXSpectrum::eDEBUGOPERATION::READ)
+            if (type & ZXSpectrum::E_DEBUGOPERATION::READ)
             {
                 condition = [condition stringByAppendingString:@"READ "];
             }
-            if (type & ZXSpectrum::eDEBUGOPERATION::WRITE)
+            if (type & ZXSpectrum::E_DEBUGOPERATION::WRITE)
             {
                 condition = [condition stringByAppendingString:@"WRITE "];
             }
-            if (type & ZXSpectrum::eDEBUGOPERATION::EXECUTE)
+            if (type & ZXSpectrum::E_DEBUGOPERATION::EXECUTE)
             {
                 condition = [condition stringByAppendingString:@"EXEC "];
             }
@@ -353,11 +353,11 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
                     {
                         NSColor *color = [NSColor clearColor];
                         switch (debugger->breakpointAtAddress(address)) {
-                            case ZXSpectrum::eDEBUGOPERATION::READ:
-                            case ZXSpectrum::eDEBUGOPERATION::WRITE:
+                            case ZXSpectrum::E_DEBUGOPERATION::READ:
+                            case ZXSpectrum::E_DEBUGOPERATION::WRITE:
                                 color = cRDWR_BREAKPOINT_COLOR;
                                 break;
-                            case ZXSpectrum::eDEBUGOPERATION::EXECUTE:
+                            case ZXSpectrum::E_DEBUGOPERATION::EXECUTE:
                                 color = cEXEC_BREAKPOINT_COLOR;
                         }
                         [attrString addAttribute:NSBackgroundColorAttributeName value:color range:NSMakeRange(0, highlightLength)];
@@ -458,11 +458,11 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
         {
             if (debugger->breakpoint(i).address == dop.address)
             {
-                if (debugger->breakpoint(i).type & ZXSpectrum::eDEBUGOPERATION::EXECUTE)
+                if (debugger->breakpoint(i).type & ZXSpectrum::E_DEBUGOPERATION::EXECUTE)
                 {
                     rowColor = cEXEC_BREAKPOINT_COLOR;
                 }
-                else if (debugger->breakpoint(i).type & ZXSpectrum::eDEBUGOPERATION::READ || debugger->breakpoint(i).type & ZXSpectrum::eDEBUGOPERATION::WRITE)
+                else if (debugger->breakpoint(i).type & ZXSpectrum::E_DEBUGOPERATION::READ || debugger->breakpoint(i).type & ZXSpectrum::E_DEBUGOPERATION::WRITE)
                 {
                     rowColor = cRDWR_BREAKPOINT_COLOR;
                 }
@@ -495,7 +495,7 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
     {
         if (debugger->breakpoint(i).address == address)
         {
-            debugger->removeBreakpoint(address, ZXSpectrum::eDEBUGOPERATION::EXECUTE);
+            debugger->removeBreakpoint(address, ZXSpectrum::E_DEBUGOPERATION::EXECUTE);
             breakpointRemoved = true;
             break;
         }
@@ -503,7 +503,7 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
 
     if (!breakpointRemoved)
     {
-        debugger->addBreakpoint(address, ZXSpectrum::eDEBUGOPERATION::EXECUTE);
+        debugger->addBreakpoint(address, ZXSpectrum::E_DEBUGOPERATION::EXECUTE);
     }
 
     [self reloadDisassemblyData];
@@ -758,27 +758,27 @@ static NSColor *const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:0
     
     if ( [[commandList[1] uppercaseString] isEqualToString:cTOKEN_BREAKPOINT_ADD_ACTION_EXECUTE] )
     {
-        debugger->addBreakpoint(value, ZXSpectrum::eDEBUGOPERATION::EXECUTE);
+        debugger->addBreakpoint(value, ZXSpectrum::E_DEBUGOPERATION::EXECUTE);
     }
     else if ( [[commandList[1] uppercaseString] isEqualToString:cTOKEN_BREAKPOINT_ADD_ACTION_READ] )
     {
-        debugger->addBreakpoint(value, ZXSpectrum::eDEBUGOPERATION::READ);
+        debugger->addBreakpoint(value, ZXSpectrum::E_DEBUGOPERATION::READ);
     }
     else if ( [[commandList[1] uppercaseString] isEqualToString:cTOKEN_BREAKPOINT_ADD_ACTION_WRITE] )
     {
-        debugger->addBreakpoint(value, ZXSpectrum::eDEBUGOPERATION::WRITE);
+        debugger->addBreakpoint(value, ZXSpectrum::E_DEBUGOPERATION::WRITE);
     }
     else if ( [[commandList[1] uppercaseString] isEqualToString:cTOKEN_BREAKPOINT_REMOVE_ACTION_READ] )
     {
-        debugger->removeBreakpoint(value, ZXSpectrum::eDEBUGOPERATION::READ);
+        debugger->removeBreakpoint(value, ZXSpectrum::E_DEBUGOPERATION::READ);
     }
     else if ( [[commandList[1] uppercaseString] isEqualToString:cTOKEN_BREAKPOINT_REMOVE_ACTION_WRITE] )
     {
-        debugger->removeBreakpoint(value, ZXSpectrum::eDEBUGOPERATION::WRITE);
+        debugger->removeBreakpoint(value, ZXSpectrum::E_DEBUGOPERATION::WRITE);
     }
     else if ( [[commandList[1] uppercaseString] isEqualToString:cTOKEN_BREAKPOINT_REMOVE_ACTION_EXECUTE] )
     {
-        debugger->removeBreakpoint(value, ZXSpectrum::eDEBUGOPERATION::EXECUTE);
+        debugger->removeBreakpoint(value, ZXSpectrum::E_DEBUGOPERATION::EXECUTE);
     }
     [self updateViewDetails];
 }

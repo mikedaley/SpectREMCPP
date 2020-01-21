@@ -9,8 +9,8 @@
 /* Begin PBXBuildFile section */
 		17B27F041F6877C800B811FC /* AudioQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17B27F021F6877C800B811FC /* AudioQueue.cpp */; };
 		17B5DB971F5B14A7003E7EF3 /* AudioCore.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17B5DB951F5B14A7003E7EF3 /* AudioCore.mm */; };
-		17C33DFA1F6578E600720A06 /* TapeBrowserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 17C33DF91F6578E600720A06 /* TapeBrowserViewController.m */; };
-		17C33DFE1F6583A400720A06 /* TapeCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 17C33DFD1F6583A400720A06 /* TapeCellView.m */; };
+		17C33DFA1F6578E600720A06 /* TapeBrowserViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17C33DF91F6578E600720A06 /* TapeBrowserViewController.mm */; };
+		17C33DFE1F6583A400720A06 /* TapeCellView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17C33DFD1F6583A400720A06 /* TapeCellView.mm */; };
 		17EC89101F5B1FC500B6EFAF /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17EC890F1F5B1FC500B6EFAF /* AudioToolbox.framework */; };
 		276ADE292101CAA900EC7DC9 /* Display.metal in Sources */ = {isa = PBXBuildFile; fileRef = 276ADE282101CAA900EC7DC9 /* Display.metal */; };
 		276ADE2D2101CE6500EC7DC9 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 276ADE2C2101CE6500EC7DC9 /* MetalKit.framework */; };
@@ -88,6 +88,8 @@
 		2968891121E3B98B00BFC3BD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2968891021E3B98B00BFC3BD /* Assets.xcassets */; };
 		2968891421E3B98B00BFC3BD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2968891221E3B98B00BFC3BD /* LaunchScreen.storyboard */; };
 		2968891721E3B98B00BFC3BD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2968891621E3B98B00BFC3BD /* main.m */; };
+		2971211D23CE633A0083C334 /* EmulationController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2971211B23CE633A0083C334 /* EmulationController.cpp */; };
+		2971211E23CE633A0083C334 /* EmulationController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2971211B23CE633A0083C334 /* EmulationController.cpp */; };
 		29D0D61B23AE418C00BA8A30 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29D0D61A23AE418C00BA8A30 /* UserNotifications.framework */; };
 		29E98454239531C00033E63C /* NSObject+Bindings.mm in Sources */ = {isa = PBXBuildFile; fileRef = 29E98453239531C00033E63C /* NSObject+Bindings.mm */; };
 		ED2A6D051F6036D3003CD6CE /* ConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D041F6036D3003CD6CE /* ConfigurationViewController.m */; };
@@ -147,9 +149,9 @@
 		17B5DB951F5B14A7003E7EF3 /* AudioCore.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AudioCore.mm; path = SpectREM/OSX/AudioCore.mm; sourceTree = SOURCE_ROOT; };
 		17B5DB9C1F5B1CCE003E7EF3 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		17C33DF81F6578E600720A06 /* TapeBrowserViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TapeBrowserViewController.h; path = SpectREM/OSX/TapeBrowserViewController.h; sourceTree = SOURCE_ROOT; };
-		17C33DF91F6578E600720A06 /* TapeBrowserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TapeBrowserViewController.m; path = SpectREM/OSX/TapeBrowserViewController.m; sourceTree = SOURCE_ROOT; };
+		17C33DF91F6578E600720A06 /* TapeBrowserViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = TapeBrowserViewController.mm; path = SpectREM/OSX/TapeBrowserViewController.mm; sourceTree = SOURCE_ROOT; };
 		17C33DFC1F6583A400720A06 /* TapeCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TapeCellView.h; path = SpectREM/OSX/TapeCellView.h; sourceTree = SOURCE_ROOT; };
-		17C33DFD1F6583A400720A06 /* TapeCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TapeCellView.m; path = SpectREM/OSX/TapeCellView.m; sourceTree = SOURCE_ROOT; };
+		17C33DFD1F6583A400720A06 /* TapeCellView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = TapeCellView.mm; path = SpectREM/OSX/TapeCellView.mm; sourceTree = SOURCE_ROOT; };
 		17EC890F1F5B1FC500B6EFAF /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		276ADE242101C64E00EC7DC9 /* MetalRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MetalRenderer.h; path = SpectREM/OSX/MetalRenderer.h; sourceTree = SOURCE_ROOT; };
 		276ADE272101C75B00EC7DC9 /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ShaderTypes.h; path = SpectREM/OSX/ShaderTypes.h; sourceTree = SOURCE_ROOT; };
@@ -224,6 +226,8 @@
 		2968891321E3B98B00BFC3BD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2968891521E3B98B00BFC3BD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2968891621E3B98B00BFC3BD /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		2971211B23CE633A0083C334 /* EmulationController.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EmulationController.cpp; sourceTree = "<group>"; };
+		2971211C23CE633A0083C334 /* EmulationController.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = EmulationController.hpp; sourceTree = "<group>"; };
 		29CE03BD22A7BD64007A1549 /* SpectREM.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = SpectREM.entitlements; path = SpectREM/OSX/SpectREM.entitlements; sourceTree = SOURCE_ROOT; };
 		29D0D61A23AE418C00BA8A30 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		29E98452239531C00033E63C /* NSObject+Bindings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSObject+Bindings.h"; path = "SpectREM/OSX/NSObject+Bindings.h"; sourceTree = SOURCE_ROOT; };
@@ -308,9 +312,9 @@
 			isa = PBXGroup;
 			children = (
 				17C33DF81F6578E600720A06 /* TapeBrowserViewController.h */,
-				17C33DF91F6578E600720A06 /* TapeBrowserViewController.m */,
+				17C33DF91F6578E600720A06 /* TapeBrowserViewController.mm */,
 				17C33DFC1F6583A400720A06 /* TapeCellView.h */,
-				17C33DFD1F6583A400720A06 /* TapeCellView.m */,
+				17C33DFD1F6583A400720A06 /* TapeCellView.mm */,
 			);
 			name = "Tape Browser";
 			sourceTree = "<group>";
@@ -385,6 +389,7 @@
 		2963B3B923B7977D00CAE4CD /* Emulation Core */ = {
 			isa = PBXGroup;
 			children = (
+				2971211923CE63170083C334 /* Emulation_Controller */,
 				2963B3C123B7977D00CAE4CD /* Z80_Core */,
 				2963B3D123B7977D00CAE4CD /* ZX_Spectrum_Core */,
 				2963B3DB23B7977D00CAE4CD /* ZX_Spectrum_48k */,
@@ -497,6 +502,15 @@
 				2968891621E3B98B00BFC3BD /* main.m */,
 			);
 			path = SpectREMiOS;
+			sourceTree = "<group>";
+		};
+		2971211923CE63170083C334 /* Emulation_Controller */ = {
+			isa = PBXGroup;
+			children = (
+				2971211C23CE633A0083C334 /* EmulationController.hpp */,
+				2971211B23CE633A0083C334 /* EmulationController.cpp */,
+			);
+			path = Emulation_Controller;
 			sourceTree = "<group>";
 		};
 		29E98462239535F60033E63C /* SmartLink */ = {
@@ -816,6 +830,7 @@
 				2963B3FE23B7977D00CAE4CD /* Z80Core_DDCB_FDCBOpcodes.cpp in Sources */,
 				2963B3F623B7977D00CAE4CD /* Z80Core_FDOpcodes.cpp in Sources */,
 				2963B3F823B7977D00CAE4CD /* Z80Core_CBOpcodes.cpp in Sources */,
+				2971211E23CE633A0083C334 /* EmulationController.cpp in Sources */,
 				2968891721E3B98B00BFC3BD /* main.m in Sources */,
 				2963B41623B7982900CAE4CD /* Tape.cpp in Sources */,
 				29555BEF21E3C36D004BC007 /* AudioQueue.cpp in Sources */,
@@ -856,11 +871,12 @@
 				276ADE2F21021A2200EC7DC9 /* MetalRenderer.m in Sources */,
 				27C5DBA51FFC000A0064C661 /* DebugViewController.mm in Sources */,
 				2963B3F323B7977D00CAE4CD /* Z80Core.cpp in Sources */,
-				17C33DFE1F6583A400720A06 /* TapeCellView.m in Sources */,
+				17C33DFE1F6583A400720A06 /* TapeCellView.mm in Sources */,
 				2963B40723B7977D00CAE4CD /* Snapshot.cpp in Sources */,
 				2963B3FB23B7977D00CAE4CD /* Z80Core_MainOpcodes.cpp in Sources */,
 				2963B3FD23B7977D00CAE4CD /* Z80Core_DDCB_FDCBOpcodes.cpp in Sources */,
 				2963B3F123B7977D00CAE4CD /* Z80Core_EDOpcodes.cpp in Sources */,
+				2971211D23CE633A0083C334 /* EmulationController.cpp in Sources */,
 				27C5AE472146F0D3008DBD54 /* InfoPanelViewController.m in Sources */,
 				29E98454239531C00033E63C /* NSObject+Bindings.mm in Sources */,
 				ED2A6D0A1F603D18003CD6CE /* NSClipView+Flipped.m in Sources */,
@@ -875,7 +891,7 @@
 				ED2A6D051F6036D3003CD6CE /* ConfigurationViewController.m in Sources */,
 				2963B40D23B7977D00CAE4CD /* ZXSpectrum48.cpp in Sources */,
 				2963B3F923B7977D00CAE4CD /* Z80Core_DDOpcodes.cpp in Sources */,
-				17C33DFA1F6578E600720A06 /* TapeBrowserViewController.m in Sources */,
+				17C33DFA1F6578E600720A06 /* TapeBrowserViewController.mm in Sources */,
 				2963B3FF23B7977D00CAE4CD /* FloatingBus.cpp in Sources */,
 				2963B3F523B7977D00CAE4CD /* Z80Core_FDOpcodes.cpp in Sources */,
 			);

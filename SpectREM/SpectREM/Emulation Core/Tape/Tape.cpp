@@ -122,7 +122,8 @@ std::string ProgramHeader::getBlockName()
 
 uint16_t ProgramHeader::getAutoStartLine()
 {
-   return (reinterpret_cast<uint16_t*>(&blockData[ cPROGRAM_HEADER_AUTOSTART_LINE_OFFSET ])[0]);
+    uint16_t lineNumber (reinterpret_cast<uint16_t*>(&blockData[ cPROGRAM_HEADER_AUTOSTART_LINE_OFFSET ])[0]);
+    return (lineNumber == 32768) ? 0 : lineNumber;
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -218,7 +219,7 @@ uint8_t DataBlock::getChecksum()
 // ------------------------------------------------------------------------------------------------------------
 // - TAP Processing
 
-Tape::Tape(TapeStatusCallback callback)
+Tape::Tape(std::function<void(int blockIndex, int bytes)> callback)
 {
    if (callback)
    {
@@ -246,6 +247,11 @@ void Tape::clearStatusCallback(void)
     {
         updateStatusCallback = nullptr;
     }
+}
+
+void Tape::setStatusCallback(std::function<void (int blockIndex, int bytes)> callback)
+{
+    updateStatusCallback = callback;
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -277,7 +283,7 @@ void Tape::resetAndClearBlocks(bool clearBlocks)
 
 // ------------------------------------------------------------------------------------------------------------
 
-Tape::TapResponse Tape::loadWithPath(const std::string path)
+Tape::FileResponse Tape::insertTapeWithPath(const std::string path)
 {
     bool success = false;
 
@@ -298,10 +304,10 @@ Tape::TapResponse Tape::loadWithPath(const std::string path)
     {
         char* errorstring = strerror(errno);
         std::cout << "ERROR LOADING TAPE: " << errorstring << "\n";
-        return Tape::TapResponse{false, errorstring};
+        return Tape::FileResponse{false, errorstring};
     }
     loaded = success;
-    return Tape::TapResponse{true, "Loaded successfully"};
+    return Tape::FileResponse{true, "Loaded successfully"};
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -675,7 +681,7 @@ bool Tape::processData(uint8_t *dataBytes, uint32_t size)
 // ------------------------------------------------------------------------------------------------------------
 // - Instant Tape Load
 
-void Tape::loadBlock(void *m)
+void Tape::loadBlockWithMachine(void *m)
 {
    ZXSpectrum *machine = static_cast<ZXSpectrum *>(m);
 
@@ -743,7 +749,7 @@ void Tape::loadBlock(void *m)
 // ------------------------------------------------------------------------------------------------------------
 // - ROM Save
 
-void Tape::saveBlock(void *m)
+void Tape::saveBlockWithMachine(void *m)
 {
    ZXSpectrum *machine = static_cast<ZXSpectrum *>(m);
 
@@ -788,7 +794,7 @@ void Tape::saveBlock(void *m)
 // ------------------------------------------------------------------------------------------------------------
 // - Tape controls
 
-void Tape::startPlaying()
+void Tape::play()
 {
    if (loaded)
    {
@@ -802,7 +808,7 @@ void Tape::startPlaying()
 
 // ------------------------------------------------------------------------------------------------------------
 
-void Tape::stopPlaying()
+void Tape::stop()
 {
    if (loaded)
    {
@@ -881,7 +887,7 @@ size_t Tape::numberOfTapeBlocks()
 
 // ------------------------------------------------------------------------------------------------------------
 
-void  Tape::setSelectedBlock(uint32_t blockIndex)
+void  Tape::setCurrentBlock(uint32_t blockIndex)
 {
    currentBlockIndex = blockIndex;
 }

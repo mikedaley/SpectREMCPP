@@ -13,11 +13,6 @@
 #include <iostream>
 #include <fstream>
 
-// - TypeDefs
-
-
-typedef void (*TapeStatusCallback)(int blockIndex, int bytes);
-
 
 // - Tape Block
 
@@ -136,38 +131,40 @@ class Tape
     };
 
 public:
-    struct TapResponse {
+    struct FileResponse {
         bool success;
         std::string responseMsg;
     };
     
 public:
-    Tape(TapeStatusCallback callback);
+    Tape(std::function<void(int blockIndex, int bytes)> callback);
     virtual ~Tape();
 
 public:
     void                    clearStatusCallback(void); // Removes the callback allocated to the Tape
-    // Load a TAP file
-    TapResponse             loadWithPath(const std::string path);
+    FileResponse            insertTapeWithPath(const std::string path);
+    
+    // Setup a callback for status changes
+    void                    setStatusCallback(std::function<void(int blockIndex, int bytes)>);
 
     // Loads/Saves the block controlled by performing a ROM load or save
-    void                    loadBlock(void *m);
-    void                    saveBlock(void *m);
+    void                    loadBlockWithMachine(void *m);
+    void                    saveBlockWithMachine(void *m);
 
     // Updates the tape to generate the tape output. Tstates passed in should be the tStates used in each opcode executed
     void                    updateWithTs(uint32_t tStates);
 
     // Functions used to control the state of the currently loaded tape
-    void                    startPlaying();
-    void                    stopPlaying();
+    void                    play();
+    void                    stop();
     void                    rewindTape();
     void                    rewindBlock();
     void                    eject();
 
     // Functions used to get details of the loaded tape that can then be used in a UI to display those details
-    void                    updateStatus(); // Called when the internal status of the current tape changes
+    void                    updateStatus(); // Called when the internal status of the current tape changes and in turn calls any registered callback function
     size_t                  numberOfTapeBlocks();
-    void                    setSelectedBlock(uint32_t blockIndex);
+    void                    setCurrentBlock(uint32_t blockIndex);
 
     // Returns a vector that contains the current tape data ready to write to disk
     std::vector<uint8_t>    getTapeData();
@@ -193,22 +190,22 @@ public:
     int                     inputBit = 0;
 
 private:
-    uint32_t                currentBytePtr = 0;
-    uint32_t                pilotPulseTStates = 0;          // How many Ts have passed since the start of the pilot pulses
-    uint32_t                pilotPulses = 0;                // How many pilot pulses have been generated
-    uint32_t                syncPulseTStates = 0;           // Sync pulse tStates
-    uint32_t                dataPulseTStates = 0;           // How many Ts have passed since the start of the data pulse
-    bool                    flipTapeBit = false;            // Should the tape bit be flipped
-    uint32_t                processingState = 0;            // Current processing state e.g. generating pilot, streaming data
-    uint32_t                nextProcessingState = 0;        // Next processing state to be used
-    uint32_t                currentDataBit = 0;             // Which bit of the current byte in the data stream is being processed
-    uint32_t                blockPauseTStates = 0;          // How many tStates have passed since starting the pause between data blocks
-    uint32_t                dataBitTStates = 0;             // How many tStates to pause when processing data bit pulses
-    uint32_t                dataPulseCount = 0;             // How many pulses have been generated for the current data bit;
-    TapeBlock               *tapeCurrentBlock = nullptr;    // Current tape block object
+    uint32_t                currentBytePtr      = 0;
+    uint32_t                pilotPulseTStates   = 0;          // How many Ts have passed since the start of the pilot pulses
+    uint32_t                pilotPulses         = 0;          // How many pilot pulses have been generated
+    uint32_t                syncPulseTStates    = 0;          // Sync pulse tStates
+    uint32_t                dataPulseTStates    = 0;          // How many Ts have passed since the start of the data pulse
+    bool                    flipTapeBit         = false;      // Should the tape bit be flipped
+    uint32_t                processingState     = 0;          // Current processing state e.g. generating pilot, streaming data
+    uint32_t                nextProcessingState = 0;          // Next processing state to be used
+    uint32_t                currentDataBit      = 0;          // Which bit of the current byte in the data stream is being processed
+    uint32_t                blockPauseTStates   = 0;          // How many tStates have passed since starting the pause between data blocks
+    uint32_t                dataBitTStates      = 0;          // How many tStates to pause when processing data bit pulses
+    uint32_t                dataPulseCount      = 0;          // How many pulses have been generated for the current data bit;
+    TapeBlock               *tapeCurrentBlock   = nullptr;    // Current tape block object
 
     // Function called whenever the status of the tape changes e.g. new block, rewind, stop etc
-    TapeStatusCallback      updateStatusCallback = nullptr;
+    std::function<void(int blockIndex, int bytes)>      updateStatusCallback = nullptr;
 };
 
 #endif /* Tape1_hpp */
