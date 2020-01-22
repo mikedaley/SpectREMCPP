@@ -57,8 +57,8 @@ public:
     void                        debugStep()                                                             { machine_->step(); };
 
     // Callbacks
-    void                        setTapeStatusCallback(std::function<void(int blockIndex, int bytes)> tapeStatusCallback);
-    void                        setDebugCallback(std::function<bool(uint16_t address, int operationType)> debugCallback);
+    void                        setTapeStatusCallback(std::function<void(int blockIndex, int bytes, int action)>    tapeStatusCallback);
+    void                        setDebugCallback(std::function<bool(uint16_t address, int operationType)>           debugCallback);
     
     // Tape player
     void                        playTape()                                                              { tapePlayer_->play(); };

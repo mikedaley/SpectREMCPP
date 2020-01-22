@@ -97,7 +97,7 @@ Tape::FileResponse EmulationController::loadFileWithPath(const std::string path)
 // - Tape player
 // ------------------------------------------------------------------------------------------------------------
 
-void EmulationController::setTapeStatusCallback(std::function<void(int blockIndex, int bytes)> tapeStatusCallback)
+void EmulationController::setTapeStatusCallback(std::function<void(int blockIndex, int bytes, int action)> tapeStatusCallback)
 {
     tapePlayer_->setStatusCallback(tapeStatusCallback);
 }

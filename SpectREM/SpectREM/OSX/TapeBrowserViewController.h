@@ -13,11 +13,13 @@
 
 @interface TapeBrowserViewController : NSViewController <NSTableViewDelegate, NSTableViewDataSource>
 
-@property EmulationController *emulationController;
+@property (nonatomic) EmulationController *emulationController;
 
 - (IBAction)playTape:(id)sender;
 - (IBAction)stopTape:(id)sender;
 - (IBAction)rewindTape:(id)sender;
+
+void tapeStatusCallback(int blockIndex, int bytes, int action);
 
 #endif
 

@@ -41,6 +41,18 @@
     });
 }
 
+void tapeStatusCallback(int blockIndex, int bytes, int action)
+{
+    NSLog(@"Index: %i - Byte: %i - Action: %i", blockIndex, bytes, action);
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"TAPE_CHANGED_NOTIFICATION" object:nil];
+}
+
+- (void)setEmulationController:(EmulationController *)emulationController
+{
+    _emulationController = emulationController;
+    self.emulationController->setTapeStatusCallback(tapeStatusCallback);
+}
+
 #pragma mark - Table View Delegate
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView
@@ -174,5 +186,15 @@
     }];
 }
 
+// ------------------------------------------------------------------------------------------------------------
+// - Tape Callback
+
+void Tape::updateStatus()
+{
+   if (updateStatusCallback)
+   {
+       updateStatusCallback(static_cast<int>(currentBlockIndex), 0, TAPEACTION::E_BLOCK_CHANGED);
+   }
+}
 
 @end

@@ -204,7 +204,7 @@ const int cSCREEN_FILL              = 1;
 
     [self setupConfigView];
     [self setupInfoView];
-    [self setupControllers];
+    [self setupViewControllers];
     [self setupObservers];
     [self setupNotifications];
     [self setupBindings];
@@ -221,7 +221,7 @@ const int cSCREEN_FILL              = 1;
 - (void)viewWillAppear
 {
     [super viewWillAppear];
-    [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@", [NSString stringWithCString:emulationController->getMachineName() encoding:NSUTF8StringEncoding]]];
+    [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM - %@", [NSString stringWithCString:emulationController->getMachineName() encoding:NSUTF8StringEncoding]]];
 }
 
 - (void)viewWillDisappear
@@ -345,7 +345,7 @@ const int cSCREEN_FILL              = 1;
     [self.view addSubview:infoPanelViewController_.view];
 }
 
-- (void)setupControllers
+- (void)setupViewControllers
 {
     debugWindowController_ = [storyBoard_ instantiateControllerWithIdentifier:@"DEBUG_WINDOW"];
     debugViewController_ = (DebugViewController *)debugWindowController_.contentViewController;
@@ -354,9 +354,9 @@ const int cSCREEN_FILL              = 1;
     [debugViewController_ setupDebugger];
 
     saveAccessoryController_ = [storyBoard_ instantiateControllerWithIdentifier:@"SAVE_ACCESSORY_VIEW_CONTROLLER"];
+
     tapeBrowserWindowController_ = [storyBoard_ instantiateControllerWithIdentifier:@"TAPE_BROWSER_WINDOW"];
     tapeBrowserViewController_ = (TapeBrowserViewController *)tapeBrowserWindowController_.contentViewController;
-//    tapeBrowserViewController_.emulationViewController = self;
     tapeBrowserViewController_.emulationController = emulationController;
 }
 
@@ -379,7 +379,10 @@ const int cSCREEN_FILL              = 1;
     emulationController->createMachineOfType(machineType, [romPath cStringUsingEncoding:NSUTF8StringEncoding]);
     [infoPanelViewController_ displayMessage:[NSString stringWithCString:emulationController->getMachineName() encoding:NSUTF8StringEncoding] duration:5];
 
-    emulationController->setTapeStatusCallback(tapeStatusCallback);
+    if (tapeBrowserViewController_)
+    {
+        emulationController->setTapeStatusCallback(tapeStatusCallback);
+    }
     
     // Once a machine instance has been created we need to apply the defaults to that instance
     [self applyDefaults];
@@ -387,7 +390,7 @@ const int cSCREEN_FILL              = 1;
     [self.audioCore start];
     emulationController->resumeMachine();
     
-    [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@",
+    [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM - %@",
                                 [NSString stringWithCString:emulationController->getMachineName()
                                                    encoding:NSUTF8StringEncoding]]];
 }
@@ -574,14 +577,6 @@ const int cSCREEN_FILL              = 1;
     }
     
     return nil;
-}
-
-#pragma mark - Tape Status Callback
-
-static void tapeStatusCallback(int blockIndex, int bytes)
-{
-    std::cout << "Tape Callback: " << blockIndex << "\n";
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"TAPE_CHANGED_NOTIFICATION" object:NULL];
 }
 
 #pragma mark - File Menu Items
