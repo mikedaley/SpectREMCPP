@@ -127,9 +127,10 @@ static NSColor * const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:
         [self updateMemoryTableSize];
     }];
 
-    [self.emulationViewController pauseMachine];
+    [self.emulationViewController stopAudioCore];
+    self.emulationController->pauseMachine();
 
-    Debug *debugger = (Debug *)[self.emulationViewController getDebugger];
+    Debug *debugger = self.emulationController->getDebugger();
     int pc = debugger->machine->z80Core.GetRegister(CZ80Core::eREG_PC);
     debugger->disassemble(pc , 0xffff - pc, self.hexFormat);
     
@@ -144,11 +145,38 @@ static NSColor * const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:
     [self updateButtonStates];
 }
 
+#pragma mark - Setup Debugger
+
+- (void)setupDebugger
+{
+    DebugViewController *blockSelf = self;
+    std::function<bool(uint16_t, uint8_t)> debugBlock;
+    
+    debugBlock = ([blockSelf](uint16_t address, uint8_t operation) {
+        
+        Debug *debugger = blockSelf->_emulationController->getDebugger();
+        if (debugger->checkForBreakpoint(address, operation))
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSLog(@"EXEC BREAK at 0x%04x", address);
+                [blockSelf pauseMachine:nil];
+            });
+            return true;
+        }
+        
+        return false;
+        
+    });
+    
+    self.emulationController->setDebugCallback( debugBlock );
+}
+
 #pragma mark - Table View Methods
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView
 {
-    Debug *debugger = (Debug *)[self.emulationViewController getDebugger];
+    if (!self.emulationController) return 0;
+    Debug *debugger = self.emulationController->getDebugger();
     
     if (debugger)
     {
@@ -177,7 +205,8 @@ static NSColor * const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:
 
 -(NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
 {
-    Debug *debugger = (Debug *)[self.emulationViewController getDebugger];
+    if (!self.emulationController) return nil;
+    Debug *debugger = self.emulationController->getDebugger();
  
     if (debugger)
     {
@@ -209,7 +238,8 @@ static NSColor * const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:
 
 - (NSView *)disassemblyTable:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
 {
-    Debug *debugger = (Debug *)[self.emulationViewController getDebugger];
+    if (!self.emulationController) return nil;
+    Debug *debugger = self.emulationController->getDebugger();
 
     NSTableCellView *view;
     view = [tableView makeViewWithIdentifier:tableColumn.identifier owner:self];
@@ -257,7 +287,8 @@ static NSColor * const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:
 
 - (NSView *)breakpointTable:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
 {
-    Debug *debugger = (Debug *)[self.emulationViewController getDebugger];
+    if (!self.emulationController) return nil;
+    Debug *debugger = self.emulationController->getDebugger();
 
     NSTableCellView *view;
     view = [tableView makeViewWithIdentifier:tableColumn.identifier owner:self];
@@ -301,7 +332,8 @@ static NSColor * const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:
 
 - (NSView *)memoryTable:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
 {
-    Debug *debugger = (Debug *)[self.emulationViewController getDebugger];
+    if (!self.emulationController) return nil;
+    Debug *debugger = self.emulationController->getDebugger();
 
     NSTableCellView *view;
     view = [tableView makeViewWithIdentifier:tableColumn.identifier owner:self];
@@ -411,7 +443,8 @@ static NSColor * const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:
 
 - (NSView *)stackTable:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
 {
-    Debug *debugger = (Debug *)[self.emulationViewController getDebugger];
+    if (!self.emulationController) return nil;
+    Debug *debugger = self.emulationController->getDebugger();
 
     NSTableCellView *view;
     view = [tableView makeViewWithIdentifier:tableColumn.identifier owner:self];
@@ -446,7 +479,8 @@ static NSColor * const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:
 
 - (void)tableView:(NSTableView *)tableView didAddRowView:(NSTableRowView *)rowView forRow:(NSInteger)row
 {
-    Debug *debugger = (Debug *)[self.emulationViewController getDebugger];
+    if (!self.emulationController) return;
+    Debug *debugger = self.emulationController->getDebugger();
 
     if ([tableView.identifier isEqualToString:cDISASSEMBLY_TABLE_VIEW])
     {
@@ -486,7 +520,8 @@ static NSColor * const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:
 
 - (IBAction)disassembleTableDoubleClick:(id)sender {
     
-    Debug *debugger = (Debug *)[self.emulationViewController getDebugger];
+    if (!self.emulationController) return;
+    Debug *debugger = self.emulationController->getDebugger();
 
     uint16_t address = debugger->disassembly(static_cast<unsigned int>(self.disassemblyTableview.clickedRow)).address;
     
@@ -538,20 +573,24 @@ static NSColor * const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:
 #pragma mark - Debug Controls
 
 - (IBAction)step:(id)sender {
-    Debug *debugger = (Debug *)[self.emulationViewController getDebugger];
-    debugger->machine->step();
+    if (!self.emulationController) return;
+    [self.emulationViewController stopAudioCore];
+    self.emulationController->pauseMachine();
+    self.emulationController->debugStep();
     [self updateViewDetails];
 }
 
 - (IBAction)startMachine:(id)sender
 {
-    [self.emulationViewController startMachine];
+    [self.emulationViewController startAudioCore];
+    self.emulationController->resumeMachine();
     [self updateButtonStates];
 }
 
 - (IBAction)pauseMachine:(id)sender
 {
-    [self.emulationViewController pauseMachine];
+    [self.emulationViewController stopAudioCore];
+    self.emulationController->pauseMachine();
     [self updateViewDetails];
     [self updateDisassemblyTable];
     [self updateButtonStates];
@@ -559,14 +598,15 @@ static NSColor * const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:
 
 - (void)updateButtonStates
 {
+    if (!self.emulationController) return;
     self.buttonStep.enabled = NO;
-    if (self.emulationViewController.isEmulatorPaused)
+    if (self.emulationController->isMachinePaused())
     {
         self.buttonStep.enabled = YES;
     }
     
     self.buttonBreak.enabled = NO;
-    if (!self.emulationViewController.isEmulatorPaused)
+    if (!self.emulationController->isMachinePaused())
     {
         self.buttonBreak.enabled = YES;
     }
@@ -575,7 +615,8 @@ static NSColor * const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:
 
 - (void)controlTextDidEndEditing:(NSNotification *)obj
 {
-    Debug *debugger = (Debug *)[self.emulationViewController getDebugger];
+    if (!self.emulationController) return;
+    Debug *debugger = self.emulationController->getDebugger();
 
     // Explode the entered command on space
     NSArray *commandList = [[(NSTextField *)obj.object stringValue] componentsSeparatedByString:@" "];
@@ -628,27 +669,34 @@ static NSColor * const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:
 
 - (void)tokenPause:(NSArray *)commandList
 {
-    [self.emulationViewController pauseMachine];
+    [self.emulationViewController stopAudioCore];
+    self.emulationController->pauseMachine();
     [self updateViewDetails];
 }
 
 - (void)tokenResume:(NSArray *)commandList
 {
-    [self.emulationViewController startMachine];
+    [self.emulationViewController startAudioCore];
+    self.emulationController->resumeMachine();
 }
 
 - (void)tokenStep:(NSArray *)commandList
 {
-    [self.emulationViewController pauseMachine];
+    [self.emulationViewController stopAudioCore];
+    self.emulationController->pauseMachine();
     [self step:nil];
     [self updateViewDetails];
+    [self updateButtonStates];
+
 }
 
 - (void)tokenStepFrame:(NSArray *)commandList machine:(ZXSpectrum *)machine
 {
-    [self.emulationViewController pauseMachine];
-    machine->emuPaused = false;
-    machine->generateFrame();
+    if (!self.emulationController) return;
+    [self.emulationViewController stopAudioCore];
+    self.emulationController->resumeMachine();
+    self.emulationController->generateFrame();
+    self.emulationController->pauseMachine();
     [self updateViewDetails];
 }
 
@@ -712,7 +760,8 @@ static NSColor * const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:
 
 - (void)tokenDisassemble:(NSArray *)commandList machine:(ZXSpectrum *)machine
 {
-    Debug *debugger = (Debug *)[self.emulationViewController getDebugger];
+    if (!self.emulationController) return;
+    Debug *debugger = self.emulationController->getDebugger();
     
     if (commandList.count >= 1)
     {
@@ -746,7 +795,8 @@ static NSColor * const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:
 
 - (void)tokenBreakpoint:(NSArray *)commandList machine:(ZXSpectrum *)machine
 {
-    Debug *debugger = (Debug *)[self.emulationViewController getDebugger];
+    if (!self.emulationController) return;
+    Debug *debugger = self.emulationController->getDebugger();
     
     NSScanner *scanner = [NSScanner scannerWithString:commandList[2]];
     unsigned int value;
@@ -785,7 +835,8 @@ static NSColor * const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:
 
 - (void)tokenSetRegister:(NSArray *)commandList machine:(ZXSpectrum *)machine
 {
-    Debug *debugger = (Debug *)[self.emulationViewController getDebugger];
+    if (!self.emulationController) return;
+    Debug *debugger = self.emulationController->getDebugger();
 
     NSString *reg = [commandList[1] uppercaseString];
     NSScanner *scanner = [NSScanner scannerWithString:commandList[2]];
@@ -806,7 +857,8 @@ static NSColor * const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:
 
 - (void)tokenFillMemory:(NSArray *)commandList machine:(ZXSpectrum *)machine
 {
-    Debug *debugger = (Debug *)[self.emulationViewController getDebugger];
+    if (!self.emulationController) return;
+    Debug *debugger = self.emulationController->getDebugger();
 
     if (commandList.count == 4)
     {
@@ -852,7 +904,8 @@ static NSColor * const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:
 
 - (void)updateDisassemblyTable
 {
-    Debug *debugger = (Debug *)[self.emulationViewController getDebugger];
+    if (!self.emulationController) return;
+    Debug *debugger = self.emulationController->getDebugger();
 
     dispatch_async(dispatch_get_main_queue(), ^{
 
@@ -894,7 +947,8 @@ static NSColor * const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:
 {
     dispatch_async(dispatch_get_main_queue(), ^{
  
-        Debug *debugger = (Debug *)[self.emulationViewController getDebugger];
+        if (!self.emulationController) return;
+        Debug *debugger = self.emulationController->getDebugger();
 
         if (self.hexFormat)
         {
@@ -962,7 +1016,8 @@ static NSColor * const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:
 
 - (void)updateStackTable
 {
-    Debug *debugger = (Debug *)[self.emulationViewController getDebugger];
+    if (!self.emulationController) return;
+    Debug *debugger = self.emulationController->getDebugger();
     debugger->stackTableUpdate();
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.stackTable reloadData];
@@ -1014,6 +1069,12 @@ static NSColor * const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:
 - (BOOL)hexFormat
 {
     return _hexFormat;
+}
+
+- (IBAction)switchHexDecimal:(id)sender
+{
+    self.hexFormat = (self.hexFormat) ? NO : YES;
+    [self updateViewDetails];
 }
 
 @end

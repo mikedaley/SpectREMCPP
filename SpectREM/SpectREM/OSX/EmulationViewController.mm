@@ -96,7 +96,7 @@ const int cSCREEN_FILL              = 1;
 
 - (void)audioCallback:(int)inNumberFrames buffer:(int16_t *)buffer
 {
-    if (emulationController->machine)
+    if (emulationController->getMachine())
     {
         const uint32_t b = (cAUDIO_SAMPLE_RATE / (cFRAMES_PER_SECOND * _defaults.machineAcceleration)) * 2;
         
@@ -347,15 +347,17 @@ const int cSCREEN_FILL              = 1;
 
 - (void)setupControllers
 {
+    debugWindowController_ = [storyBoard_ instantiateControllerWithIdentifier:@"DEBUG_WINDOW"];
+    debugViewController_ = (DebugViewController *)debugWindowController_.contentViewController;
+    debugViewController_.emulationViewController = self;
+    debugViewController_.emulationController = emulationController;
+    [debugViewController_ setupDebugger];
+
     saveAccessoryController_ = [storyBoard_ instantiateControllerWithIdentifier:@"SAVE_ACCESSORY_VIEW_CONTROLLER"];
     tapeBrowserWindowController_ = [storyBoard_ instantiateControllerWithIdentifier:@"TAPE_BROWSER_WINDOW"];
     tapeBrowserViewController_ = (TapeBrowserViewController *)tapeBrowserWindowController_.contentViewController;
 //    tapeBrowserViewController_.emulationViewController = self;
     tapeBrowserViewController_.emulationController = emulationController;
-    
-    debugWindowController_ = [storyBoard_ instantiateControllerWithIdentifier:@"DEBUG_WINDOW"];
-    debugViewController_ = (DebugViewController *)debugWindowController_.contentViewController;
-    debugViewController_.emulationViewController = self;
 }
 
 - (void)setupBindings
@@ -378,7 +380,6 @@ const int cSCREEN_FILL              = 1;
     [infoPanelViewController_ displayMessage:[NSString stringWithCString:emulationController->getMachineName() encoding:NSUTF8StringEncoding] duration:5];
 
     emulationController->setTapeStatusCallback(tapeStatusCallback);
-    [self setupDebugger];
     
     // Once a machine instance has been created we need to apply the defaults to that instance
     [self applyDefaults];
@@ -389,34 +390,6 @@ const int cSCREEN_FILL              = 1;
     [self.view.window setTitle:[NSString stringWithFormat:@"SpectREM %@",
                                 [NSString stringWithCString:emulationController->getMachineName()
                                                    encoding:NSUTF8StringEncoding]]];
-}
-
-#pragma mark - Debugger
-
-- (void)setupDebugger
-{
-    EmulationViewController *blockSelf = self;
-    std::function<bool(uint16_t, uint8_t)> debugBlock;
-    
-    debugBlock = ([blockSelf](uint16_t address, uint8_t operation) {
-        
-        if (blockSelf->emulationController->debugger->checkForBreakpoint(address, operation))
-        {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [blockSelf sendNotificationsWithTitle:@"EXEC BREAK"
-                                             subtitle:nil
-                                                 body:[NSString stringWithFormat:@"EXEC BREAK at 0x%04x", address]
-                                                sound:[UNNotificationSound defaultSound]];
-                [blockSelf->debugViewController_ pauseMachine:nil];
-            });
-            return true;
-        }
-        
-        return false;
-        
-    });
-    
-    emulationController->setDebugCallback( debugBlock );
 }
 
 
@@ -576,45 +549,6 @@ const int cSCREEN_FILL              = 1;
     }
 }
 
-#pragma mark - File Loading
-
-- (void)loadFileWithURL:(NSURL *)url addToRecent:(BOOL)addToRecent
-{
-    Tape::FileResponse fileResponse;
-    
-    emulationController->pauseMachine();
-    
-    NSString *extension = [url.pathExtension uppercaseString];
-    if (([extension isEqualToString:cZ80_EXTENSION] || [extension isEqualToString:cSNA_EXTENSION]))
-    {
-        int snapshotMachineType = emulationController->snapshotMachineInSnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
-        if (emulationController->getMachineType() != snapshotMachineType)
-        {
-            self.defaults.machineSelectedModel = snapshotMachineType;
-        }
-    }
-
-    fileResponse = emulationController->loadFileWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
-
-    if (fileResponse.success)
-    {
-        lastOpenedURL_ = url;
-        if (addToRecent)
-        {
-            [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:url];
-        }
-    } else {
-        NSAlert *alert = [NSAlert new];
-        alert.informativeText = [NSString stringWithFormat:[NSString stringWithCString:fileResponse.responseMsg.c_str()
-                                                                              encoding:[NSString defaultCStringEncoding]], url.path];
-        [alert addButtonWithTitle:@"OK"];
-        [alert setAlertStyle:NSAlertStyleWarning];
-        [alert runModal];
-    }
-    
-    emulationController->resumeMachine();
-}
-
 #pragma mark - Restore Session
 
 - (void)restoreSession
@@ -642,14 +576,7 @@ const int cSCREEN_FILL              = 1;
     return nil;
 }
 
-#pragma mark - Tape Browser Methods
-
-- (void)tapeSetCurrentBlock:(NSInteger)blockIndex
-{
-    emulationController->tapePlayer->setCurrentBlock( static_cast<int>(blockIndex) );
-    emulationController->tapePlayer->rewindBlock();
-    emulationController->tapePlayer->stop();
-}
+#pragma mark - Tape Status Callback
 
 static void tapeStatusCallback(int blockIndex, int bytes)
 {
@@ -722,6 +649,43 @@ static void tapeStatusCallback(int blockIndex, int bytes)
 - (IBAction)resetPreferences:(id)sender
 {
     [Defaults setupDefaultsWithReset:YES];
+}
+
+- (void)loadFileWithURL:(NSURL *)url addToRecent:(BOOL)addToRecent
+{
+    Tape::FileResponse fileResponse;
+    
+    emulationController->pauseMachine();
+    
+    NSString *extension = [url.pathExtension uppercaseString];
+    if (([extension isEqualToString:cZ80_EXTENSION] || [extension isEqualToString:cSNA_EXTENSION]))
+    {
+        int snapshotMachineType = emulationController->snapshotMachineInSnapshotWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+        if (emulationController->getMachineType() != snapshotMachineType)
+        {
+            self.defaults.machineSelectedModel = snapshotMachineType;
+        }
+    }
+
+    fileResponse = emulationController->loadFileWithPath([url.path cStringUsingEncoding:NSUTF8StringEncoding]);
+
+    if (fileResponse.success)
+    {
+        lastOpenedURL_ = url;
+        if (addToRecent)
+        {
+            [[NSDocumentController sharedDocumentController] noteNewRecentDocumentURL:url];
+        }
+    } else {
+        NSAlert *alert = [NSAlert new];
+        alert.informativeText = [NSString stringWithFormat:[NSString stringWithCString:fileResponse.responseMsg.c_str()
+                                                                              encoding:[NSString defaultCStringEncoding]], url.path];
+        [alert addButtonWithTitle:@"OK"];
+        [alert setAlertStyle:NSAlertStyleWarning];
+        [alert runModal];
+    }
+    
+    emulationController->resumeMachine();
 }
 
 #pragma mark - View Menu Items
@@ -814,21 +778,13 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     [debugWindowController_ showWindow:self];
 }
 
-- (IBAction)switchHexDecimal:(id)sender
+- (void)stopAudioCore
 {
-    debugViewController_.hexFormat = (debugViewController_.hexFormat) ? NO : YES;
-    [debugViewController_ updateViewDetails];
-}
-
-- (void)pauseMachine
-{
-    emulationController->pauseMachine();
     [self.audioCore stop];
 }
 
-- (void)startMachine
+- (void)startAudioCore
 {
-    emulationController->resumeMachine();
     [self.audioCore start];
 }
 
@@ -839,26 +795,4 @@ static void tapeStatusCallback(int blockIndex, int bytes)
     [tapeBrowserWindowController_ showWindow:self.view.window];
 }
 
-#pragma mark - Getters
-
-- (BOOL)getDisplayReady
-{
-    return emulationController->isDisplayReady();
-}
-
-- (void *)getDebugger
-{
-    return emulationController->getDebugger();
-}
-
-- (BOOL)isEmulatorPaused
-{
-    return emulationController->isMachinePaused();
-}
-
 @end
-
-
-
-
-

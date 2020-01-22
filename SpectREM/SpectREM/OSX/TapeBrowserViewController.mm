@@ -166,7 +166,7 @@
     [savePanel beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger result) {
         if (result == NSModalResponseOK)
         {
-            std::vector<unsigned char> tapeData = self.emulationController->tapePlayer->getTapeData();
+            std::vector<unsigned char> tapeData = self.emulationController->getTapeData();
             NSMutableData *saveData = [NSMutableData new];
             [saveData appendBytes:tapeData.data() length:tapeData.size()];
             [saveData writeToURL:savePanel.URL atomically:YES];
