@@ -525,10 +525,12 @@ static void PlayPauseTape()
         if (m_pTape->playing)
         {
             m_pTape->stop();
+            PostMessage(tvHwnd, WM_USER + 2, PM_TAPE_UPDATE_PLAYPAUSEETC, 0);
         }
         else
         {
             m_pTape->play();
+            PostMessage(tvHwnd, WM_USER + 2, PM_TAPE_UPDATE_PLAYPAUSEETC, 1);
         }
     }
 }
@@ -552,6 +554,7 @@ static void RewindTape()
     if (m_pTape->loaded)
     {
         m_pTape->stop();
+        PostMessage(tvHwnd, WM_USER + 2, PM_TAPE_UPDATE_PLAYPAUSEETC, 0);
         m_pTape->rewindTape();
     }
 }
