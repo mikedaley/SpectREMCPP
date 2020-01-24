@@ -28,7 +28,8 @@ PAGEDOWN		: Decrease volume
 -----------
 FIXED	: When opening the tape viewer while a tape is either already playing or is paused,
 	      on any block it will update the information in the tape viewer window correctly.
-
+FIXED	: Play/Pause from main menu now updates the tape window if visible.
+FIXED	: Rewind from main menu updates the tape window if visible.
 
 2020-01-18
 -----------

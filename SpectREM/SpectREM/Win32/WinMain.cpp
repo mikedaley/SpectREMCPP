@@ -554,8 +554,9 @@ static void RewindTape()
     if (m_pTape->loaded)
     {
         m_pTape->stop();
-        PostMessage(tvHwnd, WM_USER + 2, PM_TAPE_UPDATE_PLAYPAUSEETC, 0);
         m_pTape->rewindTape();
+        PostMessage(tvHwnd, WM_USER + 2, PM_TAPE_ACTIVEBLOCK, (LPARAM)0); // Let the tape viewer know we are on block number 0
+        PostMessage(tvHwnd, WM_USER + 2, PM_TAPE_UPDATE_PLAYPAUSEETC, 0); // Let the tape viewer know that we are paused
     }
 }
 //-----------------------------------------------------------------------------------------
