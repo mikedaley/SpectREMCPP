@@ -25,6 +25,9 @@ class TapeViewer
 public:
     TapeViewer(HINSTANCE mainWindowInst, HWND mainHandle, DWORD dwTlsIndex);// , std::vector<PMDawn::gTAPEBLOCK>myPTAPE);
     ~TapeViewer();
+
+
+    static void UpdateActiveBlock(HWND hwndListV, LPARAM lP);
     static LRESULT CALLBACK WndProcTV(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
     static HWND TapeViewer::CreateListView(HWND hwnd, LPARAM lParam, RECT rect);
     static BOOL TapeViewer::InitListViewColumns(HWND hWndListView, HINSTANCE hInst);

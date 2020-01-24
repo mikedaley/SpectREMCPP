@@ -21,6 +21,7 @@
 #define PM_TAPE_INSERT              85
 #define PM_TAPE_EJECT               86
 #define PM_TAPE_SAVE                87
+#define PM_TAPE_UPDATE_PLAYPAUSEETC 88
 
 #include <windows.h>
 #include <stdlib.h>
@@ -78,6 +79,7 @@ unsigned int __stdcall mythread(void* data);
 static void SendTapeBlockDataToViewer();
 static void GetTapeViewerHwnd();
 static void SetupThreadLocalStorageForTapeData();
+RECT GetWindowResizeWithUI(HWND mWin, HWND sWin, HMENU menuWin, bool visible);
 
 ZXSpectrum* m_pMachine;
 Tape* m_pTape;
@@ -374,17 +376,9 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         break;
 
     case WM_SIZE:
-        //cxClient = LOWORD(lparam);
-        //cyClient = HIWORD(lparam);
-        //if (menuDisplayed)
-        //{
-        //    viewportY += 20;
-        //}
-        //else
-        //{
-        //    viewportY -= 20;
-        //}
-        //glViewport(viewportX, viewportY, LOWORD(lparam), HIWORD(lparam));
+        cxClient = LOWORD(lparam);
+        cyClient = HIWORD(lparam);
+        //glViewport(viewportX, viewportY, 256 * zoomLevel, 192 * zoomLevel);
         return 0;
         break;
 
@@ -399,7 +393,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         }
         break;
 
-    case WM_USER+1:
+    case WM_USER + 1:
         switch (LOWORD(wparam))
         {
         case 1:
@@ -407,13 +401,21 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             if (m_pTape->numberOfTapeBlocks() > 0)
             {
                 SendTapeBlockDataToViewer();
-                PostMessage(tvHwnd, WM_USER + 2, PM_TAPE_ACTIVEBLOCK, (LPARAM)0);
+                PostMessage(tvHwnd, WM_USER + 2, PM_TAPE_ACTIVEBLOCK, (LPARAM)m_pTape->currentBlockIndex);
+                if (m_pTape->playing)
+                {
+                    PostMessage(tvHwnd, WM_USER + 2, PM_TAPE_UPDATE_PLAYPAUSEETC, 1);  // Indicate tape is playing
+                }
+                else
+                {
+                    PostMessage(tvHwnd, WM_USER + 2, PM_TAPE_UPDATE_PLAYPAUSEETC, 0);  // Indicate tape is paused
+                }
             }
             break;
         }
         break;
 
-    case WM_USER+2:
+    case WM_USER + 2:
         switch (LOWORD(wparam))
         {
         case PM_TAPE_VIEWER_CLOSED:
@@ -428,11 +430,11 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             switch (lparam)
             {
             case PM_TAPE_PLAY:
-                m_pTape->startPlaying();
+                m_pTape->play();
                 break;
 
             case PM_TAPE_PAUSE:
-                m_pTape->stopPlaying();
+                m_pTape->stop();// stopPlaying();
                 break;
 
             case PM_TAPE_REWIND:
@@ -449,7 +451,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
             }
             break;
-         }
+        }
         break;
 
     case WM_PAINT:
@@ -496,7 +498,7 @@ static void InsertTape()
     if (GetOpenFileNameA(&ofn))
     {
         EjectTape(); // Eject the current tape if inserted
-        Tape::TapResponse tR = m_pTape->loadWithPath(szFile);
+        Tape::FileResponse tR = m_pTape->insertTapeWithPath(szFile);
         if (tR.success)
         {
             PMDawn::Log(PMDawn::LOG_INFO, "Loaded tape - " + std::string(szFile));
@@ -522,11 +524,11 @@ static void PlayPauseTape()
     {
         if (m_pTape->playing)
         {
-            m_pTape->stopPlaying();
+            m_pTape->stop();
         }
         else
         {
-            m_pTape->startPlaying();
+            m_pTape->play();
         }
     }
 }
@@ -537,7 +539,7 @@ static void EjectTape()
 {
     if (m_pTape->loaded)
     {
-        m_pTape->stopPlaying();
+        m_pTape->stop();
         m_pTape->eject();
         PostMessage(tvHwnd, WM_USER + 2, PM_TAPE_EJECTED, (LPARAM)0);
     }
@@ -549,7 +551,7 @@ static void RewindTape()
 {
     if (m_pTape->loaded)
     {
-        m_pTape->stopPlaying();
+        m_pTape->stop();
         m_pTape->rewindTape();
     }
 }
@@ -564,7 +566,7 @@ static void OpenSCR()
 
     if (scrPath != "")
     {
-        ZXSpectrum::FileResponse sR = m_pMachine->scrLoadWithPath(scrPath);
+        Tape::FileResponse sR = m_pMachine->scrLoadWithPath(scrPath);
         if (sR.success)
         {
             Sleep(1);
@@ -626,13 +628,13 @@ static void IterateSCRImagesOnTimerCallback()
     if (slideshowRandom)
     {
         int randomIndex = (int)rand() % fileList.size();
-        ZXSpectrum::FileResponse sR = m_pMachine->scrLoadWithPath(PMDawn::GetApplicationBasePath() + slideshowDirectory + fileList[randomIndex]);
+        Tape::FileResponse sR = m_pMachine->scrLoadWithPath(PMDawn::GetApplicationBasePath() + slideshowDirectory + fileList[randomIndex]);
         Sleep(1);
         m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer, viewportX, viewportY);
     }
     else
     {
-        ZXSpectrum::FileResponse sR = m_pMachine->scrLoadWithPath(PMDawn::GetApplicationBasePath() + slideshowDirectory + fileList[fileListIndex]);
+        Tape::FileResponse sR = m_pMachine->scrLoadWithPath(PMDawn::GetApplicationBasePath() + slideshowDirectory + fileList[fileListIndex]);
         Sleep(1);
         m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer, viewportX, viewportY);
         fileListIndex++;
@@ -656,7 +658,7 @@ static void IterateSCRImages(HWND mWindow, std::vector<std::string> fileList, ZX
         std::chrono::milliseconds msecs(delaysecs * 1000);
         for (std::size_t i = 0; i < 10; i++)//< fileList.size(); i++)
         {
-            ZXSpectrum::FileResponse sR = machine->scrLoadWithPath(PMDawn::GetApplicationBasePath() + slideshowDirectory + fileList[i]);
+            Tape::FileResponse sR = machine->scrLoadWithPath(PMDawn::GetApplicationBasePath() + slideshowDirectory + fileList[i]);
             //SendMessageCallback(mWindow, WM_USER, PM_UPDATESPECTREM, PM_UPDATESPECTREM, nullptr, 0);
             PostMessage(mWindow, WM_USER, PM_UPDATESPECTREM, PM_UPDATESPECTREM);
             std::this_thread::sleep_for(msecs);
@@ -698,7 +700,10 @@ static void ShowUI(HWND hWnd = mainWindow)
     PMDawn::Log(PMDawn::LOG_DEBUG, "ShowUI()");
     menuDisplayed = true;
     statusDisplayed = true;
+    RECT newSize = GetWindowResizeWithUI(mainWindow, statusWindow, mainMenu, true);
     SetMenu(hWnd, mainMenu);
+    SetWindowPos(mainWindow, HWND_NOTOPMOST, newSize.left, newSize.top, newSize.right, newSize.bottom, 0);
+    m_pOpenGLView->Resize(256 * zoomLevel, 192 * zoomLevel);
     ShowWindow(statusWindow, SW_SHOW);
 }
 
@@ -709,8 +714,73 @@ static void HideUI(HWND hWnd = mainWindow)
     PMDawn::Log(PMDawn::LOG_DEBUG, "HideUI()");
     menuDisplayed = false;
     statusDisplayed = false;
+    RECT newSize = GetWindowResizeWithUI(mainWindow, statusWindow, mainMenu, false);
     SetMenu(hWnd, NULL);
+    SetWindowPos(mainWindow, HWND_NOTOPMOST, newSize.left, newSize.top, newSize.right, newSize.bottom, 0);
+    m_pOpenGLView->Resize(256 * zoomLevel, 192 * zoomLevel);
     ShowWindow(statusWindow, SW_HIDE);
+}
+
+//-----------------------------------------------------------------------------------------
+
+RECT GetWindowResizeWithUI(HWND mWin, HWND sWin, HMENU menu, bool visible)
+{
+    // Get the new window size needed for the status bar to be below the GLView...
+    if (visible)
+    {
+        Log(PMDawn::LOG_INFO, "Resizing with UI");
+        Log(PMDawn::LOG_INFO, "Menu height == " + GetSystemMetrics(SM_CYMENU));
+    }
+    else
+    {
+        Log(PMDawn::LOG_INFO, "Resizing without UI");
+        Log(PMDawn::LOG_INFO, "Menu height == " + GetSystemMetrics(SM_CYMENU));
+    }
+    RECT m, s;
+    GetWindowRect(mWin, &m);
+    GetWindowRect(sWin, &s);
+   
+    Log(PMDawn::LOG_INFO, "Main window RECT = t" +
+        std::to_string(m.top) + " l" +
+        std::to_string(m.left) + " b" +
+        std::to_string(m.bottom) + " r" +
+        std::to_string(m.right));
+    Log(PMDawn::LOG_INFO, "Status bar RECT = t" +
+        std::to_string(s.top) + " l" +
+        std::to_string(s.left) + " b" +
+        std::to_string(s.bottom) + " r" +
+        std::to_string(s.right));
+
+    if (visible)
+    {
+        RECT nWin = {
+            m.left,
+            m.top,
+            (m.right - m.left),
+            (m.bottom - m.top) + (s.bottom - s.top) + GetSystemMetrics(SM_CYMENU)
+        };
+        Log(PMDawn::LOG_INFO, "Output RECT = t" +
+            std::to_string(nWin.top) + " l" +
+            std::to_string(nWin.left) + " b" +
+            std::to_string(nWin.bottom) + " r" +
+            std::to_string(nWin.right));
+        return nWin;
+    }
+    else
+    {
+        RECT nWin = {
+            m.left,
+            m.top,
+            (m.right - m.left),
+            (m.bottom - m.top) - (s.bottom - s.top) - GetSystemMetrics(SM_CYMENU)
+        };
+        Log(PMDawn::LOG_INFO, "Output RECT = t" +
+            std::to_string(nWin.top) + " l" +
+            std::to_string(nWin.left) + " b" +
+            std::to_string(nWin.bottom) + " r" +
+            std::to_string(nWin.right));
+        return nWin;
+    }
 }
 
 //-----------------------------------------------------------------------------------------
@@ -783,7 +853,7 @@ static void LoadSnapshot()
         if (_stricmp(extension.c_str(), EXT_TAP.c_str()) == 0)
         {
             EjectTape(); // Eject the current tape if inserted
-            Tape::TapResponse tR = m_pTape->loadWithPath(filePath);
+            Tape::FileResponse tR = m_pTape->insertTapeWithPath(filePath);
             if (tR.success)
             {
                 PMDawn::Log(PMDawn::LOG_INFO, "Loaded tape - " + std::string(filePath));
@@ -816,7 +886,7 @@ static void LoadSnapshot()
             if (_stricmp(extension.c_str(), EXT_Z80.c_str()) == 0)
             {
                 PMDawn::Log(PMDawn::LOG_INFO, "Loading Z80 Snapshot - " + s);
-                ZXSpectrum::FileResponse sR = m_pMachine->snapshotZ80LoadWithPath(filePath);
+                Tape::FileResponse sR = m_pMachine->snapshotZ80LoadWithPath(filePath);
                 if (sR.success)
                 {
                     PMDawn::Log(PMDawn::LOG_INFO, "Snapshot loaded successfully");
@@ -833,7 +903,7 @@ static void LoadSnapshot()
             else if (_stricmp(extension.c_str(), EXT_SNA.c_str()) == 0)
             {
                 PMDawn::Log(PMDawn::LOG_DEBUG, "Loading SNA Snapshot - " + s);
-                ZXSpectrum::FileResponse sR = m_pMachine->snapshotSNALoadWithPath(filePath);
+                Tape::FileResponse sR = m_pMachine->snapshotSNALoadWithPath(filePath);
                 if (sR.success)
                 {
                     PMDawn::Log(PMDawn::LOG_INFO, "Snapshot loaded successfully");
@@ -855,7 +925,7 @@ static void LoadSnapshot()
 
 static void tapeStatusCallback(int blockIndex, int bytes)
 {
-    if (blockIndex < 1 && m_pTape->playing ==false) return;
+    if (blockIndex < 1 && m_pTape->playing == false) return;
     PostMessage(tvHwnd, WM_USER + 2, PM_TAPE_ACTIVEBLOCK, (LPARAM)blockIndex);
     //SendTapeBlockDataToViewer();
     //TapeBlock* currentTBI = m_pTape->blocks[blockIndex];
@@ -958,7 +1028,7 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
     wcex.cbWndExtra = 0;
     wcex.hInstance = inst;
     wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-    wcex.hbrBackground = NULL;
+    wcex.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
     wcex.lpszClassName = TEXT("SpectREM");
     wcex.hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON2));
     wcex.hIconSm = (HICON)LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON2), IMAGE_ICON, 16, 16, 0);
@@ -976,18 +1046,23 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
     Log(PMDawn::LOG_INFO, "Current zoom level is " + std::to_string(zoomLevel));
 
 
-    mainWindow = CreateWindowEx(WS_EX_APPWINDOW, TEXT("SpectREM"), TEXT("SpectREM"), 
-        WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME ^ WS_MAXIMIZEBOX, 
+    mainWindow = CreateWindowEx(WS_EX_APPWINDOW, TEXT("SpectREM"), TEXT("SpectREM"),
+        WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME ^ WS_MAXIMIZEBOX,
         CW_USEDEFAULT, CW_USEDEFAULT, wr.right - wr.left, wr.bottom - wr.top, 0, 0, inst, 0);
 #ifdef WIN32API_GUI
-    statusWindow = CreateStatusWindow(WS_CHILD | WS_VISIBLE | WS_OVERLAPPEDWINDOW, TEXT("Welcome to SpyWindows"), mainWindow, 9000);
+    //statusWindow = CreateStatusWindow(WS_CHILD | WS_VISIBLE, TEXT("Welcome to SpectREM for Windows"), mainWindow, 9000);
+    statusWindow = CreateWindow(STATUSCLASSNAME, TEXT("Welcome to SpectREM for Windows"), WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, mainWindow, NULL, inst, NULL);
 #endif
     ShowWindow(mainWindow, ncmd);
     UpdateWindow(mainWindow);
     mainMenu = GetMenu(mainWindow);
     menuDisplayed = true;
     statusDisplayed = true;
-
+    //ShowHideUI(mainWindow);
+#ifdef WIN32API_GUI
+    RECT newSize = GetWindowResizeWithUI(mainWindow, statusWindow, mainMenu, true);
+    SetWindowPos(mainWindow, HWND_NOTOPMOST, newSize.left, newSize.top, newSize.right, newSize.bottom, 0);
+#endif
 
     QueryPerformanceFrequency(&perf_freq);
     QueryPerformanceCounter(&last_time);
@@ -1043,6 +1118,7 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
                 last_time = time;
 
                 m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer, viewportX, viewportY);
+
 
                 // Set the time
                 char specType[20];
@@ -1219,7 +1295,7 @@ static void OpenTapeViewer()
 {
     if (tapeViewerThread) return;
 
-    tapeViewerThread = (HANDLE)_beginthreadex(0, 0, &mythread, 0, 0, 0);    
+    tapeViewerThread = (HANDLE)_beginthreadex(0, 0, &mythread, 0, 0, 0);
 }
 
 unsigned int __stdcall mythread(void* data)
@@ -1275,7 +1351,7 @@ static void SendTapeBlockDataToViewer()
             gT.blocktype = "  DATA:";
             break;
         }
-        
+
         if (m_pTape->blocks[i]->getDataType() < 4)
         {
             gT.filename = m_pTape->blocks[i]->getFilename();

@@ -29,6 +29,7 @@
 #define PM_TAPE_INSERT              85
 #define PM_TAPE_EJECT               86
 #define PM_TAPE_SAVE                87
+#define PM_TAPE_UPDATE_PLAYPAUSEETC 88
 
 // Status / BlockType / Filename / AutostartLine / Address / Length
 //-----------------------------------------------------------------------------------------
@@ -140,13 +141,6 @@ LRESULT CALLBACK TapeViewer::WndProcTV(HWND hwnd, UINT msg, WPARAM wParam, LPARA
                 LVITEM lvi;
 
                 lvi.mask = LVIF_TEXT | LVIF_COLFMT;
-                //lvi.iItem = 0;
-                //lvi.iSubItem = 0;
-                //lvi.pszText = TEXT("Kiss");
-                //ListView_InsertItem(hwndListView, &lvi);
-                //ListView_SetItemText(hwndListView, 0, 1, TEXT("My"));
-                //ListView_SetItemText(hwndListView, 0, 2, TEXT("Ass"));
-                //ListView_SetItemText(hwndListView, 0, 3, TEXT("!!!"));
                 ListView_SetExtendedListViewStyle(hwndListView, LVS_EX_FULLROWSELECT);
             }
         }
@@ -193,23 +187,24 @@ LRESULT CALLBACK TapeViewer::WndProcTV(HWND hwnd, UINT msg, WPARAM wParam, LPARA
         }
         if (wParam == PM_TAPE_ACTIVEBLOCK)
         {
-            if (hwndListView != nullptr) {
-                uint16_t blockNumber = (uint16_t)lParam;
-                if (currentActiveBlock >= 0)
-                {
-                    ListView_SetItemText(hwndListView, currentActiveBlock, 0, TEXT(""));
-                    if (bIsPlaying)
-                    {
-                        ListView_SetItemText(hwndListView, blockNumber, 0, TEXT("PLAYING"));
-                    }
-                    else
-                    {
-                        ListView_SetItemText(hwndListView, blockNumber, 0, TEXT("PAUSED"));
-                    }
-                    currentActiveBlock = blockNumber;
-                }
-                return 0;
+            UpdateActiveBlock(hwndListView, lParam);
+            return 0;
+        }
+        if (wParam == PM_TAPE_UPDATE_PLAYPAUSEETC)
+        {
+            if (lParam == 1)
+            {
+                // The tape is playing the current block
+                bIsPlaying = true;
+                UpdateActiveBlock(hwndListView, currentActiveBlock);
             }
+            else
+            {
+                // The tape is paused on the current block
+                bIsPlaying = false;
+                UpdateActiveBlock(hwndListView, currentActiveBlock);
+            }
+            return 0;
         }
         return 0;
         break;
@@ -277,6 +272,28 @@ LRESULT CALLBACK TapeViewer::WndProcTV(HWND hwnd, UINT msg, WPARAM wParam, LPARA
         return DefWindowProc(hwnd, msg, wParam, lParam);
     }
     return 0;
+}
+
+//-----------------------------------------------------------------------------------------
+
+void TapeViewer::UpdateActiveBlock(HWND hwndListV, LPARAM lP)
+{
+    if (hwndListV != nullptr) {
+        uint16_t blockNumber = (uint16_t)lP;
+        if (currentActiveBlock >= 0)
+        {
+            ListView_SetItemText(hwndListV, currentActiveBlock, 0, TEXT(""));
+            if (bIsPlaying)
+            {
+                ListView_SetItemText(hwndListV, blockNumber, 0, TEXT("PLAYING"));
+            }
+            else
+            {
+                ListView_SetItemText(hwndListV, blockNumber, 0, TEXT("PAUSED"));
+            }
+            currentActiveBlock = blockNumber;
+        }
+    }
 }
 
 //-----------------------------------------------------------------------------------------

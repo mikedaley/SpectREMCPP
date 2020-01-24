@@ -137,6 +137,7 @@ void OpenGLView::Deinit()
 
 void OpenGLView::Resize(int width, int height)
 {
+    GL_CHECK(glViewport(0, 0, width, height));
     _viewWidth = width;
     _viewHeight = height;
 }
@@ -188,7 +189,7 @@ bool OpenGLView::Init(HWND hWnd, int width, int height, uint16_t idClutVert, uin
 		return false;
 	}
 
-	// Set the 4.0 version of OpenGL in the attribute list.
+	// Set the 3.2 version of OpenGL in the attribute list.
 	int contextAL[] = 
 	{
 		WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
@@ -358,7 +359,7 @@ void OpenGLView::SetupTexture()
 
 void OpenGLView::UpdateTextureData(unsigned char *pData, GLint vX, GLint vY)
 {
-    glClearColor(0.0f, 1.0f, 1.0f, 0.5f);
+    glClearColor(1.0f, 1.0f, 0.0f, 0.5f);
     glClear(GL_COLOR_BUFFER_BIT);
 
     // Render the output to a texture which has the default dimensions of the output image

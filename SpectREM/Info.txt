@@ -19,9 +19,15 @@ SHIFT+F1		: Insert a tape
 ALT+F1			: Eject currently inserted tape
 F9				: Start/Stop currently inserted tape
 SHIFT+F9		: Rewind tape if inserted
+ALT+F9			: Open tape viewer window
 PAGEUP			: Increase volume
 PAGEDOWN		: Decrease volume
 
+
+2020-01-24
+-----------
+FIXED	: When opening the tape viewer while a tape is either already playing or is paused,
+	      on any block it will update the information in the tape viewer window correctly.
 
 
 2020-01-18
@@ -29,7 +35,12 @@ PAGEDOWN		: Decrease volume
 ADDED	: Tape viewer window with controls and updates (minor bug found, https://github.com/polomint/SpectREMCPP/issues/28)
 FIXED	: Forgot to resend the currently inserted .tap data to the tape viewer in between invocations :/
 ADDED	: File loaded now displays in title bar, shows Playing/Paused if it is a .tap file
+
+2020-01-06
+-----------
 UPDATED	: File loading and folder choosing now uses the new updated file open dialog
+ADDED	: Can now select folder for .scr files
+ADDED	: Open single .scr
 
 2020-01-05
 -----------
