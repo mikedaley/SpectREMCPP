@@ -61,7 +61,7 @@ static void ShowHelpAbout();
 static void ShowHideUI(HWND hWnd);
 static void ShowUI(HWND hWnd);
 static void HideUI(HWND hWnd);
-static void ResetMachineForSnapshot(uint8_t mc);
+static void ResetMachineForSnapshot(uint8_t mc, bool ayEnabled);
 static void ShowSettingsDialog();
 static void RunSlideshow(int secs);
 void IterateSCRImages(HWND mWindow, std::vector<std::string> fileList, ZXSpectrum* m_pMachine, int secs);
@@ -239,10 +239,10 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             SoftReset();
             break;
         case ID_SWITCH_TO48K:
-            ResetMachineForSnapshot(ZX48);
+            ResetMachineForSnapshot(ZX48, m_pMachine->ayEnabledSnapshot);
             break;
         case ID_SWITCH_TO128K:
-            ResetMachineForSnapshot(ZX128);
+            ResetMachineForSnapshot(ZX128, true);
             break;
         case ID_SWITCH_FLIP:
             SwitchMachines();
@@ -805,14 +805,14 @@ static void SwitchMachines()
         if (isResetting != true)
         {
             PMDawn::Log(PMDawn::LOG_DEBUG, "Flip machine requested");
-            ResetMachineForSnapshot(ZX48);
+            ResetMachineForSnapshot(ZX48, m_pMachine->ayEnabledSnapshot);
         }
     }
     else
     {
         if (isResetting != true)
         {
-            ResetMachineForSnapshot(ZX128);
+            ResetMachineForSnapshot(ZX128, true);
         }
     }
 }
@@ -824,7 +824,7 @@ static void SoftReset()
     // Soft reset
     if (isResetting != true)
     {
-        ResetMachineForSnapshot(m_pMachine->machineInfo.machineType);
+        ResetMachineForSnapshot(m_pMachine->machineInfo.machineType, m_pMachine->ayEnabledSnapshot);
         PMDawn::Log(PMDawn::LOG_INFO, "Soft reset completed");
     }
 }
@@ -836,7 +836,7 @@ static void HardReset()
     // Hard reset
     if (isResetting != true)
     {
-        ResetMachineForSnapshot(m_pMachine->machineInfo.machineType);
+        ResetMachineForSnapshot(m_pMachine->machineInfo.machineType, m_pMachine->ayEnabledSnapshot);
         PMDawn::Log(PMDawn::LOG_INFO, "Hard reset completed");
     }
 }
@@ -879,13 +879,13 @@ static void LoadSnapshot()
             if (mType <= ZX48)
             {
                 // 48 based
-                ResetMachineForSnapshot(ZX48);
+                ResetMachineForSnapshot(ZX48, m_pMachine->ayEnabledSnapshot);
                 Sleep(500);
             }
             else
             {
                 // 128 based
-                ResetMachineForSnapshot(ZX128);
+                ResetMachineForSnapshot(ZX128, true);
                 Sleep(500);
             }
             if (_stricmp(extension.c_str(), EXT_Z80.c_str()) == 0)
@@ -1205,7 +1205,7 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
 //-----------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------
 
-static void ResetMachineForSnapshot(uint8_t mc)
+static void ResetMachineForSnapshot(uint8_t mc, bool ayEnabled)
 {
     isResetting = true;
 
@@ -1229,7 +1229,7 @@ static void ResetMachineForSnapshot(uint8_t mc)
     case ZX48:
         PMDawn::Log(PMDawn::LOG_INFO, "SpectREM changed to 48K Mode");
         m_pMachine = new ZXSpectrum48(m_pTape);
-        m_pMachine->emuUseAYSound = false;
+        m_pMachine->emuUseAYSound = ayEnabled;
         break;
     case ZX128:
         PMDawn::Log(PMDawn::LOG_INFO, "SpectREM changed to 128K Mode");

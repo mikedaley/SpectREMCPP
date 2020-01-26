@@ -168,6 +168,8 @@ public:
         float b;
         float a;
     } Color;
+    // Holds whether AY is enabled for a snapshot (handy for 48k + AY)
+    bool ayEnabledSnapshot = false;
 
     
 public:
@@ -195,6 +197,7 @@ public:
     Tape::FileResponse      snapshotSNALoadWithPath(const std::string path);
     Tape::FileResponse      snapshotSNALoadWithBuffer(const char *buffer, size_t size);
     int                     snapshotMachineInSnapshotWithPath(const char *path);
+    bool                    IsAYSnapshot(uint8_t infoByte);
     SnapshotData            snapshotCreateSNA();
     SnapshotData            snapshotCreateZ80();
     

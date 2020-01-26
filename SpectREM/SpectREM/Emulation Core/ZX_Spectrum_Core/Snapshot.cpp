@@ -567,7 +567,7 @@ void ZXSpectrum::snapshotExtractMemoryBlock(const char *buffer, size_t bufferSiz
     }
     else
     {
-        while (memoryPtr < unpackedLength + memAddr)
+        while (memoryPtr < unpackedLength + memAddr - 1)
         {
             uint8_t byte1 = fileBytes[filePtr];
             uint8_t byte2 = fileBytes[filePtr + 1];
@@ -652,6 +652,8 @@ std::string ZXSpectrum::snapshotHardwareTypeForVersion(uint32_t version, uint32_
 
 int32_t ZXSpectrum::snapshotMachineInSnapshotWithPath(const char *path)
 {
+    ayEnabledSnapshot = false;
+
     std::ifstream stream(path, std::ios::binary | std::ios::ate);
     if (!stream.ios_base::good()) {
         return -1;
@@ -694,6 +696,7 @@ int32_t ZXSpectrum::snapshotMachineInSnapshotWithPath(const char *path)
         switch (version) {
         case 1:
             machineType = eZXSpectrum48;
+            ayEnabledSnapshot = false;
             break;
 
         case 2:
@@ -713,6 +716,8 @@ int32_t ZXSpectrum::snapshotMachineInSnapshotWithPath(const char *path)
                         machineType = eZXSpectrum48;
                         break;
                 }
+                IsAYSnapshot(((uint8_t*)&pFileBytes[37])[0]);
+
             break;
 
         case 3:
@@ -732,10 +737,26 @@ int32_t ZXSpectrum::snapshotMachineInSnapshotWithPath(const char *path)
                     default:
                         break;
                 }
+                IsAYSnapshot(((uint8_t*)&pFileBytes[37])[0]);
+
             break;
         }
     }
 
     return machineType;
 }
+
+bool ZXSpectrum::IsAYSnapshot(uint8_t infoByte)
+{
+    if (infoByte & 4)
+    {
+        ayEnabledSnapshot = true;
+    }
+    else
+    {
+        ayEnabledSnapshot = false;
+    }
+    return ayEnabledSnapshot;
+}
+
 

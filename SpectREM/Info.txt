@@ -28,7 +28,8 @@ PAGEDOWN		: Decrease volume
 -----------
 FIXED	: Incorrect reporting of tap blocks under 2 bytes :/
 FIXED	: Strange filename issue causing an exception
-
+FIXED	: AY can now be enabled on a 48k snapshot (retrieves the flag from the snapshot when loading)
+HACK	: Hack added to get it to load that uspirit.z80 file, ay works with it also (48k mode)
 
 
 2020-01-24
