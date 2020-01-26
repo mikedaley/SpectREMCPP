@@ -850,8 +850,9 @@ static void LoadSnapshot()
     if (filePath != "")
     {
         int32_t mType = m_pMachine->snapshotMachineInSnapshotWithPath(filePath.c_str());
-        std::string s(filePath, sizeof(filePath));
-        std::string extension = s.substr(s.find_last_of(".") + 1, s.find_last_of(".") + 4);
+        size_t sizeOfFile = sizeof(filePath) - 1;
+        std::string s(filePath.c_str(), sizeOfFile);
+        std::string extension = filePath.substr(filePath.find_last_of(".") + 1, filePath.find_last_of(".") + 4);
 
         // Check the machine type returned from the user supplied snapshot if not a tape file
         if (_stricmp(extension.c_str(), EXT_TAP.c_str()) == 0)
