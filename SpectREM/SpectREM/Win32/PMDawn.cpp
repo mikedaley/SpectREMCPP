@@ -310,7 +310,14 @@ namespace PMDawn
 
         if (!ShowAlternativeTapeLengths)
         {
-            theBlock.length -= 2;
+            if (theBlock.length < 2)
+            {
+                theBlock.length = 0;
+            }
+            else
+            {
+                theBlock.length -= 2;
+            }
         }
 
         LVITEM lvi;

@@ -24,6 +24,11 @@ PAGEUP			: Increase volume
 PAGEDOWN		: Decrease volume
 
 
+2020-01-26
+-----------
+FIXED	: Incorrect reporting of tap blocks under 2 bytes :/
+
+
 2020-01-24
 -----------
 FIXED	: When opening the tape viewer while a tape is either already playing or is paused,

@@ -1376,8 +1376,6 @@ static void SendTapeBlockDataToViewer()
 
     if (tvHwnd != nullptr)
     {
-        //PostMessage(tvHwnd, WM_USER + 2, reinterpret_cast<WPARAM>(&tBlocks), static_cast < LPARAM>(numBlocks));
-        //PostMessage(tvHwnd, WM_USER + 2, PM_TAPEDATA_FULL, numBlocks);
         PostMessage(tvHwnd, WM_USER + 2, PM_TAPEDATA_FULL, (LPARAM)&PMDawn::pData);
     }
 }
