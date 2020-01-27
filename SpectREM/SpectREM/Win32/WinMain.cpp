@@ -52,7 +52,7 @@
 
 // WinMain.cpp
 static void audio_callback(uint32_t nNumSamples, uint8_t* pBuffer);
-static void tapeStatusCallback(int blockIndex, int bytes);
+static void tapeStatusCallback(int blockIndex, int bytes, int action);
 static void LoadSnapshot();
 static void HardReset();
 static void SoftReset();
@@ -928,7 +928,7 @@ static void LoadSnapshot()
 
 //-----------------------------------------------------------------------------------------
 
-static void tapeStatusCallback(int blockIndex, int bytes)
+static void tapeStatusCallback(int blockIndex, int bytes, int action)
 {
     if (blockIndex < 1 && m_pTape->playing == false) return;
     PostMessage(tvHwnd, WM_USER + 2, PM_TAPE_ACTIVEBLOCK, (LPARAM)blockIndex);

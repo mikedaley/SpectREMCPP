@@ -357,7 +357,6 @@ bool ZXSpectrum128::opcodeCallback(uint8_t opcode, uint16_t address, void *param
             if (opcode == 0xc0)
             {
                 machine->emuLoadTrapTriggered = true;
-                machine->tapePlayer->updateStatus();
                 return true;
             }
         }
@@ -369,7 +368,6 @@ bool ZXSpectrum128::opcodeCallback(uint8_t opcode, uint16_t address, void *param
         if (opcode == 0x08)
         {
             machine->emuSaveTrapTriggered = true;
-            machine->tapePlayer->updateStatus();
             return true;
         }
     }
