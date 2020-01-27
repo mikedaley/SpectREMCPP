@@ -23,20 +23,20 @@ public:
     virtual ~TapeBlock();
 
 public:
-    virtual uint8_t   getFlag();
-    virtual uint8_t   getDataType();
-    virtual uint16_t  getDataLength();
-    virtual uint8_t   getChecksum();
-    virtual uint16_t  getAutoStartLine();
-    virtual uint16_t  getStartAddress();
-    virtual std::string getBlockName() = 0;
-    virtual std::string getFilename();
+    virtual uint8_t         getFlag();
+    virtual uint8_t         getDataType();
+    virtual uint16_t        getDataLength();
+    virtual uint8_t         getChecksum();
+    virtual uint16_t        getAutoStartLine();
+    virtual uint16_t        getStartAddress();
+    virtual std::string     getBlockName() = 0;
+    virtual std::string     getFilename();
 
 public:
-    uint16_t          blockLength = 0;
-    uint8_t           *blockData = nullptr;
-    int               blockType = 0;
-    int               currentByte = 0;
+    uint16_t                blockLength = 0;
+    uint8_t               * blockData = nullptr;
+    int                     blockType = 0;
+    int                     currentByte = 0;
 };
 
 
@@ -46,11 +46,11 @@ public:
 class ProgramHeader : public TapeBlock
 {
 public:
-    virtual uint16_t  getAutoStartLine();
-    virtual uint16_t  getProgramLength();
-    virtual uint16_t  getDataLength();
-    virtual uint8_t   getChecksum();
-    virtual std::string    getBlockName();
+    virtual uint16_t        getAutoStartLine();
+    virtual uint16_t        getProgramLength();
+    virtual uint16_t        getDataLength();
+    virtual uint8_t         getChecksum();
+    virtual std::string     getBlockName();
 };
 
 
@@ -60,7 +60,7 @@ public:
 class NumericDataHeader : public TapeBlock
 {
 public:
-    virtual std::string          getBlockName();
+    virtual std::string     getBlockName();
 };
 
 
@@ -70,7 +70,7 @@ public:
 class AlphanumericDataHeader : public TapeBlock
 {
 public:
-    virtual std::string          getBlockName();
+    virtual std::string     getBlockName();
 };
 
 
@@ -80,9 +80,9 @@ public:
 class ByteHeader : public TapeBlock
 {
 public:
-    uint16_t          getStartAddress();
-    virtual uint8_t   getChecksum();
-    virtual std::string    getBlockName();
+    uint16_t                getStartAddress();
+    virtual uint8_t         getChecksum();
+    virtual std::string     getBlockName();
 };
 
 
@@ -92,10 +92,10 @@ public:
 class DataBlock : public TapeBlock
 {
 public:
-    uint8_t           *getDataBlock();
-    virtual uint8_t   getDataType();
-    virtual uint8_t   getChecksum();
-    virtual std::string    getBlockName();
+    uint8_t               * getDataBlock();
+    virtual uint8_t         getDataType();
+    virtual uint8_t         getChecksum();
+    virtual std::string     getBlockName();
 };
 
 
@@ -147,7 +147,7 @@ class Tape
     
 public:
     struct FileResponse {
-        bool success;
+        bool        success;
         std::string responseMsg;
     };
     

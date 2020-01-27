@@ -67,7 +67,7 @@ void ZXSpectrum::ULAApplyIOContention(uint16_t address, bool contended)
 
 void ZXSpectrum::ULABuildContentionTable()
 {
-    for (uint32_t i = 0; i < machineInfo.tsPerFrame; i++)
+    for (int i = 0; i < machineInfo.tsPerFrame; i++)
     {
         ULAMemoryContentionTable[i] = 0;
         ULAIOContentionTable[i] = 0;

@@ -260,7 +260,7 @@ public:
     virtual uint8_t         coreDebugRead(uint16_t address, void *data) = 0;
     virtual void            coreDebugWrite(uint16_t address, uint8_t byte, void *data) = 0;
     
-    void                    coreMemoryWriteWithBuffer(const char *buffer, size_t size, uint16_t address);
+    void                    coreMemoryWriteWithBuffer(const char *buffer, size_t size, uint16_t address, void *param);
         
     // Machine hardware
     CZ80Core                z80Core;

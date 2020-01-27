@@ -127,8 +127,8 @@ static NSColor * const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:
         [self updateMemoryTableSize];
     }];
 
-    [self.emulationViewController stopAudioCore];
     self.emulationController->pauseMachine();
+    [self.emulationViewController stopAudioCore];
 
     Debug *debugger = self.emulationController->getDebugger();
     int pc = debugger->machine->z80Core.GetRegister(CZ80Core::eREG_PC);
@@ -574,8 +574,8 @@ static NSColor * const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:
 
 - (IBAction)step:(id)sender {
     if (!self.emulationController) return;
-    [self.emulationViewController stopAudioCore];
     self.emulationController->pauseMachine();
+    [self.emulationViewController stopAudioCore];
     self.emulationController->debugStep();
     [self updateViewDetails];
 }
@@ -589,8 +589,8 @@ static NSColor * const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:
 
 - (IBAction)pauseMachine:(id)sender
 {
-    [self.emulationViewController stopAudioCore];
     self.emulationController->pauseMachine();
+    [self.emulationViewController stopAudioCore];
     [self updateViewDetails];
     [self updateDisassemblyTable];
     [self updateButtonStates];
@@ -669,8 +669,8 @@ static NSColor * const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:
 
 - (void)tokenPause:(NSArray *)commandList
 {
-    [self.emulationViewController stopAudioCore];
     self.emulationController->pauseMachine();
+    [self.emulationViewController stopAudioCore];
     [self updateViewDetails];
 }
 
@@ -682,8 +682,8 @@ static NSColor * const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:
 
 - (void)tokenStep:(NSArray *)commandList
 {
-    [self.emulationViewController stopAudioCore];
     self.emulationController->pauseMachine();
+    [self.emulationViewController stopAudioCore];
     [self step:nil];
     [self updateViewDetails];
     [self updateButtonStates];
