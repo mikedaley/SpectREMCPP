@@ -84,7 +84,7 @@ public:
     {
         eCPUTYPE_CMOS,
         eCPUTYPE_NMOS
-    } eCPYTYPE;
+    } eCPUTYPE;
 
     typedef enum
     {
@@ -223,6 +223,10 @@ public:
     bool					GetHalted(void) const { return m_CPURegisters.Halted; }
     void					SetHalted(bool halted) { m_CPURegisters.Halted = halted; }
     void                    setNMIReq(bool nmi) { m_CPURegisters.NMIReq = nmi; }
+    void                    setCPUType(eCPUTYPE type) { m_CPUType = type; };
+    uint8_t                 getCPUType() const { return m_CPUType; };
+    void                    setCPUMan(eCPUMANUFACTURER manufacturer) { m_CPUMan = manufacturer; };
+    uint8_t                 getCPUMan() const { return m_CPUMan; };
 
     bool                    isLD_I_A() { return m_LD_I_A; }
 
@@ -291,8 +295,8 @@ protected:
     uint8_t			        m_ParityTable[256];
     uint8_t			        m_SZ35Table[256];
     uint16_t			    m_MEMPTR;
-    eCPUMANUFACTURER		m_CPUMan;
-    eCPYTYPE                m_CPUType;
+    eCPUMANUFACTURER		m_CPUMan = eCPUMAN_Nec;
+    eCPUTYPE                m_CPUType = eCPUTYPE_CMOS;
     uint32_t			    m_PrevOpcodeFlags;
     bool                    m_Iff2_read = false;
     bool                    m_LD_I_A = false;

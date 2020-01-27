@@ -51,7 +51,9 @@ void ZXSpectrum128::initialise(std::string romPath)
     
     machineInfo = machines[ eZXSpectrum128 ];
     ZXSpectrum::initialise(romPath);
-    
+    z80Core.setCPUMan(CZ80Core::eCPUMAN_Zilog);
+    z80Core.setCPUType(CZ80Core::eCPUTYPE_NMOS);
+
     // Register an opcode callback function with the Z80 core so that opcodes can be intercepted
     // when handling things like ROM saving and loading
     z80Core.RegisterOpcodeCallback(opcodeCallback);
@@ -357,7 +359,6 @@ bool ZXSpectrum128::opcodeCallback(uint8_t opcode, uint16_t address, void *param
             if (opcode == 0xc0)
             {
                 machine->emuLoadTrapTriggered = true;
-                machine->tapePlayer->updateStatus();
                 return true;
             }
         }
@@ -369,7 +370,6 @@ bool ZXSpectrum128::opcodeCallback(uint8_t opcode, uint16_t address, void *param
         if (opcode == 0x08)
         {
             machine->emuSaveTrapTriggered = true;
-            machine->tapePlayer->updateStatus();
             return true;
         }
     }
