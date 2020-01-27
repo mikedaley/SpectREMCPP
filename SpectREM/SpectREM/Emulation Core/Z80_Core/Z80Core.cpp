@@ -17,7 +17,8 @@ CZ80Core::CZ80Core()
     m_DebugRead = nullptr;
     m_OpcodeCallback = nullptr;
     m_DebugCallback = nullptr;
-    m_CPUType = eCPUTYPE_Zilog;
+    m_CPUMan = eCPUMAN_Zilog;
+    m_CPUType = eCPUTYPE_NMOS;
     m_PrevOpcodeFlags = 0;
 
     Reset();
@@ -205,7 +206,7 @@ uint32_t CZ80Core::Execute(uint32_t num_tstates, uint32_t int_t_states)
                  have actually been cleared before its value was transferred by LD A,I
                  or LD A,R.  We cannot do this when emulating LD itself as we cannot
                  tell whether the next instruction will be interrupted. */
-                if ( m_Iff2_read )
+                if ( m_Iff2_read && m_CPUType == eCPUTYPE_NMOS)
                 {
                     m_CPURegisters.regs.regF &= ~FLAG_V;
                 }

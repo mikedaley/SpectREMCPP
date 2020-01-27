@@ -76,9 +76,15 @@ public:
 
     typedef enum
     {
-        eCPUTYPE_Zilog,
-        eCPUTYPE_Nec
-    } eCPUTYPE;
+        eCPUMAN_Zilog,
+        eCPUMAN_Nec
+    } eCPUMANUFACTURER;
+    
+    typedef enum
+    {
+        eCPUTYPE_CMOS,
+        eCPUTYPE_NMOS
+    } eCPYTYPE;
 
     typedef enum
     {
@@ -223,7 +229,7 @@ public:
     void					AddContentionTStates(uint32_t extra_tstates) { m_CPURegisters.TStates += extra_tstates; }
     void					AddTStates(uint32_t extra_tstates) { m_CPURegisters.TStates += extra_tstates; }
 
-    uint32_t			GetTStates() const { return m_CPURegisters.TStates; }
+    uint32_t			    GetTStates() const { return m_CPURegisters.TStates; }
     void					ResetTStates() { m_CPURegisters.TStates = 0; }
     void					ResetTStates(uint32_t tstates_per_frame) { m_CPURegisters.TStates -= tstates_per_frame; }
 
@@ -285,8 +291,9 @@ protected:
     uint8_t			        m_ParityTable[256];
     uint8_t			        m_SZ35Table[256];
     uint16_t			    m_MEMPTR;
-    eCPUTYPE				m_CPUType;
-    uint32_t			m_PrevOpcodeFlags;
+    eCPUMANUFACTURER		m_CPUMan;
+    eCPYTYPE                m_CPUType;
+    uint32_t			    m_PrevOpcodeFlags;
     bool                    m_Iff2_read = false;
     bool                    m_LD_I_A = false;
 
