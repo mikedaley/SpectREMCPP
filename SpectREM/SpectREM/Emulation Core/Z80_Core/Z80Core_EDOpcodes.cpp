@@ -406,7 +406,14 @@ void CZ80Core::IN_F_off_C(uint8_t)
 void CZ80Core::OUT_off_C_0(uint8_t)
 {
     m_MEMPTR = m_CPURegisters.reg_pairs.regBC + 1;
-    Z80CoreIOWrite(m_CPURegisters.reg_pairs.regBC, 0);
+    if (m_CPUType == eCPUTYPE_CMOS)
+    {
+        Z80CoreIOWrite(m_CPURegisters.reg_pairs.regBC, 0xff);
+    }
+    else
+    {
+        Z80CoreIOWrite(m_CPURegisters.reg_pairs.regBC, 0);
+    }
 }
 
 //-----------------------------------------------------------------------------------------

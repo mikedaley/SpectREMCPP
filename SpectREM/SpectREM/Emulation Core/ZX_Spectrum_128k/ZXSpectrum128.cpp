@@ -51,7 +51,9 @@ void ZXSpectrum128::initialise(std::string romPath)
     
     machineInfo = machines[ eZXSpectrum128 ];
     ZXSpectrum::initialise(romPath);
-    
+    z80Core.setCPUMan(CZ80Core::eCPUMAN_Zilog);
+    z80Core.setCPUType(CZ80Core::eCPUTYPE_CMOS);
+
     // Register an opcode callback function with the Z80 core so that opcodes can be intercepted
     // when handling things like ROM saving and loading
     z80Core.RegisterOpcodeCallback(opcodeCallback);

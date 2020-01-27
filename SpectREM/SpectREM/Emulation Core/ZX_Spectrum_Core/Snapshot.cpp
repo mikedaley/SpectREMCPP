@@ -545,7 +545,8 @@ Tape::FileResponse ZXSpectrum::snapshotZ80LoadWithBuffer(const char *buffer, siz
                 else
                 {
                     std::cout << "Something funny going on! Can't find a match for the snap version and machine type.\n";
-                    return Tape::FileResponse{ false, "Could not find a match for " };
+                    resume();
+                    return Tape::FileResponse{ false, "Could not find a match for the supplied version and machine type!" };
                 }
 
                 offset += compressedLength + 3;
