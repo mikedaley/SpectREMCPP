@@ -57,7 +57,7 @@ uint8_t ZXSpectrum::ULAFloatingBus()
 
 void ZXSpectrum::ULABuildFloatingBusTable()
 {
-    for (uint32_t i = 0; i < machineInfo.tsPerFrame; i++)
+    for (int i = 0; i < machineInfo.tsPerFrame; i++)
     {
         ULAFloatingBusTable[ i ] = 0;
         

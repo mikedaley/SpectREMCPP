@@ -24,20 +24,20 @@ public:
     virtual ~TapeBlock();
 
 public:
-    virtual uint8_t   getFlag();
-    virtual uint8_t   getDataType();
-    virtual uint16_t  getDataLength();
-    virtual uint8_t   getChecksum();
-    virtual uint16_t  getAutoStartLine();
-    virtual uint16_t  getStartAddress();
-    virtual std::string getBlockName() = 0;
-    virtual std::string getFilename();
+    virtual uint8_t         getFlag();
+    virtual uint8_t         getDataType();
+    virtual uint16_t        getDataLength();
+    virtual uint8_t         getChecksum();
+    virtual uint16_t        getAutoStartLine();
+    virtual uint16_t        getStartAddress();
+    virtual std::string     getBlockName() = 0;
+    virtual std::string     getFilename();
 
 public:
-    uint16_t          blockLength = 0;
-    uint8_t           *blockData = nullptr;
-    int               blockType = 0;
-    int               currentByte = 0;
+    uint16_t                blockLength = 0;
+    uint8_t               * blockData = nullptr;
+    int                     blockType = 0;
+    int                     currentByte = 0;
 };
 
 
@@ -47,11 +47,11 @@ public:
 class ProgramHeader : public TapeBlock
 {
 public:
-    virtual uint16_t  getAutoStartLine();
-    virtual uint16_t  getProgramLength();
-    virtual uint16_t  getDataLength();
-    virtual uint8_t   getChecksum();
-    virtual std::string    getBlockName();
+    virtual uint16_t        getAutoStartLine();
+    virtual uint16_t        getProgramLength();
+    virtual uint16_t        getDataLength();
+    virtual uint8_t         getChecksum();
+    virtual std::string     getBlockName();
 };
 
 
@@ -61,7 +61,7 @@ public:
 class NumericDataHeader : public TapeBlock
 {
 public:
-    virtual std::string          getBlockName();
+    virtual std::string     getBlockName();
 };
 
 
@@ -71,7 +71,7 @@ public:
 class AlphanumericDataHeader : public TapeBlock
 {
 public:
-    virtual std::string          getBlockName();
+    virtual std::string     getBlockName();
 };
 
 
@@ -81,9 +81,9 @@ public:
 class ByteHeader : public TapeBlock
 {
 public:
-    uint16_t          getStartAddress();
-    virtual uint8_t   getChecksum();
-    virtual std::string    getBlockName();
+    uint16_t                getStartAddress();
+    virtual uint8_t         getChecksum();
+    virtual std::string     getBlockName();
 };
 
 
@@ -93,10 +93,10 @@ public:
 class DataBlock : public TapeBlock
 {
 public:
-    uint8_t           *getDataBlock();
-    virtual uint8_t   getDataType();
-    virtual uint8_t   getChecksum();
-    virtual std::string    getBlockName();
+    uint8_t               * getDataBlock();
+    virtual uint8_t         getDataType();
+    virtual uint8_t         getChecksum();
+    virtual std::string     getBlockName();
 };
 
 
@@ -108,37 +108,52 @@ class Tape
     // TAPE block types
     enum
     {
-        ePROGRAM_HEADER = 0,
-        eNUMERIC_DATA_HEADER,
-        eALPHANUMERIC_DATA_HEADER,
-        eBYTE_HEADER,
-        eDATA_BLOCK,
-        eFRAGMENTED_DATA_BLOCK,
-        eUNKNOWN_BLOCK = 99
+        E_PROGRAM_HEADER = 0,
+        E_NUMERIC_DATA_HEADER,
+        E_ALPHANUMERIC_DATA_HEADER,
+        E_BYTE_HEADER,
+        E_DATA_BLOCK,
+        E_FRAGMENTED_DATA_BLOCK,
+        E_UNKNOWN_BLOCK = 99
     };
 
     // TAP Processing states
     enum
     {
-        eNO_TAPE = 0,
-        eHEADER_PILOT,
-        eSYNC1,
-        eSYNC2,
-        eDATA_PILOT,
-        eBLOCK_PAUSE,
-        eDATA_STREAM,
-        eHEADER_DATA_STREAM,
-        eDATA_BIT
+        E_NO_TAPE = 0,
+        E_HEADER_PILOT,
+        E_SYNC1,
+        E_SYNC2,
+        E_DATA_PILOT,
+        E_BLOCK_PAUSE,
+        E_DATA_STREAM,
+        E_HEADER_DATA_STREAM,
+        E_DATA_BIT
     };
 
+    // Tape player actions
+    enum TAPEACTION
+    {
+        E_TAPE_STOP,
+        E_TAPE_PLAY,
+        E_TAPE_REWIND,
+        E_BLOCK_REWIND,
+        E_BLOCK_CHANGED,
+        E_PROCESSING_BLOCK,
+        E_NEW_BLOCK,
+        E_INSTA_LOAD_BLOCK,
+        E_RESET,
+        E_EJECT
+    };
+    
 public:
     struct FileResponse {
-        bool success;
+        bool        success;
         std::string responseMsg;
     };
     
 public:
-    Tape(std::function<void(int blockIndex, int bytes)> callback);
+    Tape(std::function<void(int blockIndex, int bytes, int action)> callback);
     virtual ~Tape();
 
 public:
@@ -146,7 +161,7 @@ public:
     FileResponse            insertTapeWithPath(const std::string path);
     
     // Setup a callback for status changes
-    void                    setStatusCallback(std::function<void(int blockIndex, int bytes)>);
+    void                    setStatusCallback(std::function<void(int blockIndex, int bytes, int action)>);
 
     // Loads/Saves the block controlled by performing a ROM load or save
     void                    loadBlockWithMachine(void *m);
@@ -206,7 +221,7 @@ private:
     TapeBlock               *tapeCurrentBlock   = nullptr;    // Current tape block object
 
     // Function called whenever the status of the tape changes e.g. new block, rewind, stop etc
-    std::function<void(int blockIndex, int bytes)>      updateStatusCallback = nullptr;
+    std::function<void(int blockIndex, int bytes, int action)> updateStatusCallback = nullptr;
 };
 
 #endif /* Tape1_hpp */

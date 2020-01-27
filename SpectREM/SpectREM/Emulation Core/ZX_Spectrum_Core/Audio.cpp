@@ -30,7 +30,7 @@ static const double fAYVolBase[] = {
 
 void ZXSpectrum::audioBuildAYVolumesTable()
 {
-    for (uint32_t i = 0; i < 16; i++)
+    for (int i = 0; i < 16; i++)
     {
         audioAYVolumes[ i ] = static_cast<uint16_t>(fAYVolBase[ i ] * 8192);
     }
@@ -76,7 +76,7 @@ void ZXSpectrum::audioReset()
     audioAYEnvelopeHolding = false;
     specdrumDACValue = 0;
     
-    for (int32_t i = 0; i < E_AYREGISTER::MAX_REGISTERS; i++)
+    for (int i = 0; i < E_AYREGISTER::MAX_REGISTERS; i++)
     {
         audioAYSetRegister(i);
         audioAYWriteData(0);
@@ -104,7 +104,7 @@ void ZXSpectrum::audioUpdateWithTs(int32_t tStates)
     }
     
     // Loop over each tState so that the necessary audio samples can be generated
-    for(int32_t i = 0; i < tStates; i++)
+    for(int i = 0; i < tStates; i++)
     {
         // If we have done more cycles now than the audio step counter, generate a new sample
         audioTsCounter += 1.0f;

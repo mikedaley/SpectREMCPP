@@ -65,6 +65,8 @@ vector_float4 channelSplit(metal::texture2d<float>image, metal::sampler tex, vec
     return frag;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /**
  VERTEX SHADER
  Vertex shader used to pass the vertices through to the fragment shader. Not much going on in here :o)
@@ -104,7 +106,7 @@ fragment vector_float4 clutShader( RasterizerData in [[stage_in]],
 
 /**
  EFFECTS FRAGMENT SHADER
- Used to apply effects to the output from the colour lookup shader. The output from this shader is what is
+ Used to apply effects to the output from the colour CLUT shader. The output from this shader is what is
  then displayed on screen
  **/
 fragment vector_float4 effectsShader(RasterizerData in [[stage_in]],
@@ -112,7 +114,7 @@ fragment vector_float4 effectsShader(RasterizerData in [[stage_in]],
                                      constant Uniforms & uniforms [[buffer(0) ]])
 {
     constexpr metal::sampler textureSampler (metal::mag_filter::linear,
-                                      metal::min_filter::linear);
+                                             metal::min_filter::linear);
     
     float max = metal::pow(uniforms.displayVignetteX, uniforms.displayVignetteY);
     const float w = 32 + 256 + 32;

@@ -215,12 +215,12 @@ void ZXSpectrum::zxSpectrumDebugWrite(uint16_t address, uint8_t byte, void* para
 
 // ------------------------------------------------------------------------------------------------------------
 
-void ZXSpectrum::coreMemoryWriteWithBuffer(const char *buffer, size_t size, uint16_t address)
+void ZXSpectrum::coreMemoryWriteWithBuffer(const char *buffer, size_t size, uint16_t address, void *param)
 {
     std::vector<uint8_t> bufferData(buffer, buffer + size);
-    for (size_t i = 0; i < size; i++)
+    for (int i = 0; i < size; i++)
     {
-        ZXSpectrum::zxSpectrumDebugWrite(address++, bufferData[i], nullptr, nullptr);
+        ZXSpectrum::zxSpectrumDebugWrite(address++, bufferData[i], param, nullptr);
     }
 }
 
@@ -261,7 +261,7 @@ void ZXSpectrum::resetMachine(bool hard)
 {
 	if (hard)
 	{
-		for (uint32_t i = 0; i < machineInfo.ramSize; i++)
+		for (int i = 0; i < machineInfo.ramSize; i++)
 		{
 			memoryRam[i] = static_cast<char>(rand() % 255);
 		}

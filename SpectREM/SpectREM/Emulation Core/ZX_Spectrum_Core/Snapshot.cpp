@@ -560,33 +560,45 @@ void ZXSpectrum::snapshotExtractMemoryBlock(const char *buffer, size_t bufferSiz
 
     if (!isCompressed)
     {
-        while (memoryPtr < unpackedLength + memAddr)
+        while (memoryPtr < unpackedLength + memAddr && memoryPtr + 1 < memoryRam.size())
         {
             memoryRam[memoryPtr++] = static_cast<int8_t>(fileBytes[filePtr++]);
         }
     }
     else
     {
-        while (memoryPtr < unpackedLength + memAddr)
+        while (memoryPtr < unpackedLength + memAddr && memoryPtr < memoryRam.size())
         {
             std::string n = std::string("memoryPtr: ") + std::to_string(memoryPtr) + std::string(" unpackedLength: ") + std::to_string(unpackedLength) + std::string(" memAddr: ") + std::to_string(memAddr) + std::string(" filePtr+1: ") + std::to_string(filePtr + 1) + " - " + std::to_string(fileBytes.size()) + "\n";
             uint8_t byte1 = fileBytes[filePtr];
-            uint8_t byte2 = fileBytes[filePtr + 1];
+            
+            if (byte1 == 0xed && filePtr + 1 < fileBytes.size())
+            {
+                uint8_t byte2 = fileBytes[filePtr + 1];
 
-            if ((unpackedLength + memAddr) - memoryPtr >= 2 && byte1 == 0xed && byte2 == 0xed)
-            {
-                uint8_t count = fileBytes[filePtr + 2];
-                uint8_t value = fileBytes[filePtr + 3];
-                for (uint32_t i = 0; i < count; i++)
+                if (byte2 == 0xed)
                 {
-                    memoryRam[memoryPtr++] = static_cast<int8_t>(value);
+                    if (filePtr + 3 < fileBytes.size())
+                    {
+                        uint8_t count = fileBytes[filePtr + 2];
+                        uint8_t value = fileBytes[filePtr + 3];
+                        for (int i = 0; i < count; i++)
+                        {
+                            memoryRam[memoryPtr++] = static_cast<int8_t>(value);
+                        }
+                        filePtr += 4;
+                        continue;
+                    }
+                    else
+                    {
+                        std::cout << "Something isn't right, expected packed bytes but ran out of file data!\n";
+                        return;
+                    }
                 }
-                filePtr += 4;
             }
-            else
-            {
-                memoryRam[memoryPtr++] = static_cast<int8_t>(fileBytes[filePtr++]);
-            }
+            
+            // Getting here means no compressed bytes were found, so just load the byte into memory
+            memoryRam[memoryPtr++] = static_cast<int8_t>(fileBytes.at(filePtr++));
         }
     }
 }

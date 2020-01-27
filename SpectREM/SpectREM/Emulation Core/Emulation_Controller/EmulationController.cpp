@@ -17,8 +17,8 @@
 EmulationController::EmulationController()
 {
     std::cout << "EmulationController::Constructor" << "\n";
-    tapePlayer = new Tape(nullptr);
-    debugger = new Debug();
+    tapePlayer_ = new Tape(nullptr);
+    debugger_ = new Debug();
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -26,8 +26,8 @@ EmulationController::EmulationController()
 EmulationController::~EmulationController()
 {
     std::cout << "EmulationController::Destructor" << "\n";
-    delete tapePlayer;
-    delete debugger;
+    delete tapePlayer_;
+    delete debugger_;
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -36,28 +36,28 @@ EmulationController::~EmulationController()
 
 void EmulationController::createMachineOfType(int machineType, std::string romPath)
 {
-    if (machine)
+    if (machine_)
     {
-        machine->pause();
-        delete machine;
+        machine_->pause();
+        delete machine_;
     }
     
     switch (machineType) {
         case eZXSpectrum48:
-            machine = new ZXSpectrum48(tapePlayer);
+            machine_ = new ZXSpectrum48(tapePlayer_);
             break;
             
         case eZXSpectrum128:
-            machine = new ZXSpectrum128(tapePlayer);
+            machine_ = new ZXSpectrum128(tapePlayer_);
             break;
             
         default:
-            machine = new ZXSpectrum48(tapePlayer);
+            machine_ = new ZXSpectrum48(tapePlayer_);
             break;
     }
     
-    machine->initialise(romPath);
-    debugger->attachMachine(machine);
+    machine_->initialise(romPath);
+    debugger_->attachMachine(machine_);
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -75,19 +75,19 @@ Tape::FileResponse EmulationController::loadFileWithPath(const std::string path)
     
     if (fileExtension == "SNA")
     {
-        return machine->snapshotSNALoadWithPath(path);
+        return machine_->snapshotSNALoadWithPath(path);
     }
     else if (fileExtension == "Z80")
     {
-        return machine->snapshotZ80LoadWithPath(path);
+        return machine_->snapshotZ80LoadWithPath(path);
     }
     else if (fileExtension == "TAP")
     {
-        return tapePlayer->insertTapeWithPath(path);
+        return tapePlayer_->insertTapeWithPath(path);
     }
     else if (fileExtension == "SCR")
     {
-        return machine->scrLoadWithPath(path);
+        return machine_->scrLoadWithPath(path);
     }
     
     return Tape::FileResponse{ false, "Unknown file type" };
@@ -97,18 +97,18 @@ Tape::FileResponse EmulationController::loadFileWithPath(const std::string path)
 // - Tape player
 // ------------------------------------------------------------------------------------------------------------
 
-void EmulationController::setTapeStatusCallback(std::function<void(int blockIndex, int bytes)> tapeStatusCallback)
+void EmulationController::setTapeStatusCallback(std::function<void(int blockIndex, int bytes, int action)> tapeStatusCallback)
 {
-    tapePlayer->setStatusCallback(tapeStatusCallback);
+    tapePlayer_->setStatusCallback(tapeStatusCallback);
 }
 
 // ------------------------------------------------------------------------------------------------------------
 
 void EmulationController::setCurrentTapeBlockIndex(int index)
 {
-    tapePlayer->setCurrentBlock(index);
-    tapePlayer->rewindBlock();
-    tapePlayer->stop();
+    tapePlayer_->setCurrentBlock(index);
+    tapePlayer_->rewindBlock();
+    tapePlayer_->stop();
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -117,7 +117,7 @@ void EmulationController::setCurrentTapeBlockIndex(int index)
 
 void EmulationController::setDebugCallback(std::function<bool (uint16_t, int)> debugCallback)
 {
-    machine->registerDebugOpCallback(debugCallback);
+    machine_->registerDebugOpCallback(debugCallback);
 }
 
 // ------------------------------------------------------------------------------------------------------------

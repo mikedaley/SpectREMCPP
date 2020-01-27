@@ -8,6 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "EmulationViewController.h"
+#import "EmulationController.hpp"
 
 @interface DebugViewController : NSViewController <NSTableViewDataSource, NSTabViewDelegate, NSTextFieldDelegate>
 
@@ -53,6 +54,7 @@
 @property (strong) NSString * tStates;
 
 @property (assign)  EmulationViewController * emulationViewController;
+@property (assign)  EmulationController * emulationController;
 @property (weak)    IBOutlet NSTableView * disassemblyTableview;
 @property (weak)    IBOutlet NSTableView * memoryTableView;
 @property (weak)    IBOutlet NSTableView * stackTable;
@@ -63,6 +65,7 @@
 
 #pragma mark - Methods
 
+- (void)setupDebugger;
 - (void)updateMemoryTableSize;
 - (void)updateViewDetails;
 - (IBAction)pauseMachine:(id)sender;

@@ -6,9 +6,8 @@
 //  Copyright © 2017 71Squared Ltd. All rights reserved.
 //
 
-#import "Defaults.h"
-
 #import <MetalKit/MetalKit.h>
+#import "Defaults.h"
 
 @class EmulationScene;
 @class AudioCore;
@@ -33,17 +32,10 @@ enum
 
 #pragma mark - Methods
 
-- (BOOL)getDisplayReady;
-- (void *)getDebugger;
-- (BOOL)isEmulatorPaused;
-
 - (void)loadFileWithURL:(NSURL *)url addToRecent:(BOOL)addToRecent;
-- (void)audioCallback:(int)inNumberFrames buffer:(int16_t *)buffer;
 
-- (void)pauseMachine;
-- (void)startMachine;
+- (void)stopAudioCore;
+- (void)startAudioCore;
 - (void)updateDisplay;
-
-- (IBAction)showTapeBrowser:(id)sender;
 
 @end

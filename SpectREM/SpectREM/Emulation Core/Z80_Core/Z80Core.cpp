@@ -45,7 +45,7 @@ void CZ80Core::Initialise(Z80CoreRead mem_read, Z80CoreWrite mem_write, Z80CoreR
     m_Debugwrite = debug_write_handler;
 
     // Setup the flags tables
-    for (uint16_t i = 0; i < 256; i++)
+    for (int i = 0; i < 256; i++)
     {
         m_SZ35Table[i] = (i == 0) ? FLAG_Z : 0;
         m_SZ35Table[i] |= ((i & 0x80) == 0x80) ? FLAG_S : 0;
