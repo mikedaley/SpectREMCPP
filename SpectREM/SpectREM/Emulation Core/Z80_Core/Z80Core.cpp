@@ -18,7 +18,7 @@ CZ80Core::CZ80Core()
     m_OpcodeCallback = nullptr;
     m_DebugCallback = nullptr;
     m_CPUMan = eCPUMAN_Zilog;
-    m_CPUType = eCPUTYPE_NMOS;
+    m_CPUType = eCPUTYPE_CMOS;
     m_PrevOpcodeFlags = 0;
 
     Reset();
