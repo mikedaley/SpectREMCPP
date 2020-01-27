@@ -587,7 +587,7 @@ void CZ80Core::LD_off_HL_n(uint8_t)
 
 void CZ80Core::SCF(uint8_t)
 {
-    if ( m_CPUType == eCPUTYPE_Zilog )
+    if ( m_CPUMan == eCPUMAN_Zilog )
     {
         if ( m_PrevOpcodeFlags & OPCODEFLAG_AltersFlags )
         {
@@ -701,7 +701,7 @@ void CZ80Core::CCF(uint8_t)
 {
     uint8_t tf = m_CPURegisters.regs.regF;
 
-    if ( m_CPUType == eCPUTYPE_Zilog )
+    if ( m_CPUMan == eCPUMAN_Zilog )
     {
         if ( m_PrevOpcodeFlags & OPCODEFLAG_AltersFlags )
         {
