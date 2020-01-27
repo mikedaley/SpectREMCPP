@@ -3,20 +3,23 @@
 // Used by SpectREM.rc
 //
 #define IDR_MENU1                       101
-#define IDD_SETTINGS_DIALOG             101
 #define IDR_ACCELERATOR1                102
 #define IDR_MENUACCELERATORS            102
 #define IDI_ICON1                       105
+#define IDD_PROPPAGE_SOUND              106
+#define IDD_PROPPAGE_DISPLAY            107
 #define IDI_ICON2                       108
 #define IDS_FIRSTCOLUMN                 111
 #define IDS_BLOCKTYPE                   112
 #define IDS_FILENAME                    113
+#define IDD_DIALOG_SETTINGS             113
 #define IDS_AUTOSTARTLINE               114
+#define IDD_PROPPAGE_MEDIUM             114
+#define IDD_PROPPAGE_MISC               114
 #define IDS_ADDRESS                     115
 #define IDS_LENGTH                      116
 #define ID_TEXTFILE                     256
-#define IDC_BTN_SETTINGS_SAVE           1001
-#define IDC_BTN_SETTINGS_CLOSE          1002
+#define IDC_BUTTON1                     1004
 #define ID_FILE_OPENSNAPSHOT            40001
 #define ID_FILE_EXIT                    40002
 #define ID_EMULATION_FULLSPEED          40003
@@ -64,9 +67,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        112
+#define _APS_NEXT_RESOURCE_VALUE        119
 #define _APS_NEXT_COMMAND_VALUE         40075
-#define _APS_NEXT_CONTROL_VALUE         1002
+#define _APS_NEXT_CONTROL_VALUE         1005
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

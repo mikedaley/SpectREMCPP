@@ -567,8 +567,9 @@ void ZXSpectrum::snapshotExtractMemoryBlock(const char *buffer, size_t bufferSiz
     }
     else
     {
-        while (memoryPtr < unpackedLength + memAddr - 1)
+        while (memoryPtr < unpackedLength + memAddr)
         {
+            std::string n = std::string("memoryPtr: ") + std::to_string(memoryPtr) + std::string(" unpackedLength: ") + std::to_string(unpackedLength) + std::string(" memAddr: ") + std::to_string(memAddr) + std::string(" filePtr+1: ") + std::to_string(filePtr + 1) + " - " + std::to_string(fileBytes.size()) + "\n";
             uint8_t byte1 = fileBytes[filePtr];
             uint8_t byte2 = fileBytes[filePtr + 1];
 
