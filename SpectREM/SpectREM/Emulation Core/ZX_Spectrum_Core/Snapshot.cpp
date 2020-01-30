@@ -534,10 +534,11 @@ Tape::FileResponse ZXSpectrum::snapshotZ80LoadWithBuffer(const char *buffer, siz
                     }
                 }
                 else if (version == 1 || ((version == 2 || version == 3) && (hardwareType == cZ80_V2_MACHINE_TYPE_128 ||
-                                                                          hardwareType == cZ80_V3_MACHINE_TYPE_128 ||
-                                                                          hardwareType == cZ80_V2_MACHINE_TYPE_128_IF1 ||
-                                                                          hardwareType == cZ80_V3_MACHINE_TYPE_128_IF1 ||
-                                                                          hardwareType == cz80_V3_MACHINE_TYPE_128_MGT)))
+                                                                             hardwareType == cZ80_V3_MACHINE_TYPE_128 ||
+                                                                             hardwareType == cZ80_V2_MACHINE_TYPE_128_IF1 ||
+                                                                             hardwareType == cZ80_V3_MACHINE_TYPE_128_IF1 ||
+                                                                             hardwareType == cz80_V3_MACHINE_TYPE_128_MGT ||
+                                                                             hardwareType == cZ80_V3_MACHINE_TYPE_128_2)))
                 {
                     // 128k
                     snapshotExtractMemoryBlock(buffer, size, (pageId - 3) * 0x4000, offset + 3, isCompressed, 0x4000);
@@ -750,8 +751,13 @@ int32_t ZXSpectrum::snapshotMachineInSnapshotWithPath(const char *path)
                     case cZ80_V3_MACHINE_TYPE_128:
                     case cZ80_V3_MACHINE_TYPE_128_IF1:
                     case cz80_V3_MACHINE_TYPE_128_MGT:
-                    case cZ80_V3_MACHINE_TYPE_128_2:
                         machineType = eZXSpectrum128;
+                        break;
+
+                    case cZ80_V3_MACHINE_TYPE_128_2:
+                        machineType = eZXSpectrum128_2;
+                        break;
+
                     default:
                         break;
                 }

@@ -26,8 +26,8 @@
 #import "Tape.hpp"
 #import "TapeBrowserViewController.h"
 #import "ZXSpectrum.hpp"
-#import "ZXSpectrum128.hpp"
-#import "ZXSpectrum48.hpp"
+//#import "ZXSpectrum128.hpp"
+//#import "ZXSpectrum48.hpp"
 
 #pragma mark - Constants
 
@@ -409,149 +409,6 @@ const int cSCREEN_FILL              = 1;
     [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
 }
 
-#pragma mark - Keyboard
-
-- (void)setupKeyMappings
-{
-    keyMappings_ = @{
-        @(OSX_KEY_LEFT_SHIFT)   : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Shift), //Left Shift
-        @(OSX_KEY_RIGHT_SHIFT)  : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Shift), //Right Shift
-        @(OSX_KEY_Z)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Z),
-        @(OSX_KEY_X)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_X),
-        @(OSX_KEY_C)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_C),
-        @(OSX_KEY_V)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_V),
-        
-        @(OSX_KEY_A)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_A),
-        @(OSX_KEY_S)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_S),
-        @(OSX_KEY_D)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_D),
-        @(OSX_KEY_F)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_F),
-        @(OSX_KEY_G)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_G),
-        
-        @(OSX_KEY_Q)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Q),
-        @(OSX_KEY_W)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_W),
-        @(OSX_KEY_E)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_E),
-        @(OSX_KEY_R)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_R),
-        @(OSX_KEY_T)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_T),
-        
-        @(OSX_KEY_1)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_1),
-        @(OSX_KEY_2)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_2),
-        @(OSX_KEY_3)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_3),
-        @(OSX_KEY_4)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_4),
-        @(OSX_KEY_5)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_5),
-        
-        @(OSX_KEY_0)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_0),
-        @(OSX_KEY_9)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_9),
-        @(OSX_KEY_8)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_8),
-        @(OSX_KEY_7)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_7),
-        @(OSX_KEY_6)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_6),
-        
-        @(OSX_KEY_P)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_P),
-        @(OSX_KEY_O)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_O),
-        @(OSX_KEY_I)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_I),
-        @(OSX_KEY_U)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_U),
-        @(OSX_KEY_Y)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Y),
-        
-        @(OSX_KEY_ENTER)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Enter),
-        @(OSX_KEY_L)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_L),
-        @(OSX_KEY_K)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_K),
-        @(OSX_KEY_J)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_J),
-        @(OSX_KEY_H)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_H),
-        
-        @(OSX_KEY_SPACE)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Space),
-        @(OSX_KEY_CONTROL)      : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_SymbolShift), // Control key
-        @(OSX_KEY_M)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_M),
-        @(OSX_KEY_N)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_N),
-        @(OSX_KEY_B)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_B),
-        
-        @(OSX_KEY_RIGHT_SQUARE) : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_InvVideo),
-        @(OSX_KEY_LEFT_SQUARE)  : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_TrueVideo),
-        @(OSX_KEY_QUOTE)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Quote),
-        @(OSX_KEY_SEMI_COLON)   : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_SemiColon),
-        @(OSX_KEY_COMMA)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Comma),
-        @(OSX_KEY_MINUS)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Minus),
-        @(OSX_KEY_PLUS)         : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Plus),
-        @(OSX_KEY_PERIOD)       : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Period),
-        @(OSX_KEY_TAB)          : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Edit),
-        @(OSX_KEY_TILDA)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Graph),
-        @(OSX_KEY_ESC)          : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Break), // ESC key
-        @(OSX_KEY_BACKSPACE)    : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Backspace),
-        @(OSX_KEY_ARROW_UP)     : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ArrowUp),
-        @(OSX_KEY_ARROW_DOWN)   : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ArrowDown),
-        @(OSX_KEY_ARROW_LEFT)   : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ArrowLeft),
-        @(OSX_KEY_ARROW_RIGHT)  : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ArrowRight),
-        @(OSX_KEY_LEFT_ALT)     : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ExtendMode), // Left Alt
-        @(OSX_KEY_RIGHT_ALT)    : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ExtendMode), // Right Alt
-        @(OSX_KEY_CAPSLOCK)     : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_CapsLock)
-    };
-}
-
-- (void)keyDown:(NSEvent *)event
-{
-    if (!event.isARepeat && !(event.modifierFlags & NSEventModifierFlagCommand) && event.keyCode != 96)
-    {
-        emulationController->keyboardKeyDown((ZXSpectrum::eZXSpectrumKey)[[keyMappings_ objectForKey:@(event.keyCode)] unsignedIntValue]);
-    }
-}
-
-- (void)keyUp:(NSEvent *)event
-{
-    if (event.keyCode == 96) // F5 key
-    {
-        [self loadFileWithURL:lastOpenedURL_ addToRecent:NO];
-        return;
-    }
-    
-    if (!event.isARepeat && !(event.modifierFlags & NSEventModifierFlagCommand))
-    {
-        emulationController->keyboardKeyUp((ZXSpectrum::eZXSpectrumKey)[[keyMappings_ objectForKey:@(event.keyCode)] unsignedIntValue]);
-    }
-}
-
-- (void)flagsChanged:(NSEvent *)event
-{
-    if (!(event.modifierFlags & NSEventModifierFlagCommand))
-    {
-        switch (event.keyCode)
-        {
-            case 58:
-            case 61:
-                if (event.modifierFlags & NSEventModifierFlagOption)
-                {
-                    emulationController->keyboardKeyDown(ZXSpectrum::eZXSpectrumKey::Key_ExtendMode);
-                } else {
-                    emulationController->keyboardKeyUp(ZXSpectrum::eZXSpectrumKey::Key_ExtendMode);
-                }
-                break;
-            case 57:
-                if ((event.modifierFlags & NSEventModifierFlagCapsLock) || !(event.modifierFlags & NSEventModifierFlagCapsLock))
-                {
-                    emulationController->keyboardKeyDown(ZXSpectrum::eZXSpectrumKey::Key_CapsLock);
-                } else {
-                    emulationController->keyboardKeyUp(ZXSpectrum::eZXSpectrumKey::Key_CapsLock);
-                }
-                break;
-            case 56:
-            case 60:
-                if (event.modifierFlags & NSEventModifierFlagShift)
-                {
-                    emulationController->keyboardKeyDown(ZXSpectrum::eZXSpectrumKey::Key_Shift);
-                } else {
-                    emulationController->keyboardKeyUp(ZXSpectrum::eZXSpectrumKey::Key_Shift);
-                }
-                break;
-            case 59:
-                if (event.modifierFlags & NSEventModifierFlagControl)
-                {
-                    emulationController->keyboardKeyDown(ZXSpectrum::eZXSpectrumKey::Key_SymbolShift);
-                } else {
-                    emulationController->keyboardKeyUp(ZXSpectrum::eZXSpectrumKey::Key_SymbolShift);
-                }
-            default:
-                break;
-        }
-    }
-}
-
 #pragma mark - Restore Session
 
 - (void)restoreSession
@@ -790,4 +647,146 @@ const int cSCREEN_FILL              = 1;
     [tapeBrowserWindowController_ showWindow:self.view.window];
 }
 
+#pragma mark - Keyboard
+
+- (void)setupKeyMappings
+{
+    keyMappings_ = @{
+        @(OSX_KEY_LEFT_SHIFT)   : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Shift), //Left Shift
+        @(OSX_KEY_RIGHT_SHIFT)  : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Shift), //Right Shift
+        @(OSX_KEY_Z)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Z),
+        @(OSX_KEY_X)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_X),
+        @(OSX_KEY_C)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_C),
+        @(OSX_KEY_V)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_V),
+        
+        @(OSX_KEY_A)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_A),
+        @(OSX_KEY_S)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_S),
+        @(OSX_KEY_D)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_D),
+        @(OSX_KEY_F)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_F),
+        @(OSX_KEY_G)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_G),
+        
+        @(OSX_KEY_Q)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Q),
+        @(OSX_KEY_W)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_W),
+        @(OSX_KEY_E)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_E),
+        @(OSX_KEY_R)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_R),
+        @(OSX_KEY_T)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_T),
+        
+        @(OSX_KEY_1)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_1),
+        @(OSX_KEY_2)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_2),
+        @(OSX_KEY_3)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_3),
+        @(OSX_KEY_4)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_4),
+        @(OSX_KEY_5)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_5),
+        
+        @(OSX_KEY_0)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_0),
+        @(OSX_KEY_9)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_9),
+        @(OSX_KEY_8)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_8),
+        @(OSX_KEY_7)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_7),
+        @(OSX_KEY_6)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_6),
+        
+        @(OSX_KEY_P)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_P),
+        @(OSX_KEY_O)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_O),
+        @(OSX_KEY_I)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_I),
+        @(OSX_KEY_U)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_U),
+        @(OSX_KEY_Y)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Y),
+        
+        @(OSX_KEY_ENTER)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Enter),
+        @(OSX_KEY_L)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_L),
+        @(OSX_KEY_K)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_K),
+        @(OSX_KEY_J)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_J),
+        @(OSX_KEY_H)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_H),
+        
+        @(OSX_KEY_SPACE)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Space),
+        @(OSX_KEY_CONTROL)      : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_SymbolShift), // Control key
+        @(OSX_KEY_M)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_M),
+        @(OSX_KEY_N)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_N),
+        @(OSX_KEY_B)            : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_B),
+        
+        @(OSX_KEY_RIGHT_SQUARE) : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_InvVideo),
+        @(OSX_KEY_LEFT_SQUARE)  : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_TrueVideo),
+        @(OSX_KEY_QUOTE)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Quote),
+        @(OSX_KEY_SEMI_COLON)   : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_SemiColon),
+        @(OSX_KEY_COMMA)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Comma),
+        @(OSX_KEY_MINUS)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Minus),
+        @(OSX_KEY_PLUS)         : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Plus),
+        @(OSX_KEY_PERIOD)       : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Period),
+        @(OSX_KEY_TAB)          : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Edit),
+        @(OSX_KEY_TILDA)        : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Graph),
+        @(OSX_KEY_ESC)          : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Break), // ESC key
+        @(OSX_KEY_BACKSPACE)    : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_Backspace),
+        @(OSX_KEY_ARROW_UP)     : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ArrowUp),
+        @(OSX_KEY_ARROW_DOWN)   : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ArrowDown),
+        @(OSX_KEY_ARROW_LEFT)   : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ArrowLeft),
+        @(OSX_KEY_ARROW_RIGHT)  : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ArrowRight),
+        @(OSX_KEY_LEFT_ALT)     : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ExtendMode), // Left Alt
+        @(OSX_KEY_RIGHT_ALT)    : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_ExtendMode), // Right Alt
+        @(OSX_KEY_CAPSLOCK)     : @((uint32_t)ZXSpectrum::eZXSpectrumKey::Key_CapsLock)
+    };
+}
+
+- (void)keyDown:(NSEvent *)event
+{
+    if (!event.isARepeat && !(event.modifierFlags & NSEventModifierFlagCommand) && event.keyCode != 96)
+    {
+        emulationController->keyboardKeyDown((ZXSpectrum::eZXSpectrumKey)[[keyMappings_ objectForKey:@(event.keyCode)] unsignedIntValue]);
+    }
+}
+
+- (void)keyUp:(NSEvent *)event
+{
+    if (event.keyCode == 96) // F5 key
+    {
+        [self loadFileWithURL:lastOpenedURL_ addToRecent:NO];
+        return;
+    }
+    
+    if (!event.isARepeat && !(event.modifierFlags & NSEventModifierFlagCommand))
+    {
+        emulationController->keyboardKeyUp((ZXSpectrum::eZXSpectrumKey)[[keyMappings_ objectForKey:@(event.keyCode)] unsignedIntValue]);
+    }
+}
+
+- (void)flagsChanged:(NSEvent *)event
+{
+    if (!(event.modifierFlags & NSEventModifierFlagCommand))
+    {
+        switch (event.keyCode)
+        {
+            case 58:
+            case 61:
+                if (event.modifierFlags & NSEventModifierFlagOption)
+                {
+                    emulationController->keyboardKeyDown(ZXSpectrum::eZXSpectrumKey::Key_ExtendMode);
+                } else {
+                    emulationController->keyboardKeyUp(ZXSpectrum::eZXSpectrumKey::Key_ExtendMode);
+                }
+                break;
+            case 57:
+                if ((event.modifierFlags & NSEventModifierFlagCapsLock) || !(event.modifierFlags & NSEventModifierFlagCapsLock))
+                {
+                    emulationController->keyboardKeyDown(ZXSpectrum::eZXSpectrumKey::Key_CapsLock);
+                } else {
+                    emulationController->keyboardKeyUp(ZXSpectrum::eZXSpectrumKey::Key_CapsLock);
+                }
+                break;
+            case 56:
+            case 60:
+                if (event.modifierFlags & NSEventModifierFlagShift)
+                {
+                    emulationController->keyboardKeyDown(ZXSpectrum::eZXSpectrumKey::Key_Shift);
+                } else {
+                    emulationController->keyboardKeyUp(ZXSpectrum::eZXSpectrumKey::Key_Shift);
+                }
+                break;
+            case 59:
+                if (event.modifierFlags & NSEventModifierFlagControl)
+                {
+                    emulationController->keyboardKeyDown(ZXSpectrum::eZXSpectrumKey::Key_SymbolShift);
+                } else {
+                    emulationController->keyboardKeyUp(ZXSpectrum::eZXSpectrumKey::Key_SymbolShift);
+                }
+            default:
+                break;
+        }
+    }
+}
 @end

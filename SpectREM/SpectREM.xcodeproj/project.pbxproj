@@ -90,6 +90,7 @@
 		2968891721E3B98B00BFC3BD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2968891621E3B98B00BFC3BD /* main.m */; };
 		2971211D23CE633A0083C334 /* EmulationController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2971211B23CE633A0083C334 /* EmulationController.cpp */; };
 		2971211E23CE633A0083C334 /* EmulationController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2971211B23CE633A0083C334 /* EmulationController.cpp */; };
+		2985C70223E2D16B00F42D8F /* ZXSpectrum128_2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2985C70023E2D16B00F42D8F /* ZXSpectrum128_2.cpp */; };
 		29D0D61B23AE418C00BA8A30 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29D0D61A23AE418C00BA8A30 /* UserNotifications.framework */; };
 		29E98454239531C00033E63C /* NSObject+Bindings.mm in Sources */ = {isa = PBXBuildFile; fileRef = 29E98453239531C00033E63C /* NSObject+Bindings.mm */; };
 		ED2A6D051F6036D3003CD6CE /* ConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D041F6036D3003CD6CE /* ConfigurationViewController.m */; };
@@ -228,6 +229,8 @@
 		2968891621E3B98B00BFC3BD /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		2971211B23CE633A0083C334 /* EmulationController.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EmulationController.cpp; sourceTree = "<group>"; };
 		2971211C23CE633A0083C334 /* EmulationController.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = EmulationController.hpp; sourceTree = "<group>"; };
+		2985C70023E2D16B00F42D8F /* ZXSpectrum128_2.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ZXSpectrum128_2.cpp; sourceTree = "<group>"; };
+		2985C70123E2D16B00F42D8F /* ZXSpectrum128_2.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ZXSpectrum128_2.hpp; sourceTree = "<group>"; };
 		29CE03BD22A7BD64007A1549 /* SpectREM.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = SpectREM.entitlements; path = SpectREM/OSX/SpectREM.entitlements; sourceTree = SOURCE_ROOT; };
 		29D0D61A23AE418C00BA8A30 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		29E98452239531C00033E63C /* NSObject+Bindings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSObject+Bindings.h"; path = "SpectREM/OSX/NSObject+Bindings.h"; sourceTree = SOURCE_ROOT; };
@@ -394,6 +397,7 @@
 				2963B3D123B7977D00CAE4CD /* ZX_Spectrum_Core */,
 				2963B3DB23B7977D00CAE4CD /* ZX_Spectrum_48k */,
 				2963B3E223B7977D00CAE4CD /* ZX_Spectrum_128k */,
+				2985C6FE23E2D13700F42D8F /* ZX_Spectrum_128k_2 */,
 				2963B3DE23B7977D00CAE4CD /* Debugger */,
 				2963B3E123B7977D00CAE4CD /* Tape */,
 				2963B3BA23B7977D00CAE4CD /* ROMS */,
@@ -511,6 +515,15 @@
 				2971211B23CE633A0083C334 /* EmulationController.cpp */,
 			);
 			path = Emulation_Controller;
+			sourceTree = "<group>";
+		};
+		2985C6FE23E2D13700F42D8F /* ZX_Spectrum_128k_2 */ = {
+			isa = PBXGroup;
+			children = (
+				2985C70123E2D16B00F42D8F /* ZXSpectrum128_2.hpp */,
+				2985C70023E2D16B00F42D8F /* ZXSpectrum128_2.cpp */,
+			);
+			path = ZX_Spectrum_128k_2;
 			sourceTree = "<group>";
 		};
 		29E98462239535F60033E63C /* SmartLink */ = {
@@ -892,6 +905,7 @@
 				2963B40D23B7977D00CAE4CD /* ZXSpectrum48.cpp in Sources */,
 				2963B3F923B7977D00CAE4CD /* Z80Core_DDOpcodes.cpp in Sources */,
 				17C33DFA1F6578E600720A06 /* TapeBrowserViewController.mm in Sources */,
+				2985C70223E2D16B00F42D8F /* ZXSpectrum128_2.cpp in Sources */,
 				2963B3FF23B7977D00CAE4CD /* FloatingBus.cpp in Sources */,
 				2963B3F523B7977D00CAE4CD /* Z80Core_FDOpcodes.cpp in Sources */,
 			);
