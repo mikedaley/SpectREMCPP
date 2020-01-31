@@ -68,8 +68,8 @@ void ZXSpectrum::ULABuildFloatingBusTable()
             
             if (line < machineInfo.pxVerticalDisplay && ts < 128)
             {
-                ULAMemoryContentionTable[i] = ULAConentionValues[ ts & 0x07 ];
-                ULAIOContentionTable[i] = ULAConentionValues[ ts & 0x07 ];
+                ULAMemoryContentionTable[i] = ULAContentionValues[ ts & 0x07 ];
+                ULAIOContentionTable[i] = ULAContentionValues[ ts & 0x07 ];
             }
         }
     }

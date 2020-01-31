@@ -65,7 +65,7 @@ void ZXSpectrum::initialise(std::string romPath)
 	displayBuildTsTable();
 	displayBuildCLUT();
 
-	ULABuildContentionTable();
+	ULABuildContentionTable(machineInfo.altContention);
 
 	audioSetup(cSAMPLE_RATE, cFPS);
 	audioBuildAYVolumesTable();

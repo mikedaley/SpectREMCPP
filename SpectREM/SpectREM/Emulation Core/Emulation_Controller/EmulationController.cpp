@@ -10,6 +10,7 @@
 #include "ZXSpectrum48.hpp"
 #include "ZXSpectrum128.hpp"
 #include "ZXSpectrum128_2.hpp"
+#include "ZXSpectrum128_2A.hpp"
 
 // ------------------------------------------------------------------------------------------------------------
 // - Constructor/Deconstructor
@@ -54,6 +55,10 @@ void EmulationController::createMachineOfType(int machineType, std::string romPa
 
         case eZXSpectrum128_2:
             machine_ = new ZXSpectrum128_2(tapePlayer_);
+            break;
+
+        case eZXSpectrum128_2A:
+            machine_ = new ZXSpectrum128_2A(tapePlayer_);
             break;
 
         default:

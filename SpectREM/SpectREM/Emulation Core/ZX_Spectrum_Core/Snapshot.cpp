@@ -338,7 +338,7 @@ ZXSpectrum::SnapshotData ZXSpectrum::snapshotCreateZ80()
             snapData.data[snapPtr++] = z80Core.Z80CoreDebugMemRead(static_cast<uint16_t>(memAddr), nullptr);
         }
     }
-    else if (machineInfo.machineType == eZXSpectrum128)
+    else if (machineInfo.machineType == eZXSpectrum128 || machineInfo.machineType == eZXSpectrum128_2)
     {
         // 128k/Next
         for (uint8_t page = 0; page < 8; page++)
@@ -483,14 +483,14 @@ Tape::FileResponse ZXSpectrum::snapshotZ80LoadWithBuffer(const char *buffer, siz
                 // Decode byte 35 so that port 0x7ffd can be set on the 128k
                 uint8_t data = reinterpret_cast<uint8_t *>(&pFileBytes[35])[0];
                 emuDisablePaging = ((data & 0x20) == 0x20) ? true : false;
-                emuROMPage = ((data & 0x10) == 0x10) ? 1 : 0;
+                emuROMNumber = ((data & 0x10) == 0x10) ? 1 : 0;
                 emuDisplayPage = ((data & 0x08) == 0x08) ? 7 : 5;
                 emuRAMPage = (data & 0x07);
             }
             else
             {
                 emuDisablePaging = true;
-                emuROMPage = 0;
+                emuROMNumber = 0;
                 emuRAMPage = 0;
                 emuDisplayPage = 1;
             }
@@ -664,6 +664,9 @@ std::string ZXSpectrum::snapshotHardwareTypeForVersion(uint32_t version, uint32_
                 break;
             case cz80_V3_MACHINE_TYPE_128_MGT:
                 hardware = "128k + M.G.T";
+                break;
+            case cZ80_V3_MACHINE_TYPE_128_2:
+                hardware = "128k +2";
                 break;
 
             default:
