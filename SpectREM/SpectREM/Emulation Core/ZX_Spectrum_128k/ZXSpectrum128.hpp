@@ -34,7 +34,7 @@ public:
     
     static bool             opcodeCallback(uint8_t opcode, uint16_t address, void *param);
 
-    void                    UpdatePort7FFD(uint8_t data);
+    void                    updatePort7FFD(uint8_t data);
     
 };
 

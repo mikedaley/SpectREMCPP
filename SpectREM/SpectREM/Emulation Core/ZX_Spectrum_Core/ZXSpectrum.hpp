@@ -355,7 +355,8 @@ public:
     uint32_t                ULAFloatingBusTable[80000]{0};
     const static uint32_t   ULAContentionValues[];
     const static uint32_t   ULAAltContentionValues[];
-    uint8_t                 ULAPortnnFDValue        = 0;
+    uint8_t                 ULAPort7FFDValue        = 0;
+    uint8_t                 ULAPort1FFDValue        = 0;
 
     // Floating bus
     const static uint32_t   ULAFloatingBusValues[];

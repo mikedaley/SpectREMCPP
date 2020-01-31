@@ -54,7 +54,7 @@ void ZXSpectrum128_2A::initialise(std::string romPath)
     machineInfo = machines[ eZXSpectrum128_2A ];
     ZXSpectrum::initialise(romPath);
     z80Core.setCPUMan(CZ80Core::eCPUMAN_Zilog);
-    z80Core.setCPUType(CZ80Core::eCPUTYPE_CMOS);
+    z80Core.setCPUType(CZ80Core::eCPUTYPE_NMOS);
 
     // Register an opcode callback function with the Z80 core so that opcodes can be intercepted
     // when handling things like ROM saving and loading
@@ -70,7 +70,7 @@ void ZXSpectrum128_2A::initialise(std::string romPath)
     emuSpecialPagingMode = true;
     emuDisplayPage = 5;
     emuDisablePaging = false;
-    ULAPortnnFDValue = 0;
+    ULAPort7FFDValue = 0;
 
 }
 
@@ -83,7 +83,7 @@ uint8_t ZXSpectrum128_2A::coreIORead(uint16_t address)
     bool contended = false;
     int memoryPage = address / cMEMORY_PAGE_SIZE;
     
-    if (machineInfo.hasPaging && (memoryPage == 1 || (memoryPage == 3 && (emuRAMPage == 1 || emuRAMPage == 3 || emuRAMPage == 5 || emuRAMPage == 7))))
+    if (machineInfo.hasPaging && (memoryPage == 5 || (memoryPage == 3 && (emuRAMPage == 4 || emuRAMPage == 5 || emuRAMPage == 6 || emuRAMPage == 7))))
     {
         contended = true;
     }
@@ -144,7 +144,7 @@ void ZXSpectrum128_2A::coreIOWrite(uint16_t address, uint8_t data)
     bool contended = false;
     int memoryPage = address / cMEMORY_PAGE_SIZE;
     
-    if (machineInfo.hasPaging && (memoryPage == 1 || (memoryPage == 3 && (emuRAMPage == 1 || emuRAMPage == 3 || emuRAMPage == 5 || emuRAMPage == 7))))
+    if (machineInfo.hasPaging && (memoryPage == 5 || (memoryPage == 3 && (emuRAMPage == 4 || emuRAMPage == 5 || emuRAMPage == 6 || emuRAMPage == 7))))
     {
         contended = true;
     }
@@ -167,7 +167,7 @@ void ZXSpectrum128_2A::coreIOWrite(uint16_t address, uint8_t data)
     // AY-3-8912 ports
     if((address & 0xc002) == 0xc000 && machineInfo.hasAY)
     {
-        ULAPortnnFDValue = data;
+        ULAPort7FFDValue = data;
         audioAYSetRegister(data);
     }
     
@@ -194,7 +194,7 @@ void ZXSpectrum128_2A::coreIOWrite(uint16_t address, uint8_t data)
 void ZXSpectrum128_2A::updatePort7FFD(uint8_t data)
 {
     // Save the last byte set, used when generating a Z80 snapshot
-    ULAPortnnFDValue = data;
+    ULAPort7FFDValue = data;
     
     if (emuDisplayPage != (((data & 0x08ul) == 0x08ul) ? 7ul : 5ul))
     {
@@ -226,6 +226,8 @@ void ZXSpectrum128_2A::updatePort7FFD(uint8_t data)
 
 void ZXSpectrum128_2A::updatePort1FFD(uint8_t data)
 {
+    ULAPort1FFDValue = data;
+    
     emuSpecialPagingMode = (data & 0x01);
     if (!emuSpecialPagingMode)
     {
@@ -373,9 +375,8 @@ void ZXSpectrum128_2A::coreMemoryContention(uint16_t address, uint32_t)
 {
     const uint32_t memoryPage = address / cMEMORY_PAGE_SIZE;
     
-    if (memoryPage == 1 ||
-        (memoryPage == 3 &&
-          (emuRAMPage == 1 || emuRAMPage == 3 || emuRAMPage == 5 || emuRAMPage == 7)))
+    if (memoryPage == 5 || (memoryPage == 3 &&
+          (emuRAMPage == 4 || emuRAMPage == 5 || emuRAMPage == 6 || emuRAMPage == 7)))
     {
         z80Core.AddContentionTStates( ULAMemoryContentionTable[z80Core.GetTStates() % machineInfo.tsPerFrame] );
     }
@@ -395,7 +396,7 @@ void ZXSpectrum128_2A::resetMachine(bool hard)
     emuRAMPage = 0;
     emuDisplayPage = 5;
     emuDisablePaging = false;
-    ULAPortnnFDValue = 0;
+    ULAPort7FFDValue = 0;
     ZXSpectrum::resetMachine(hard);
 }
 

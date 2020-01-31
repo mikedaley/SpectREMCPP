@@ -52,7 +52,7 @@ void ZXSpectrum128::initialise(std::string romPath)
     machineInfo = machines[ eZXSpectrum128 ];
     ZXSpectrum::initialise(romPath);
     z80Core.setCPUMan(CZ80Core::eCPUMAN_Zilog);
-    z80Core.setCPUType(CZ80Core::eCPUTYPE_CMOS);
+    z80Core.setCPUType(CZ80Core::eCPUTYPE_NMOS);
 
     // Register an opcode callback function with the Z80 core so that opcodes can be intercepted
     // when handling things like ROM saving and loading
@@ -65,7 +65,7 @@ void ZXSpectrum128::initialise(std::string romPath)
     emuRAMPage = 0;
     emuDisplayPage = 5;
     emuDisablePaging = false;
-    ULAPortnnFDValue = 0;
+    ULAPort7FFDValue = 0;
 
 }
 
@@ -108,7 +108,7 @@ uint8_t ZXSpectrum128::coreIORead(uint16_t address)
         {
             uint8_t floatingBusData = ULAFloatingBus();
             uint32_t currentTStates = z80Core.GetTStates();
-            UpdatePort7FFD(floatingBusData);
+            updatePort7FFD(floatingBusData);
             z80Core.ResetTStates(z80Core.GetTStates() - currentTStates);
         }
 
@@ -165,7 +165,7 @@ void ZXSpectrum128::coreIOWrite(uint16_t address, uint8_t data)
     // AY-3-8912 ports
     if((address & 0xc002) == 0xc000 && machineInfo.hasAY)
     {
-        ULAPortnnFDValue = data;
+        ULAPort7FFDValue = data;
         audioAYSetRegister(data);
     }
     
@@ -177,16 +177,16 @@ void ZXSpectrum128::coreIOWrite(uint16_t address, uint8_t data)
     // Memory paging port
     if ( (address & 0x8002) == 0 && emuDisablePaging == false)
     {
-        UpdatePort7FFD(data);
+        updatePort7FFD(data);
     }
 }
 
 // ------------------------------------------------------------------------------------------------------------
 
-void ZXSpectrum128::UpdatePort7FFD(uint8_t data)
+void ZXSpectrum128::updatePort7FFD(uint8_t data)
 {
     // Save the last byte set, used when generating a Z80 snapshot
-    ULAPortnnFDValue = data;
+    ULAPort7FFDValue = data;
     
     if (emuDisplayPage != (((data & 0x08ul) == 0x08ul) ? 7ul : 5ul))
     {
@@ -340,7 +340,7 @@ void ZXSpectrum128::resetMachine(bool hard)
     emuRAMPage = 0;
     emuDisplayPage = 5;
     emuDisablePaging = false;
-    ULAPortnnFDValue = 0;
+    ULAPort7FFDValue = 0;
     ZXSpectrum::resetMachine(hard);
 }
 

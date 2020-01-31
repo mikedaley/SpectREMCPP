@@ -409,7 +409,7 @@
 				2963B3DB23B7977D00CAE4CD /* ZX_Spectrum_48k */,
 				2963B3E223B7977D00CAE4CD /* ZX_Spectrum_128k */,
 				2985C6FE23E2D13700F42D8F /* ZX_Spectrum_128k_2 */,
-				2985C70323E3357600F42D8F /* ZXSpectrum_2A */,
+				2985C70323E3357600F42D8F /* ZXSpectrum_128k_2A */,
 				2963B3DE23B7977D00CAE4CD /* Debugger */,
 				2963B3E123B7977D00CAE4CD /* Tape */,
 				2963B3BA23B7977D00CAE4CD /* ROMS */,
@@ -542,13 +542,13 @@
 			path = ZX_Spectrum_128k_2;
 			sourceTree = "<group>";
 		};
-		2985C70323E3357600F42D8F /* ZXSpectrum_2A */ = {
+		2985C70323E3357600F42D8F /* ZXSpectrum_128k_2A */ = {
 			isa = PBXGroup;
 			children = (
 				2985C70523E3359900F42D8F /* ZXSpectrum128_2A.hpp */,
 				2985C70423E3359900F42D8F /* ZXSpectrum128_2A.cpp */,
 			);
-			path = ZXSpectrum_2A;
+			path = ZXSpectrum_128k_2A;
 			sourceTree = "<group>";
 		};
 		29E98462239535F60033E63C /* SmartLink */ = {
