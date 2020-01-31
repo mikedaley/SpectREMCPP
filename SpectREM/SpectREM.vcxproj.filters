@@ -99,12 +99,8 @@
     <ClCompile Include="SpectREM\Win32\TapeViewerWindow.cpp">
       <Filter>Win32</Filter>
     </ClCompile>
-    <ClCompile Include="SpectREM\Emulation Core\ZXSpectrum_128k_2A\ZXSpectrum128_2A.cpp">
-      <Filter>Emulation Core</Filter>
-    </ClCompile>
-    <ClCompile Include="SpectREM\Emulation Core\ZX_Spectrum_128k_2\ZXSpectrum128_2.cpp">
-      <Filter>Emulation Core</Filter>
-    </ClCompile>
+    <ClCompile Include="SpectREM\Emulation Core\ZX_Spectrum_128k_2\ZXSpectrum128_2.cpp" />
+    <ClCompile Include="SpectREM\Emulation Core\ZXSpectrum_128k_2A\ZXSpectrum128_2A.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SpectREM\Win32\AudioCore.hpp">
@@ -165,12 +161,8 @@
     <ClInclude Include="SpectREM\Win32\PMDawn.hpp">
       <Filter>Win32</Filter>
     </ClInclude>
-    <ClInclude Include="SpectREM\Emulation Core\ZXSpectrum_128k_2A\ZXSpectrum128_2A.hpp">
-      <Filter>Emulation Core</Filter>
-    </ClInclude>
-    <ClInclude Include="SpectREM\Emulation Core\ZX_Spectrum_128k_2\ZXSpectrum128_2.hpp">
-      <Filter>Emulation Core</Filter>
-    </ClInclude>
+    <ClInclude Include="SpectREM\Emulation Core\ZX_Spectrum_128k_2\ZXSpectrum128_2.hpp" />
+    <ClInclude Include="SpectREM\Emulation Core\ZXSpectrum_128k_2A\ZXSpectrum128_2A.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="SpectREM\clut.frag" />

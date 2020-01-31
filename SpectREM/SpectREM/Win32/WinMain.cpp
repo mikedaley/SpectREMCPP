@@ -38,6 +38,8 @@
 #include "..\Emulation Core\ZX_Spectrum_Core\ZXSpectrum.hpp"
 #include "..\Emulation Core\ZX_Spectrum_48k\ZXSpectrum48.hpp"
 #include "..\Emulation Core\ZX_Spectrum_128k\ZXSpectrum128.hpp"
+#include "..\Emulation Core\ZX_Spectrum_128k_2\ZXSpectrum128_2.hpp"
+#include "..\Emulation Core\ZXSpectrum_128k_2A\ZXSpectrum128_2A.hpp"
 #include "..\Emulation Core\Tape\Tape.hpp"
 #include "..\OSX\AudioQueue.hpp"
 #include "OpenGLView.hpp"
@@ -91,8 +93,17 @@ std::string loadedFile;
 
 enum MachineType
 {
-    ZX48, ZX128, PLUS2, PLUS3, UNKNOWN
+    ZX48, ZX128, PLUS2, PLUS2A, PLUS3, UNKNOWN
 } mType;
+
+//enum
+//{
+//    eZXSpectrum48 = 0,
+//    eZXSpectrum128 = 1,
+//    eZXSpectrum128_2 = 2,
+//    eZXSpectrum128_2A = 3,
+//    eZXSpectrum128_3 = 4
+//};
 
 enum SnapType
 {
@@ -244,8 +255,14 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         case ID_SWITCH_TO128K:
             ResetMachineForSnapshot(ZX128, true);
             break;
-        case ID_SWITCH_FLIP:
-            SwitchMachines();
+        case ID_SWITCH_TOPLUS2:
+            ResetMachineForSnapshot(PLUS2, true);
+            break;
+        case ID_SWITCH_TOPLUS2A:
+            ResetMachineForSnapshot(PLUS2A, true);
+            break;
+        case ID_SWITCH_TOPLUS3:
+            ResetMachineForSnapshot(PLUS3, true);
             break;
         case ID_HELP_ABOUT:
             ShowHelpAbout();
@@ -1006,7 +1023,7 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
     unsigned int cThreads = std::thread::hardware_concurrency();
     PMDawn::Log(PMDawn::LOG_INFO, "Maximum available threads = " + std::to_string(cThreads));
 
-    SetupThreadLocalStorageForTapeData();
+    //SetupThreadLocalStorageForTapeData();
 
     loadedFile = "-empty-";
     slideshowTimerRunning = false;
@@ -1078,7 +1095,7 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
     m_pAudioCore = new AudioCore();
     m_pAudioCore->Init(44100, 50, audio_callback);
     m_pTape = new Tape(tapeStatusCallback);
-    m_pMachine = new ZXSpectrum128(m_pTape);
+    m_pMachine = new ZXSpectrum128_2A(m_pTape);// ZXSpectrum128(m_pTape);
     m_pMachine->emuUseAYSound = true;
     m_pMachine->emuBasePath = PMDawn::GetApplicationBasePath();
     PMDawn::Log(PMDawn::LOG_INFO, "ROMs path = " + m_pMachine->emuBasePath + romPath);
@@ -1234,6 +1251,22 @@ static void ResetMachineForSnapshot(uint8_t mc, bool ayEnabled)
     case ZX128:
         PMDawn::Log(PMDawn::LOG_INFO, "SpectREM changed to 128K Mode");
         m_pMachine = new ZXSpectrum128(m_pTape);
+        m_pMachine->emuUseAYSound = true;
+        break;
+    case PLUS2:
+        PMDawn::Log(PMDawn::LOG_INFO, "SpectREM changed to 128K +2 Mode");
+        m_pMachine = new ZXSpectrum128_2(m_pTape);
+        m_pMachine->emuUseAYSound = true;
+        break;
+    case PLUS2A:
+        PMDawn::Log(PMDawn::LOG_INFO, "SpectREM changed to 128K +2A Mode");
+        m_pMachine = new ZXSpectrum128_2A(m_pTape);
+        m_pMachine->emuUseAYSound = true;
+        break;
+    case PLUS3:
+        PMDawn::Log(PMDawn::LOG_INFO, "SpectREM changed to 128K +3 Mode");
+        m_pMachine = new ZXSpectrum128_2A(m_pTape);
+        //m_pMachine = new ZXSpectrum128_3(m_pTape);
         m_pMachine->emuUseAYSound = true;
         break;
     default:

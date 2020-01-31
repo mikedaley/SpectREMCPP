@@ -58,6 +58,9 @@
 #define ID_TAPE_REWINGTAPE              40068
 #define ID_TAPE_REWINDTAPE              40069
 #define ID_TAPE_TAPEVIEWER              40072
+#define ID_SWITCH_TOPLUS2               40075
+#define ID_SWITCH_TOPLUS2A              40076
+#define ID_SWITCH_TOPLUS3               40077
 #define ID_SHADER_DISPLAY_FRAG          57000
 #define ID_SHADER_DISPLAY_VERT          57001
 #define ID_SHADER_CLUT_FRAG             57002
@@ -68,7 +71,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        119
-#define _APS_NEXT_COMMAND_VALUE         40075
+#define _APS_NEXT_COMMAND_VALUE         40078
 #define _APS_NEXT_CONTROL_VALUE         1005
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

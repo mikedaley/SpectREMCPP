@@ -135,6 +135,32 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// Dialog
+//
+
+IDD_DIALOG_SETTINGS DIALOGEX 0, 0, 309, 176
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "SpectREM Settings"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,198,155,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,252,155,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG_SETTINGS AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // RCDATA
 //
 
@@ -232,7 +258,9 @@ BEGIN
         BEGIN
             MENUITEM "to 48K\tShift+F5",            ID_SWITCH_TO48K
             MENUITEM "to 128K\tCtrl+F5",            ID_SWITCH_TO128K
-            MENUITEM "Flip\tF5",                    ID_SWITCH_FLIP
+            MENUITEM "to +2\tAlt+F5",               ID_SWITCH_TOPLUS2
+            MENUITEM "to +2A\tShift+Ctrl+F5",       ID_SWITCH_TOPLUS2A
+            MENUITEM "to +3\tCtrl+Alt+F5",          ID_SWITCH_TOPLUS3
         END
     END
     POPUP "&Settings"
@@ -265,6 +293,9 @@ BEGIN
     VK_F5,          ID_SWITCH_FLIP,         VIRTKEY, NOINVERT
     VK_F5,          ID_SWITCH_TO128K,       VIRTKEY, CONTROL, NOINVERT
     VK_F5,          ID_SWITCH_TO48K,        VIRTKEY, SHIFT, NOINVERT
+    VK_F5,          ID_SWITCH_TOPLUS2,      VIRTKEY, ALT
+    VK_F5,          ID_SWITCH_TOPLUS2A,     VIRTKEY, SHIFT, CONTROL
+    VK_F5,          ID_SWITCH_TOPLUS3,      VIRTKEY, CONTROL, ALT
     VK_F1,          ID_TAPE_EJECTTAPE,      VIRTKEY, ALT, NOINVERT
     VK_F1,          ID_TAPE_INSERTTAPE,     VIRTKEY, SHIFT, NOINVERT
     VK_F9,          ID_TAPE_REWINDTAPE,     VIRTKEY, SHIFT, NOINVERT
@@ -288,32 +319,6 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDI_ICON2               ICON                    "SpectREM\\Win32\\SpectREM.ico"
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Dialog
-//
-
-IDD_DIALOG_SETTINGS DIALOGEX 0, 0, 309, 176
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "SpectREM Settings"
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
-BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,198,155,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,252,155,50,14
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// AFX_DIALOG_LAYOUT
-//
-
-IDD_DIALOG_SETTINGS AFX_DIALOG_LAYOUT
-BEGIN
-    0
-END
 
 
 /////////////////////////////////////////////////////////////////////////////
