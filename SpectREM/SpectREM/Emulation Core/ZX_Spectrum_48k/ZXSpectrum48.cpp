@@ -60,7 +60,7 @@ void ZXSpectrum48::initialise(std::string romPath)
     machineInfo = machines[ eZXSpectrum48 ];
     ZXSpectrum::initialise( romPath );
     z80Core.setCPUMan(CZ80Core::eCPUMAN_Zilog);
-    z80Core.setCPUType(CZ80Core::eCPUTYPE_CMOS);
+    z80Core.setCPUType(CZ80Core::eCPUTYPE_NMOS);
 
     // Register an opcode callback function with the Z80 core so that opcodes can be intercepted
     // when handling things like ROM saving and loading
@@ -169,7 +169,7 @@ void ZXSpectrum48::coreIOWrite(uint16_t address, uint8_t data)
     // AY-3-8912 ports
     if(address == 0xfffd && (machineInfo.hasAY || emuUseAYSound))
     {
-        ULAPortnnFDValue = data;
+        ULAPort7FFDValue = data;
         audioAYSetRegister(data);
     }
     

@@ -26,7 +26,9 @@ const uint8_t               cZ80_V2_MACHINE_TYPE_128_IF1 = 4;
 const uint8_t               cZ80_V3_MACHINE_TYPE_128 = 4;
 const uint8_t               cZ80_V3_MACHINE_TYPE_128_IF1 = 5;
 const uint8_t               cz80_V3_MACHINE_TYPE_128_MGT = 6;
+const uint8_t               cZ80_V3_MACHINE_TYPE_128_3 = 7;
 const uint8_t               cZ80_V3_MACHINE_TYPE_128_2 = 12;
+const uint8_t               cZ80_V3_MACHINE_TYPE_128_2A = 13;
 
 // ------------------------------------------------------------------------------------------------------------
 // - SNA functions
@@ -194,6 +196,7 @@ ZXSpectrum::SnapshotData ZXSpectrum::snapshotCreateZ80()
             
         case eZXSpectrum128:
         case eZXSpectrum128_2:
+        case eZXSpectrum128_2A:
             snapshotSize = (128 * 1024) + cZ80_V3_HEADER_SIZE + (cZ80_V3_PAGE_HEADER_SIZE * 8);
             break;
             
@@ -258,22 +261,33 @@ ZXSpectrum::SnapshotData ZXSpectrum::snapshotCreateZ80()
     snapData.data[32] = z80Core.GetRegister(CZ80Core::eREG_PC) & 0xff;    // PC
     snapData.data[33] = z80Core.GetRegister(CZ80Core::eREG_PC) >> 8;
 
-    if (machineInfo.machineType == eZXSpectrum48)
-    {
-        snapData.data[34] = cZ80_V2_MACHINE_TYPE_48;
-    }
-    else if (machineInfo.machineType == eZXSpectrum128)
-    {
-        snapData.data[34] = cZ80_V3_MACHINE_TYPE_128;
-    }
-    else if (machineInfo.machineType == eZXSpectrum128_2)
-    {
-        snapData.data[34] = cZ80_V3_MACHINE_TYPE_128_2;
+    switch (machineInfo.machineType) {
+        case eZXSpectrum48:
+            snapData.data[34] = cZ80_V3_MACHINE_TYPE_48;
+            break;
+
+        case eZXSpectrum128:
+            snapData.data[34] = cZ80_V3_MACHINE_TYPE_128;
+            break;
+
+        case eZXSpectrum128_2:
+            snapData.data[34] = cZ80_V3_MACHINE_TYPE_128_2;
+            break;
+
+        case eZXSpectrum128_2A:
+            snapData.data[34] = cZ80_V3_MACHINE_TYPE_128_2A;
+            break;
+
+        default:
+            break;
     }
 
-    if (machineInfo.machineType == eZXSpectrum128 || machineInfo.machineType == eZXSpectrum128_2)
+    if (machineInfo.machineType == eZXSpectrum128 ||
+        machineInfo.machineType == eZXSpectrum128_2 ||
+        machineInfo.machineType == eZXSpectrum128_2A ||
+        machineInfo.machineType == eZXSpectrum128_3)
     {
-        snapData.data[35] = ULAPortnnFDValue; // last 128k 0x7ffd port value
+        snapData.data[35] = ULAPort7FFDValue; // last 128k 0x7ffd port value
     }
     else
     {
@@ -282,7 +296,7 @@ ZXSpectrum::SnapshotData ZXSpectrum::snapshotCreateZ80()
 
     snapData.data[36] = 0; // Interface 1 ROM
     snapData.data[37] = 4; // AY Sound
-    snapData.data[38] = ULAPortnnFDValue; // Last OUT fffd
+    snapData.data[38] = ULAPort7FFDValue; // Last OUT fffd
 
     // Save the AY register values
     uint32_t dataIndex = 39;
@@ -306,52 +320,58 @@ ZXSpectrum::SnapshotData ZXSpectrum::snapshotCreateZ80()
     snapData.data[83] = 0; // MGT Type
     snapData.data[84] = 0; // Disciple inhibit button
     snapData.data[85] = 0; // Disciple inhibit flag
+    snapData.data[86] = ULAPort1FFDValue; // Last out to 0x1ffd
 
     uint32_t snapPtr = cZ80_V3_HEADER_SIZE;
 
-    if (machineInfo.machineType == eZXSpectrum48)
-    {
-        snapData.data[snapPtr++] = 0xff;
-        snapData.data[snapPtr++] = 0xff;
-        snapData.data[snapPtr++] = 4;
-
-        for (uint32_t memAddr = 0x8000; memAddr <= 0xbfff; memAddr++)
-        {
-            snapData.data[snapPtr++] = z80Core.Z80CoreDebugMemRead(static_cast<uint16_t>(memAddr), nullptr);
-        }
-
-        snapData.data[snapPtr++] = 0xff;
-        snapData.data[snapPtr++] = 0xff;
-        snapData.data[snapPtr++] = 5;
-
-        for (uint32_t memAddr = 0xc000; memAddr <= 0xffff; memAddr++)
-        {
-            snapData.data[snapPtr++] = z80Core.Z80CoreDebugMemRead(static_cast<uint16_t>(memAddr), nullptr);
-        }
-
-        snapData.data[snapPtr++] = 0xff;
-        snapData.data[snapPtr++] = 0xff;
-        snapData.data[snapPtr++] = 8;
-
-        for (uint32_t memAddr = 0x4000; memAddr <= 0x7fff; memAddr++)
-        {
-            snapData.data[snapPtr++] = z80Core.Z80CoreDebugMemRead(static_cast<uint16_t>(memAddr), nullptr);
-        }
-    }
-    else if (machineInfo.machineType == eZXSpectrum128 || machineInfo.machineType == eZXSpectrum128_2)
-    {
-        // 128k/Next
-        for (uint8_t page = 0; page < 8; page++)
-        {
+    switch (machineInfo.machineType) {
+        case eZXSpectrum48:
             snapData.data[snapPtr++] = 0xff;
             snapData.data[snapPtr++] = 0xff;
-            snapData.data[snapPtr++] = page + 3;
+            snapData.data[snapPtr++] = 4;
 
-            for (uint32_t memAddr = page * 0x4000ul; memAddr < (page * 0x4000ul) + 0x4000ul; memAddr++)
+            for (uint32_t memAddr = 0x8000; memAddr <= 0xbfff; memAddr++)
             {
-                snapData.data[snapPtr++] = static_cast<uint8_t>(memoryRam[static_cast<size_t>(memAddr)]);
+                snapData.data[snapPtr++] = z80Core.Z80CoreDebugMemRead(static_cast<uint16_t>(memAddr), nullptr);
             }
-        }
+
+            snapData.data[snapPtr++] = 0xff;
+            snapData.data[snapPtr++] = 0xff;
+            snapData.data[snapPtr++] = 5;
+
+            for (uint32_t memAddr = 0xc000; memAddr <= 0xffff; memAddr++)
+            {
+                snapData.data[snapPtr++] = z80Core.Z80CoreDebugMemRead(static_cast<uint16_t>(memAddr), nullptr);
+            }
+
+            snapData.data[snapPtr++] = 0xff;
+            snapData.data[snapPtr++] = 0xff;
+            snapData.data[snapPtr++] = 8;
+
+            for (uint32_t memAddr = 0x4000; memAddr <= 0x7fff; memAddr++)
+            {
+                snapData.data[snapPtr++] = z80Core.Z80CoreDebugMemRead(static_cast<uint16_t>(memAddr), nullptr);
+            }
+            break;
+
+        case eZXSpectrum128:
+        case eZXSpectrum128_2:
+        case eZXSpectrum128_2A:
+            for (uint8_t page = 0; page < 8; page++)
+            {
+                snapData.data[snapPtr++] = 0xff;
+                snapData.data[snapPtr++] = 0xff;
+                snapData.data[snapPtr++] = page + 3;
+
+                for (uint32_t memAddr = page * 0x4000ul; memAddr < (page * 0x4000ul) + 0x4000ul; memAddr++)
+                {
+                    snapData.data[snapPtr++] = static_cast<uint8_t>(memoryRam[static_cast<size_t>(memAddr)]);
+                }
+            }
+            break;
+
+        default:
+            break;
     }
 
     resume();
@@ -476,9 +496,10 @@ Tape::FileResponse ZXSpectrum::snapshotZ80LoadWithBuffer(const char *buffer, siz
             additionHeaderBlockLength = reinterpret_cast<uint16_t *>(&pFileBytes[30])[0];
             uint32_t offset = 32 + additionHeaderBlockLength;
 
-            if ((version == 2 && (hardwareType == cZ80_V2_MACHINE_TYPE_128 || hardwareType == cZ80_V2_MACHINE_TYPE_128_IF1)) ||
-                (version == 3 && (hardwareType == cZ80_V3_MACHINE_TYPE_128 || hardwareType == cZ80_V3_MACHINE_TYPE_128_IF1 ||
-                                  hardwareType == cz80_V3_MACHINE_TYPE_128_MGT ||hardwareType == cZ80_V3_MACHINE_TYPE_128_2)))
+            if (hardwareType == cZ80_V3_MACHINE_TYPE_128 ||
+                hardwareType == cZ80_V3_MACHINE_TYPE_128_IF1 ||
+                hardwareType == cz80_V3_MACHINE_TYPE_128_MGT ||
+                hardwareType == cZ80_V3_MACHINE_TYPE_128_2)
             {
                 // Decode byte 35 so that port 0x7ffd can be set on the 128k
                 uint8_t data = reinterpret_cast<uint8_t *>(&pFileBytes[35])[0];
@@ -486,6 +507,20 @@ Tape::FileResponse ZXSpectrum::snapshotZ80LoadWithBuffer(const char *buffer, siz
                 emuROMNumber = ((data & 0x10) == 0x10) ? 1 : 0;
                 emuDisplayPage = ((data & 0x08) == 0x08) ? 7 : 5;
                 emuRAMPage = (data & 0x07);
+            }
+            else if (hardwareType == cZ80_V3_MACHINE_TYPE_128_2A ||
+                     hardwareType == cZ80_V3_MACHINE_TYPE_128_3)
+            {
+                uint8_t data7ffd = reinterpret_cast<uint8_t *>(&pFileBytes[35])[0];
+                emuDisablePaging = ((data7ffd & 0x20) == 0x20) ? true : false;
+                emuROMLoBit = (data7ffd & 0x10) >> 4;
+                emuDisplayPage = ((data7ffd & 0x08) == 0x08) ? 7 : 5;
+                emuRAMPage = (data7ffd & 0x07);
+
+                uint8_t data1ffd = reinterpret_cast<uint8_t *>(&pFileBytes[86])[0];
+                emuROMHiBit = ((data1ffd & 0x04) >> 1);
+                
+                emuROMNumber = emuROMHiBit | emuROMLoBit;
             }
             else
             {
@@ -508,17 +543,15 @@ Tape::FileResponse ZXSpectrum::snapshotZ80LoadWithBuffer(const char *buffer, siz
                 uint32_t pageId = buffer[offset + 2];
                 
                 std::cout << "Snap Page: " << pageId << "\t\t";
-//                std::cout << ((pageId > 9) ? "\t" : "\t\t");
                 std::cout << "Mem Page: " << pageId - 3 << "\tCompressed Length: " << compressedLength << "\tIsCompressed: " << isCompressed;
                 std::cout << "\tHardware Type: " << snapshotHardwareTypeForVersion(version, hardwareType) << "\n";
 
-                if (version == 1 || ((version == 2 || version == 3) && (hardwareType == cZ80_V2_MACHINE_TYPE_48 ||
-                                                                        hardwareType == cZ80_V3_MACHINE_TYPE_48 ||
-                                                                        hardwareType == cZ80_V2_MACHINE_TYPE_48_IF1 ||
-                                                                        hardwareType == cZ80_V3_MACHINE_TYPE_48_IF1 ||
-                                                                        hardwareType == cZ80_V3_MACHINE_TYPE_48_MGT)))
+                if (hardwareType == cZ80_V2_MACHINE_TYPE_48 ||
+                    hardwareType == cZ80_V3_MACHINE_TYPE_48 ||
+                    hardwareType == cZ80_V2_MACHINE_TYPE_48_IF1 ||
+                    hardwareType == cZ80_V3_MACHINE_TYPE_48_IF1 ||
+                    hardwareType == cZ80_V3_MACHINE_TYPE_48_MGT)
                 {
-                    // 48k
                     switch (pageId) {
                     case 4:
                         snapshotExtractMemoryBlock(buffer, size, 0x8000, offset + 3, isCompressed, 0x4000);
@@ -533,14 +566,15 @@ Tape::FileResponse ZXSpectrum::snapshotZ80LoadWithBuffer(const char *buffer, siz
                         break;
                     }
                 }
-                else if (version == 1 || ((version == 2 || version == 3) && (hardwareType == cZ80_V2_MACHINE_TYPE_128 ||
-                                                                             hardwareType == cZ80_V3_MACHINE_TYPE_128 ||
-                                                                             hardwareType == cZ80_V2_MACHINE_TYPE_128_IF1 ||
-                                                                             hardwareType == cZ80_V3_MACHINE_TYPE_128_IF1 ||
-                                                                             hardwareType == cz80_V3_MACHINE_TYPE_128_MGT ||
-                                                                             hardwareType == cZ80_V3_MACHINE_TYPE_128_2)))
+                else if (hardwareType == cZ80_V2_MACHINE_TYPE_128 ||
+                         hardwareType == cZ80_V3_MACHINE_TYPE_128 ||
+                         hardwareType == cZ80_V2_MACHINE_TYPE_128_IF1 ||
+                         hardwareType == cZ80_V3_MACHINE_TYPE_128_IF1 ||
+                         hardwareType == cz80_V3_MACHINE_TYPE_128_MGT ||
+                         hardwareType == cZ80_V3_MACHINE_TYPE_128_2 ||
+                         hardwareType == cZ80_V3_MACHINE_TYPE_128_2A ||
+                         hardwareType == cZ80_V3_MACHINE_TYPE_128_3)
                 {
-                    // 128k
                     snapshotExtractMemoryBlock(buffer, size, (pageId - 3) * 0x4000, offset + 3, isCompressed, 0x4000);
                 }
                 else
@@ -669,6 +703,14 @@ std::string ZXSpectrum::snapshotHardwareTypeForVersion(uint32_t version, uint32_
                 hardware = "128k +2";
                 break;
 
+            case cZ80_V3_MACHINE_TYPE_128_2A:
+                hardware = "128k +2A";
+                break;
+
+            case cZ80_V3_MACHINE_TYPE_128_3:
+                hardware = "128k +3";
+                break;
+
             default:
                 break;
         }
@@ -765,6 +807,14 @@ int32_t ZXSpectrum::snapshotMachineInSnapshotWithPath(const char *path)
 
                     case cZ80_V3_MACHINE_TYPE_128_2:
                         machineType = eZXSpectrum128_2;
+                        break;
+
+                    case cZ80_V3_MACHINE_TYPE_128_2A:
+                        machineType = eZXSpectrum128_2A;
+                        break;
+
+                    case cZ80_V3_MACHINE_TYPE_128_3:
+                        machineType = eZXSpectrum128_3;
                         break;
 
                     default:

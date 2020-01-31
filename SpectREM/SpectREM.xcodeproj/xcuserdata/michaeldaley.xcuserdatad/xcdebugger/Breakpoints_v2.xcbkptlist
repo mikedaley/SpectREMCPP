@@ -23,15 +23,15 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "177491E6-C1ED-4467-99EF-95FD26A0E951"
+            uuid = "27331FC1-7B4D-4641-AEB2-87C61ECDE9B8"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SpectREM/Emulation Core/ZX_Spectrum_Core/Snapshot.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "271"
-            endingLineNumber = "271"
+            startingLineNumber = "327"
+            endingLineNumber = "327"
             landmarkName = "ZXSpectrum::snapshotCreateZ80()"
             landmarkType = "7">
          </BreakpointContent>

@@ -51,7 +51,7 @@ void ZXSpectrum128_2::initialise(std::string romPath)
     machineInfo = machines[ eZXSpectrum128_2 ];
     ZXSpectrum::initialise(romPath);
     z80Core.setCPUMan(CZ80Core::eCPUMAN_Zilog);
-    z80Core.setCPUType(CZ80Core::eCPUTYPE_CMOS);
+    z80Core.setCPUType(CZ80Core::eCPUTYPE_NMOS);
 
     // Register an opcode callback function with the Z80 core so that opcodes can be intercepted
     // when handling things like ROM saving and loading
@@ -64,7 +64,7 @@ void ZXSpectrum128_2::initialise(std::string romPath)
     emuRAMPage = 0;
     emuDisplayPage = 5;
     emuDisablePaging = false;
-    ULAPortnnFDValue = 0;
+    ULAPort7FFDValue = 0;
 
 }
 
@@ -165,7 +165,7 @@ void ZXSpectrum128_2::coreIOWrite(uint16_t address, uint8_t data)
     // AY-3-8912 ports
     if((address & 0xc002) == 0xc000 && machineInfo.hasAY)
     {
-        ULAPortnnFDValue = data;
+        ULAPort7FFDValue = data;
         audioAYSetRegister(data);
     }
     
@@ -186,7 +186,7 @@ void ZXSpectrum128_2::coreIOWrite(uint16_t address, uint8_t data)
 void ZXSpectrum128_2::updatePort7FFD(uint8_t data)
 {
     // Save the last byte set, used when generating a Z80 snapshot
-    ULAPortnnFDValue = data;
+    ULAPort7FFDValue = data;
     
     if (emuDisplayPage != (((data & 0x08ul) == 0x08ul) ? 7ul : 5ul))
     {
@@ -355,7 +355,7 @@ void ZXSpectrum128_2::resetMachine(bool hard)
     emuRAMPage = 0;
     emuDisplayPage = 5;
     emuDisablePaging = false;
-    ULAPortnnFDValue = 0;
+    ULAPort7FFDValue = 0;
     ZXSpectrum::resetMachine(hard);
 }
 

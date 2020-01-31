@@ -9,7 +9,7 @@
 #include "ZXSpectrum.hpp"
 
 const uint32_t ZXSpectrum::ULAContentionValues[] = { 6, 5, 4, 3, 2, 1, 0, 0 };
-const uint32_t ZXSpectrum::ULAAltContentionValues[] = { 7, 6, 5, 4, 3, 2, 1, 0};
+const uint32_t ZXSpectrum::ULAAltContentionValues[] = { 1, 0, 7, 6, 5, 4, 3, 2};
 
 // ------------------------------------------------------------------------------------------------------------
 // - IO Contention
