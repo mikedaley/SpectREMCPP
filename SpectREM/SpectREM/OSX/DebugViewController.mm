@@ -993,7 +993,7 @@ static NSColor * const cRDWR_BREAKPOINT_COLOR = [NSColor colorWithRed:0.6 green:
             self.iy = [NSString stringWithFormat:@"%04i", debugger->machine->z80Core.GetRegister(CZ80Core::eREG_IY)];
         }
         
-        self.currentRom = [NSString stringWithFormat:@"%02i", debugger->machine->emuROMPage];
+        self.currentRom = [NSString stringWithFormat:@"%02i", debugger->machine->emuROMNumber];
         self.displayPage = [NSString stringWithFormat:@"%02i", debugger->machine->emuDisplayPage];
         self.ramPage = [NSString stringWithFormat:@"%02i", debugger->machine->emuRAMPage];
         self.iff1 = [NSString stringWithFormat:@"%02i", debugger->machine->z80Core.GetIFF1()];

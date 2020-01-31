@@ -231,7 +231,7 @@ private:
     void                    displayBuildTsTable();
     void                    displayBuildLineAddressTable();
     void                    displayBuildCLUT();
-    void                    ULABuildContentionTable();
+    void                    ULABuildContentionTable(bool alt);
     void                    audioBuildAYVolumesTable();
     void                    keyboardCheckCapsLockStatus();
     void                    keyboardMapReset();
@@ -276,7 +276,7 @@ public:
     uint32_t                emuFrameCounter         = 0;
     bool                    emuPaused               = true;
     uint8_t                 emuRAMPage              = 0;
-    uint8_t                 emuROMPage              = 0;
+    uint8_t                 emuROMNumber            = 0;
     uint8_t                 emuDisplayPage          = 0;
     bool                    emuDisablePaging        = true;
     std::string             emuROMPath;
@@ -286,6 +286,10 @@ public:
     bool                    emuLoadTrapTriggered    = false;
     bool                    emuSaveTrapTriggered    = false;
     bool                    emuUseSpecDRUM          = false;
+    bool                    emuSpecialPagingMode    = false;
+    uint8_t                 emuPagingMode           = 0;
+    uint8_t                 emuROMHiBit             = 0;
+    uint8_t                 emuROMLoBit             = 0;
 
     // Display
     uint8_t                 *displayBuffer;
@@ -301,11 +305,6 @@ public:
     bool                    displayReady            = false;
     Color                   clutBuffer[64];
     
-    // ULAPlus
-    uint8_t                 ulaPlusMode             = 0;
-    uint8_t                 ulaPlusPaletteOn        = 0;
-    uint8_t                 ulaPlusCurrentReg       = 0;
-
     // Audio
     int16_t                 *audioBuffer            = nullptr;
     int8_t                  audioEarBit             = 0;
@@ -354,7 +353,8 @@ public:
     uint32_t                ULAMemoryContentionTable[80000]{0};
     uint32_t                ULAIOContentionTable[80000]{0};
     uint32_t                ULAFloatingBusTable[80000]{0};
-    const static uint32_t   ULAConentionValues[];
+    const static uint32_t   ULAContentionValues[];
+    const static uint32_t   ULAAltContentionValues[];
     uint8_t                 ULAPortnnFDValue        = 0;
 
     // Floating bus

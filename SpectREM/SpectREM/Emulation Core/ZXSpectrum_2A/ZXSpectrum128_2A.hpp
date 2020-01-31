@@ -6,17 +6,17 @@
 //  Copyright © 2020 Michael Daley. All rights reserved.
 //
 
-#ifndef ZXSpectrum128_2_hpp
-#define ZXSpectrum128_2_hpp
+#ifndef ZXSpectrum128_2A_hpp
+#define ZXSpectrum128_2A_hpp
 
 #include "../ZX_Spectrum_Core/ZXSpectrum.hpp"
 
-class ZXSpectrum128_2 : public ZXSpectrum
+class ZXSpectrum128_2A : public ZXSpectrum
 {
     
 public:
-    ZXSpectrum128_2(Tape *t);
-    virtual ~ZXSpectrum128_2();
+    ZXSpectrum128_2A(Tape *t);
+    virtual ~ZXSpectrum128_2A();
     
 public:
     virtual void            initialise(std::string romPath) override;
@@ -35,7 +35,11 @@ public:
     static bool             opcodeCallback(uint8_t opcode, uint16_t address, void *param);
 
     void                    updatePort7FFD(uint8_t data);
+    void                    updatePort1FFD(uint8_t data);
     
+private:
+    void                    updateROMNumber();
+
 };
 
-#endif /* ZXSpectrum128_2_hpp */
+#endif /* ZXSpectrum128_2A_hpp */

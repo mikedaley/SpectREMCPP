@@ -17,7 +17,6 @@
 //static const int cROM_SIZE = 16384;
 static const char *cDEFAULT_ROM_0 = "plus2-0.ROM";
 static const char *cDEFAULT_ROM_1 = "plus2-1.ROM";
-
 // ------------------------------------------------------------------------------------------------------------
 // - Constructor/Destructor
 
@@ -61,7 +60,7 @@ void ZXSpectrum128_2::initialise(std::string romPath)
     loadROM( cDEFAULT_ROM_0, 0 );
     loadROM( cDEFAULT_ROM_1, 1 );
 
-    emuROMPage = 0;
+    emuROMNumber = 0;
     emuRAMPage = 0;
     emuDisplayPage = 5;
     emuDisablePaging = false;
@@ -71,6 +70,7 @@ void ZXSpectrum128_2::initialise(std::string romPath)
 
 // ------------------------------------------------------------------------------------------------------------
 // - ULA
+// ------------------------------------------------------------------------------------------------------------
 
 uint8_t ZXSpectrum128_2::coreIORead(uint16_t address)
 {
@@ -108,7 +108,7 @@ uint8_t ZXSpectrum128_2::coreIORead(uint16_t address)
         {
             uint8_t floatingBusData = ULAFloatingBus();
             uint32_t currentTStates = z80Core.GetTStates();
-            UpdatePort7FFD(floatingBusData);
+            updatePort7FFD(floatingBusData);
             z80Core.ResetTStates(z80Core.GetTStates() - currentTStates);
         }
 
@@ -177,13 +177,13 @@ void ZXSpectrum128_2::coreIOWrite(uint16_t address, uint8_t data)
     // Memory paging port
     if ( (address & 0x8002) == 0 && emuDisablePaging == false)
     {
-        UpdatePort7FFD(data);
+        updatePort7FFD(data);
     }
 }
 
 // ------------------------------------------------------------------------------------------------------------
 
-void ZXSpectrum128_2::UpdatePort7FFD(uint8_t data)
+void ZXSpectrum128_2::updatePort7FFD(uint8_t data)
 {
     // Save the last byte set, used when generating a Z80 snapshot
     ULAPortnnFDValue = data;
@@ -199,35 +199,40 @@ void ZXSpectrum128_2::UpdatePort7FFD(uint8_t data)
         emuDisablePaging = true;
     }
     
-    emuROMPage = ((data & 0x10) == 0x10) ? 1 : 0;
+    emuROMNumber = ((data & 0x10) == 0x10) ? 1 : 0;
     emuRAMPage = (data & 0x07);
     emuDisplayPage = ((data & 0x08) == 0x08) ? 7 : 5;
     
 }
-
+    
+// ------------------------------------------------------------------------------------------------------------
 // - Memory Read/Write
 
 void ZXSpectrum128_2::coreMemoryWrite(uint16_t address, uint8_t data)
 {
-    const uint32_t memoryPage = address / cMEMORY_PAGE_SIZE;
+    const uint32_t page = address / cMEMORY_PAGE_SIZE;
     address &= 16383;
 
-    if (memoryPage == 0)
-    {
-        return;
-    }
-    else if (memoryPage == 1)
-    {
-        displayUpdateWithTs((z80Core.GetTStates() - emuCurrentDisplayTs) + machineInfo.paperDrawingOffset);
-        memoryRam[(5 * cMEMORY_PAGE_SIZE) + address] = data;
-    }
-    else if (memoryPage == 2)
-    {
-        memoryRam[(2 * cMEMORY_PAGE_SIZE) + address] = data;
-    }
-    else if (memoryPage == 3)
-    {
-        memoryRam[(emuRAMPage * cMEMORY_PAGE_SIZE) + address] = data;
+    switch (page) {
+        case 0:
+            return;
+            break;
+            
+        case 1:
+            displayUpdateWithTs((z80Core.GetTStates() - emuCurrentDisplayTs) + machineInfo.paperDrawingOffset);
+            memoryRam[(5 * cMEMORY_PAGE_SIZE) + address] = data;
+            break;
+            
+        case 2:
+            memoryRam[(2 * cMEMORY_PAGE_SIZE) + address] = data;
+            break;
+            
+        case 3:
+            memoryRam[(emuRAMPage * cMEMORY_PAGE_SIZE) + address] = data;
+            break;
+            
+        default:
+            break;
     }
 }
 
@@ -238,24 +243,27 @@ uint8_t ZXSpectrum128_2::coreMemoryRead(uint16_t address)
     const uint32_t page = address / cMEMORY_PAGE_SIZE;
     address &= 16383;
 
-    if (page == 0)
-    {
-        return (memoryRom[(emuROMPage * cMEMORY_PAGE_SIZE) + address]);
+    switch (page) {
+        case 0:
+            return (memoryRom[(emuROMNumber * cMEMORY_PAGE_SIZE) + address]);
+            break;
+            
+        case 1:
+            return (memoryRam[(5 * cMEMORY_PAGE_SIZE) + address]);
+            break;
+            
+        case 2:
+            return (memoryRam[(2 * cMEMORY_PAGE_SIZE) + address]);
+            break;
+            
+        case 3:
+            return (memoryRam[(emuRAMPage * cMEMORY_PAGE_SIZE) + address]);
+            break;
+            
+        default:
+            return 0;
+            break;
     }
-    else if (page == 1)
-    {
-        return (memoryRam[(5 * cMEMORY_PAGE_SIZE) + address]);
-    }
-    else if (page == 2)
-    {
-        return (memoryRam[(2 * cMEMORY_PAGE_SIZE) + address]);
-    }
-    else if (page == 3)
-    {
-        return (memoryRam[(emuRAMPage * cMEMORY_PAGE_SIZE) + address]);
-    }
-    
-    return 0;
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -263,24 +271,28 @@ uint8_t ZXSpectrum128_2::coreMemoryRead(uint16_t address)
 
 void ZXSpectrum128_2::coreDebugWrite(uint16_t address, uint8_t byte, void *)
 {
-    const uint32_t memoryPage = address / cMEMORY_PAGE_SIZE;
+    const uint32_t page = address / cMEMORY_PAGE_SIZE;
     address &= 16383;
     
-    if (memoryPage == 0)
-    {
-        return;
-    }
-    else if (memoryPage == 1)
-    {
-        memoryRam[(5 * cMEMORY_PAGE_SIZE) + address] = byte;
-    }
-    else if (memoryPage == 2)
-    {
-        memoryRam[(2 * cMEMORY_PAGE_SIZE) + address] = byte;
-    }
-    else if (memoryPage == 3)
-    {
-        memoryRam[(emuRAMPage * cMEMORY_PAGE_SIZE) + address] = byte;
+    switch (page) {
+        case 0:
+            return;
+            break;
+            
+        case 1:
+            memoryRam[(5 * cMEMORY_PAGE_SIZE) + address] = byte;
+            break;
+            
+        case 2:
+            memoryRam[(2 * cMEMORY_PAGE_SIZE) + address] = byte;
+            break;
+            
+        case 3:
+            memoryRam[(emuRAMPage * cMEMORY_PAGE_SIZE) + address] = byte;
+            break;
+            
+        default:
+            break;
     }
 }
 
@@ -291,24 +303,27 @@ uint8_t ZXSpectrum128_2::coreDebugRead(uint16_t address, void *)
     const uint32_t page = address / cMEMORY_PAGE_SIZE;
     address &= 16383;
     
-    if (page == 0)
-    {
-        return (memoryRom[(emuROMPage * cMEMORY_PAGE_SIZE) + address]);
+    switch (page) {
+        case 0:
+            return (memoryRom[(emuROMNumber * cMEMORY_PAGE_SIZE) + address]);
+            break;
+            
+        case 1:
+            return (memoryRam[(5 * cMEMORY_PAGE_SIZE) + address]);
+            break;
+            
+        case 2:
+            return (memoryRam[(2 * cMEMORY_PAGE_SIZE) + address]);
+            break;
+            
+        case 3:
+            return (memoryRam[(emuRAMPage * cMEMORY_PAGE_SIZE) + address]);
+            break;
+            
+        default:
+            return 0;
+            break;
     }
-    else if (page == 1)
-    {
-        return (memoryRam[(5 * cMEMORY_PAGE_SIZE) + address]);
-    }
-    else if (page == 2)
-    {
-        return (memoryRam[(2 * cMEMORY_PAGE_SIZE) + address]);
-    }
-    else if (page == 3)
-    {
-        return (memoryRam[(emuRAMPage * cMEMORY_PAGE_SIZE) + address]);
-    }
-    
-    return 0;
 }
 
 // ------------------------------------------------------------------------------------------------------------
@@ -336,7 +351,7 @@ void ZXSpectrum128_2::release()
 
 void ZXSpectrum128_2::resetMachine(bool hard)
 {
-    emuROMPage = 0;
+    emuROMNumber = 0;
     emuRAMPage = 0;
     emuDisplayPage = 5;
     emuDisablePaging = false;
