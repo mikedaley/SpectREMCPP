@@ -189,7 +189,9 @@ copy "$(ProjectDir)SpectREM\Emulation Core\ROMS\*.*" $(TargetDir)ROMS\*.*
     <ClCompile Include="SpectREM\Emulation Core\Z80_Core\Z80Core_EDOpcodes.cpp" />
     <ClCompile Include="SpectREM\Emulation Core\Z80_Core\Z80Core_FDOpcodes.cpp" />
     <ClCompile Include="SpectREM\Emulation Core\Z80_Core\Z80Core_MainOpcodes.cpp" />
+    <ClCompile Include="SpectREM\Emulation Core\ZXSpectrum_128k_2A\ZXSpectrum128_2A.cpp" />
     <ClCompile Include="SpectREM\Emulation Core\ZX_Spectrum_128k\ZXSpectrum128.cpp" />
+    <ClCompile Include="SpectREM\Emulation Core\ZX_Spectrum_128k_2\ZXSpectrum128_2.cpp" />
     <ClCompile Include="SpectREM\Emulation Core\ZX_Spectrum_48k\ZXSpectrum48.cpp" />
     <ClCompile Include="SpectREM\Emulation Core\ZX_Spectrum_Core\Audio.cpp" />
     <ClCompile Include="SpectREM\Emulation Core\ZX_Spectrum_Core\Contention.cpp" />
@@ -217,7 +219,9 @@ copy "$(ProjectDir)SpectREM\Emulation Core\ROMS\*.*" $(TargetDir)ROMS\*.*
     <ClInclude Include="SpectREM\Emulation Core\Z80_Core\Z80Core_EDOpcodes.h" />
     <ClInclude Include="SpectREM\Emulation Core\Z80_Core\Z80Core_FDOpcodes.h" />
     <ClInclude Include="SpectREM\Emulation Core\Z80_Core\Z80Core_MainOpcodes.h" />
+    <ClInclude Include="SpectREM\Emulation Core\ZXSpectrum_128k_2A\ZXSpectrum128_2A.hpp" />
     <ClInclude Include="SpectREM\Emulation Core\ZX_Spectrum_128k\ZXSpectrum128.hpp" />
+    <ClInclude Include="SpectREM\Emulation Core\ZX_Spectrum_128k_2\ZXSpectrum128_2.hpp" />
     <ClInclude Include="SpectREM\Emulation Core\ZX_Spectrum_48k\ZXSpectrum48.hpp" />
     <ClInclude Include="SpectREM\Emulation Core\ZX_Spectrum_Core\MachineInfo.h" />
     <ClInclude Include="SpectREM\Emulation Core\ZX_Spectrum_Core\ZXSpectrum.hpp" />
@@ -228,6 +232,7 @@ copy "$(ProjectDir)SpectREM\Emulation Core\ROMS\*.*" $(TargetDir)ROMS\*.*
     <ClInclude Include="SpectREM\Win32\TapeViewerWindow.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
     <None Include="SpectREM\clut.frag">
       <DeploymentContent>false</DeploymentContent>
     </None>

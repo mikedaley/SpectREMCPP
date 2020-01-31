@@ -40,6 +40,10 @@ namespace PMDawn
         localtime_s(&timeinfo, &rawtime);
         strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &timeinfo);
         std::string str(buffer);
+        std::string str(buffer);
+
+        std::string str(buffer);
+
         return str;
     }
 
