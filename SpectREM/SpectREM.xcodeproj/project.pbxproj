@@ -9,6 +9,12 @@
 /* Begin PBXBuildFile section */
 		17B27F041F6877C800B811FC /* AudioQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17B27F021F6877C800B811FC /* AudioQueue.cpp */; };
 		17B5DB971F5B14A7003E7EF3 /* AudioCore.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17B5DB951F5B14A7003E7EF3 /* AudioCore.mm */; };
+		17BB26C923FEAC2900F68DC8 /* ORSSerial.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17BB26C723FEABF100F68DC8 /* ORSSerial.framework */; };
+		17BB26CA23FEAC2900F68DC8 /* ORSSerial.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 17BB26C723FEABF100F68DC8 /* ORSSerial.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		17BB26D123FEAD9F00F68DC8 /* plus3-41-3.rom in Resources */ = {isa = PBXBuildFile; fileRef = 17BB26D023FEAD9F00F68DC8 /* plus3-41-3.rom */; };
+		17BB26D323FEADAA00F68DC8 /* plus3-41-2.rom in Resources */ = {isa = PBXBuildFile; fileRef = 17BB26D223FEADAA00F68DC8 /* plus3-41-2.rom */; };
+		17BB26D523FEADB200F68DC8 /* plus3-41-1.rom in Resources */ = {isa = PBXBuildFile; fileRef = 17BB26D423FEADB200F68DC8 /* plus3-41-1.rom */; };
+		17BB26D723FEADB800F68DC8 /* plus3-41-0.rom in Resources */ = {isa = PBXBuildFile; fileRef = 17BB26D623FEADB800F68DC8 /* plus3-41-0.rom */; };
 		17C33DFA1F6578E600720A06 /* TapeBrowserViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17C33DF91F6578E600720A06 /* TapeBrowserViewController.mm */; };
 		17C33DFE1F6583A400720A06 /* TapeCellView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17C33DFD1F6583A400720A06 /* TapeCellView.mm */; };
 		17EC89101F5B1FC500B6EFAF /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17EC890F1F5B1FC500B6EFAF /* AudioToolbox.framework */; };
@@ -18,13 +24,11 @@
 		276ADE3421021B5100EC7DC9 /* MetalView.m in Sources */ = {isa = PBXBuildFile; fileRef = 276ADE3321021B5100EC7DC9 /* MetalView.m */; };
 		276E3F9C1F97A06B00020BB3 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17B5DB9C1F5B1CCE003E7EF3 /* AVFoundation.framework */; };
 		276E3F9E1F97AAE800020BB3 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 276E3F9D1F97AAD600020BB3 /* CoreMedia.framework */; };
-		27A8B22A23C21791007C7242 /* ORSSerial.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2934D9F423B6887100A9BAA6 /* ORSSerial.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		27BAE9A520F4CB68007A8CFB /* Commands.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 27BAE9A420F4CB68007A8CFB /* Commands.rtf */; };
 		27BAE9A820F4CE9C007A8CFB /* InstructionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27BAE9A720F4CE9C007A8CFB /* InstructionViewController.m */; };
 		27BE4031239E60A7006204BA /* SmartLINK.mm in Sources */ = {isa = PBXBuildFile; fileRef = 27BE402F239E60A7006204BA /* SmartLINK.mm */; };
 		27C5AE472146F0D3008DBD54 /* InfoPanelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C5AE462146F0D3008DBD54 /* InfoPanelViewController.m */; };
 		27C5DBA51FFC000A0064C661 /* DebugViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 27C5DBA41FFC000A0064C661 /* DebugViewController.mm */; };
-		2934D9F923B6888300A9BAA6 /* ORSSerial.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2934D9F423B6887100A9BAA6 /* ORSSerial.framework */; };
 		29555BEF21E3C36D004BC007 /* AudioQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17B27F021F6877C800B811FC /* AudioQueue.cpp */; };
 		29555C0921E523FA004BC007 /* AudioCore.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17B5DB951F5B14A7003E7EF3 /* AudioCore.mm */; };
 		29555C1421E52701004BC007 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29555C1321E52701004BC007 /* CoreMedia.framework */; };
@@ -91,10 +95,6 @@
 		2971211D23CE633A0083C334 /* EmulationController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2971211B23CE633A0083C334 /* EmulationController.cpp */; };
 		2971211E23CE633A0083C334 /* EmulationController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2971211B23CE633A0083C334 /* EmulationController.cpp */; };
 		2985C70223E2D16B00F42D8F /* ZXSpectrum128_2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2985C70023E2D16B00F42D8F /* ZXSpectrum128_2.cpp */; };
-		2985C70A23E33BA500F42D8F /* plus3-3.rom in Resources */ = {isa = PBXBuildFile; fileRef = 2985C70623E33BA500F42D8F /* plus3-3.rom */; };
-		2985C70B23E33BA500F42D8F /* plus3-1.rom in Resources */ = {isa = PBXBuildFile; fileRef = 2985C70723E33BA500F42D8F /* plus3-1.rom */; };
-		2985C70C23E33BA500F42D8F /* plus3-0.rom in Resources */ = {isa = PBXBuildFile; fileRef = 2985C70823E33BA500F42D8F /* plus3-0.rom */; };
-		2985C70D23E33BA500F42D8F /* plus3-2.rom in Resources */ = {isa = PBXBuildFile; fileRef = 2985C70923E33BA500F42D8F /* plus3-2.rom */; };
 		2985C70E23E342C100F42D8F /* ZXSpectrum128_2A.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2985C70423E3359900F42D8F /* ZXSpectrum128_2A.cpp */; };
 		29D0D61B23AE418C00BA8A30 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29D0D61A23AE418C00BA8A30 /* UserNotifications.framework */; };
 		29E98454239531C00033E63C /* NSObject+Bindings.mm in Sources */ = {isa = PBXBuildFile; fileRef = 29E98453239531C00033E63C /* NSObject+Bindings.mm */; };
@@ -110,38 +110,14 @@
 		EDC56FDA1F6C228700162739 /* Defaults.m in Sources */ = {isa = PBXBuildFile; fileRef = EDC56FD91F6C228700162739 /* Defaults.m */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		2934D9F323B6887100A9BAA6 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2934D9EE23B6887100A9BAA6 /* ORSSerialPort.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 9DCA89121A2BB106009285EB;
-			remoteInfo = ORSSerial;
-		};
-		2934D9F523B6887100A9BAA6 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2934D9EE23B6887100A9BAA6 /* ORSSerialPort.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 9D7472131B6D7767002D8B10;
-			remoteInfo = "ORSSerialPort Tests";
-		};
-		2934D9F723B6887E00A9BAA6 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2934D9EE23B6887100A9BAA6 /* ORSSerialPort.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 9DCA89111A2BB106009285EB;
-			remoteInfo = ORSSerial;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXCopyFilesBuildPhase section */
-		27A8B22923C21787007C7242 /* Embed Frameworks */ = {
+		17BB26CB23FEAC2900F68DC8 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				27A8B22A23C21791007C7242 /* ORSSerial.framework in Embed Frameworks */,
+				17BB26CA23FEAC2900F68DC8 /* ORSSerial.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -154,6 +130,11 @@
 		17B5DB931F5B14A7003E7EF3 /* AudioCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioCore.h; path = SpectREM/OSX/AudioCore.h; sourceTree = SOURCE_ROOT; };
 		17B5DB951F5B14A7003E7EF3 /* AudioCore.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AudioCore.mm; path = SpectREM/OSX/AudioCore.mm; sourceTree = SOURCE_ROOT; };
 		17B5DB9C1F5B1CCE003E7EF3 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		17BB26C723FEABF100F68DC8 /* ORSSerial.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ORSSerial.framework; path = Frameworks/ORSSerialPort/ORSSerial.framework; sourceTree = "<group>"; };
+		17BB26D023FEAD9F00F68DC8 /* plus3-41-3.rom */ = {isa = PBXFileReference; lastKnownFileType = file; path = "plus3-41-3.rom"; sourceTree = "<group>"; };
+		17BB26D223FEADAA00F68DC8 /* plus3-41-2.rom */ = {isa = PBXFileReference; lastKnownFileType = file; path = "plus3-41-2.rom"; sourceTree = "<group>"; };
+		17BB26D423FEADB200F68DC8 /* plus3-41-1.rom */ = {isa = PBXFileReference; lastKnownFileType = file; path = "plus3-41-1.rom"; sourceTree = "<group>"; };
+		17BB26D623FEADB800F68DC8 /* plus3-41-0.rom */ = {isa = PBXFileReference; lastKnownFileType = file; path = "plus3-41-0.rom"; sourceTree = "<group>"; };
 		17C33DF81F6578E600720A06 /* TapeBrowserViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TapeBrowserViewController.h; path = SpectREM/OSX/TapeBrowserViewController.h; sourceTree = SOURCE_ROOT; };
 		17C33DF91F6578E600720A06 /* TapeBrowserViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = TapeBrowserViewController.mm; path = SpectREM/OSX/TapeBrowserViewController.mm; sourceTree = SOURCE_ROOT; };
 		17C33DFC1F6583A400720A06 /* TapeCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TapeCellView.h; path = SpectREM/OSX/TapeCellView.h; sourceTree = SOURCE_ROOT; };
@@ -176,7 +157,6 @@
 		27C5AE462146F0D3008DBD54 /* InfoPanelViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = InfoPanelViewController.m; path = SpectREM/OSX/InfoPanelViewController.m; sourceTree = SOURCE_ROOT; };
 		27C5DBA31FFC000A0064C661 /* DebugViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DebugViewController.h; path = SpectREM/OSX/DebugViewController.h; sourceTree = SOURCE_ROOT; };
 		27C5DBA41FFC000A0064C661 /* DebugViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = DebugViewController.mm; path = SpectREM/OSX/DebugViewController.mm; sourceTree = SOURCE_ROOT; };
-		2934D9EE23B6887100A9BAA6 /* ORSSerialPort.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ORSSerialPort.xcodeproj; path = "../ORSSerialPort/Framework Project/ORSSerialPort.xcodeproj"; sourceTree = "<group>"; };
 		29555C1321E52701004BC007 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.1.sdk/System/Library/Frameworks/CoreMedia.framework; sourceTree = DEVELOPER_DIR; };
 		29555C1521E5270A004BC007 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.1.sdk/System/Library/Frameworks/MetalKit.framework; sourceTree = DEVELOPER_DIR; };
 		29555C1721E52719004BC007 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.1.sdk/System/Library/Frameworks/AudioToolbox.framework; sourceTree = DEVELOPER_DIR; };
@@ -238,10 +218,6 @@
 		2985C70123E2D16B00F42D8F /* ZXSpectrum128_2.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ZXSpectrum128_2.hpp; sourceTree = "<group>"; };
 		2985C70423E3359900F42D8F /* ZXSpectrum128_2A.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ZXSpectrum128_2A.cpp; sourceTree = "<group>"; };
 		2985C70523E3359900F42D8F /* ZXSpectrum128_2A.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ZXSpectrum128_2A.hpp; sourceTree = "<group>"; };
-		2985C70623E33BA500F42D8F /* plus3-3.rom */ = {isa = PBXFileReference; lastKnownFileType = file; path = "plus3-3.rom"; sourceTree = "<group>"; };
-		2985C70723E33BA500F42D8F /* plus3-1.rom */ = {isa = PBXFileReference; lastKnownFileType = file; path = "plus3-1.rom"; sourceTree = "<group>"; };
-		2985C70823E33BA500F42D8F /* plus3-0.rom */ = {isa = PBXFileReference; lastKnownFileType = file; path = "plus3-0.rom"; sourceTree = "<group>"; };
-		2985C70923E33BA500F42D8F /* plus3-2.rom */ = {isa = PBXFileReference; lastKnownFileType = file; path = "plus3-2.rom"; sourceTree = "<group>"; };
 		29CE03BD22A7BD64007A1549 /* SpectREM.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = SpectREM.entitlements; path = SpectREM/OSX/SpectREM.entitlements; sourceTree = SOURCE_ROOT; };
 		29D0D61A23AE418C00BA8A30 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		29E98452239531C00033E63C /* NSObject+Bindings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSObject+Bindings.h"; path = "SpectREM/OSX/NSObject+Bindings.h"; sourceTree = SOURCE_ROOT; };
@@ -283,12 +259,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2934D9F923B6888300A9BAA6 /* ORSSerial.framework in Frameworks */,
 				276ADE2D2101CE6500EC7DC9 /* MetalKit.framework in Frameworks */,
 				29D0D61B23AE418C00BA8A30 /* UserNotifications.framework in Frameworks */,
 				276E3F9E1F97AAE800020BB3 /* CoreMedia.framework in Frameworks */,
 				276E3F9C1F97A06B00020BB3 /* AVFoundation.framework in Frameworks */,
 				17EC89101F5B1FC500B6EFAF /* AudioToolbox.framework in Frameworks */,
+				17BB26C923FEAC2900F68DC8 /* ORSSerial.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -309,6 +285,7 @@
 		17B5DB9B1F5B1CCE003E7EF3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				17BB26C723FEABF100F68DC8 /* ORSSerial.framework */,
 				29D0D61A23AE418C00BA8A30 /* UserNotifications.framework */,
 				29555C1921E5271F004BC007 /* AVFoundation.framework */,
 				29555C1721E52719004BC007 /* AudioToolbox.framework */,
@@ -375,15 +352,6 @@
 			name = "Debug View Controller";
 			sourceTree = "<group>";
 		};
-		2934D9EF23B6887100A9BAA6 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				2934D9F423B6887100A9BAA6 /* ORSSerial.framework */,
-				2934D9F623B6887100A9BAA6 /* ORSSerialPort Tests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		295745F323BCBE3F00F6CF8C /* OSX */ = {
 			isa = PBXGroup;
 			children = (
@@ -420,10 +388,10 @@
 		2963B3BA23B7977D00CAE4CD /* ROMS */ = {
 			isa = PBXGroup;
 			children = (
-				2985C70823E33BA500F42D8F /* plus3-0.rom */,
-				2985C70723E33BA500F42D8F /* plus3-1.rom */,
-				2985C70923E33BA500F42D8F /* plus3-2.rom */,
-				2985C70623E33BA500F42D8F /* plus3-3.rom */,
+				17BB26D623FEADB800F68DC8 /* plus3-41-0.rom */,
+				17BB26D423FEADB200F68DC8 /* plus3-41-1.rom */,
+				17BB26D223FEADAA00F68DC8 /* plus3-41-2.rom */,
+				17BB26D023FEAD9F00F68DC8 /* plus3-41-3.rom */,
 				2963B3BB23B7977D00CAE4CD /* 128-1.ROM */,
 				2963B3BC23B7977D00CAE4CD /* 128-0.ROM */,
 				2963B3BD23B7977D00CAE4CD /* plus2-0.ROM */,
@@ -594,7 +562,6 @@
 		ED913F8C1F30759300316E1A = {
 			isa = PBXGroup;
 			children = (
-				2934D9EE23B6887100A9BAA6 /* ORSSerialPort.xcodeproj */,
 				ED913F971F30759300316E1A /* SpectREM */,
 				2968890021E3B98900BFC3BD /* SpectREMiOS */,
 				ED913F961F30759300316E1A /* Products */,
@@ -740,12 +707,11 @@
 				ED913F911F30759300316E1A /* Sources */,
 				ED913F921F30759300316E1A /* Frameworks */,
 				ED913F931F30759300316E1A /* Resources */,
-				27A8B22923C21787007C7242 /* Embed Frameworks */,
+				17BB26CB23FEAC2900F68DC8 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				2934D9F823B6887E00A9BAA6 /* PBXTargetDependency */,
 			);
 			name = SpectREM;
 			productName = SpectREM;
@@ -788,12 +754,6 @@
 			mainGroup = ED913F8C1F30759300316E1A;
 			productRefGroup = ED913F961F30759300316E1A /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 2934D9EF23B6887100A9BAA6 /* Products */;
-					ProjectRef = 2934D9EE23B6887100A9BAA6 /* ORSSerialPort.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				ED913F941F30759300316E1A /* SpectREM */,
@@ -801,23 +761,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		2934D9F423B6887100A9BAA6 /* ORSSerial.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = ORSSerial.framework;
-			remoteRef = 2934D9F323B6887100A9BAA6 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		2934D9F623B6887100A9BAA6 /* ORSSerialPort Tests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = "ORSSerialPort Tests.xctest";
-			remoteRef = 2934D9F523B6887100A9BAA6 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		296888FD21E3B98800BFC3BD /* Resources */ = {
@@ -840,20 +783,20 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2985C70B23E33BA500F42D8F /* plus3-1.rom in Resources */,
+				17BB26D723FEADB800F68DC8 /* plus3-41-0.rom in Resources */,
+				17BB26D123FEAD9F00F68DC8 /* plus3-41-3.rom in Resources */,
 				27BAE9A520F4CB68007A8CFB /* Commands.rtf in Resources */,
 				2963B3EF23B7977D00CAE4CD /* 48.ROM in Resources */,
 				2963B3E923B7977D00CAE4CD /* plus2-0.ROM in Resources */,
 				2963B3EB23B7977D00CAE4CD /* plus2-1.ROM in Resources */,
 				ED913FA91F30759300316E1A /* Assets.xcassets in Resources */,
-				2985C70C23E33BA500F42D8F /* plus3-0.rom in Resources */,
+				17BB26D323FEADAA00F68DC8 /* plus3-41-2.rom in Resources */,
 				295745F623BCC50000F6CF8C /* Credits.rtf in Resources */,
 				2963B3E523B7977D00CAE4CD /* 128-1.ROM in Resources */,
-				2985C70D23E33BA500F42D8F /* plus3-2.rom in Resources */,
 				2963B3E723B7977D00CAE4CD /* 128-0.ROM in Resources */,
-				2985C70A23E33BA500F42D8F /* plus3-3.rom in Resources */,
 				2963B3ED23B7977D00CAE4CD /* 128.rom in Resources */,
 				ED913FAC1F30759300316E1A /* Main.storyboard in Resources */,
+				17BB26D523FEADB200F68DC8 /* plus3-41-1.rom in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -942,14 +885,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		2934D9F823B6887E00A9BAA6 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = ORSSerial;
-			targetProxy = 2934D9F723B6887E00A9BAA6 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		2968890D21E3B98900BFC3BD /* Main.storyboard */ = {
@@ -1161,6 +1096,10 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = PJNBHRUE79;
 				ENABLE_HARDENED_RUNTIME = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks/ORSSerialPort",
+				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_UNROLL_LOOPS = YES;
 				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
@@ -1202,6 +1141,10 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = PJNBHRUE79;
 				ENABLE_HARDENED_RUNTIME = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks/ORSSerialPort",
+				);
 				GCC_OPTIMIZATION_LEVEL = fast;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_UNROLL_LOOPS = YES;
