@@ -989,6 +989,7 @@ static void audio_callback(uint32_t nNumSamples, uint8_t* pBuffer)
 
 int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
 {
+    CoInitializeEx(NULL, COINIT_MULTITHREADED);
     // Check for logging type if needed, CTRL = LOG_INFO, ALT = LOG_DEBUG
     PMDawn::logLevel = PMDawn::LOG_NONE;
     if (GetAsyncKeyState(VK_MENU))
@@ -1001,6 +1002,7 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
         // CTRL is pressed
         PMDawn::logLevel = PMDawn::LOG_INFO;
     }
+    PMDawn::logLevel = PMDawn::LOG_INFO;
     if (PMDawn::logLevel != PMDawn::LOG_NONE)
     {
         if (PMDawn::LogOpenOrCreate(PMDawn::GetApplicationBasePath() + "\\" + PMDawn::logFilename))
@@ -1214,6 +1216,7 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
         WaitForSingleObject(tapeViewerThread, INFINITE);
         CloseHandle(tapeViewerThread);
     }
+    CoUninitialize();
     return 0;
 }
 
