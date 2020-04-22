@@ -1095,7 +1095,13 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
     m_pOpenGLView->Init(mainWindow, 256 * zoomLevel, 192 * zoomLevel, ID_SHADER_CLUT_VERT, ID_SHADER_CLUT_FRAG, ID_SHADER_DISPLAY_VERT, ID_SHADER_DISPLAY_FRAG, RT_RCDATA);
     m_pAudioQueue = new AudioQueue();
     m_pAudioCore = new AudioCore();
-    m_pAudioCore->Init(44100, 50, audio_callback);
+    bool rV = m_pAudioCore->Init(44100, 50, audio_callback);
+    if (!rV)
+    {
+        // AudioCore::Init failed
+        CoUninitialize();
+        return 0;
+    }
     m_pTape = new Tape(tapeStatusCallback);
     m_pMachine = new ZXSpectrum128_2A(m_pTape);// ZXSpectrum128(m_pTape);
     m_pMachine->emuUseAYSound = true;
@@ -1104,6 +1110,7 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
     m_pMachine->initialise(romPath);
     m_pAudioCore->Start();
     m_pMachine->resume();
+    m_pMachine->resetMachine(true);
 
     // Do the main message loop
     while (!exit_emulator)
