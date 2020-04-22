@@ -16,10 +16,10 @@
 
 //static const int cROM_SIZE = 16384;
 
-static const char *cDEFAULT_ROM_0 = "plus3-0.rom";
-static const char *cDEFAULT_ROM_1 = "plus3-1.rom";
-static const char *cDEFAULT_ROM_2 = "plus3-2.rom";
-static const char *cDEFAULT_ROM_3 = "plus3-3.rom";
+static const char *cDEFAULT_ROM_0 = "plus3-41-0.rom";
+static const char *cDEFAULT_ROM_1 = "plus3-41-1.rom";
+static const char *cDEFAULT_ROM_2 = "plus3-41-2.rom";
+static const char *cDEFAULT_ROM_3 = "plus3-41-3.rom";
 // ------------------------------------------------------------------------------------------------------------
 // - Constructor/Destructor
 
