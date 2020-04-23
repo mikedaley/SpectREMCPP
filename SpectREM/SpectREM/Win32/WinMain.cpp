@@ -724,7 +724,7 @@ static void ShowUI(HWND hWnd = mainWindow)
     RECT newSize = GetWindowResizeWithUI(mainWindow, statusWindow, mainMenu, true);
     SetMenu(hWnd, mainMenu);
     SetWindowPos(mainWindow, HWND_NOTOPMOST, newSize.left, newSize.top, newSize.right, newSize.bottom, 0);
-    m_pOpenGLView->Resize(256 * zoomLevel, 192 * zoomLevel);
+    m_pOpenGLView->Resize(0, 0, 256 * zoomLevel, 192 * zoomLevel);
     ShowWindow(statusWindow, SW_SHOW);
 }
 
@@ -738,7 +738,7 @@ static void HideUI(HWND hWnd = mainWindow)
     RECT newSize = GetWindowResizeWithUI(mainWindow, statusWindow, mainMenu, false);
     SetMenu(hWnd, NULL);
     SetWindowPos(mainWindow, HWND_NOTOPMOST, newSize.left, newSize.top, newSize.right, newSize.bottom, 0);
-    m_pOpenGLView->Resize(256 * zoomLevel, 192 * zoomLevel);
+    m_pOpenGLView->Resize(0, 0, 256 * zoomLevel, 192 * zoomLevel);
     ShowWindow(statusWindow, SW_HIDE);
 }
 
@@ -778,7 +778,7 @@ RECT GetWindowResizeWithUI(HWND mWin, HWND sWin, HMENU menu, bool visible)
             m.left,
             m.top,
             (m.right - m.left),
-            (m.bottom - m.top) + (s.bottom - s.top) + GetSystemMetrics(SM_CYMENU)
+            (m.bottom - m.top) + GetSystemMetrics(SM_CYMENU)// + (s.bottom - s.top)// + GetSystemMetrics(SM_CYMENU)
         };
         Log(PMDawn::LOG_INFO, "Output RECT = t" +
             std::to_string(nWin.top) + " l" +
@@ -793,7 +793,7 @@ RECT GetWindowResizeWithUI(HWND mWin, HWND sWin, HMENU menu, bool visible)
             m.left,
             m.top,
             (m.right - m.left),
-            (m.bottom - m.top) - (s.bottom - s.top) - GetSystemMetrics(SM_CYMENU)
+            (m.bottom - m.top) - GetSystemMetrics(SM_CYMENU)// - (s.bottom - s.top)// - GetSystemMetrics(SM_CYMENU)
         };
         Log(PMDawn::LOG_INFO, "Output RECT = t" +
             std::to_string(nWin.top) + " l" +
@@ -1092,6 +1092,7 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
     QueryPerformanceCounter(&last_time);
 
     m_pOpenGLView = new OpenGLView();
+    // * zoomLevel
     m_pOpenGLView->Init(mainWindow, 256 * zoomLevel, 192 * zoomLevel, ID_SHADER_CLUT_VERT, ID_SHADER_CLUT_FRAG, ID_SHADER_DISPLAY_VERT, ID_SHADER_DISPLAY_FRAG, RT_RCDATA);
     m_pAudioQueue = new AudioQueue();
     m_pAudioCore = new AudioCore();
@@ -1103,7 +1104,7 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
         return 0;
     }
     m_pTape = new Tape(tapeStatusCallback);
-    m_pMachine = new ZXSpectrum128_2A(m_pTape);// ZXSpectrum128(m_pTape);
+    m_pMachine = new ZXSpectrum48(m_pTape);// ZXSpectrum128(m_pTape);
     m_pMachine->emuUseAYSound = true;
     m_pMachine->emuBasePath = PMDawn::GetApplicationBasePath();
     PMDawn::Log(PMDawn::LOG_INFO, "ROMs path = " + m_pMachine->emuBasePath + romPath);
@@ -1111,6 +1112,8 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
     m_pAudioCore->Start();
     m_pMachine->resume();
     m_pMachine->resetMachine(true);
+
+    m_pOpenGLView->ShaderSetScreenCurve((GLint)0.0);
 
     // Do the main message loop
     while (!exit_emulator)

@@ -109,6 +109,8 @@ public:
 
 	void								UpdateTextureData(unsigned char *pData, GLint vX, GLint vY);
 	void								OpenGLView::Resize(int width, int height);
+	void								OpenGLView::Resize(int x, int y, int width, int height);
+	void								OpenGLView::ShaderSetScreenCurve(GLint curve);
 private:
 	bool								InitialiseExtensions();
 	bool								LoadExtensionList();
@@ -192,7 +194,9 @@ private:
 */
 
     GLuint          _viewWidth = 320;
-    GLuint          _viewHeight = 256;
+	GLuint          _viewHeight = 256;
+	GLuint			_viewTop = 0;
+	GLuint			_viewLeft = 0;
 
     GLuint          _vertexBuffer;
     GLuint          _vertexArray;
@@ -204,6 +208,7 @@ private:
     GLuint          _clutInputTexture;
     GLuint          _clutTexture;
     GLuint          _clutOutputTexture;
+
 
     // Display shader uniforms/samplers
     GLuint          displayDepthBuffer;

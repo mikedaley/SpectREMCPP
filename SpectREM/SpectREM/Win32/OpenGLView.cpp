@@ -144,6 +144,17 @@ void OpenGLView::Resize(int width, int height)
 
 //-----------------------------------------------------------------------------------------
 
+void OpenGLView::Resize(int x, int y, int width, int height)
+{
+    GL_CHECK(glViewport(x, y, width, height));
+    _viewTop = y;
+    _viewLeft = x;
+    _viewWidth = width;
+    _viewHeight = height;
+}
+
+//-----------------------------------------------------------------------------------------
+
 bool OpenGLView::Init(HWND hWnd, int width, int height, uint16_t idClutVert, uint16_t idClutFrag,  uint16_t idDisplayVert, uint16_t idDisplayFrag, LPWSTR idType)
 {
 	unsigned int formatCount;
@@ -203,7 +214,7 @@ bool OpenGLView::Init(HWND hWnd, int width, int height, uint16_t idClutVert, uin
 		return false;
 	}
 	
-	glClearColor(1.0f, 0.0f, 0.4f, 1.0f);
+	glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
 
 	LoadShaders(idClutVert, idClutFrag, idDisplayVert, idDisplayFrag, idType);
 	SetupTexture();
@@ -359,7 +370,7 @@ void OpenGLView::SetupTexture()
 
 void OpenGLView::UpdateTextureData(unsigned char *pData, GLint vX, GLint vY)
 {
-    glClearColor(1.0f, 1.0f, 0.0f, 0.5f);
+    glClearColor(1.0f, 0.0f, 0.0f, 0.5f);  // this changes the main colour behind the texture...
     glClear(GL_COLOR_BUFFER_BIT);
 
     // Render the output to a texture which has the default dimensions of the output image
@@ -515,7 +526,9 @@ void OpenGLView::paintGL()
 {
     // Render the texture to the actual screen, this time using the size of the screen as the viewport
     GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-    GL_CHECK(glViewport(0, 0, static_cast<GLint>(_viewWidth), static_cast<GLint>(_viewHeight)));
+    GL_CHECK(glViewport(
+        static_cast<GLint>(_viewLeft), static_cast<GLint>(_viewTop), 
+        static_cast<GLint>(_viewWidth), static_cast<GLint>(_viewHeight)));
     GL_CHECK(glUseProgram(_displayShaderProg));
     GL_CHECK(glActiveTexture(GL_TEXTURE0));
     GL_CHECK(glBindTexture(GL_TEXTURE_2D, _clutOutputTexture));
@@ -528,7 +541,7 @@ void OpenGLView::paintGL()
     GL_CHECK(glProgramUniform1f(_displayShaderProg, u_brightness, 1.0f));
     GL_CHECK(glProgramUniform1f(_displayShaderProg, u_scanlineSize, 960));
     GL_CHECK(glProgramUniform1f(_displayShaderProg, u_scanlines, 0));
-    GL_CHECK(glProgramUniform1f(_displayShaderProg, u_screenCurve, 0.3f));
+    GL_CHECK(glProgramUniform1f(_displayShaderProg, u_screenCurve, 0.0));// 0.3f));
     GL_CHECK(glProgramUniform1f(_displayShaderProg, u_pixelFilterValue, 0.15f));
     GL_CHECK(glProgramUniform1f(_displayShaderProg, u_rgbOffset, 0));
     GL_CHECK(glProgramUniform1i(_displayShaderProg, u_showVignette, true));
@@ -606,6 +619,34 @@ void OpenGLView::CheckOpenGLError(const char* stmt, const char* fname, int line)
         exit(EXIT_FAILURE);
     }
 }
+
+
+//-----------------------------------------------------------------------------------------
+void OpenGLView::ShaderSetScreenCurve(GLint curve)
+{
+    //u_screenCurve = curve;
+    //GL_CHECK(glProgramUniform1f(_displayShaderProg, u_screenCurve, curve));
+}
+
+//-----------------------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------------------
 
 
 //-----------------------------------------------------------------------------------------
