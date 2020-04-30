@@ -13,6 +13,8 @@
 #include <vector>
 #include "OpenGLView.hpp"
 #include <unordered_map>
+#include "PMDawn.hpp"
+
 
 #ifdef _DEBUG
 #define GL_CHECK(stmt) do { \
@@ -29,11 +31,13 @@
 
 static const GLint textureUnit0 = 0;
 static const GLint textureUnit1 = 1;
+static const GLint textureUnit2 = 2;
 
 static const GLuint borderWidth = 32;
 static const GLuint screenWidth = borderWidth + 256 + borderWidth;
 static const GLuint screenHeight = borderWidth + 192 + borderWidth;
 
+static char const * reflectionFilename = "bluesbro.png";
 static char const * cS_DISPLAY_TEXTURE = "s_displayTexture";
 static char const * cS_CLUT_TEXTURE = "s_clutTexture";
 static char const * cS_REFLECTION_TEXTURE = "s_reflectionTexture";
@@ -111,9 +115,9 @@ const Color CLUT[] = {
 
 //-----------------------------------------------------------------------------------------
 
-OpenGLView::OpenGLView()
+OpenGLView::OpenGLView(std::string bpath)
 {
-
+    appBasePath = bpath;
 }
 
 
@@ -217,10 +221,53 @@ bool OpenGLView::Init(HWND hWnd, int width, int height, uint16_t idClutVert, uin
 	glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
 
 	LoadShaders(idClutVert, idClutFrag, idDisplayVert, idDisplayFrag, idType);
+    LoadFileTextures();
 	SetupTexture();
 	SetupQuad();
 
 	return true;
+}
+//-----------------------------------------------------------------------------------------
+
+void OpenGLView::LoadFileTextures()
+{
+    // bluesbro.png
+    //LoadBitmap(appBasePath + std::string("bluesbro.png"), _reflectionTexture);
+    LoadBitmap(L"C:\\Users\\polom\\source\\repos\\SpectREMCPP\\SpectREM\\x64\\Debug\\bluesbro.bmp", _reflectionTexture);
+}
+
+bool OpenGLView::LoadBitmap(LPTSTR szFileName, GLuint& texid)                   // Creates Texture From A Bitmap File
+{
+    HBITMAP hBMP;                                                       // Handle Of The Bitmap
+    BITMAP  BMP;                                                        // Bitmap Structure
+
+    glGenTextures(1, &texid);                                           // Create The Texture
+    hBMP = (HBITMAP)LoadImage(GetModuleHandle(NULL), szFileName, IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION | LR_LOADFROMFILE);
+
+    if (!hBMP)                                                          // Does The Bitmap Exist?
+        return FALSE;                                                   // If Not Return False
+
+    GetObject(hBMP, sizeof(BMP), &BMP);                                 // Get The Object
+                                                                        // hBMP:        Handle To Graphics Object
+                                                                        // sizeof(BMP): Size Of Buffer For Object Information
+                                                                        // &BMP:        Buffer For Object Information
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);                              // Pixel Storage Mode (Word Alignment / 4 Bytes)
+
+    //// Typical Texture Generation Using Data From The Bitmap
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, _reflectionTexture);                                // Bind To The Texture ID
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);   // Linear Min Filter
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);   // Linear Mag Filter
+    //glTexImage2D(GL_TEXTURE_2D, 0, 3, BMP.bmWidth, BMP.bmHeight, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, BMP.bmBits);
+
+    DeleteObject(hBMP);                                                 // Delete The Object
+    //GL_CHECK(glUniform1i(s_reflectionTexture, textureUnit2));
+    return TRUE;                                                        // Loading Was Successful
+
+    //GL_CHECK(glActiveTexture(GL_TEXTURE1));
+    //GL_CHECK(glBindTexture(GL_TEXTURE_2D, _clutTexture));
+    //GL_CHECK(glUniform1i(s_clutTexture, textureUnit1));
 }
 
 //-----------------------------------------------------------------------------------------
@@ -265,7 +312,8 @@ void OpenGLView::LoadShaders(uint16_t vertCLUT, uint16_t fragCLUT, uint16_t vert
     _clutShaderProg = prepareShaderProgram(vertCLUTR, fragCLUTR);
     GL_CHECK(s_displayTexture = glGetUniformLocation(_clutShaderProg, cS_DISPLAY_TEXTURE));
     GL_CHECK(s_clutTexture = glGetUniformLocation(_clutShaderProg, cS_CLUT_TEXTURE));
-
+    //GL_CHECK(s_reflectionTexture = glGetUniformLocation(_displayShaderProg, cS_DISPLAY_TEXTURE));
+    
     // Display Shader program
 	std::string vertDisplayR;
 	hRes = FindResource(0, MAKEINTRESOURCE(vertDISPLAY), MAKEINTRESOURCE(idtype));
@@ -385,6 +433,10 @@ void OpenGLView::UpdateTextureData(unsigned char *pData, GLint vX, GLint vY)
     GL_CHECK(glActiveTexture(GL_TEXTURE1));
     GL_CHECK(glBindTexture(GL_TEXTURE_2D, _clutTexture));
     GL_CHECK(glUniform1i(s_clutTexture, textureUnit1));
+
+    //GL_CHECK(glActiveTexture(GL_TEXTURE2));
+    //GL_CHECK(glBindTexture(GL_TEXTURE_2D, _reflectionTexture));
+    //GL_CHECK(glUniform1i(s_clutTexture, textureUnit2));
 
     GL_CHECK(glDrawArrays(GL_TRIANGLE_FAN, 0, 4));
     paintGL();
@@ -541,13 +593,13 @@ void OpenGLView::paintGL()
     GL_CHECK(glProgramUniform1f(_displayShaderProg, u_brightness, 1.0f));
     GL_CHECK(glProgramUniform1f(_displayShaderProg, u_scanlineSize, 960));
     GL_CHECK(glProgramUniform1f(_displayShaderProg, u_scanlines, 0));
-    GL_CHECK(glProgramUniform1f(_displayShaderProg, u_screenCurve, 0.0));// 0.3f));
-    GL_CHECK(glProgramUniform1f(_displayShaderProg, u_pixelFilterValue, 0.15f));
+    GL_CHECK(glProgramUniform1f(_displayShaderProg, u_screenCurve, u_screenCurveValue));// 0.3f));
+    GL_CHECK(glProgramUniform1f(_displayShaderProg, u_pixelFilterValue, 0.15));// 0.15f));
     GL_CHECK(glProgramUniform1f(_displayShaderProg, u_rgbOffset, 0));
-    GL_CHECK(glProgramUniform1i(_displayShaderProg, u_showVignette, true));
-    GL_CHECK(glProgramUniform1f(_displayShaderProg, u_vignetteX, 0.31f));
-    GL_CHECK(glProgramUniform1f(_displayShaderProg, u_vignetteY, 6.53f));
-    GL_CHECK(glProgramUniform1i(_displayShaderProg, u_showReflection, false));
+    GL_CHECK(glProgramUniform1i(_displayShaderProg, u_showVignette, u_showVignetteValue));
+    GL_CHECK(glProgramUniform1f(_displayShaderProg, u_vignetteX, 0.31f));// 0.31f));
+    GL_CHECK(glProgramUniform1f(_displayShaderProg, u_vignetteY, 7.10f));// 6.53f));
+    GL_CHECK(glProgramUniform1i(_displayShaderProg, u_showReflection, u_showReflectionValue));
     //GL_CHECK(glProgramUniform1f(_displayShaderProg, u_time, static_cast<int>(QDateTime::currentMSecsSinceEpoch())));
     GL_CHECK(glProgramUniform2f(_displayShaderProg, u_screenSize, static_cast<GLfloat>(_viewWidth), static_cast<GLfloat>(_viewHeight)));
 
@@ -622,17 +674,41 @@ void OpenGLView::CheckOpenGLError(const char* stmt, const char* fname, int line)
 
 
 //-----------------------------------------------------------------------------------------
-void OpenGLView::ShaderSetScreenCurve(GLint curve)
+void OpenGLView::ShaderSetScreenCurve(GLfloat curve)
 {
-    //u_screenCurve = curve;
-    //GL_CHECK(glProgramUniform1f(_displayShaderProg, u_screenCurve, curve));
+    u_screenCurveValue = curve;
+    PMDawn::Log(PMDawn::LOG_INFO, "ShaderSetScreenCurve = " + std::to_string(curve));
 }
 
 //-----------------------------------------------------------------------------------------
 
+void OpenGLView::ShaderSetVignette(bool onoff)
+{
+    u_showVignetteValue = onoff;
+    if (onoff)
+    {
+        PMDawn::Log(PMDawn::LOG_INFO, "ShaderSetVignette = true");
+    }
+    else
+    {
+        PMDawn::Log(PMDawn::LOG_INFO, "ShaderSetVignette = false");
+    }
+}
 
 //-----------------------------------------------------------------------------------------
 
+void OpenGLView::ShaderSetReflection(bool onoff)
+{
+    u_showReflectionValue = onoff;
+    if (onoff)
+    {
+        PMDawn::Log(PMDawn::LOG_INFO, "ShaderSetReflection = true");
+    }
+    else
+    {
+        PMDawn::Log(PMDawn::LOG_INFO, "ShaderSetReflection = false");
+    }
+}
 
 //-----------------------------------------------------------------------------------------
 

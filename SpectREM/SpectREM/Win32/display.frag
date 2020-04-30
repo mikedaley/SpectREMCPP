@@ -9,6 +9,7 @@ out vec4 out_fragColor;
 // Texture to be processed
 uniform sampler2D s_displayTexture;
 uniform sampler2D s_reflectionTexture;
+uniform sampler2D s_poloTexture;
 
 // Uniforms linked to different screen settings
 uniform int   u_borderSize;
@@ -87,7 +88,7 @@ void main()
     // Anything outside the texture should be black, otherwise sample the texel in the texture
     if (texCoord.x < 0 || texCoord.y < 0 || texCoord.x > 1 || texCoord.y > 1)
     {
-        color = vec4(0, 0, 0, 1);
+        color = vec4(0.0, 0.0, 0.0, 1);
     }
     else
     {
@@ -119,10 +120,10 @@ void main()
         // Adjust colour based on contrast, saturation and brightness
         color.rgb = colorCorrection(color.rgb, u_saturation, u_contrast, u_brightness);
 
-//        if (u_showReflection == 1)
-//        {
-//            color = mix(color, vec4(colorCorrection(vec3(texture( s_reflectionTexture, texCoord * vec2(-1.0, 1.0))), 0.2, 0.5, 0.8), 1.0), 0.18);
-//        }
+        if (u_showReflection == 1)
+        {
+            color = mix(color, vec4(colorCorrection(vec3(texture( s_reflectionTexture, texCoord * vec2(1.0, -0.4) ) ), 0.2, 0.5, 0.8), 1.0), 0.18);
+        }
 
         // Add scanlines
         float scanline = sin(scanTexCoord.y * u_scanlineSize) * 0.09 * u_scanlines;

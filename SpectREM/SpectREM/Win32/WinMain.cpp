@@ -1091,7 +1091,7 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
     QueryPerformanceFrequency(&perf_freq);
     QueryPerformanceCounter(&last_time);
 
-    m_pOpenGLView = new OpenGLView();
+    m_pOpenGLView = new OpenGLView(bpath);
     // * zoomLevel
     m_pOpenGLView->Init(mainWindow, 256 * zoomLevel, 192 * zoomLevel, ID_SHADER_CLUT_VERT, ID_SHADER_CLUT_FRAG, ID_SHADER_DISPLAY_VERT, ID_SHADER_DISPLAY_FRAG, RT_RCDATA);
     m_pAudioQueue = new AudioQueue();
@@ -1113,7 +1113,9 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
     m_pMachine->resume();
     m_pMachine->resetMachine(true);
 
-    m_pOpenGLView->ShaderSetScreenCurve((GLint)0.0);
+    m_pOpenGLView->ShaderSetScreenCurve((GLfloat)0.10);
+    m_pOpenGLView->ShaderSetVignette(true);
+    m_pOpenGLView->ShaderSetReflection(true);
 
     // Do the main message loop
     while (!exit_emulator)
