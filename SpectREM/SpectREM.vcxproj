@@ -91,6 +91,7 @@
       <AdditionalIncludeDirectories>SpectREM\Emulator Core\Base;SpectREM\Emulator Core\Z80 Core;SpectREM\Emulator Core\Tape;SpectREM\Win32;SpectREM\Emulator Core\ZX Spectrum +2;SpectREM\Emulator Core\ZX Spectrum 48k;SpectREM\Emulator Core\ZX Spectrum 128k;SpectREM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4068</DisableSpecificWarnings>
       <TreatWarningAsError>false</TreatWarningAsError>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -101,7 +102,7 @@
       <Command>if not exist $(TargetDir)\ROMS mkdir $(TargetDir)\ROMS
 copy "$(ProjectDir)SpectREM\Emulation Core\ROMS\*.*" $(TargetDir)ROMS\*.*
 </Command>
-      <Message>Copies the shaders and speccy roms to the output folder</Message>
+      <Message>Copying the speccy roms to the output folder</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -112,6 +113,7 @@ copy "$(ProjectDir)SpectREM\Emulation Core\ROMS\*.*" $(TargetDir)ROMS\*.*
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWarningAsError>false</TreatWarningAsError>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -122,7 +124,7 @@ copy "$(ProjectDir)SpectREM\Emulation Core\ROMS\*.*" $(TargetDir)ROMS\*.*
       <Command>if not exist $(TargetDir)\ROMS mkdir $(TargetDir)\ROMS
 copy "$(ProjectDir)SpectREM\Emulation Core\ROMS\*.*" $(TargetDir)ROMS\*.*
 </Command>
-      <Message>Copies the shaders and speccy roms to the output folder</Message>
+      <Message>Copying the speccy roms to the output folder</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -135,6 +137,7 @@ copy "$(ProjectDir)SpectREM\Emulation Core\ROMS\*.*" $(TargetDir)ROMS\*.*
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWarningAsError>false</TreatWarningAsError>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -147,7 +150,7 @@ copy "$(ProjectDir)SpectREM\Emulation Core\ROMS\*.*" $(TargetDir)ROMS\*.*
       <Command>if not exist $(TargetDir)\ROMS mkdir $(TargetDir)\ROMS
 copy "$(ProjectDir)SpectREM\Emulation Core\ROMS\*.*" $(TargetDir)ROMS\*.*
 </Command>
-      <Message>Copies the shaders and speccy roms to the output folder</Message>
+      <Message>Copying the speccy roms to the output folder</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -160,6 +163,7 @@ copy "$(ProjectDir)SpectREM\Emulation Core\ROMS\*.*" $(TargetDir)ROMS\*.*
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWarningAsError>false</TreatWarningAsError>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -172,7 +176,7 @@ copy "$(ProjectDir)SpectREM\Emulation Core\ROMS\*.*" $(TargetDir)ROMS\*.*
       <Command>if not exist $(TargetDir)\ROMS mkdir $(TargetDir)\ROMS
 copy "$(ProjectDir)SpectREM\Emulation Core\ROMS\*.*" $(TargetDir)ROMS\*.*
 </Command>
-      <Message>Copies the shaders and speccy roms to the output folder</Message>
+      <Message>Copying the speccy roms to the output folder</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -185,7 +189,9 @@ copy "$(ProjectDir)SpectREM\Emulation Core\ROMS\*.*" $(TargetDir)ROMS\*.*
     <ClCompile Include="SpectREM\Emulation Core\Z80_Core\Z80Core_EDOpcodes.cpp" />
     <ClCompile Include="SpectREM\Emulation Core\Z80_Core\Z80Core_FDOpcodes.cpp" />
     <ClCompile Include="SpectREM\Emulation Core\Z80_Core\Z80Core_MainOpcodes.cpp" />
+    <ClCompile Include="SpectREM\Emulation Core\ZXSpectrum_128k_2A\ZXSpectrum128_2A.cpp" />
     <ClCompile Include="SpectREM\Emulation Core\ZX_Spectrum_128k\ZXSpectrum128.cpp" />
+    <ClCompile Include="SpectREM\Emulation Core\ZX_Spectrum_128k_2\ZXSpectrum128_2.cpp" />
     <ClCompile Include="SpectREM\Emulation Core\ZX_Spectrum_48k\ZXSpectrum48.cpp" />
     <ClCompile Include="SpectREM\Emulation Core\ZX_Spectrum_Core\Audio.cpp" />
     <ClCompile Include="SpectREM\Emulation Core\ZX_Spectrum_Core\Contention.cpp" />
@@ -213,16 +219,20 @@ copy "$(ProjectDir)SpectREM\Emulation Core\ROMS\*.*" $(TargetDir)ROMS\*.*
     <ClInclude Include="SpectREM\Emulation Core\Z80_Core\Z80Core_EDOpcodes.h" />
     <ClInclude Include="SpectREM\Emulation Core\Z80_Core\Z80Core_FDOpcodes.h" />
     <ClInclude Include="SpectREM\Emulation Core\Z80_Core\Z80Core_MainOpcodes.h" />
+    <ClInclude Include="SpectREM\Emulation Core\ZXSpectrum_128k_2A\ZXSpectrum128_2A.hpp" />
     <ClInclude Include="SpectREM\Emulation Core\ZX_Spectrum_128k\ZXSpectrum128.hpp" />
+    <ClInclude Include="SpectREM\Emulation Core\ZX_Spectrum_128k_2\ZXSpectrum128_2.hpp" />
     <ClInclude Include="SpectREM\Emulation Core\ZX_Spectrum_48k\ZXSpectrum48.hpp" />
     <ClInclude Include="SpectREM\Emulation Core\ZX_Spectrum_Core\MachineInfo.h" />
     <ClInclude Include="SpectREM\Emulation Core\ZX_Spectrum_Core\ZXSpectrum.hpp" />
     <ClInclude Include="SpectREM\OSX\AudioQueue.hpp" />
     <ClInclude Include="SpectREM\Win32\AudioCore.hpp" />
     <ClInclude Include="SpectREM\Win32\OpenGLView.hpp" />
+    <ClInclude Include="SpectREM\Win32\PMDawn.hpp" />
     <ClInclude Include="SpectREM\Win32\TapeViewerWindow.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
     <None Include="SpectREM\clut.frag">
       <DeploymentContent>false</DeploymentContent>
     </None>

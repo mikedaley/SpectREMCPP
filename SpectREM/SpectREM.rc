@@ -21,33 +21,34 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Dialog
-//
-
-IDD_SETTINGS_DIALOG DIALOGEX 0, 0, 309, 189
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_CHILD | WS_CAPTION
-CAPTION "SpectREM Settings"
-FONT 8, "MS Shell Dlg", 400, 0, 0x0
-BEGIN
-    PUSHBUTTON      "Save",IDC_BTN_SETTINGS_SAVE,191,157,50,14
-    PUSHBUTTON      "Close",IDC_BTN_SETTINGS_CLOSE,243,157,50,14
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
 // DESIGNINFO
 //
 
 #ifdef APSTUDIO_INVOKED
 GUIDELINES DESIGNINFO
 BEGIN
-    IDD_SETTINGS_DIALOG, DIALOG
+    IDD_PROPPAGE_DISPLAY, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 302
+        RIGHTMARGIN, 228
         TOPMARGIN, 7
-        BOTTOMMARGIN, 182
+        BOTTOMMARGIN, 149
+    END
+
+    IDD_PROPPAGE_SOUND, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 203
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 147
+    END
+
+    IDD_PROPPAGE_MISC, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 203
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 147
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -55,10 +56,49 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// Dialog
+//
+
+IDD_PROPPAGE_DISPLAY DIALOGEX 0, 0, 235, 156
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Display"
+FONT 8, "MS Shell Dlg", 400, 0, 0x0
+BEGIN
+    PUSHBUTTON      "Button1",IDC_BUTTON1,60,87,50,14
+END
+
+IDD_PROPPAGE_SOUND DIALOGEX 0, 0, 210, 154
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Sound"
+FONT 8, "MS Shell Dlg", 400, 0, 0x0
+BEGIN
+END
+
+IDD_PROPPAGE_MISC DIALOGEX 0, 0, 210, 154
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Miscellaneous"
+FONT 8, "MS Shell Dlg", 400, 0, 0x0
+BEGIN
+    LTEXT           "TODO: layout property page",IDC_STATIC,60,73,90,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // AFX_DIALOG_LAYOUT
 //
 
-IDD_SETTINGS_DIALOG AFX_DIALOG_LAYOUT
+IDD_PROPPAGE_DISPLAY AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_PROPPAGE_SOUND AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_PROPPAGE_MISC AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
@@ -73,6 +113,51 @@ END
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENG)
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
 #pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG_SETTINGS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 302
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 169
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_SETTINGS DIALOGEX 0, 0, 309, 176
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "SpectREM Settings"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,198,155,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,252,155,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG_SETTINGS AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -173,7 +258,9 @@ BEGIN
         BEGIN
             MENUITEM "to 48K\tShift+F5",            ID_SWITCH_TO48K
             MENUITEM "to 128K\tCtrl+F5",            ID_SWITCH_TO128K
-            MENUITEM "Flip\tF5",                    ID_SWITCH_FLIP
+            MENUITEM "to +2\tAlt+F5",               ID_SWITCH_TOPLUS2
+            MENUITEM "to +2A\tShift+Ctrl+F5",       ID_SWITCH_TOPLUS2A
+            MENUITEM "to +3\tCtrl+Alt+F5",          ID_SWITCH_TOPLUS3
         END
     END
     POPUP "&Settings"
@@ -206,6 +293,9 @@ BEGIN
     VK_F5,          ID_SWITCH_FLIP,         VIRTKEY, NOINVERT
     VK_F5,          ID_SWITCH_TO128K,       VIRTKEY, CONTROL, NOINVERT
     VK_F5,          ID_SWITCH_TO48K,        VIRTKEY, SHIFT, NOINVERT
+    VK_F5,          ID_SWITCH_TOPLUS2,      VIRTKEY, ALT
+    VK_F5,          ID_SWITCH_TOPLUS2A,     VIRTKEY, SHIFT, CONTROL
+    VK_F5,          ID_SWITCH_TOPLUS3,      VIRTKEY, CONTROL, ALT
     VK_F1,          ID_TAPE_EJECTTAPE,      VIRTKEY, ALT, NOINVERT
     VK_F1,          ID_TAPE_INSERTTAPE,     VIRTKEY, SHIFT, NOINVERT
     VK_F9,          ID_TAPE_REWINDTAPE,     VIRTKEY, SHIFT, NOINVERT
@@ -229,6 +319,26 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDI_ICON2               ICON                    "SpectREM\\Win32\\SpectREM.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_FIRSTCOLUMN         "Status"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_BLOCKTYPE           "Block Type"
+    IDS_FILENAME            "Filename"
+    IDS_AUTOSTARTLINE       "Autostart"
+    IDS_ADDRESS             "Address"
+    IDS_LENGTH              "Length"
+END
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

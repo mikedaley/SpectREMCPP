@@ -40,6 +40,7 @@
 #define GL_INFO_LOG_LENGTH					0x8B84
 #define GL_TEXTURE0							0x84C0
 #define GL_TEXTURE1							0x84C1
+#define GL_TEXTURE2							0x84C2
 #define GL_BGRA								0x80E1
 #define GL_ELEMENT_ARRAY_BUFFER				0x8893
 #define GL_FRAMEBUFFER_COMPLETE             0x8CD5
@@ -100,15 +101,23 @@ typedef void (APIENTRY * PFNGLPROGRAMUNIFORM2FPROC) (GLuint program, GLint locat
 class OpenGLView
 {
 public:
-										OpenGLView();
+										OpenGLView(std::string bpath);
 										~OpenGLView();
 
 public:
 	void								Deinit();
 	bool								Init(HWND hWnd, int width, int height, const uint16_t idClutVert, uint16_t idClutFrag, uint16_t idDisplayVert, uint16_t idDisplayFrag, LPWSTR idType);
 
-	void								UpdateTextureData(unsigned char *pData);
+	void								UpdateTextureData(unsigned char *pData, GLint vX, GLint vY);
 	void								OpenGLView::Resize(int width, int height);
+	void								OpenGLView::Resize(int x, int y, int width, int height);
+	void								OpenGLView::ShaderSetScreenCurve(GLfloat curve);
+	void								OpenGLView::ShaderSetVignette(bool onoff);
+	void								OpenGLView::ShaderSetReflection(bool onoff);
+	void								OpenGLView::LoadFileTextures();
+	bool								OpenGLView::LoadBitmap(LPTSTR szFileName, GLuint& texid);
+
+
 private:
 	bool								InitialiseExtensions();
 	bool								LoadExtensionList();
@@ -123,6 +132,8 @@ private:
 
 
 public:
+	std::string							appBasePath;
+
 	PFNGLATTACHSHADERPROC				glAttachShader;
 	PFNGLBINDBUFFERPROC					glBindBuffer;
 	PFNGLBINDVERTEXARRAYPROC			glBindVertexArray;
@@ -192,7 +203,9 @@ private:
 */
 
     GLuint          _viewWidth = 320;
-    GLuint          _viewHeight = 256;
+	GLuint          _viewHeight = 256;
+	GLuint			_viewTop = 0;
+	GLuint			_viewLeft = 0;
 
     GLuint          _vertexBuffer;
     GLuint          _vertexArray;
@@ -204,10 +217,12 @@ private:
     GLuint          _clutInputTexture;
     GLuint          _clutTexture;
     GLuint          _clutOutputTexture;
+	GLuint          _reflectionTexture;
+
 
     // Display shader uniforms/samplers
     GLuint          displayDepthBuffer;
-    GLuint          reflectionTexture;
+
     GLint           s_displayTexture;
     GLint           s_texture;
     GLint           s_reflectionTexture;
@@ -228,7 +243,9 @@ private:
     GLint           u_time;
     GLint           u_screenSize;
 
-
+	bool			u_showVignetteValue;
+	GLfloat			u_screenCurveValue;
+	bool			u_showReflectionValue;
 
 
 

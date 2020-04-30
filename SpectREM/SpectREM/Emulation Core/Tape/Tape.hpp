@@ -12,6 +12,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <functional>
 
 
 // - Tape Block
@@ -177,7 +178,6 @@ public:
     void                    eject();
 
     // Functions used to get details of the loaded tape that can then be used in a UI to display those details
-    void                    updateStatus(); // Called when the internal status of the current tape changes and in turn calls any registered callback function
     size_t                  numberOfTapeBlocks();
     void                    setCurrentBlock(uint32_t blockIndex);
 
