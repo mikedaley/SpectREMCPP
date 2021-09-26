@@ -122,7 +122,7 @@ void main()
 
         if (u_showReflection == 1)
         {
-            color = mix(color, vec4(colorCorrection(vec3(texture( s_reflectionTexture, texCoord * vec2(1.0, -0.4) ) ), 0.2, 0.5, 0.8), 1.0), 0.18);
+            //color = mix(color, vec4(colorCorrection(vec3(texture( s_reflectionTexture, texCoord * vec2(1.0, -0.4) ) ), 0.2, 0.5, 0.8), 1.0), 0.18);
         }
 
         // Add scanlines

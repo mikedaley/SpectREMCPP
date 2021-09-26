@@ -135,8 +135,9 @@ uint8_t fileListIndex = 0;
 std::thread scrDisplayThread;
 bool slideshowTimerRunning = false;
 bool slideshowRandom = true;
-const float volumeStep = 0.1f;
-float applicationVolume = 0.75f;
+const float volumeStep = 0.05f;
+const float startupVolume = 0.50f;
+float applicationVolume = 0.50f;
 GLint viewportX;
 GLint viewportY;
 HANDLE tapeViewerThread;
@@ -1103,7 +1104,17 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
         CoUninitialize();
         return 0;
     }
+    // Get the current application volume (if changed previously)
+    if (applicationVolume < 0.0f || applicationVolume > 1.0f)
+    {
+        m_pAudioCore->SetOutputVolume(startupVolume);
+    }
+    else
+    {
+        m_pAudioCore->SetOutputVolume(applicationVolume);
+    }
     m_pTape = new Tape(tapeStatusCallback);
+    // Default to a Speccy 48k :)
     m_pMachine = new ZXSpectrum48(m_pTape);// ZXSpectrum128(m_pTape);
     m_pMachine->emuUseAYSound = true;
     m_pMachine->emuBasePath = PMDawn::GetApplicationBasePath();
@@ -1295,6 +1306,15 @@ static void ResetMachineForSnapshot(uint8_t mc, bool ayEnabled)
     m_pMachine->emuBasePath = PMDawn::GetApplicationBasePath();
     m_pMachine->initialise(romPath);
     m_pAudioCore->Start();
+    // Get the current application volume (if changed previously)
+    if (applicationVolume < 0.0f || applicationVolume > 1.0f)
+    {
+        m_pAudioCore->SetOutputVolume(startupVolume);
+    }
+    else
+    {
+        m_pAudioCore->SetOutputVolume(applicationVolume);
+    }
     m_pMachine->resume();
 
     isResetting = false;
