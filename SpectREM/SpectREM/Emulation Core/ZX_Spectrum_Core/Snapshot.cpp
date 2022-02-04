@@ -615,6 +615,7 @@ void ZXSpectrum::snapshotExtractMemoryBlock(const char *buffer, size_t bufferSiz
     {
         while (memoryPtr < unpackedLength + memAddr && memoryPtr < memoryRam.size())
         {
+            std::string n = std::string("memoryPtr: ") + std::to_string(memoryPtr) + std::string(" unpackedLength: ") + std::to_string(unpackedLength) + std::string(" memAddr: ") + std::to_string(memAddr) + std::string(" filePtr+1: ") + std::to_string(filePtr + 1) + " - " + std::to_string(fileBytes.size()) + "\n";
             uint8_t byte1 = fileBytes[filePtr];
             
             if (byte1 == 0xed && filePtr + 1 < fileBytes.size())
@@ -721,6 +722,8 @@ std::string ZXSpectrum::snapshotHardwareTypeForVersion(uint32_t version, uint32_
 
 int32_t ZXSpectrum::snapshotMachineInSnapshotWithPath(const char *path)
 {
+    ayEnabledSnapshot = false;
+
     std::ifstream stream(path, std::ios::binary | std::ios::ate);
     if (!stream.ios_base::good()) {
         return -1;
@@ -763,6 +766,7 @@ int32_t ZXSpectrum::snapshotMachineInSnapshotWithPath(const char *path)
         switch (version) {
         case 1:
             machineType = eZXSpectrum48;
+            ayEnabledSnapshot = false;
             break;
 
         case 2:
@@ -782,6 +786,8 @@ int32_t ZXSpectrum::snapshotMachineInSnapshotWithPath(const char *path)
                         machineType = eZXSpectrum48;
                         break;
                 }
+                IsAYSnapshot(((uint8_t*)&pFileBytes[37])[0]);
+
             break;
 
         case 3:
@@ -814,10 +820,26 @@ int32_t ZXSpectrum::snapshotMachineInSnapshotWithPath(const char *path)
                     default:
                         break;
                 }
+                IsAYSnapshot(((uint8_t*)&pFileBytes[37])[0]);
+
             break;
         }
     }
 
     return machineType;
 }
+
+bool ZXSpectrum::IsAYSnapshot(uint8_t infoByte)
+{
+    if (infoByte & 4)
+    {
+        ayEnabledSnapshot = true;
+    }
+    else
+    {
+        ayEnabledSnapshot = false;
+    }
+    return ayEnabledSnapshot;
+}
+
 

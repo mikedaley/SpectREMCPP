@@ -10,6 +10,18 @@
 #define _CRT_RAND_S
 #define WIN32API_GUI
 
+#define PM_TAPEDATA_FULL            77
+#define PM_TAPE_VIEWER_CLOSED       78
+#define PM_TAPE_COMMAND             79
+#define PM_TAPE_EJECTED             80
+#define PM_TAPE_ACTIVEBLOCK         81
+#define PM_TAPE_PLAY                82
+#define PM_TAPE_PAUSE               83
+#define PM_TAPE_REWIND              84
+#define PM_TAPE_INSERT              85
+#define PM_TAPE_EJECT               86
+#define PM_TAPE_SAVE                87
+#define PM_TAPE_UPDATE_PLAYPAUSEETC 88
 
 #include <windows.h>
 #include <stdlib.h>
@@ -26,20 +38,23 @@
 #include "..\Emulation Core\ZX_Spectrum_Core\ZXSpectrum.hpp"
 #include "..\Emulation Core\ZX_Spectrum_48k\ZXSpectrum48.hpp"
 #include "..\Emulation Core\ZX_Spectrum_128k\ZXSpectrum128.hpp"
+#include "..\Emulation Core\ZX_Spectrum_128k_2\ZXSpectrum128_2.hpp"
+#include "..\Emulation Core\ZXSpectrum_128k_2A\ZXSpectrum128_2A.hpp"
 #include "..\Emulation Core\Tape\Tape.hpp"
 #include "..\OSX\AudioQueue.hpp"
 #include "OpenGLView.hpp"
 #include "../../resource.h"
-#include "PMDawn.cpp"
+#include "PMDawn.hpp"
 #include <CommCtrl.h>
 #include "TapeViewerWindow.hpp"
+#include <process.h>
 
 #pragma comment(lib, "comctl32.lib")
 
 
 // WinMain.cpp
 static void audio_callback(uint32_t nNumSamples, uint8_t* pBuffer);
-static void tapeStatusCallback(int blockIndex, int bytes);
+static void tapeStatusCallback(int blockIndex, int bytes, int action);
 static void LoadSnapshot();
 static void HardReset();
 static void SoftReset();
@@ -48,7 +63,7 @@ static void ShowHelpAbout();
 static void ShowHideUI(HWND hWnd);
 static void ShowUI(HWND hWnd);
 static void HideUI(HWND hWnd);
-static void ResetMachineForSnapshot(uint8_t mc);
+static void ResetMachineForSnapshot(uint8_t mc, bool ayEnabled);
 static void ShowSettingsDialog();
 static void RunSlideshow(int secs);
 void IterateSCRImages(HWND mWindow, std::vector<std::string> fileList, ZXSpectrum* m_pMachine, int secs);
@@ -62,24 +77,43 @@ static void OpenTapeViewer();
 static void SetOutputVolume(float vol);
 static void IncreaseApplicationVolume();
 static void DecreaseApplicationVolume();
+unsigned int __stdcall mythread(void* data);
+static void SendTapeBlockDataToViewer();
+static void GetTapeViewerHwnd();
+static void SetupThreadLocalStorageForTapeData();
+RECT GetWindowResizeWithUI(HWND mWin, HWND sWin, HMENU menuWin, bool visible);
 
 ZXSpectrum* m_pMachine;
 Tape* m_pTape;
 AudioCore* m_pAudioCore;
 AudioQueue* m_pAudioQueue;
 OpenGLView* m_pOpenGLView;
+static TapeViewer* tvWindow;
+std::string loadedFile;
 
 enum MachineType
 {
-    ZX48, ZX128, PLUS2, PLUS3, UNKNOWN
+    ZX48, ZX128, PLUS2, PLUS2A, PLUS3, UNKNOWN
 } mType;
+
+//enum
+//{
+//    eZXSpectrum48 = 0,
+//    eZXSpectrum128 = 1,
+//    eZXSpectrum128_2 = 2,
+//    eZXSpectrum128_2A = 3,
+//    eZXSpectrum128_3 = 4
+//};
 
 enum SnapType
 {
     SNA, Z80
 };
 
+// Status / BlockType / Filename / AutostartLine / Address / Length
 
+static DWORD dwTlsIndex;
+static int cxClient, cyClient;
 const UINT PM_UPDATESPECTREM = 7777;
 const std::string EXT_Z80 = "z80";
 const std::string EXT_SNA = "sna";
@@ -90,7 +124,6 @@ HACCEL hAcc;
 bool isResetting = false;
 HWND mainWindow;
 HWND statusWindow;
-//HWND tapeViewerWindow;
 HMENU mainMenu;
 bool TurboMode = false;
 bool menuDisplayed = true;
@@ -102,74 +135,79 @@ uint8_t fileListIndex = 0;
 std::thread scrDisplayThread;
 bool slideshowTimerRunning = false;
 bool slideshowRandom = true;
-const float volumeStep = 0.1f;
-float applicationVolume = 0.75f;
+const float volumeStep = 0.05f;
+const float startupVolume = 0.50f;
+float applicationVolume = 0.50f;
+GLint viewportX;
+GLint viewportY;
+HANDLE tapeViewerThread;
+HWND tvHwnd;
 
-std::unordered_map<WPARAM, ZXSpectrum::ZXSpectrumKey> KeyMappings
+std::unordered_map<WPARAM, ZXSpectrum::eZXSpectrumKey> KeyMappings
 {
-    { VK_UP, ZXSpectrum::ZXSpectrumKey::Key_ArrowUp },
-    { VK_DOWN, ZXSpectrum::ZXSpectrumKey::Key_ArrowDown },
-    { VK_LEFT, ZXSpectrum::ZXSpectrumKey::Key_ArrowLeft },
-    { VK_RIGHT, ZXSpectrum::ZXSpectrumKey::Key_ArrowRight },
-    { VK_RETURN, ZXSpectrum::ZXSpectrumKey::Key_Enter },
-    { VK_SHIFT, ZXSpectrum::ZXSpectrumKey::Key_Shift },
-    { VK_RSHIFT, ZXSpectrum::ZXSpectrumKey::Key_Shift },
-    { VK_SPACE, ZXSpectrum::ZXSpectrumKey::Key_Space },
-    { VK_CONTROL, ZXSpectrum::ZXSpectrumKey::Key_SymbolShift },
-    { VK_RCONTROL, ZXSpectrum::ZXSpectrumKey::Key_SymbolShift },
+    { VK_UP, ZXSpectrum::eZXSpectrumKey::Key_ArrowUp },
+    { VK_DOWN, ZXSpectrum::eZXSpectrumKey::Key_ArrowDown },
+    { VK_LEFT, ZXSpectrum::eZXSpectrumKey::Key_ArrowLeft },
+    { VK_RIGHT, ZXSpectrum::eZXSpectrumKey::Key_ArrowRight },
+    { VK_RETURN, ZXSpectrum::eZXSpectrumKey::Key_Enter },
+    { VK_SHIFT, ZXSpectrum::eZXSpectrumKey::Key_Shift },
+    { VK_RSHIFT, ZXSpectrum::eZXSpectrumKey::Key_Shift },
+    { VK_SPACE, ZXSpectrum::eZXSpectrumKey::Key_Space },
+    { VK_CONTROL, ZXSpectrum::eZXSpectrumKey::Key_SymbolShift },
+    { VK_RCONTROL, ZXSpectrum::eZXSpectrumKey::Key_SymbolShift },
     //{ VK_SHIFT, ZXSpectrum::ZXSpectrumKey::Key_InvVideo },
     //{ VK_SHIFT, ZXSpectrum::ZXSpectrumKey::Key_TrueVideo },
-    { VK_DELETE, ZXSpectrum::ZXSpectrumKey::Key_Backspace },
-    { VK_BACK, ZXSpectrum::ZXSpectrumKey::Key_Backspace },
+    { VK_DELETE, ZXSpectrum::eZXSpectrumKey::Key_Backspace },
+    { VK_BACK, ZXSpectrum::eZXSpectrumKey::Key_Backspace },
     //{ VK_SHIFT, ZXSpectrum::ZXSpectrumKey::Key_Quote },
-    { VK_OEM_1, ZXSpectrum::ZXSpectrumKey::Key_SemiColon },
-    { VK_OEM_COMMA, ZXSpectrum::ZXSpectrumKey::Key_Comma },
-    { VK_OEM_MINUS, ZXSpectrum::ZXSpectrumKey::Key_Minus },
-    { VK_OEM_PLUS, ZXSpectrum::ZXSpectrumKey::Key_Plus },
-    { VK_OEM_PERIOD, ZXSpectrum::ZXSpectrumKey::Key_Period },
+    { VK_OEM_1, ZXSpectrum::eZXSpectrumKey::Key_SemiColon },
+    { VK_OEM_COMMA, ZXSpectrum::eZXSpectrumKey::Key_Comma },
+    { VK_OEM_MINUS, ZXSpectrum::eZXSpectrumKey::Key_Minus },
+    { VK_OEM_PLUS, ZXSpectrum::eZXSpectrumKey::Key_Plus },
+    { VK_OEM_PERIOD, ZXSpectrum::eZXSpectrumKey::Key_Period },
     //{ VK_SHIFT, ZXSpectrum::ZXSpectrumKey::Key_Edit },
     //{ VK_SHIFT, ZXSpectrum::ZXSpectrumKey::Key_Graph },
     //{ VK_SHIFT, ZXSpectrum::ZXSpectrumKey::Key_Break },
     //{ VK_SHIFT, ZXSpectrum::ZXSpectrumKey::Key_ExtendMode },
-    { VK_CAPITAL, ZXSpectrum::ZXSpectrumKey::Key_CapsLock },
+    { VK_CAPITAL, ZXSpectrum::eZXSpectrumKey::Key_CapsLock },
     // Numbers
-    { 0x30, ZXSpectrum::ZXSpectrumKey::Key_0 },
-    { 0x31, ZXSpectrum::ZXSpectrumKey::Key_1 },
-    { 0x32, ZXSpectrum::ZXSpectrumKey::Key_2 },
-    { 0x33, ZXSpectrum::ZXSpectrumKey::Key_3 },
-    { 0x34, ZXSpectrum::ZXSpectrumKey::Key_4 },
-    { 0x35, ZXSpectrum::ZXSpectrumKey::Key_5 },
-    { 0x36, ZXSpectrum::ZXSpectrumKey::Key_6 },
-    { 0x37, ZXSpectrum::ZXSpectrumKey::Key_7 },
-    { 0x38, ZXSpectrum::ZXSpectrumKey::Key_8 },
-    { 0x39, ZXSpectrum::ZXSpectrumKey::Key_9 },
+    { 0x30, ZXSpectrum::eZXSpectrumKey::Key_0 },
+    { 0x31, ZXSpectrum::eZXSpectrumKey::Key_1 },
+    { 0x32, ZXSpectrum::eZXSpectrumKey::Key_2 },
+    { 0x33, ZXSpectrum::eZXSpectrumKey::Key_3 },
+    { 0x34, ZXSpectrum::eZXSpectrumKey::Key_4 },
+    { 0x35, ZXSpectrum::eZXSpectrumKey::Key_5 },
+    { 0x36, ZXSpectrum::eZXSpectrumKey::Key_6 },
+    { 0x37, ZXSpectrum::eZXSpectrumKey::Key_7 },
+    { 0x38, ZXSpectrum::eZXSpectrumKey::Key_8 },
+    { 0x39, ZXSpectrum::eZXSpectrumKey::Key_9 },
     // Letters
-    { 0x41, ZXSpectrum::ZXSpectrumKey::Key_A },
-    { 0x42, ZXSpectrum::ZXSpectrumKey::Key_B },
-    { 0x43, ZXSpectrum::ZXSpectrumKey::Key_C },
-    { 0x44, ZXSpectrum::ZXSpectrumKey::Key_D },
-    { 0x45, ZXSpectrum::ZXSpectrumKey::Key_E },
-    { 0x46, ZXSpectrum::ZXSpectrumKey::Key_F },
-    { 0x47, ZXSpectrum::ZXSpectrumKey::Key_G },
-    { 0x48, ZXSpectrum::ZXSpectrumKey::Key_H },
-    { 0x49, ZXSpectrum::ZXSpectrumKey::Key_I },
-    { 0x4a, ZXSpectrum::ZXSpectrumKey::Key_J },
-    { 0x4b, ZXSpectrum::ZXSpectrumKey::Key_K },
-    { 0x4c, ZXSpectrum::ZXSpectrumKey::Key_L },
-    { 0x4d, ZXSpectrum::ZXSpectrumKey::Key_M },
-    { 0x4e, ZXSpectrum::ZXSpectrumKey::Key_N },
-    { 0x4f, ZXSpectrum::ZXSpectrumKey::Key_O },
-    { 0x50, ZXSpectrum::ZXSpectrumKey::Key_P },
-    { 0x51, ZXSpectrum::ZXSpectrumKey::Key_Q },
-    { 0x52, ZXSpectrum::ZXSpectrumKey::Key_R },
-    { 0x53, ZXSpectrum::ZXSpectrumKey::Key_S },
-    { 0x54, ZXSpectrum::ZXSpectrumKey::Key_T },
-    { 0x55, ZXSpectrum::ZXSpectrumKey::Key_U },
-    { 0x56, ZXSpectrum::ZXSpectrumKey::Key_V },
-    { 0x57, ZXSpectrum::ZXSpectrumKey::Key_W },
-    { 0x58, ZXSpectrum::ZXSpectrumKey::Key_X },
-    { 0x59, ZXSpectrum::ZXSpectrumKey::Key_Y },
-    { 0x5a, ZXSpectrum::ZXSpectrumKey::Key_Z },
+    { 0x41, ZXSpectrum::eZXSpectrumKey::Key_A },
+    { 0x42, ZXSpectrum::eZXSpectrumKey::Key_B },
+    { 0x43, ZXSpectrum::eZXSpectrumKey::Key_C },
+    { 0x44, ZXSpectrum::eZXSpectrumKey::Key_D },
+    { 0x45, ZXSpectrum::eZXSpectrumKey::Key_E },
+    { 0x46, ZXSpectrum::eZXSpectrumKey::Key_F },
+    { 0x47, ZXSpectrum::eZXSpectrumKey::Key_G },
+    { 0x48, ZXSpectrum::eZXSpectrumKey::Key_H },
+    { 0x49, ZXSpectrum::eZXSpectrumKey::Key_I },
+    { 0x4a, ZXSpectrum::eZXSpectrumKey::Key_J },
+    { 0x4b, ZXSpectrum::eZXSpectrumKey::Key_K },
+    { 0x4c, ZXSpectrum::eZXSpectrumKey::Key_L },
+    { 0x4d, ZXSpectrum::eZXSpectrumKey::Key_M },
+    { 0x4e, ZXSpectrum::eZXSpectrumKey::Key_N },
+    { 0x4f, ZXSpectrum::eZXSpectrumKey::Key_O },
+    { 0x50, ZXSpectrum::eZXSpectrumKey::Key_P },
+    { 0x51, ZXSpectrum::eZXSpectrumKey::Key_Q },
+    { 0x52, ZXSpectrum::eZXSpectrumKey::Key_R },
+    { 0x53, ZXSpectrum::eZXSpectrumKey::Key_S },
+    { 0x54, ZXSpectrum::eZXSpectrumKey::Key_T },
+    { 0x55, ZXSpectrum::eZXSpectrumKey::Key_U },
+    { 0x56, ZXSpectrum::eZXSpectrumKey::Key_V },
+    { 0x57, ZXSpectrum::eZXSpectrumKey::Key_W },
+    { 0x58, ZXSpectrum::eZXSpectrumKey::Key_X },
+    { 0x59, ZXSpectrum::eZXSpectrumKey::Key_Y },
+    { 0x5a, ZXSpectrum::eZXSpectrumKey::Key_Z },
 
 };
 
@@ -193,7 +231,6 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 {
     switch (msg)
     {
-
 #ifdef WIN32API_GUI
     case WM_COMMAND:
         switch (LOWORD(wparam))
@@ -214,13 +251,19 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             SoftReset();
             break;
         case ID_SWITCH_TO48K:
-            ResetMachineForSnapshot(ZX48);
+            ResetMachineForSnapshot(ZX48, m_pMachine->ayEnabledSnapshot);
             break;
         case ID_SWITCH_TO128K:
-            ResetMachineForSnapshot(ZX128);
+            ResetMachineForSnapshot(ZX128, true);
             break;
-        case ID_SWITCH_FLIP:
-            SwitchMachines();
+        case ID_SWITCH_TOPLUS2:
+            ResetMachineForSnapshot(PLUS2, true);
+            break;
+        case ID_SWITCH_TOPLUS2A:
+            ResetMachineForSnapshot(PLUS2A, true);
+            break;
+        case ID_SWITCH_TOPLUS3:
+            ResetMachineForSnapshot(PLUS3, true);
             break;
         case ID_HELP_ABOUT:
             ShowHelpAbout();
@@ -286,6 +329,8 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         break;
 #endif
 
+
+
     case WM_CLOSE:
         PostQuitMessage(0);
         return 0;
@@ -349,7 +394,10 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         break;
 
     case WM_SIZE:
-        glViewport(0, 0, LOWORD(lparam), HIWORD(lparam));
+        cxClient = LOWORD(lparam);
+        cyClient = HIWORD(lparam);
+        //glViewport(viewportX, viewportY, 256 * zoomLevel, 192 * zoomLevel);
+        return 0;
         break;
 
     case WM_USER:
@@ -357,11 +405,85 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         {
         case PM_UPDATESPECTREM:
             Sleep(50);
-            m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer);
+            m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer, viewportX, viewportY);
             PMDawn::Log(PMDawn::LOG_DEBUG, "Changed slideshow image");
             break;
         }
         break;
+
+    case WM_USER + 1:
+        switch (LOWORD(wparam))
+        {
+        case 1:
+            GetTapeViewerHwnd();
+            if (m_pTape->numberOfTapeBlocks() > 0)
+            {
+                SendTapeBlockDataToViewer();
+                PostMessage(tvHwnd, WM_USER + 2, PM_TAPE_ACTIVEBLOCK, (LPARAM)m_pTape->currentBlockIndex);
+                if (m_pTape->playing)
+                {
+                    PostMessage(tvHwnd, WM_USER + 2, PM_TAPE_UPDATE_PLAYPAUSEETC, 1);  // Indicate tape is playing
+                }
+                else
+                {
+                    PostMessage(tvHwnd, WM_USER + 2, PM_TAPE_UPDATE_PLAYPAUSEETC, 0);  // Indicate tape is paused
+                }
+            }
+            break;
+        }
+        break;
+
+    case WM_USER + 2:
+        switch (LOWORD(wparam))
+        {
+        case PM_TAPE_VIEWER_CLOSED:
+            if (tapeViewerThread)
+            {
+                CloseHandle(tapeViewerThread);
+                tapeViewerThread = nullptr;
+            }
+            break;
+        case PM_TAPE_COMMAND:
+            // The tape window is sending a command to do something with the tape
+            switch (lparam)
+            {
+            case PM_TAPE_PLAY:
+                m_pTape->play();
+                break;
+
+            case PM_TAPE_PAUSE:
+                m_pTape->stop();// stopPlaying();
+                break;
+
+            case PM_TAPE_REWIND:
+                RewindTape();
+                break;
+
+            case PM_TAPE_INSERT:
+                InsertTape();
+                break;
+
+            case PM_TAPE_EJECT:
+                EjectTape();
+                break;
+
+            }
+            break;
+        }
+        break;
+
+    case WM_PAINT:
+    {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(mainWindow, &ps);
+        //if (m_pMachine)
+        //{
+        //    m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer, viewportX, viewportY);
+        //}
+        EndPaint(mainWindow, &ps);
+        return 0;
+        break;
+    }
 
     default:
         return DefWindowProc(hwnd, msg, wparam, lparam);
@@ -394,15 +516,19 @@ static void InsertTape()
     if (GetOpenFileNameA(&ofn))
     {
         EjectTape(); // Eject the current tape if inserted
-        Tape::TapResponse tR = m_pTape->loadWithPath(szFile);
+        Tape::FileResponse tR = m_pTape->insertTapeWithPath(szFile);
         if (tR.success)
         {
             PMDawn::Log(PMDawn::LOG_INFO, "Loaded tape - " + std::string(szFile));
+            PathStripPathA(szFile);
+            loadedFile = "TAPE: " + std::string(szFile);
+            SendTapeBlockDataToViewer();
         }
         else
         {
             MessageBox(mainWindow, TEXT("Unable to load tape >> "), TEXT("Tape Loader"), MB_OK | MB_ICONINFORMATION | MB_APPLMODAL);
             PMDawn::Log(PMDawn::LOG_INFO, "Failed to load tape - " + std::string(szFile) + " > " + tR.responseMsg);
+            loadedFile = "-empty-";
             return;
         }
     }
@@ -416,11 +542,13 @@ static void PlayPauseTape()
     {
         if (m_pTape->playing)
         {
-            m_pTape->stopPlaying();
+            m_pTape->stop();
+            PostMessage(tvHwnd, WM_USER + 2, PM_TAPE_UPDATE_PLAYPAUSEETC, 0);
         }
         else
         {
-            m_pTape->startPlaying();
+            m_pTape->play();
+            PostMessage(tvHwnd, WM_USER + 2, PM_TAPE_UPDATE_PLAYPAUSEETC, 1);
         }
     }
 }
@@ -431,8 +559,9 @@ static void EjectTape()
 {
     if (m_pTape->loaded)
     {
-        m_pTape->stopPlaying();
+        m_pTape->stop();
         m_pTape->eject();
+        PostMessage(tvHwnd, WM_USER + 2, PM_TAPE_EJECTED, (LPARAM)0);
     }
 }
 
@@ -442,8 +571,10 @@ static void RewindTape()
 {
     if (m_pTape->loaded)
     {
-        m_pTape->stopPlaying();
+        m_pTape->stop();
         m_pTape->rewindTape();
+        PostMessage(tvHwnd, WM_USER + 2, PM_TAPE_ACTIVEBLOCK, (LPARAM)0); // Let the tape viewer know we are on block number 0
+        PostMessage(tvHwnd, WM_USER + 2, PM_TAPE_UPDATE_PLAYPAUSEETC, 0); // Let the tape viewer know that we are paused
     }
 }
 //-----------------------------------------------------------------------------------------
@@ -453,35 +584,21 @@ static void OpenSCR()
     HardReset();
     Sleep(1000);
 
-    OPENFILENAMEA ofn;
-    char szFile[_MAX_PATH];
-    // Setup the ofn structure
-    ZeroMemory(&ofn, sizeof(ofn));
-    ofn.lStructSize = sizeof(ofn);
-    ofn.hwndOwner = NULL;
-    ofn.lpstrFile = szFile;
-    ofn.lpstrFile[0] = '\0';
-    ofn.nMaxFile = sizeof(szFile);
-    ofn.lpstrFilter = "All\0*.*\0Screen File\0*.SCR\0\0";
-    ofn.nFilterIndex = 1;
-    ofn.lpstrFileTitle = NULL;
-    ofn.nMaxFileTitle = 0;
-    ofn.lpstrInitialDir = NULL;
-    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+    std::string scrPath = PMDawn::GetFilenameUsingDialog("");
 
-    if (GetOpenFileNameA(&ofn))
+    if (scrPath != "")
     {
-        ZXSpectrum::Response sR = m_pMachine->scrLoadWithPath(szFile);
+        Tape::FileResponse sR = m_pMachine->scrLoadWithPath(scrPath);
         if (sR.success)
         {
             Sleep(1);
-            m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer);
-            PMDawn::Log(PMDawn::LOG_INFO, "Loaded .scr file - " + std::string(szFile));
+            m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer, viewportX, viewportY);
+            PMDawn::Log(PMDawn::LOG_INFO, "Loaded .scr file - " + std::string(scrPath));
         }
         else
         {
             MessageBox(mainWindow, TEXT("Invalid SCR file"), TEXT("Gimme SCR's !!!"), MB_OK | MB_ICONINFORMATION | MB_APPLMODAL);
-            PMDawn::Log(PMDawn::LOG_INFO, "Failed to load .scr file - " + std::string(szFile) + " > " + sR.responseMsg);
+            PMDawn::Log(PMDawn::LOG_INFO, "Failed to load .scr file - " + std::string(scrPath) + " > " + sR.responseMsg);
             return;
         }
     }
@@ -495,7 +612,8 @@ static void RunSlideshow(int secs)
     Sleep(1000);
     PMDawn::Log(PMDawn::LOG_INFO, "Running slideshow (" + std::to_string(secs) + " secs) from " + PMDawn::GetApplicationBasePath() + slideshowDirectory);
     fileList.clear();
-    fileList = PMDawn::GetFilesInDirectory(PMDawn::GetApplicationBasePath() + slideshowDirectory, "*.scr");
+    std::string fpath = PMDawn::GetFolderUsingDialog("");
+    fileList = PMDawn::GetFilesInDirectory(fpath + "\\", "*.scr");
     PMDawn::Log(PMDawn::LOG_DEBUG, "Found " + std::to_string(fileList.size()) + " matching files");
     // iterate (randomly maybe) through the list of files as long as there is at least one file :)
     if (fileList.size() < 1)
@@ -532,15 +650,15 @@ static void IterateSCRImagesOnTimerCallback()
     if (slideshowRandom)
     {
         int randomIndex = (int)rand() % fileList.size();
-        ZXSpectrum::Response sR = m_pMachine->scrLoadWithPath(PMDawn::GetApplicationBasePath() + slideshowDirectory + fileList[randomIndex]);
+        Tape::FileResponse sR = m_pMachine->scrLoadWithPath(PMDawn::GetApplicationBasePath() + slideshowDirectory + fileList[randomIndex]);
         Sleep(1);
-        m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer);
+        m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer, viewportX, viewportY);
     }
     else
     {
-        ZXSpectrum::Response sR = m_pMachine->scrLoadWithPath(PMDawn::GetApplicationBasePath() + slideshowDirectory + fileList[fileListIndex]);
+        Tape::FileResponse sR = m_pMachine->scrLoadWithPath(PMDawn::GetApplicationBasePath() + slideshowDirectory + fileList[fileListIndex]);
         Sleep(1);
-        m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer);
+        m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer, viewportX, viewportY);
         fileListIndex++;
         if (fileListIndex >= fileList.size())
         {
@@ -562,7 +680,7 @@ static void IterateSCRImages(HWND mWindow, std::vector<std::string> fileList, ZX
         std::chrono::milliseconds msecs(delaysecs * 1000);
         for (std::size_t i = 0; i < 10; i++)//< fileList.size(); i++)
         {
-            ZXSpectrum::Response sR = machine->scrLoadWithPath(PMDawn::GetApplicationBasePath() + slideshowDirectory + fileList[i]);
+            Tape::FileResponse sR = machine->scrLoadWithPath(PMDawn::GetApplicationBasePath() + slideshowDirectory + fileList[i]);
             //SendMessageCallback(mWindow, WM_USER, PM_UPDATESPECTREM, PM_UPDATESPECTREM, nullptr, 0);
             PostMessage(mWindow, WM_USER, PM_UPDATESPECTREM, PM_UPDATESPECTREM);
             std::this_thread::sleep_for(msecs);
@@ -602,10 +720,13 @@ static void ShowHideUI(HWND hWnd = mainWindow)
 static void ShowUI(HWND hWnd = mainWindow)
 {
     PMDawn::Log(PMDawn::LOG_DEBUG, "ShowUI()");
-    SetMenu(hWnd, mainMenu);
     menuDisplayed = true;
-    ShowWindow(statusWindow, SW_SHOW);
     statusDisplayed = true;
+    RECT newSize = GetWindowResizeWithUI(mainWindow, statusWindow, mainMenu, true);
+    SetMenu(hWnd, mainMenu);
+    SetWindowPos(mainWindow, HWND_NOTOPMOST, newSize.left, newSize.top, newSize.right, newSize.bottom, 0);
+    m_pOpenGLView->Resize(0, 0, 256 * zoomLevel, 192 * zoomLevel);
+    ShowWindow(statusWindow, SW_SHOW);
 }
 
 //-----------------------------------------------------------------------------------------
@@ -613,10 +734,75 @@ static void ShowUI(HWND hWnd = mainWindow)
 static void HideUI(HWND hWnd = mainWindow)
 {
     PMDawn::Log(PMDawn::LOG_DEBUG, "HideUI()");
-    SetMenu(hWnd, NULL);
     menuDisplayed = false;
-    ShowWindow(statusWindow, SW_HIDE);
     statusDisplayed = false;
+    RECT newSize = GetWindowResizeWithUI(mainWindow, statusWindow, mainMenu, false);
+    SetMenu(hWnd, NULL);
+    SetWindowPos(mainWindow, HWND_NOTOPMOST, newSize.left, newSize.top, newSize.right, newSize.bottom, 0);
+    m_pOpenGLView->Resize(0, 0, 256 * zoomLevel, 192 * zoomLevel);
+    ShowWindow(statusWindow, SW_HIDE);
+}
+
+//-----------------------------------------------------------------------------------------
+
+RECT GetWindowResizeWithUI(HWND mWin, HWND sWin, HMENU menu, bool visible)
+{
+    // Get the new window size needed for the status bar to be below the GLView...
+    if (visible)
+    {
+        Log(PMDawn::LOG_INFO, "Resizing with UI");
+        Log(PMDawn::LOG_INFO, "Menu height == " + GetSystemMetrics(SM_CYMENU));
+    }
+    else
+    {
+        Log(PMDawn::LOG_INFO, "Resizing without UI");
+        Log(PMDawn::LOG_INFO, "Menu height == " + GetSystemMetrics(SM_CYMENU));
+    }
+    RECT m, s;
+    GetWindowRect(mWin, &m);
+    GetWindowRect(sWin, &s);
+   
+    Log(PMDawn::LOG_INFO, "Main window RECT = t" +
+        std::to_string(m.top) + " l" +
+        std::to_string(m.left) + " b" +
+        std::to_string(m.bottom) + " r" +
+        std::to_string(m.right));
+    Log(PMDawn::LOG_INFO, "Status bar RECT = t" +
+        std::to_string(s.top) + " l" +
+        std::to_string(s.left) + " b" +
+        std::to_string(s.bottom) + " r" +
+        std::to_string(s.right));
+
+    if (visible)
+    {
+        RECT nWin = {
+            m.left,
+            m.top,
+            (m.right - m.left),
+            (m.bottom - m.top) + GetSystemMetrics(SM_CYMENU)// + (s.bottom - s.top)// + GetSystemMetrics(SM_CYMENU)
+        };
+        Log(PMDawn::LOG_INFO, "Output RECT = t" +
+            std::to_string(nWin.top) + " l" +
+            std::to_string(nWin.left) + " b" +
+            std::to_string(nWin.bottom) + " r" +
+            std::to_string(nWin.right));
+        return nWin;
+    }
+    else
+    {
+        RECT nWin = {
+            m.left,
+            m.top,
+            (m.right - m.left),
+            (m.bottom - m.top) - GetSystemMetrics(SM_CYMENU)// - (s.bottom - s.top)// - GetSystemMetrics(SM_CYMENU)
+        };
+        Log(PMDawn::LOG_INFO, "Output RECT = t" +
+            std::to_string(nWin.top) + " l" +
+            std::to_string(nWin.left) + " b" +
+            std::to_string(nWin.bottom) + " r" +
+            std::to_string(nWin.right));
+        return nWin;
+    }
 }
 
 //-----------------------------------------------------------------------------------------
@@ -637,14 +823,14 @@ static void SwitchMachines()
         if (isResetting != true)
         {
             PMDawn::Log(PMDawn::LOG_DEBUG, "Flip machine requested");
-            ResetMachineForSnapshot(ZX48);
+            ResetMachineForSnapshot(ZX48, m_pMachine->ayEnabledSnapshot);
         }
     }
     else
     {
         if (isResetting != true)
         {
-            ResetMachineForSnapshot(ZX128);
+            ResetMachineForSnapshot(ZX128, true);
         }
     }
 }
@@ -656,7 +842,7 @@ static void SoftReset()
     // Soft reset
     if (isResetting != true)
     {
-        ResetMachineForSnapshot(m_pMachine->machineInfo.machineType);
+        ResetMachineForSnapshot(m_pMachine->machineInfo.machineType, m_pMachine->ayEnabledSnapshot);
         PMDawn::Log(PMDawn::LOG_INFO, "Soft reset completed");
     }
 }
@@ -668,7 +854,7 @@ static void HardReset()
     // Hard reset
     if (isResetting != true)
     {
-        ResetMachineForSnapshot(m_pMachine->machineInfo.machineType);
+        ResetMachineForSnapshot(m_pMachine->machineInfo.machineType, m_pMachine->ayEnabledSnapshot);
         PMDawn::Log(PMDawn::LOG_INFO, "Hard reset completed");
     }
 }
@@ -677,82 +863,81 @@ static void HardReset()
 
 static void LoadSnapshot()
 {
-    OPENFILENAMEA ofn;
-    char szFile[_MAX_PATH];
+    std::string filePath = PMDawn::GetFilenameUsingDialog("");
 
-    // Setup the ofn structure
-    ZeroMemory(&ofn, sizeof(ofn));
-    ofn.lStructSize = sizeof(ofn);
-    ofn.hwndOwner = NULL;
-    ofn.lpstrFile = szFile;
-    ofn.lpstrFile[0] = '\0';
-    ofn.nMaxFile = sizeof(szFile);
-    ofn.lpstrFilter = "All\0*.*\0Snapshot\0*.SNA\0Z80\0*.Z80\0Tapes\0*.TAP\0\0";
-    ofn.nFilterIndex = 1;
-    ofn.lpstrFileTitle = NULL;
-    ofn.nMaxFileTitle = 0;
-    ofn.lpstrInitialDir = NULL;
-    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
-
-    if (GetOpenFileNameA(&ofn))
+    if (filePath != "")
     {
-        int32_t mType = m_pMachine->snapshotMachineInSnapshotWithPath(szFile);
-        std::string s(szFile, sizeof(szFile));
-        std::string extension = s.substr(s.find_last_of(".") + 1, s.find_last_of(".") + 4);
+        int32_t mType = m_pMachine->snapshotMachineInSnapshotWithPath(filePath.c_str());
+        size_t sizeOfFile = sizeof(filePath) - 1;
+        std::string s(filePath.c_str(), sizeOfFile);
+        std::string extension = filePath.substr(filePath.find_last_of(".") + 1, filePath.find_last_of(".") + 4);
 
         // Check the machine type returned from the user supplied snapshot if not a tape file
         if (_stricmp(extension.c_str(), EXT_TAP.c_str()) == 0)
         {
             EjectTape(); // Eject the current tape if inserted
-            Tape::TapResponse tR = m_pTape->loadWithPath(szFile);
+            Tape::FileResponse tR = m_pTape->insertTapeWithPath(filePath);
             if (tR.success)
             {
-                PMDawn::Log(PMDawn::LOG_INFO, "Loaded tape - " + std::string(szFile));
+                PMDawn::Log(PMDawn::LOG_INFO, "Loaded tape - " + std::string(filePath));
+                PathStripPathA(const_cast<char*>(filePath.c_str()));
+                loadedFile = "TAPE: " + filePath;
+                SendTapeBlockDataToViewer();
             }
             else
             {
                 MessageBox(mainWindow, TEXT("Unable to load tape >> "), TEXT("Tape Loader"), MB_OK | MB_ICONINFORMATION | MB_APPLMODAL);
-                PMDawn::Log(PMDawn::LOG_INFO, "Failed to load tape - " + std::string(szFile) + " > " + tR.responseMsg);
+                loadedFile = "-empty-";
+                PMDawn::Log(PMDawn::LOG_INFO, "Failed to load tape - " + std::string(filePath) + " > " + tR.responseMsg);
             }
         }
         else
         {
+            EjectTape();
             if (mType <= ZX48)
             {
                 // 48 based
-                ResetMachineForSnapshot(ZX48);
+                ResetMachineForSnapshot(ZX48, m_pMachine->ayEnabledSnapshot);
                 Sleep(500);
             }
             else
             {
                 // 128 based
-                ResetMachineForSnapshot(ZX128);
+                ResetMachineForSnapshot(ZX128, true);
                 Sleep(500);
             }
             if (_stricmp(extension.c_str(), EXT_Z80.c_str()) == 0)
             {
                 PMDawn::Log(PMDawn::LOG_INFO, "Loading Z80 Snapshot - " + s);
-                ZXSpectrum::Response sR = m_pMachine->snapshotZ80LoadWithPath(szFile);
+                Tape::FileResponse sR = m_pMachine->snapshotZ80LoadWithPath(filePath);
                 if (sR.success)
                 {
                     PMDawn::Log(PMDawn::LOG_INFO, "Snapshot loaded successfully");
+                    PMDawn::Log(PMDawn::LOG_INFO, "Loaded snapshot - " + std::string(filePath));
+                    PathStripPathA(const_cast<char*>(filePath.c_str()));
+                    loadedFile = ".Z80: " + filePath;
                 }
                 else
                 {
                     PMDawn::Log(PMDawn::LOG_INFO, "Snapshot loading failed : " + sR.responseMsg);
+                    loadedFile = "-empty-";
                 }
             }
             else if (_stricmp(extension.c_str(), EXT_SNA.c_str()) == 0)
             {
                 PMDawn::Log(PMDawn::LOG_DEBUG, "Loading SNA Snapshot - " + s);
-                ZXSpectrum::Response sR = m_pMachine->snapshotSNALoadWithPath(szFile);
+                Tape::FileResponse sR = m_pMachine->snapshotSNALoadWithPath(filePath);
                 if (sR.success)
                 {
                     PMDawn::Log(PMDawn::LOG_INFO, "Snapshot loaded successfully");
+                    PMDawn::Log(PMDawn::LOG_INFO, "Loaded snapshot - " + std::string(filePath));
+                    PathStripPathA(const_cast<char*>(filePath.c_str()));
+                    loadedFile = ".SNA: " + filePath;
                 }
                 else
                 {
                     PMDawn::Log(PMDawn::LOG_INFO, "Snapshot loading failed : " + sR.responseMsg);
+                    loadedFile = "-empty";
                 }
             }
         }
@@ -761,9 +946,11 @@ static void LoadSnapshot()
 
 //-----------------------------------------------------------------------------------------
 
-static void tapeStatusCallback(int blockIndex, int bytes)
+static void tapeStatusCallback(int blockIndex, int bytes, int action)
 {
-    if (blockIndex < 1 && m_pTape->playing ==false) return;
+    if (blockIndex < 1 && m_pTape->playing == false) return;
+    PostMessage(tvHwnd, WM_USER + 2, PM_TAPE_ACTIVEBLOCK, (LPARAM)blockIndex);
+    //SendTapeBlockDataToViewer();
     //TapeBlock* currentTBI = m_pTape->blocks[blockIndex];
     //PMDawn::Log(PMDawn::LOG_DEBUG, "Tape block       : " + std::to_string(blockIndex));
     //PMDawn::Log(PMDawn::LOG_DEBUG, "  Block name     : " + currentTBI->getBlockName());
@@ -803,6 +990,7 @@ static void audio_callback(uint32_t nNumSamples, uint8_t* pBuffer)
 
 int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
 {
+    CoInitializeEx(NULL, COINIT_MULTITHREADED);
     // Check for logging type if needed, CTRL = LOG_INFO, ALT = LOG_DEBUG
     PMDawn::logLevel = PMDawn::LOG_NONE;
     if (GetAsyncKeyState(VK_MENU))
@@ -815,6 +1003,7 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
         // CTRL is pressed
         PMDawn::logLevel = PMDawn::LOG_INFO;
     }
+    PMDawn::logLevel = PMDawn::LOG_INFO;
     if (PMDawn::logLevel != PMDawn::LOG_NONE)
     {
         if (PMDawn::LogOpenOrCreate(PMDawn::GetApplicationBasePath() + "\\" + PMDawn::logFilename))
@@ -837,9 +1026,14 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
     unsigned int cThreads = std::thread::hardware_concurrency();
     PMDawn::Log(PMDawn::LOG_INFO, "Maximum available threads = " + std::to_string(cThreads));
 
+    //SetupThreadLocalStorageForTapeData();
+
+    loadedFile = "-empty-";
     slideshowTimerRunning = false;
     slideshowRandom = true;
     //srand((unsigned int)time(NULL));
+    viewportX = 0;
+    viewportY = 0;
 
     bool exit_emulator = false;
     LARGE_INTEGER  perf_freq, time, last_time;
@@ -859,7 +1053,7 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
     wcex.cbWndExtra = 0;
     wcex.hInstance = inst;
     wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-    wcex.hbrBackground = NULL;
+    wcex.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
     wcex.lpszClassName = TEXT("SpectREM");
     wcex.hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON2));
     wcex.hIconSm = (HICON)LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON2), IMAGE_ICON, 16, 16, 0);
@@ -877,32 +1071,62 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
     Log(PMDawn::LOG_INFO, "Current zoom level is " + std::to_string(zoomLevel));
 
 
-    mainWindow = CreateWindowEx(WS_EX_APPWINDOW, TEXT("SpectREM"), TEXT("SpectREM"), WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME ^ WS_MAXIMIZEBOX, 0, 0, wr.right - wr.left, wr.bottom - wr.top, 0, 0, inst, 0);
+    mainWindow = CreateWindowEx(WS_EX_APPWINDOW, TEXT("SpectREM"), TEXT("SpectREM"),
+        WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME ^ WS_MAXIMIZEBOX,
+        CW_USEDEFAULT, CW_USEDEFAULT, wr.right - wr.left, wr.bottom - wr.top, 0, 0, inst, 0);
 #ifdef WIN32API_GUI
-    statusWindow = CreateStatusWindow(WS_CHILD | WS_VISIBLE | WS_OVERLAPPEDWINDOW, TEXT("Welcome to SpyWindows"), mainWindow, 9000);
+    //statusWindow = CreateStatusWindow(WS_CHILD | WS_VISIBLE, TEXT("Welcome to SpectREM for Windows"), mainWindow, 9000);
+    statusWindow = CreateWindow(STATUSCLASSNAME, TEXT("Welcome to SpectREM for Windows"), WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, mainWindow, NULL, inst, NULL);
 #endif
     ShowWindow(mainWindow, ncmd);
     UpdateWindow(mainWindow);
     mainMenu = GetMenu(mainWindow);
     menuDisplayed = true;
     statusDisplayed = true;
+    //ShowHideUI(mainWindow);
+#ifdef WIN32API_GUI
+    RECT newSize = GetWindowResizeWithUI(mainWindow, statusWindow, mainMenu, true);
+    SetWindowPos(mainWindow, HWND_NOTOPMOST, newSize.left, newSize.top, newSize.right, newSize.bottom, 0);
+#endif
 
     QueryPerformanceFrequency(&perf_freq);
     QueryPerformanceCounter(&last_time);
 
-    m_pOpenGLView = new OpenGLView();
+    m_pOpenGLView = new OpenGLView(bpath);
+    // * zoomLevel
     m_pOpenGLView->Init(mainWindow, 256 * zoomLevel, 192 * zoomLevel, ID_SHADER_CLUT_VERT, ID_SHADER_CLUT_FRAG, ID_SHADER_DISPLAY_VERT, ID_SHADER_DISPLAY_FRAG, RT_RCDATA);
     m_pAudioQueue = new AudioQueue();
     m_pAudioCore = new AudioCore();
-    m_pAudioCore->Init(44100, 50, audio_callback);
+    bool rV = m_pAudioCore->Init(44100, 50, audio_callback);
+    if (!rV)
+    {
+        // AudioCore::Init failed
+        CoUninitialize();
+        return 0;
+    }
+    // Get the current application volume (if changed previously)
+    if (applicationVolume < 0.0f || applicationVolume > 1.0f)
+    {
+        m_pAudioCore->SetOutputVolume(startupVolume);
+    }
+    else
+    {
+        m_pAudioCore->SetOutputVolume(applicationVolume);
+    }
     m_pTape = new Tape(tapeStatusCallback);
-    m_pMachine = new ZXSpectrum128(m_pTape);
+    // Default to a Speccy 48k :)
+    m_pMachine = new ZXSpectrum48(m_pTape);// ZXSpectrum128(m_pTape);
     m_pMachine->emuUseAYSound = true;
     m_pMachine->emuBasePath = PMDawn::GetApplicationBasePath();
     PMDawn::Log(PMDawn::LOG_INFO, "ROMs path = " + m_pMachine->emuBasePath + romPath);
     m_pMachine->initialise(romPath);
     m_pAudioCore->Start();
     m_pMachine->resume();
+    m_pMachine->resetMachine(true);
+
+    m_pOpenGLView->ShaderSetScreenCurve((GLfloat)0.10);
+    m_pOpenGLView->ShaderSetVignette(true);
+    m_pOpenGLView->ShaderSetReflection(true);
 
     // Do the main message loop
     while (!exit_emulator)
@@ -940,7 +1164,8 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
             {
                 last_time = time;
 
-                m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer);
+                m_pOpenGLView->UpdateTextureData(m_pMachine->displayBuffer, viewportX, viewportY);
+
 
                 // Set the time
                 char specType[20];
@@ -984,12 +1209,37 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
                     sprintf_s(lLevel, sizeof(lLevel), " ");
                 }
 
-                char buff[100];
-                sprintf_s(buff, sizeof(buff), "SpectREM - %4.1f fps - [%s] - %s %s", 1.0f / delta_time, specType, zoom, lLevel);
+                char lfBuff[300];
+                if (m_pTape->playing)
+                {
+                    sprintf_s(lfBuff, sizeof(lfBuff), "%s > Playing", loadedFile.c_str());
+                }
+                else
+                {
+                    if (m_pTape->loaded)
+                    {
+                        sprintf_s(lfBuff, sizeof(lfBuff), "%s > Paused", loadedFile.c_str());
+                    }
+                    else
+                    {
+                        sprintf_s(lfBuff, sizeof(lfBuff), "%s", loadedFile.c_str());
+                    }
+                }
+
+
+                char buff[512];
+                sprintf_s(buff, sizeof(buff), "SpectREM - %4.1f fps - [%s] - %s - [%s] %s", 1.0f / delta_time, specType, zoom, lfBuff, lLevel);
                 SetWindowTextA(mainWindow, buff);
             }
         }
     }
+    // if tape viewer is running on it's thread then wait before closing
+    if (tapeViewerThread != nullptr)
+    {
+        WaitForSingleObject(tapeViewerThread, INFINITE);
+        CloseHandle(tapeViewerThread);
+    }
+    CoUninitialize();
     return 0;
 }
 
@@ -998,7 +1248,7 @@ int __stdcall WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int ncmd)
 //-----------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------
 
-static void ResetMachineForSnapshot(uint8_t mc)
+static void ResetMachineForSnapshot(uint8_t mc, bool ayEnabled)
 {
     isResetting = true;
 
@@ -1022,11 +1272,27 @@ static void ResetMachineForSnapshot(uint8_t mc)
     case ZX48:
         PMDawn::Log(PMDawn::LOG_INFO, "SpectREM changed to 48K Mode");
         m_pMachine = new ZXSpectrum48(m_pTape);
-        m_pMachine->emuUseAYSound = false;
+        m_pMachine->emuUseAYSound = ayEnabled;
         break;
     case ZX128:
         PMDawn::Log(PMDawn::LOG_INFO, "SpectREM changed to 128K Mode");
         m_pMachine = new ZXSpectrum128(m_pTape);
+        m_pMachine->emuUseAYSound = true;
+        break;
+    case PLUS2:
+        PMDawn::Log(PMDawn::LOG_INFO, "SpectREM changed to 128K +2 Mode");
+        m_pMachine = new ZXSpectrum128_2(m_pTape);
+        m_pMachine->emuUseAYSound = true;
+        break;
+    case PLUS2A:
+        PMDawn::Log(PMDawn::LOG_INFO, "SpectREM changed to 128K +2A Mode");
+        m_pMachine = new ZXSpectrum128_2A(m_pTape);
+        m_pMachine->emuUseAYSound = true;
+        break;
+    case PLUS3:
+        PMDawn::Log(PMDawn::LOG_INFO, "SpectREM changed to 128K +3 Mode");
+        m_pMachine = new ZXSpectrum128_2A(m_pTape);
+        //m_pMachine = new ZXSpectrum128_3(m_pTape);
         m_pMachine->emuUseAYSound = true;
         break;
     default:
@@ -1040,6 +1306,15 @@ static void ResetMachineForSnapshot(uint8_t mc)
     m_pMachine->emuBasePath = PMDawn::GetApplicationBasePath();
     m_pMachine->initialise(romPath);
     m_pAudioCore->Start();
+    // Get the current application volume (if changed previously)
+    if (applicationVolume < 0.0f || applicationVolume > 1.0f)
+    {
+        m_pAudioCore->SetOutputVolume(startupVolume);
+    }
+    else
+    {
+        m_pAudioCore->SetOutputVolume(applicationVolume);
+    }
     m_pMachine->resume();
 
     isResetting = false;
@@ -1091,18 +1366,107 @@ static void DecreaseApplicationVolume()
 
 static void OpenTapeViewer()
 {
-    TapeViewer* tvWindow = new TapeViewer(GetModuleHandle(NULL), mainWindow);
-    //int retval = TapeViewer::OpenTapeViewerWindow(GetModuleHandle(NULL), mainWindow);
+    if (tapeViewerThread) return;
+
+    tapeViewerThread = (HANDLE)_beginthreadex(0, 0, &mythread, 0, 0, 0);
+}
+
+unsigned int __stdcall mythread(void* data)
+{
+
+    tvWindow = new TapeViewer(GetModuleHandle(NULL), mainWindow, dwTlsIndex);
+    tvWindow = nullptr;
+    PostMessage(mainWindow, WM_USER + 2, PM_TAPE_VIEWER_CLOSED, (LPARAM)0);
+    return 0;
+}
+//-----------------------------------------------------------------------------------------
+static void SendTapeBlockDataToViewer()
+{
+    size_t numBlocks = m_pTape->numberOfTapeBlocks();
+
+    PMDawn::pData.clear();
+    for (int i = 0; i < numBlocks; i++)
+    {
+        PMDawn::gTAPEBLOCK gT;
+
+        gT.status = " ";
+        switch (m_pTape->blocks[i]->getDataType())
+        {
+        case 0: // ePROGRAM_HEADER
+            gT.blocktype = "PROGRAM:";
+            break;
+
+        case 1: // eNUMERIC_DATA_HEADER
+            gT.blocktype = "DATA():";
+            break;
+
+        case 2: // eALPHANUMERIC_DATA_HEADER
+            gT.blocktype = "STRING():";
+            break;
+
+        case 3: // eBYTE_HEADER
+            gT.blocktype = "CODE:";
+            break;
+
+        case 4: // eDATA_BLOCK
+            gT.blocktype = "DATA:";
+            break;
+
+        case 5: // eFRAGMENTED_DATA_BLOCK
+            gT.blocktype = "FRAGMENTED:";
+            break;
+
+        case 99: // eUNKNOWN_BLOCK
+            gT.blocktype = "UNKNOWN:";
+            break;
+
+        default: // Uh oh...
+            gT.blocktype = "  DATA:";
+            break;
+        }
+
+        if (m_pTape->blocks[i]->getDataType() < 4)
+        {
+            gT.filename = m_pTape->blocks[i]->getFilename();
+            gT.autostartline = m_pTape->blocks[i]->getAutoStartLine();
+        }
+        else
+        {
+            gT.filename = "";
+            gT.autostartline = 0;
+        }
+        gT.address = m_pTape->blocks[i]->getStartAddress();
+        gT.length = m_pTape->blocks[i]->getDataLength();
+
+        PMDawn::pData.push_back(gT);
+    }
+
+    size_t num = PMDawn::pData.size();
+
+    if (tvHwnd != nullptr)
+    {
+        PostMessage(tvHwnd, WM_USER + 2, PM_TAPEDATA_FULL, (LPARAM)&PMDawn::pData);
+    }
 }
 
 //-----------------------------------------------------------------------------------------
 
+static void GetTapeViewerHwnd()
+{
+    tvHwnd = TapeViewer::tapeViewerWindowInternal;
+}
 
 //-----------------------------------------------------------------------------------------
 
-
-//-----------------------------------------------------------------------------------------
-
+static void SetupThreadLocalStorageForTapeData()
+{
+    return;
+    //// Setup the thread local storage
+    //dwTlsIndex = TlsAlloc();
+    //TlsSetValue(dwTlsIndex, GlobalAlloc(GPTR, sizeof(PMDawn::THREADDATA)));
+    //PMDawn::pData = (PMDawn::PTHREADDATA)TlsGetValue(dwTlsIndex);
+    //PMDawn::pData->filename = "POLO2";
+}
 
 //-----------------------------------------------------------------------------------------
 

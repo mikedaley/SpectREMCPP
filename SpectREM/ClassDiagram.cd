@@ -1,0 +1,586 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="AudioQueue" Collapsed="true">
+    <Position X="13" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAIAAAAAQAGQACAAAAAAAAAAAQAAAQAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\OSX\AudioQueue.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AudioCore" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="13" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgABAACAAQAIAIAAAAAEAAEEAAAEgIAASJBEAAAA=</HashCode>
+      <FileName>SpectREM\Win32\AudioCore.hpp</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="OpenGLView">
+    <Position X="10" Y="0.5" Width="2.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>4BJQmIUvACCTAwg0YdQU4YSgEkIAiBKaABhuA3kI0Zg=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TapeViewer">
+    <Position X="4" Y="2.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAACAQAAAAAgSAgAAABAAAACAAACAAACA=</HashCode>
+      <FileName>SpectREM\Win32\TapeViewerWindow.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Debug" Collapsed="true">
+    <Position X="13" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ASQAICAAAAAQAIACQAAIBAAAIAAAEIIAAiAAACAAAEg=</HashCode>
+      <FileName>SpectREM\Emulation Core\Debugger\Debug.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TapeBlock" Collapsed="true">
+    <Position X="4" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CCAQAAAAAAIAACAAAACgAAIAAAAAIAAAAABAAAAAjAA=</HashCode>
+      <FileName>SpectREM\Emulation Core\Tape\Tape.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ProgramHeader" Collapsed="true">
+    <Position X="0.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAQAAAAAAAAAAAAAAAgAAAAAAAAIAAAAAgAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Emulation Core\Tape\Tape.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NumericDataHeader" Collapsed="true">
+    <Position X="2.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Emulation Core\Tape\Tape.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AlphanumericDataHeader" Collapsed="true">
+    <Position X="4.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Emulation Core\Tape\Tape.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ByteHeader" Collapsed="true">
+    <Position X="6" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAQAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Emulation Core\Tape\Tape.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DataBlock" Collapsed="true">
+    <Position X="7.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAQAAAAAAIAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Emulation Core\Tape\Tape.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Tape">
+    <Position X="6.75" Y="2.75" Width="3" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <NestedTypes>
+      <Enum Name="Tape::__unnamed_enum_0006_1" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>SpectREM\Emulation Core\Tape\Tape.hpp</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Enum Name="Tape::__unnamed_enum_0006_2" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>SpectREM\Emulation Core\Tape\Tape.hpp</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Enum Name="Tape::TAPEACTION" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>SpectREM\Emulation Core\Tape\Tape.hpp</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Struct Name="Tape::FileResponse" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>SpectREM\Emulation Core\Tape\Tape.hpp</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>FBBIIBCgACYkJEABAQgAACQAEgTgCAAEBCGAAUCgZgA=</HashCode>
+      <FileName>SpectREM\Emulation Core\Tape\Tape.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CZ80Core" Collapsed="true">
+    <Position X="13" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>JPgCshACMFCTN4SADiRT5IJAxSgggEQwAJiAQ8uMICE=</HashCode>
+      <FileName>SpectREM\Emulation Core\Z80_Core\Z80Core.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ZXSpectrum48" Collapsed="true">
+    <Position X="0.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ECgAAAACAAAQAAAEABEQQAAgAAAAAAAAABACAAAAAAA=</HashCode>
+      <FileName>SpectREM\Emulation Core\ZX_Spectrum_48k\ZXSpectrum48.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ZXSpectrum128" Collapsed="true">
+    <Position X="2.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ECgAAAAKBAAQAAAEAAEQQAAgAAAAAAAAEAACAAAAAAA=</HashCode>
+      <FileName>SpectREM\Emulation Core\ZX_Spectrum_128k\ZXSpectrum128.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ZXSpectrum" Collapsed="true">
+    <Position X="1.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>HCveBSk3Wy5esSLXtJkzwCagyJIkAxBU0SLHQDHLLik=</HashCode>
+      <FileName>SpectREM\Emulation Core\ZX_Spectrum_Core\ZXSpectrum.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="__unnamed_struct_0025_1" Collapsed="true">
+    <Position X="22.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoAQABAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.cpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="__unnamed_struct_001f_2" Collapsed="true">
+    <Position X="24.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgBAAwBEAAACAAAJAgAAACACAkAAoAEIAhAIIBAQA=</HashCode>
+      <FileName>SpectREM\Emulation Core\ZX_Spectrum_Core\MachineInfo.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="PMDawn::gTAPEBLOCK">
+    <Position X="4" Y="6.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAABAAAAAAAAAAECAAAAAAAIAAAAAIAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\PMDawn.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Typedef Name="Color" Collapsed="true">
+    <Position X="22.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.cpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="AUDIOCORE_Callback" Collapsed="true">
+    <Position X="21" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\AudioCore.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNWGLCHOOSEPIXELFORMATARBPROC" Collapsed="true">
+    <Position X="24.5" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNWGLCREATECONTEXTATTRIBSARBPROC" Collapsed="true">
+    <Position X="26.25" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNWGLSWAPINTERVALEXTPROC" Collapsed="true">
+    <Position X="28" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLATTACHSHADERPROC" Collapsed="true">
+    <Position X="24.5" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLBINDBUFFERPROC" Collapsed="true">
+    <Position X="28" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLBINDVERTEXARRAYPROC" Collapsed="true">
+    <Position X="31.5" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLBUFFERDATAPROC" Collapsed="true">
+    <Position X="33.25" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLCOMPILESHADERPROC" Collapsed="true">
+    <Position X="22.75" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLCREATEPROGRAMPROC" Collapsed="true">
+    <Position X="24.5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLCREATESHADERPROC" Collapsed="true">
+    <Position X="26.25" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLDELETEBUFFERSPROC" Collapsed="true">
+    <Position X="28" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLDELETEPROGRAMPROC" Collapsed="true">
+    <Position X="29.75" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLDELETESHADERPROC" Collapsed="true">
+    <Position X="31.5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLDELETEVERTEXARRAYSPROC" Collapsed="true">
+    <Position X="33.25" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLDETACHSHADERPROC" Collapsed="true">
+    <Position X="21" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLENABLEVERTEXATTRIBARRAYPROC" Collapsed="true">
+    <Position X="26.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLGENBUFFERSPROC" Collapsed="true">
+    <Position X="29.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLGENVERTEXARRAYSPROC" Collapsed="true">
+    <Position X="21" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLGETATTRIBLOCATIONPROC" Collapsed="true">
+    <Position X="22.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLGETPROGRAMINFOLOGPROC" Collapsed="true">
+    <Position X="24.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLGETPROGRAMIVPROC" Collapsed="true">
+    <Position X="26.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLGETSHADERINFOLOGPROC" Collapsed="true">
+    <Position X="28" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLGETSHADERIVPROC" Collapsed="true">
+    <Position X="29.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLLINKPROGRAMPROC" Collapsed="true">
+    <Position X="33.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLSHADERSOURCEPROC" Collapsed="true">
+    <Position X="26.25" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLUSEPROGRAMPROC" Collapsed="true">
+    <Position X="21" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLVERTEXATTRIBPOINTERPROC" Collapsed="true">
+    <Position X="22.75" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLBINDATTRIBLOCATIONPROC" Collapsed="true">
+    <Position X="26.25" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLGETUNIFORMLOCATIONPROC" Collapsed="true">
+    <Position X="31.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLUNIFORMMATRIX4FVPROC" Collapsed="true">
+    <Position X="33.25" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLACTIVETEXTUREPROC" Collapsed="true">
+    <Position X="22.75" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLUNIFORM1IPROC" Collapsed="true">
+    <Position X="28" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLPROGRAMUNIFORM1FPROC" Collapsed="true">
+    <Position X="21" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLGENERATEMIPMAPPROC" Collapsed="true">
+    <Position X="31.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLDISABLEVERTEXATTRIBARRAYPROC" Collapsed="true">
+    <Position X="22.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLUNIFORM3FVPROC" Collapsed="true">
+    <Position X="29.75" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLUNIFORM4FVPROC" Collapsed="true">
+    <Position X="31.5" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLGENFRAMEBUFFERSPROC" Collapsed="true">
+    <Position X="33.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLBINDFRAMEBUFFERPROC" Collapsed="true">
+    <Position X="29.75" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLFRAMEBUFFERTEXTUREPROC" Collapsed="true">
+    <Position X="28" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLDRAWBUFFERSPROC" Collapsed="true">
+    <Position X="24.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLCHECKFRAMEBUFFERSTATUSPROC" Collapsed="true">
+    <Position X="21" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLPROGRAMUNIFORM1IPROC" Collapsed="true">
+    <Position X="22.75" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="PFNGLPROGRAMUNIFORM2FPROC" Collapsed="true">
+    <Position X="24.5" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\OpenGLView.hpp</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="Z80CoreRead" Collapsed="true">
+    <Position X="21" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Emulation Core\Z80_Core\Z80Core.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="Z80CoreWrite" Collapsed="true">
+    <Position X="22.75" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Emulation Core\Z80_Core\Z80Core.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="Z80CoreContention" Collapsed="true">
+    <Position X="29.75" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Emulation Core\Z80_Core\Z80Core.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="Z80CoreDebugRead" Collapsed="true">
+    <Position X="31.5" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Emulation Core\Z80_Core\Z80Core.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="Z80CoreDebugWrite" Collapsed="true">
+    <Position X="33.25" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Emulation Core\Z80_Core\Z80Core.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="Z80OpcodeCallback" Collapsed="true">
+    <Position X="26.25" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Emulation Core\Z80_Core\Z80Core.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="Z80DebugCallback" Collapsed="true">
+    <Position X="24.5" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Emulation Core\Z80_Core\Z80Core.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="MachineInfo" Collapsed="true">
+    <Position X="24.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Emulation Core\ZX_Spectrum_Core\MachineInfo.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Enum Name="MachineType" Collapsed="true">
+    <Position X="28" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAABAAAQAAAAAAAAAAAAAAAQAAAAAAAAAACAA=</HashCode>
+      <FileName>SpectREM\Win32\WinMain.cpp</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="SnapType" Collapsed="true">
+    <Position X="29.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\WinMain.cpp</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="__unnamed_enum_001a_1" Collapsed="true">
+    <Position X="21" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAIAAAgAAAAAAAIAAAAAIAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Emulation Core\ZX_Spectrum_Core\Audio.cpp</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="__unnamed_enum_001c_1" Collapsed="true">
+    <Position X="22.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAgAAAAAAAAgA=</HashCode>
+      <FileName>SpectREM\Emulation Core\ZX_Spectrum_Core\Display.cpp</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="__unnamed_enum_001f_1" Collapsed="true">
+    <Position X="24.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAIICA=</HashCode>
+      <FileName>SpectREM\Emulation Core\ZX_Spectrum_Core\MachineInfo.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="PMDawn::LogType" Collapsed="true">
+    <Position X="26.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAACgAAAAAAAAAAAAAAEAQAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SpectREM\Win32\PMDawn.hpp</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="10" />
+</ClassDiagram>

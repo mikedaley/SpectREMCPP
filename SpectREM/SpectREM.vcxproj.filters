@@ -99,6 +99,8 @@
     <ClCompile Include="SpectREM\Win32\TapeViewerWindow.cpp">
       <Filter>Win32</Filter>
     </ClCompile>
+    <ClCompile Include="SpectREM\Emulation Core\ZX_Spectrum_128k_2\ZXSpectrum128_2.cpp" />
+    <ClCompile Include="SpectREM\Emulation Core\ZXSpectrum_128k_2A\ZXSpectrum128_2A.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SpectREM\Win32\AudioCore.hpp">
@@ -156,6 +158,11 @@
     <ClInclude Include="SpectREM\Win32\TapeViewerWindow.hpp">
       <Filter>Win32</Filter>
     </ClInclude>
+    <ClInclude Include="SpectREM\Win32\PMDawn.hpp">
+      <Filter>Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="SpectREM\Emulation Core\ZX_Spectrum_128k_2\ZXSpectrum128_2.hpp" />
+    <ClInclude Include="SpectREM\Emulation Core\ZXSpectrum_128k_2A\ZXSpectrum128_2A.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="SpectREM\clut.frag" />
@@ -166,6 +173,7 @@
     <None Include="Spectrem\Win32\display.vert" />
     <None Include="Spectrem\Win32\clut.frag" />
     <None Include="Spectrem\Win32\clut.vert" />
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Info.txt">
