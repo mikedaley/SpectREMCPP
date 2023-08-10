@@ -3,14 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 48;
+	objectVersion = 53;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		17B27F041F6877C800B811FC /* AudioQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17B27F021F6877C800B811FC /* AudioQueue.cpp */; };
 		17B5DB971F5B14A7003E7EF3 /* AudioCore.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17B5DB951F5B14A7003E7EF3 /* AudioCore.mm */; };
-		17BB26C923FEAC2900F68DC8 /* ORSSerial.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17BB26C723FEABF100F68DC8 /* ORSSerial.framework */; };
-		17BB26CA23FEAC2900F68DC8 /* ORSSerial.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 17BB26C723FEABF100F68DC8 /* ORSSerial.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		17BB26D123FEAD9F00F68DC8 /* plus3-41-3.rom in Resources */ = {isa = PBXBuildFile; fileRef = 17BB26D023FEAD9F00F68DC8 /* plus3-41-3.rom */; };
 		17BB26D323FEADAA00F68DC8 /* plus3-41-2.rom in Resources */ = {isa = PBXBuildFile; fileRef = 17BB26D223FEADAA00F68DC8 /* plus3-41-2.rom */; };
 		17BB26D523FEADB200F68DC8 /* plus3-41-1.rom in Resources */ = {isa = PBXBuildFile; fileRef = 17BB26D423FEADB200F68DC8 /* plus3-41-1.rom */; };
@@ -96,6 +94,7 @@
 		2971211E23CE633A0083C334 /* EmulationController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2971211B23CE633A0083C334 /* EmulationController.cpp */; };
 		2985C70223E2D16B00F42D8F /* ZXSpectrum128_2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2985C70023E2D16B00F42D8F /* ZXSpectrum128_2.cpp */; };
 		2985C70E23E342C100F42D8F /* ZXSpectrum128_2A.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2985C70423E3359900F42D8F /* ZXSpectrum128_2A.cpp */; };
+		29C795BF2A855CC300F35D42 /* ORSSerial.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29C795BC2A855BF300F35D42 /* ORSSerial.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		29D0D61B23AE418C00BA8A30 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29D0D61A23AE418C00BA8A30 /* UserNotifications.framework */; };
 		29E98454239531C00033E63C /* NSObject+Bindings.mm in Sources */ = {isa = PBXBuildFile; fileRef = 29E98453239531C00033E63C /* NSObject+Bindings.mm */; };
 		ED2A6D051F6036D3003CD6CE /* ConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED2A6D041F6036D3003CD6CE /* ConfigurationViewController.m */; };
@@ -110,6 +109,23 @@
 		EDC56FDA1F6C228700162739 /* Defaults.m in Sources */ = {isa = PBXBuildFile; fileRef = EDC56FD91F6C228700162739 /* Defaults.m */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		29C795BB2A855BF300F35D42 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29C795B62A855B7D00F35D42 /* ORSSerialPort.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9DCA89121A2BB106009285EB;
+			remoteInfo = ORSSerial;
+		};
+		29C795BD2A855BF300F35D42 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29C795B62A855B7D00F35D42 /* ORSSerialPort.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9D7472131B6D7767002D8B10;
+			remoteInfo = "ORSSerialPort Tests";
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		17BB26CB23FEAC2900F68DC8 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -117,7 +133,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				17BB26CA23FEAC2900F68DC8 /* ORSSerial.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -130,7 +145,6 @@
 		17B5DB931F5B14A7003E7EF3 /* AudioCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioCore.h; path = SpectREM/OSX/AudioCore.h; sourceTree = SOURCE_ROOT; };
 		17B5DB951F5B14A7003E7EF3 /* AudioCore.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AudioCore.mm; path = SpectREM/OSX/AudioCore.mm; sourceTree = SOURCE_ROOT; };
 		17B5DB9C1F5B1CCE003E7EF3 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		17BB26C723FEABF100F68DC8 /* ORSSerial.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ORSSerial.framework; path = Frameworks/ORSSerialPort/ORSSerial.framework; sourceTree = "<group>"; };
 		17BB26D023FEAD9F00F68DC8 /* plus3-41-3.rom */ = {isa = PBXFileReference; lastKnownFileType = file; path = "plus3-41-3.rom"; sourceTree = "<group>"; };
 		17BB26D223FEADAA00F68DC8 /* plus3-41-2.rom */ = {isa = PBXFileReference; lastKnownFileType = file; path = "plus3-41-2.rom"; sourceTree = "<group>"; };
 		17BB26D423FEADB200F68DC8 /* plus3-41-1.rom */ = {isa = PBXFileReference; lastKnownFileType = file; path = "plus3-41-1.rom"; sourceTree = "<group>"; };
@@ -218,6 +232,7 @@
 		2985C70123E2D16B00F42D8F /* ZXSpectrum128_2.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ZXSpectrum128_2.hpp; sourceTree = "<group>"; };
 		2985C70423E3359900F42D8F /* ZXSpectrum128_2A.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ZXSpectrum128_2A.cpp; sourceTree = "<group>"; };
 		2985C70523E3359900F42D8F /* ZXSpectrum128_2A.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ZXSpectrum128_2A.hpp; sourceTree = "<group>"; };
+		29C795B62A855B7D00F35D42 /* ORSSerialPort.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ORSSerialPort.xcodeproj; path = "../Frameworks/ORSSerialPort/Framework Project/ORSSerialPort.xcodeproj"; sourceTree = "<group>"; };
 		29CE03BD22A7BD64007A1549 /* SpectREM.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = SpectREM.entitlements; path = SpectREM/OSX/SpectREM.entitlements; sourceTree = SOURCE_ROOT; };
 		29D0D61A23AE418C00BA8A30 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		29E98452239531C00033E63C /* NSObject+Bindings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSObject+Bindings.h"; path = "SpectREM/OSX/NSObject+Bindings.h"; sourceTree = SOURCE_ROOT; };
@@ -259,12 +274,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				29C795BF2A855CC300F35D42 /* ORSSerial.framework in Frameworks */,
 				276ADE2D2101CE6500EC7DC9 /* MetalKit.framework in Frameworks */,
 				29D0D61B23AE418C00BA8A30 /* UserNotifications.framework in Frameworks */,
 				276E3F9E1F97AAE800020BB3 /* CoreMedia.framework in Frameworks */,
 				276E3F9C1F97A06B00020BB3 /* AVFoundation.framework in Frameworks */,
 				17EC89101F5B1FC500B6EFAF /* AudioToolbox.framework in Frameworks */,
-				17BB26C923FEAC2900F68DC8 /* ORSSerial.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -285,7 +300,6 @@
 		17B5DB9B1F5B1CCE003E7EF3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				17BB26C723FEABF100F68DC8 /* ORSSerial.framework */,
 				29D0D61A23AE418C00BA8A30 /* UserNotifications.framework */,
 				29555C1921E5271F004BC007 /* AVFoundation.framework */,
 				29555C1721E52719004BC007 /* AudioToolbox.framework */,
@@ -519,6 +533,15 @@
 			path = ZXSpectrum_128k_2A;
 			sourceTree = "<group>";
 		};
+		29C795B72A855B7D00F35D42 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				29C795BC2A855BF300F35D42 /* ORSSerial.framework */,
+				29C795BE2A855BF300F35D42 /* ORSSerialPort Tests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		29E98462239535F60033E63C /* SmartLink */ = {
 			isa = PBXGroup;
 			children = (
@@ -562,6 +585,7 @@
 		ED913F8C1F30759300316E1A = {
 			isa = PBXGroup;
 			children = (
+				29C795B62A855B7D00F35D42 /* ORSSerialPort.xcodeproj */,
 				ED913F971F30759300316E1A /* SpectREM */,
 				2968890021E3B98900BFC3BD /* SpectREMiOS */,
 				ED913F961F30759300316E1A /* Products */,
@@ -724,8 +748,9 @@
 		ED913F8D1F30759300316E1A /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = YES;
 				CLASSPREFIX = "";
-				LastUpgradeCheck = 1100;
+				LastUpgradeCheck = 1430;
 				ORGANIZATIONNAME = "Michael Daley";
 				TargetAttributes = {
 					296888FE21E3B98800BFC3BD = {
@@ -754,6 +779,12 @@
 			mainGroup = ED913F8C1F30759300316E1A;
 			productRefGroup = ED913F961F30759300316E1A /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 29C795B72A855B7D00F35D42 /* Products */;
+					ProjectRef = 29C795B62A855B7D00F35D42 /* ORSSerialPort.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				ED913F941F30759300316E1A /* SpectREM */,
@@ -761,6 +792,23 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		29C795BC2A855BF300F35D42 /* ORSSerial.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = ORSSerial.framework;
+			remoteRef = 29C795BB2A855BF300F35D42 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		29C795BE2A855BF300F35D42 /* ORSSerialPort Tests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "ORSSerialPort Tests.xctest";
+			remoteRef = 29C795BD2A855BF300F35D42 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		296888FD21E3B98800BFC3BD /* Resources */ = {
@@ -929,8 +977,12 @@
 				DEVELOPMENT_TEAM = PJNBHRUE79;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				INFOPLIST_FILE = SpectREMiOS/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				OTHER_LDFLAGS = "-v";
@@ -955,8 +1007,12 @@
 				DEVELOPMENT_TEAM = PJNBHRUE79;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				INFOPLIST_FILE = SpectREMiOS/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.daley.SpectREMiOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -992,6 +1048,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = NO;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -999,6 +1056,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "-";
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -1016,7 +1074,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -1049,6 +1107,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = NO;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -1056,6 +1115,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "-";
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1067,7 +1127,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				"OTHER_LDFLAGS[arch=*]" = "";
 				SDKROOT = macosx;
@@ -1092,9 +1152,11 @@
 				CLANG_WARN__EXIT_TIME_DESTRUCTORS = YES;
 				CODE_SIGN_ENTITLEMENTS = SpectREM/OSX/SpectREM.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = PJNBHRUE79;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1108,8 +1170,11 @@
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_PARAMETER = NO;
 				INFOPLIST_FILE = SpectREM/OSX/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_TREAT_WARNINGS_AS_ERRORS = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.daley.SpectREM;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1137,9 +1202,11 @@
 				CLANG_WARN__EXIT_TIME_DESTRUCTORS = YES;
 				CODE_SIGN_ENTITLEMENTS = SpectREM/OSX/SpectREM.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = PJNBHRUE79;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1154,8 +1221,11 @@
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_PARAMETER = NO;
 				INFOPLIST_FILE = SpectREM/OSX/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_TREAT_WARNINGS_AS_ERRORS = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.daley.SpectREM;
 				PRODUCT_NAME = "$(TARGET_NAME)";

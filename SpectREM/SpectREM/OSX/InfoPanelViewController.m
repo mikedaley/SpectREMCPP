@@ -20,7 +20,7 @@
     
     self.view.wantsLayer = YES;
     [(NSVisualEffectView*)self.view setBlendingMode:NSVisualEffectBlendingModeWithinWindow];
-    [(NSVisualEffectView*)self.view setMaterial:NSVisualEffectMaterialDark];
+    [(NSVisualEffectView*)self.view setMaterial:NSVisualEffectMaterialHUDWindow];
     self.view.layer.cornerRadius = 6;
     [self.view setFrameOrigin:(NSPoint){0, -self.view.frame.size.height}];
     self.panelHidden = YES;
